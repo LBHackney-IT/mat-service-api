@@ -19,7 +19,7 @@ jobs:
       - run:
           name: BuildTheApplication
           command: |
-            yarn build
+            npm run build
 
       - persist_to_workspace:
           root: ~/repo
@@ -40,7 +40,7 @@ jobs:
       - run:
           name: deploy
           command: |
-            cd ../repo && yarn build && yarn --production=true && sudo npm i -g serverless && sls deploy -s dev
+            cd ../repo && npm run build && npm run build --production=true && sudo npm i -g serverless && sls deploy -s dev
             
 workflows:
   version: 2

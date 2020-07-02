@@ -4,9 +4,15 @@ orbs:
   aws-cli: circleci/aws-cli@1.0.0
   aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
 
+executors:
+  build-executor:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+ 
 jobs:
   build:
-    executor: aws-cli/default
+    executor: build-executor
     working_directory: ~/repo  
 
     steps:

@@ -5,12 +5,14 @@ orbs:
   aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
 
 jobs:
-  build-application:
+  build:
+    executor: aws-cli/default
     working_directory: ~/repo  
+
     steps:
       - checkout
       - run:
-          name: Build the application
+          name: BuildTheApplication
           command: |
             yarn build
 
@@ -20,13 +22,16 @@ jobs:
     
   build-deploy-dev:
     executor: aws-cli/default  
+
     steps:
       - attach_workspace:
           at: ~/repo
+
       - aws_assume_role/assume_role:
-        account: $AWS_ACCOUNT
-        profile_name: default
-        role: 'LBH_Circle_CI_Deployment_Role'
+          account: $AWS_ACCOUNT
+          profile_name: default
+          role: 'LBH_Circle_CI_Deployment_Role'
+
       - run:
           name: deploy
           command: |
@@ -34,9 +39,10 @@ jobs:
             
 workflows:
   version: 2
+
   continuous-delivery:
     jobs:
-      - build-application
+      - build
       - build-deploy-dev:
           filters:
             branches:
@@ -45,7 +51,7 @@ workflows:
       - permit-deploy-dev:
           type: approval
           requires:
-            - build-application
+            - build
       - build-deploy-dev:
           requires:
             - permit-deploy-dev

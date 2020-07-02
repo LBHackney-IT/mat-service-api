@@ -13,7 +13,6 @@ executors:
 jobs:
   build:
     executor: build-executor
-    working_directory: ~/repo  
 
     steps:
       - checkout

@@ -19,7 +19,7 @@ jobs:
       - run:
           name: BuildTheApplication
           command: |
-            npm install yarn && yarn build
+            npm install yarn
 
       - persist_to_workspace:
           root: ~/repo

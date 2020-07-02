@@ -1,0 +1,59 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@1.0.0
+  aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
+
+  jobs:
+    build-application:
+      working_directory: ~/repo
+  
+      steps:
+        - checkout
+        - run:
+            name: Build the application
+            command: |
+              yarn build
+  
+        - persist_to_workspace:
+            root: ~/repo
+            paths: .
+    
+    build-deploy-dev:
+      executor: aws-cli/default
+  
+      steps:
+        - attach_workspace:
+            at: ~/repo
+  
+        #- aws-cli/setup:
+        #    aws-access-key-id: AWS_ACCESS_KEY_ID
+        #    aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+        #    aws-region: eu-west-2
+        - aws_assume_role/assume_role:
+          account: $AWS_ACCOUNT
+          profile_name: default
+          role: 'LBH_Circle_CI_Deployment_Role'
+  
+        - run:
+            name: deploy
+            command: |
+              cd ../repo && yarn build && yarn --production=true && sudo npm i -g serverless && sls deploy -s dev
+
+workflows:
+  version: 2
+  continuous-delivery:
+    jobs:
+      - build-application
+      - build-deploy-dev:
+          filters:
+            branches:
+              only:
+                - test/serverless-deployment
+      - permit-deploy-dev:
+          type: approval
+          requires:
+            - build-application
+      - build-deploy-dev:
+          requires:
+            - permit-deploy-dev

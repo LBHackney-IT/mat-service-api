@@ -42,8 +42,7 @@ workflows:
 
   continuous-delivery:
     jobs:
-      - build
-      - build-deploy-dev:
+      - build:
           filters:
             branches:
               only:

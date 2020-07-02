@@ -6,8 +6,7 @@ orbs:
 
   jobs:
     build-application:
-      working_directory: ~/repo
-  
+      working_directory: ~/repo  
       steps:
         - checkout
         - run:
@@ -20,8 +19,7 @@ orbs:
             paths: .
     
     build-deploy-dev:
-      executor: aws-cli/default
-  
+      executor: aws-cli/default  
       steps:
         - attach_workspace:
             at: ~/repo
@@ -39,7 +37,6 @@ orbs:
             name: deploy
             command: |
               cd ../repo && yarn build && yarn --production=true && sudo npm i -g serverless && sls deploy -s dev
-
 workflows:
   version: 2
   continuous-delivery:

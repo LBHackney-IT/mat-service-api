@@ -14,9 +14,6 @@ jobs:
     executor: build-executor  
 
     steps:
-      - attach_workspace:
-          at: ~/repo
-
       - aws_assume_role/assume_role:
           account: $AWS_ACCOUNT
           profile_name: default

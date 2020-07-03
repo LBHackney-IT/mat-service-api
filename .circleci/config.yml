@@ -27,7 +27,7 @@ jobs:
       - run:
           name: deploy
           command: |
-            sudo npm i -g serverless --config serverless.yml && sls deploy -s dev
+            sudo npm i -g serverless --config ~/serverless.yml && sls deploy -s dev
             
 workflows:
   version: 2

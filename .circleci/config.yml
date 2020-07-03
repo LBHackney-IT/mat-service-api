@@ -29,6 +29,7 @@ jobs:
           command: |
             ls -al
             cd ~/
+            cd project
             ls -al
             
           #sudo npm i -g serverless && sls deploy  

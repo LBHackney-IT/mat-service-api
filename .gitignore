@@ -1,30 +1,11 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# package directories
+node_modules
+jspm_packages
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Serverless directories
+.serverless
 
-# testing
-/coverage
+# next.js directories
+.next
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env

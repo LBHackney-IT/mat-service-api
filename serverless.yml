@@ -1,0 +1,81 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: hn-mat
+
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-2
+  stage: ${opt:stage}
+  profile: hackney
+  timeout: 15
+  vpc:
+    securityGroupIds:
+      - sg-0b18288c83a2a1515
+    subnetIds:
+      - subnet-0f9d0a6e7fea5975c
+      - subnet-05f78e228a3e553d3
+
+plugins:
+  #- serverless-offline-ssm
+  - serverless-offline
+
+package:
+  individually: true
+  exclude:
+    - ./**
+
+functions:
+  hello:
+    name: hn-mat-${self:provider.stage}
+    #role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    handler: handler.hello
+    package:
+      include:
+        - api/hello.js
+        - index.js
+    events:
+      - http:
+          path: '{proxy+}'
+          method: ANY
+          #authorizer: ${self:custom.authorizer.hn-single-view-api-authorizer}
+          cors:
+            origins:
+              - '*'
+
+    environment:
+      ENV: ${self:provider.stage}
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+
+custom:
+  stage: ${self:provider.stage}

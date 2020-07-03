@@ -28,6 +28,8 @@ jobs:
           name: deploy
           command: |
             pwd 
+            cd mat-service-api
+            pwd
             sudo npm i -g serverless && sls deploy -s dev
             
 workflows:

@@ -8,11 +8,10 @@ executors:
   build-executor:
     docker:
       - image: circleci/node:12.13
-    working_directory: ~/repo
  
 jobs:
   build-deploy-dev:
-    executor: aws-cli/default  
+    executor: build-executor  
 
     steps:
       - attach_workspace:

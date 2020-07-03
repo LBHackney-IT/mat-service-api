@@ -14,13 +14,13 @@ jobs:
     steps:
       - checkout
 
-      # - run:
-      #     name: Concatenate all package-lock.json files into single file for checksum
-      #     command: cat package-lock.json api/package-lock.json > combined-package-lock.txt
+      - run:
+          name: Concatenate all package-lock.json files into single file for checksum
+          command: cat package-lock.json api/package-lock.json > combined-package-lock.txt
 
-      # - restore_cache:
-      #     keys:
-      #       - v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
 
       - run:
           name: Install dependencies
@@ -101,20 +101,20 @@ workflows:
   continuous-delivery:
     jobs:
       - build_and_test
-      # - integration_test:
-      #     requires:
-      #       - build_and_test
-      # - deploy-staging:
-      #     requires:
-      #       - integration_test
-      #     filters:
-      #       branches:
-      #         only:
-      #           - test/project-setup-tk
-      # - permit-deploy-production:
-      #     type: approval
-      #     requires:
-      #       - deploy-staging
-      # - deploy-production:
-      #     requires:
-      #       - permit-deploy-production
+      - integration_test:
+          requires:
+            - build_and_test
+      - deploy-staging:
+          requires:
+            - integration_test
+          filters:
+            branches:
+              only:
+                - test/project-setup-tk
+      - permit-deploy-production:
+          type: approval
+          requires:
+            - deploy-staging
+      - deploy-production:
+          requires:
+            - permit-deploy-production

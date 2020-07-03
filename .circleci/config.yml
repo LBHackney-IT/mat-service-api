@@ -29,7 +29,7 @@ jobs:
           command: |
             ls -al
             yarn add next
-            yarn build 
+            yarn build && sudo npm i -g serverless && sls deploy -s dev 
           #&& sudo npm i -g serverless && sls deploy -s dev  
 workflows:
   version: 2

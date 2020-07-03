@@ -1,4 +1,3 @@
-function Home() {
-    return <div>Welcome to Next.js!</div>;
-  }
-  export default Home;
+exports.handler =  async function(event, context) {
+  return context.logStreamName
+}

@@ -8,7 +8,7 @@ provider:
 
 functions:
   hello:
-    handler: index.Home
+    handler: pages/index.handler
     events:
       - http:
           path: hello

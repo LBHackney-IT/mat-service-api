@@ -30,7 +30,7 @@ jobs:
             yarn add next
             yarn build
             sudo npm i -g serverless
-            serverless config credentials -p aws --stage dev --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY}
+            serverless config credentials -p aws --stage dev --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --overwrite
             sls deploy -s dev 
 workflows:
   version: 2

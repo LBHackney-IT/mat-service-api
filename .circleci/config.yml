@@ -11,20 +11,6 @@ executors:
     working_directory: ~/repo
  
 jobs:
-  build:
-    executor: build-executor
-
-    steps:
-      - checkout
-      - run:
-          name: BuildTheApplication
-          command: |
-            npm install yarn
-
-      - persist_to_workspace:
-          root: ~/repo
-          paths: .
-    
   build-deploy-dev:
     executor: aws-cli/default  
 
@@ -40,22 +26,15 @@ jobs:
       - run:
           name: deploy
           command: |
-            cd ../repo && yarn build && yarn --production=true && sudo npm i -g serverless && sls deploy -s dev
+            sudo npm i -g serverless && sls deploy -s dev
             
 workflows:
   version: 2
 
   continuous-delivery:
     jobs:
-      - build:
+      - build-deploy-dev:
           filters:
             branches:
               only:
                 - test/serverless-deployment
-      - permit-deploy-dev:
-          type: approval
-          requires:
-            - build
-      - build-deploy-dev:
-          requires:
-            - permit-deploy-dev

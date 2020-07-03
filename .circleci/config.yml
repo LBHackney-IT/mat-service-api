@@ -27,7 +27,7 @@ jobs:
       - run:
           name: deploy
           command: |
-            cd ../repo sudo npm i -g serverless && sls deploy -s dev
+            cd ../repo && sudo npm i -g serverless && sls deploy -s dev
             
 workflows:
   version: 2

@@ -25,13 +25,15 @@ jobs:
           aws-region: AWS_REGION
       - checkout
       - run:
-          command: serverless config credentials -p aws --stage dev --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile hackney
+          command: 
       - run:
           name: deploy
           command: |
-            ls -al
             yarn add next
-            yarn build && sudo npm i -g serverless && sls deploy -s dev 
+            yarn build
+            sudo npm i -g serverless
+            serverless config credentials -p aws --stage dev --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile hackney
+            sls deploy -s dev 
           #&& sudo npm i -g serverless && sls deploy -s dev  
 workflows:
   version: 2

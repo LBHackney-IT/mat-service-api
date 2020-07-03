@@ -14,10 +14,14 @@ jobs:
     executor: build-executor  
 
     steps:
-      - aws_assume_role/assume_role:
-          account: $AWS_ACCOUNT
-          profile_name: default
-          role: 'LBH_Circle_CI_Deployment_Role'
+      # - aws_assume_role/assume_role:
+      #     account: $AWS_ACCOUNT
+      #     profile_name: default
+      #     role: 'LBH_Circle_CI_Deployment_Role'
+      - aws-cli/setup:
+        aws-access-key-id: AWS_ACCESS_KEY_ID
+        aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+        aws-region: eu-west-2
 
       - run:
           name: deploy

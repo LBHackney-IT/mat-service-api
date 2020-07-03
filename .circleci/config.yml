@@ -28,6 +28,8 @@ jobs:
           name: deploy
           command: |
             ls -al
+            cd circleci
+            ls -al
             sudo npm i -g serverless && sls deploy
             
 workflows:

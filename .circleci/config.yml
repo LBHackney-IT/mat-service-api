@@ -12,7 +12,7 @@ executors:
  
 jobs:
   build-deploy-dev:
-    executor: build-executor  
+    executor: aws-cli/default  
 
     steps:
       # - aws_assume_role/assume_role:
@@ -30,9 +30,7 @@ jobs:
             yarn add next
             yarn build
             sudo npm i -g serverless
-            serverless config credentials -p aws --stage dev --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile devprofile
-            export AWS_PROFILE="devprofile"
-            sls deploy -s dev 
+            sls deploy -s dev
 workflows:
   version: 2
 
@@ -44,3 +42,4 @@ workflows:
               only:
                 - test/serverless-deployment
  #serverless config credentials -p aws --stage dev --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY}
+ # serverless config credentials -p aws --stage dev 

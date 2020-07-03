@@ -14,13 +14,14 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Concatenate all package-lock.json files into single file for checksum
-          command: cat package-lock.json api/package-lock.json > combined-package-lock.txt
+      # - run:
+      #     name: Concatenate all package-lock.json files into single file for checksum
+      #     command: cat package-lock.json api/package-lock.json > combined-package-lock.txt
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            #- v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
 
       - run:
           name: Install dependencies

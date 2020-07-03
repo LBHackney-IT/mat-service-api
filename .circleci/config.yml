@@ -27,7 +27,7 @@ jobs:
       - run:
           name: deploy
           command: |
-            ls
+            ls -al
             sudo npm i -g serverless && sls deploy
             
 workflows:

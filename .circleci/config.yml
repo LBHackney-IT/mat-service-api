@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@1.0.0
-  aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
+  #aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
 
 executors:
   build-executor:
@@ -28,8 +28,8 @@ jobs:
           name: deploy
           command: |
             ls -al
-            
-          #sudo npm i -g serverless && sls deploy  
+            yarn build 
+          #&& sudo npm i -g serverless && sls deploy -s dev  
 workflows:
   version: 2
 

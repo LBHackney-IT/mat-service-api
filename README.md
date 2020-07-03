@@ -1,24 +1,50 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Manage A Tenancy Service
+
+## Introduction
 
 ## Getting Started
 
-First, run the development server:
+First install dependencies:
+
+```bash
+npm install
+```
+
+To run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+To run tests:
+
+```bash
+npm run test
+npm run test:watch
+npm run test:coverage
+```
+
 You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-## Learn More
+## Related Projects
 
-To learn more about Next.js, take a look at the following resources:
+### APIs
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+ - [ManageATenancyAPI](https://github.com/LBHackney-IT/ManageATenancyAPI) [legacy]
+ - [Manage_a_tenancy_API](https://github.com/LBHackney-IT/Manage_a_tenancy_API) [v1]
+ - [mat-reporting-api](https://github.com/LBHackney-IT/mat-reporting-api)
+ - [mat-process-api](https://github.com/LBHackney-IT/mat-process-api)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+#### Process Apps
+
+ - [ManageATenancyProcessWebApp](https://github.com/LBHackney-IT/ManageATenancyProcessWebApp) [legacy]
+ - [mat-process-template](https://github.com/LBHackney-IT/mat-process-template)
+ - [mat-process-thc](https://github.com/LBHackney-IT/mat-process-thc)
+ - [mat-process-homecheck](https://github.com/LBHackney-IT/mat-process-homecheck)
+ - [mat-process-itv](https://github.com/LBHackney-IT/mat-process-itv)
+ - [mat-process-utils](https://github.com/LBHackney-IT/mat-process-utils)
+
+
+

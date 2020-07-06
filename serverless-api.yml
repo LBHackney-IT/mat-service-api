@@ -28,31 +28,31 @@ provider:
   stage: ${opt:stage}
   profile: hackney
   timeout: 15
-  vpc:
-    securityGroupIds:
-      - sg-0b18288c83a2a1515
-    subnetIds:
-      - subnet-0f9d0a6e7fea5975c
-      - subnet-05f78e228a3e553d3
+  # vpc:
+  #   securityGroupIds:
+  #     - sg-0b18288c83a2a1515
+  #   subnetIds:
+  #     - subnet-0f9d0a6e7fea5975c
+  #     - subnet-05f78e228a3e553d3
 
 plugins:
   #- serverless-offline-ssm
   - serverless-offline
 
-package:
-  individually: true
-  exclude:
-    - ./**
+# package:
+#   individually: true
+#   exclude:
+#     - ./**
 
 functions:
   hello:
     name: hn-mat-${self:provider.stage}
     #role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     handler: handler.hello
-    package:
-      include:
-        - api/hello.js
-        - index.js
+    # package:
+    #   include:
+    #     - api/hello.js
+    #     - index.js
     events:
       - http:
           path: '{proxy+}'

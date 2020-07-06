@@ -104,12 +104,12 @@ workflows:
   continuous-delivery:
     jobs:
       - build_and_test
-      - integration_test:
-          requires:
-            - build_and_test
+      # - integration_test:
+      #     requires:
+      #       - build_and_test
       - deploy-staging:
           requires:
-            - integration_test
+            - build_and_test
           filters:
             branches:
               only:

@@ -16,11 +16,13 @@ jobs:
 
       - run:
           name: Concatenate all package-lock.json files into single file for checksum
-          command: cat package-lock.json api/package-lock.json > combined-package-lock.txt
+          command: cat package-lock.json > combined-package-lock.txt
+          #command: cat package-lock.json api/package-lock.json > combined-package-lock.txt
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
+            - v1-dependencies-{{ checksum "combined-package-lock.txt" }}
+            #- v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
 
       - run:
           name: Install dependencies
@@ -31,15 +33,16 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
+          key: v1-dependencies-{{ checksum "combined-package-lock.txt" }}
+          #key: v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
 
-      - run:
-          name: Run linter
-          command: npm run lint
+      # - run:
+      #     name: Run linter
+      #     command: npm run lint
 
-      - run:
-          name: Run unit tests
-          command: npm run unit-tests
+      # - run:
+      #     name: Run unit tests
+      #     command: npm run unit-tests
 
       - persist_to_workspace:
           root: ~/repo

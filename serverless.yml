@@ -1,42 +1,13 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
-
 service: hn-mat
-
-# app and org for use with dashboard.serverless.com
-#app: your-app-name
-#org: your-org-name
-
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
-# frameworkVersion: "=X.X.X"
 
 provider:
   name: aws
   runtime: nodejs12.x
   region: eu-west-2
-  stage: ${opt:stage}
-  profile: hackney
-  timeout: 15
-  vpc:
-    securityGroupIds:
-      - sg-0b18288c83a2a1515
-    subnetIds:
-      - subnet-0f9d0a6e7fea5975c
-      - subnet-05f78e228a3e553d3
+  api-name: hn-mat-service-api
+  stage: ${opt:stage, env:SLS_STAGE, 'dev'}
 
 plugins:
-  #- serverless-offline-ssm
   - serverless-offline
 
 package:
@@ -45,37 +16,20 @@ package:
     - ./**
 
 functions:
-  hello:
-    name: hn-mat-${self:provider.stage}
-    #role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
-    handler: handler.hello
-    package:
-      include:
-        - api/hello.js
-        - index.js
+  hn-mat-service:
+    name: ${self:service}-${self:provider.stage}
+    handler: src/lambda.handler
+    # events:
+    # - http:
+    #     path: /
+    #     method: ANY
+    # - http:
+    #     path: /{any+}
+    #     method: ANY
     events:
-      - http:
-          path: '{proxy+}'
-          method: ANY
-          #authorizer: ${self:custom.authorizer.hn-single-view-api-authorizer}
-          cors:
-            origins:
-              - '*'
-
-    environment:
-      ENV: ${self:provider.stage}
-
-resources:
-  Resources:
-    GatewayResponseDefault4XX:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: DEFAULT_4XX
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
-
-custom:
-  stage: ${self:provider.stage}
+    - http:
+        path: api/{proxy+}
+        method: ANY
+        authorizer: ${self:custom.authorizer.${self:service}-authorizer}
+    - http: ANY /
+    - http: ANY /{proxy+}

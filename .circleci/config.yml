@@ -114,7 +114,7 @@ workflows:
           filters:
             branches:
               only:
-                - test/project-setup-tk
+                - master
       - permit-deploy-production:
           type: approval
           requires:

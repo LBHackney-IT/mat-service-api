@@ -9,7 +9,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "eslint && echo 'Lint complete.'"
+    "lint": "eslint"
   },
   "dependencies": {
     "next": "9.4.4",

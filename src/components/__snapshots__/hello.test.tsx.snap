@@ -1,9 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Hello Renders  1`] = `ShallowWrapper {}`;
-
-exports[`Hello Renders  2`] = `ShallowWrapper {}`;
-
 exports[`Hello Renders Matt 1`] = `ShallowWrapper {}`;
 
 exports[`Hello Renders Nigel 1`] = `ShallowWrapper {}`;

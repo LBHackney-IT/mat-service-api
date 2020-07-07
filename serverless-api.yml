@@ -10,10 +10,10 @@ provider:
 plugins:
   - serverless-offline
 
-package:
-  individually: true
-  exclude:
-    - ./**
+# package:
+#   individually: true
+#   exclude:
+#     - ./**
 
 functions:
   hn-mat-service:

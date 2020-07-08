@@ -81,7 +81,7 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            ./node_modules/serverless/bin/serverless deploy -s staging --config serverless-api.yml
+            ./node_modules/serverless/bin/serverless deploy -s staging --config serverless.yml
 
   deploy-production:
     executor: my-executor
@@ -98,7 +98,7 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            ./node_modules/serverless/bin/serverless deploy -s production --config serverless-api.yml
+            ./node_modules/serverless/bin/serverless deploy -s production --config serverless.yml
 
 workflows:
   version: 2

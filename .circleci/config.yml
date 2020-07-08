@@ -1,0 +1,124 @@
+version: 2.1
+
+executors:
+  my-executor:
+    docker:
+      - image: circleci/node:12.13
+
+    working_directory: ~/repo
+
+jobs:
+  build_and_test:
+    executor: my-executor
+
+    steps:
+      - checkout
+
+      - run:
+          name: Concatenate all package-lock.json files into single file for checksum
+          command: cat package-lock.json > combined-package-lock.txt
+          #command: cat package-lock.json api/package-lock.json > combined-package-lock.txt
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "combined-package-lock.txt" }}
+            #- v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo npm i --no-cache git
+            sudo npm i 
+          #sudo npm i && pushd api && npm i && popd
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "combined-package-lock.txt" }}
+          #key: v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
+
+      - run:
+          name: Run linter
+          command: npm run lint
+
+      - run:
+          name: Run unit tests
+          command: npm run test
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
+  # integration_test:
+  #   machine: true
+
+  #   working_directory: ~/repo
+
+  #   environment:
+  #     TZ: Europe/London
+
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/repo
+
+  #     - run:
+  #         name: Run integration tests
+  #         command: |
+  #           docker-compose run test_api
+
+  deploy-staging:
+    executor: my-executor
+
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Set AWS credentials
+          command: |
+            pushd ~ && ./repo/node_modules/serverless/bin/serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
+
+      - run:
+          name: Deploy application
+          command: |
+            ./node_modules/serverless/bin/serverless deploy -s staging --config serverless-api.yml
+
+  deploy-production:
+    executor: my-executor
+
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Set AWS credentials
+          command: |
+            pushd ~ && ./repo/node_modules/serverless/bin/serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
+
+      - run:
+          name: Deploy application
+          command: |
+            ./node_modules/serverless/bin/serverless deploy -s production --config serverless-api.yml
+
+workflows:
+  version: 2
+  continuous-delivery:
+    jobs:
+      - build_and_test
+      # - integration_test:
+      #     requires:
+      #       - build_and_test
+      - deploy-staging:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              only:
+                - master
+      - permit-deploy-production:
+          type: approval
+          requires:
+            - deploy-staging
+      - deploy-production:
+          requires:
+            - permit-deploy-production

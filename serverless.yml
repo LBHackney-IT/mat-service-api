@@ -1,0 +1,35 @@
+service: hn-mat
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-2
+  api-name: hn-mat-service-api
+  stage: ${opt:stage, env:SLS_STAGE, 'dev'}
+
+plugins:
+  - serverless-offline
+
+# package:
+#   individually: true
+#   exclude:
+#     - ./**
+
+functions:
+  hn-mat-service:
+    name: ${self:service}-${self:provider.stage}
+    handler: src/lambda.handler
+    # events:
+    # - http:
+    #     path: /
+    #     method: ANY
+    # - http:
+    #     path: /{any+}
+    #     method: ANY
+    events:
+    - http:
+        path: api/{proxy+}
+        method: ANY
+        #authorizer: ${self:custom.authorizer.${self:service}-authorizer}
+    - http: ANY /
+    - http: ANY /{proxy+}

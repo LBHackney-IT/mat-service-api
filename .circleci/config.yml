@@ -17,25 +17,21 @@ jobs:
       - run:
           name: Concatenate all package-lock.json files into single file for checksum
           command: cat package-lock.json > combined-package-lock.txt
-          #command: cat package-lock.json api/package-lock.json > combined-package-lock.txt
 
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "combined-package-lock.txt" }}
-            #- v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
 
       - run:
           name: Install dependencies
           command: |
             sudo npm i --no-cache git
             sudo npm i 
-          #sudo npm i && pushd api && npm i && popd
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "combined-package-lock.txt" }}
-          #key: v1-dependencies-{{ checksum "package-lock.json" }}-{{ checksum "combined-package-lock.txt" }}
 
       - run:
           name: Run linter
@@ -48,24 +44,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
-
-  # integration_test:
-  #   machine: true
-
-  #   working_directory: ~/repo
-
-  #   environment:
-  #     TZ: Europe/London
-
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-
-  #     - run:
-  #         name: Run integration tests
-  #         command: |
-  #           docker-compose run test_api
-
+  
   deploy-staging:
     executor: my-executor
 
@@ -76,12 +55,12 @@ jobs:
       - run:
           name: Set AWS credentials
           command: |
-            pushd ~ && ./repo/node_modules/serverless/bin/serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
+            pushd ~ && ./repo/node_modules/serverless/bin/serverless.js config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
 
       - run:
           name: Deploy application
           command: |
-            ./node_modules/serverless/bin/serverless deploy -s staging --config serverless.yml
+            npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
 
   deploy-production:
     executor: my-executor
@@ -93,21 +72,18 @@ jobs:
       - run:
           name: Set AWS credentials
           command: |
-            pushd ~ && ./repo/node_modules/serverless/bin/serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
+            pushd ~ && ./repo/node_modules/serverless/bin/serverless.js config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
 
       - run:
           name: Deploy application
           command: |
-            ./node_modules/serverless/bin/serverless deploy -s production --config serverless.yml
+            npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
 
 workflows:
   version: 2
   continuous-delivery:
     jobs:
       - build_and_test
-      # - integration_test:
-      #     requires:
-      #       - build_and_test
       - deploy-staging:
           requires:
             - build_and_test
@@ -122,3 +98,5 @@ workflows:
       - deploy-production:
           requires:
             - permit-deploy-production
+
+

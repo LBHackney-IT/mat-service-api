@@ -72,12 +72,12 @@ jobs:
       - run:
           name: Set AWS credentials
           command: |
-            pushd ~ && ./repo/node_modules/serverless/bin/serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
+            pushd ~ && ./repo/node_modules/serverless/bin/serverless.js config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
 
       - run:
           name: Deploy application
           command: |
-            npm run build && ./node_modules/serverless/bin/serverless deploy -s production
+            npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
 
 workflows:
   version: 2

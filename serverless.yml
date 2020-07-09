@@ -20,3 +20,4 @@ functions:
         method: ANY
     - http: ANY /
     - http: ANY /{proxy+}
+    

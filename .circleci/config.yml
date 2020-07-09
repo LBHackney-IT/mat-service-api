@@ -90,7 +90,7 @@ workflows:
           filters:
             branches:
               only:
-                - rename-serverless-service
+                - master
       - permit-deploy-production:
           type: approval
           requires:

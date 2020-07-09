@@ -60,7 +60,7 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            sls deploy -s staging
+            sudo npm i -g serverless && sls deploy -s staging
 
   deploy-production:
     executor: my-executor
@@ -77,7 +77,7 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            sls deploy -s production
+            sudo npm i -g serverless && sls deploy -s production
 
 workflows:
   version: 2

@@ -90,7 +90,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - feature/database-resource
       - permit-deploy-production:
           type: approval
           requires:

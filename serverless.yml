@@ -6,6 +6,7 @@ provider:
   region: eu-west-2
   api-name: hn-mat-service-api
   stage: ${opt:stage, env:SLS_STAGE, 'dev'}
+  dbname: matServiceDb
 
 plugins:
   - serverless-offline
@@ -20,4 +21,18 @@ functions:
         method: ANY
     - http: ANY /
     - http: ANY /{proxy+}
-    
+
+resources:
+  Resources:
+    matServiceDb:
+      Type: "AWS::RDS::DBInstance"
+      Properties:
+        DBInstanceIdentifier: "mat-service-db-${self:provider.stage}"
+        DBName: ${self:provider.dbname}
+        AllocatedStorage: 5
+        DBInstanceClass: "db.t2.micro"
+        Engine: "postgres"
+        EngineVersion: "11.7"
+        MasterUsername: ${ssm:/${self:provider.stage}-mat-service-db-MASTER_USERNAME}
+        MasterUserPassword: ${ssm:/${self:provider.stage}-mat-service-db-MASTER_PASSWORD~true}
+      DeletionPolicy: "Snapshot"

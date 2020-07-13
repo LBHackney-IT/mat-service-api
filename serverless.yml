@@ -24,6 +24,16 @@ functions:
 
 resources:
   Resources:
+    matServiceDbSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Access to Postgres
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '5432'
+          ToPort: '5432'
+          CidrIp: 0.0.0.0/0
+
     matServiceDb:
       Type: "AWS::RDS::DBInstance"
       Properties:
@@ -35,4 +45,8 @@ resources:
         EngineVersion: "11.7"
         MasterUsername: ${ssm:/${self:provider.stage}-mat-service-db-MASTER_USERNAME}
         MasterUserPassword: ${ssm:/${self:provider.stage}-mat-service-db-MASTER_PASSWORD~true}
+        VPCSecurityGroups:
+        - Fn::GetAtt:
+          - matServiceDbSecurityGroup
+          - GroupId
       DeletionPolicy: "Snapshot"

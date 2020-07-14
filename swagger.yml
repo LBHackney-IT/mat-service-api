@@ -1,0 +1,222 @@
+swagger: '2.0'
+info:
+  version: 0.1.0
+  title: MaT Service
+  description: Manage A Tenancy
+basePath: /mat/api/
+schemes:
+ - https
+paths:
+  '/area':
+    get:
+      summary: List all areas
+      responses:
+        '200':
+          description: Successful operation
+  '/area/{id}':
+    parameters:
+      - in: path
+        name: id
+        type: string
+        description: The area id
+        required: true
+    get:
+      summary: Retrieve an area
+      responses:
+        '200':
+          description: Successful operation
+  '/patch':
+    get:
+      summary: List all patches
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: Create a new patch
+      responses:
+        '200':
+          description: Successful operation
+  '/patch/{id}':
+    parameters:
+      - in: path
+        name: id
+        type: string
+        description: The patch id
+        required: true
+    get:
+      summary: Retrieve a patch
+      responses:
+        '200':
+          description: Successful operation
+    put:
+      summary: Update an existing patch
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: Delete an existing patch
+      responses:
+        '200':
+          description: Successful operation
+  '/healthcheck':
+    get:
+      summary: Retrieve service health status
+      responses:
+        '200':
+          description: Successful operation
+  '/scheduler':
+    get:
+      summary: List all scheduled tasks 
+      responses:
+        '200':
+          description: Successful operation
+  '/scheduler/itv':
+    post:
+      summary: Launch a task to create ITV requests for new tenancies
+      responses:
+        '200':
+          description: Successful operation
+  '/task':
+    post:
+      summary: Create a new task
+      responses:
+        '200':
+          description: Successful operation
+  '/task/{id}':
+    parameters:
+      - in: path
+        name: id
+        type: string
+        description: The task id
+        required: true
+    get:
+      summary: Retrieve an existing task
+      responses:
+        '200':
+          description: Successful operation
+    put:
+      summary: Update an existing task
+      responses:
+        '200':
+          description: Successful operation
+  '/tra':
+    get:
+      summary: List all TRAs
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: Create a new TRA
+      responses:
+        '200':
+          description: Successful operation
+  '/tra/{id}':
+    parameters:
+      - in: path
+        name: id
+        type: string
+        description: The TRA id
+        required: true
+    get:
+      summary: Retrieve an existing TRA
+      responses:
+        '200':
+          description: Successful operation
+    put:
+      summary: Update an existing TRA
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: Delete an existing TRA
+      responses:
+        '200':
+          description: Successful operation
+  '/tra/{id}/meeting':
+    parameters:
+      - in: path
+        name: id
+        type: string
+        description: The TRA id
+        required: true
+    get:
+      summary: List all meetings for the specified TRA
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: Create a new meeting for the specified TRA
+      responses:
+        '200':
+          description: Successful operation
+  '/tra/{tra-id}/meeting/{meeting-id}':
+    parameters:
+      - in: path
+        name: tra-id
+        type: string
+        description: The TRA id
+        required: true
+      - in: path
+        name: meeting-id
+        type: string
+        description: The meeting id
+        required: true
+    get:
+      summary: Retrieve an existing TRA meeting
+      responses:
+        '200':
+          description: Successful operation
+    put:
+      summary: Update an existing TRA meeting
+      responses:
+        '200':
+          description: Successful operation
+  '/tra/{tra-id}/meeting/{meeting-id}/issue':
+    parameters:
+      - in: path
+        name: tra-id
+        type: string
+        description: The TRA id
+        required: true
+      - in: path
+        name: meeting-id
+        type: string
+        description: The meeting id
+        required: true
+    get:
+      summary: List all issues for the specified TRA meeting
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: Create a new issue for the specified TRA meeting
+      responses:
+        '200':
+          description: Successful operation
+  '/tra/{tra-id}meeting/{meeting-id}/issue/{issue-id}':
+    parameters:
+      - in: path
+        name: tra-id
+        type: string
+        description: The TRA id
+        required: true
+      - in: path
+        name: meeting-id
+        type: string
+        description: The meeting id
+        required: true
+      - in: path
+        name: issue-id
+        type: string
+        description: The issue id
+        required: true
+    get:
+      summary: Retrieve an existing issue for the specified TRA meeting
+      responses:
+        '200':
+          description: Successful operation
+    put:
+      summary: Update an existing issue foe the specified TRA meeting
+      responses:
+        '200':
+          description: Successful operation

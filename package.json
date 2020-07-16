@@ -9,10 +9,14 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dbmigrate": "db-migrate --migrations-dir 'db/migrations/'",
+    "dbmigratetest": "db-migrate --migrations-dir 'db/migrations/' -e test",
+    "dbmigratedry": "db-migrate --dry-run --migrations-dir 'db/migrations/'"
   },
   "dependencies": {
     "next": "9.4.4",
+    "node-lambda-authorizer": "LBHackney-IT/node-lambda-authorizer.git#master",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "restana": "^4.6.1",
@@ -26,6 +30,8 @@
     "@types/jest": "^26.0.3",
     "@types/node": "^14.0.14",
     "@types/react": "^16.9.41",
+    "db-migrate": "^0.11.11",
+    "db-migrate-pg": "^1.2.2",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^7.4.0",

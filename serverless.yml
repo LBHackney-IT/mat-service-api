@@ -5,8 +5,11 @@ provider:
   runtime: nodejs12.x
   region: eu-west-2
   api-name: hn-mat-service-api
-  stage: ${opt:stage, env:SLS_STAGE, 'dev'}
+  stage: dev
   dbname: matServiceDb
+  environment:
+    DB_USER: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_USERNAME}
+    DB_PW: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_PASSWORD~true}
 
 plugins:
   - serverless-offline-ssm
@@ -14,7 +17,7 @@ plugins:
 
 functions:
   hn-mat-service:
-    name: ${self:service}-${self:provider.stage}
+    name: ${self:service}-${self:custom.stage}
     handler: src/lambda.handler
     events:
       - http:
@@ -24,8 +27,8 @@ functions:
       - http: ANY /{proxy+}
 
 mat-service-api-authorizer:
-  name: mat-service-api-authorizer-${self:provider.stage}
-  role: ${self:custom.lambdaRole.${self:provider.stage}}
+  name: mat-service-api-authorizer-${self:custom.stage}
+  role: ${self:custom.lambdaRole.${self:ustom.stage}}
   handler: authorizer.handler
   package:
     include:
@@ -36,8 +39,8 @@ mat-service-api-authorizer:
     allowedGroups:
       'Fn::Join':
         - ','
-        - ${self:custom.allowedGroups.${self:provider.stage}}
-    ENV: ${self:provider.stage}
+        - ${self:custom.allowedGroups.${self:custom.stage}}
+    ENV: ${self:custom.stage}
 
 resources:
   Resources:
@@ -50,18 +53,17 @@ resources:
             FromPort: '5432'
             ToPort: '5432'
             CidrIp: 0.0.0.0/0
-
     matServiceDb:
       Type: 'AWS::RDS::DBInstance'
       Properties:
-        DBInstanceIdentifier: 'mat-service-db-${self:provider.stage}'
+        DBInstanceIdentifier: 'mat-service-db-${self:custom.stage}'
         DBName: ${self:provider.dbname}
         AllocatedStorage: 5
         DBInstanceClass: 'db.t2.micro'
         Engine: 'postgres'
         EngineVersion: '11.7'
-        MasterUsername: ${ssm:/${self:provider.stage}-mat-service-db-MASTER_USERNAME}
-        MasterUserPassword: ${ssm:/${self:provider.stage}-mat-service-db-MASTER_PASSWORD~true}
+        MasterUsername: "DB_USER"
+        MasterUserPassword: "DB_PW"
         VPCSecurityGroups:
           - Fn::GetAtt:
               - matServiceDbSecurityGroup
@@ -69,11 +71,10 @@ resources:
       DeletionPolicy: 'Snapshot'
 
 custom:
-  stage: ${self:provider.stage}
+  stage: ${opt:stage, self:provider.stage}
   lambdaRole:
     staging: arn:aws:iam::492942404536:role/mat-service-staging-eu-west-2-lambdaRole
     production: arn:aws:iam::492942404536:role/mat-service-production-eu-west-2-lambdaRole
-
   allowedGroups:
     staging:
       - contact-centre-staging
@@ -89,3 +90,7 @@ custom:
       - housing-officer-production
       - area-housing-manager-production
       - housing-needs-production
+  serverless-offline-ssm:
+    stages:
+      - dev
+      

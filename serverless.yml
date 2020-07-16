@@ -9,8 +9,8 @@ provider:
   dbname: matServiceDb
 
 plugins:
-  - serverless-offline
   - serverless-offline-ssm
+  - serverless-offline
 
 functions:
   hn-mat-service:

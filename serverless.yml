@@ -23,8 +23,8 @@ functions:
       - http: ANY /
       - http: ANY /{proxy+}
 
-mat-service-single-view-api-authorizer:
-  name: mat-service-single-view-api-authorizer-${self:provider.stage}
+mat-service-api-authorizer:
+  name: mat-service-api-authorizer-${self:provider.stage}
   role: ${self:custom.lambdaRole.${self:provider.stage}}
   handler: authorizer.handler
   package:
@@ -32,7 +32,7 @@ mat-service-single-view-api-authorizer:
       - authorizer.js
       - node_modules/**
   environment:
-    jwtsecret: ${ssm:/common/hackney-jwt-secret}
+    jwtsecret: ${ssm:/common/hackney-jwt-secret~true}
     allowedGroups:
       'Fn::Join':
         - ','

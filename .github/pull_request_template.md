@@ -25,6 +25,15 @@
   Include any user stories driving this feature, if appropriate.
   -->
 
+# Checklist
+
+<!-- Add 'x' to the tests you've created and provide additional comments where useful.
+     e.g. - [x] Cypress tests - Login & Logout user journeys -->
+
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] Cypress tests
+
 # Notes
 
 <!--

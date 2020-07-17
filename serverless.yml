@@ -28,7 +28,7 @@ functions:
 
 mat-service-api-authorizer:
   name: mat-service-api-authorizer-${self:custom.stage}
-  role: ${self:custom.lambdaRole.${self:ustom.stage}}
+  role: ${self:custom.lambdaRole.${self:custom.stage}}
   handler: authorizer.handler
   package:
     include:

@@ -27,7 +27,7 @@ interface Cell {
   value: string | Date;
 }
 
-export enum Status {
+enum Status {
   inProgress,
   complete,
 }

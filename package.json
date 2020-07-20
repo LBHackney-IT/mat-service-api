@@ -15,7 +15,9 @@
     "dbmigratedry": "db-migrate --dry-run --migrations-dir 'db/migrations/'"
   },
   "dependencies": {
+    "@types/moment": "^2.13.0",
     "lbh-frontend-react": "^0.2.1",
+    "moment": "^2.27.0",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",

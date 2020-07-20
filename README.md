@@ -32,19 +32,16 @@ You can start editing the page by modifying `pages/index.js`. The page auto-upda
 
 ### APIs
 
- - [ManageATenancyAPI](https://github.com/LBHackney-IT/ManageATenancyAPI) [legacy]
- - [Manage_a_tenancy_API](https://github.com/LBHackney-IT/Manage_a_tenancy_API) [v1]
- - [mat-reporting-api](https://github.com/LBHackney-IT/mat-reporting-api)
- - [mat-process-api](https://github.com/LBHackney-IT/mat-process-api)
+- [ManageATenancyAPI](https://github.com/LBHackney-IT/ManageATenancyAPI) [legacy]
+- [Manage_a_tenancy_API](https://github.com/LBHackney-IT/Manage_a_tenancy_API) [v1]
+- [mat-reporting-api](https://github.com/LBHackney-IT/mat-reporting-api)
+- [mat-process-api](https://github.com/LBHackney-IT/mat-process-api)
 
 #### Process Apps
 
- - [ManageATenancyProcessWebApp](https://github.com/LBHackney-IT/ManageATenancyProcessWebApp) [legacy]
- - [mat-process-template](https://github.com/LBHackney-IT/mat-process-template)
- - [mat-process-thc](https://github.com/LBHackney-IT/mat-process-thc)
- - [mat-process-homecheck](https://github.com/LBHackney-IT/mat-process-homecheck)
- - [mat-process-itv](https://github.com/LBHackney-IT/mat-process-itv)
- - [mat-process-utils](https://github.com/LBHackney-IT/mat-process-utils)
-
-
-
+- [ManageATenancyProcessWebApp](https://github.com/LBHackney-IT/ManageATenancyProcessWebApp) [legacy]
+- [mat-process-template](https://github.com/LBHackney-IT/mat-process-template)
+- [mat-process-thc](https://github.com/LBHackney-IT/mat-process-thc)
+- [mat-process-homecheck](https://github.com/LBHackney-IT/mat-process-homecheck)
+- [mat-process-itv](https://github.com/LBHackney-IT/mat-process-itv)
+- [mat-process-utils](https://github.com/LBHackney-IT/mat-process-utils)

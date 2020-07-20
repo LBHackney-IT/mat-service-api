@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Head from 'next/head'
 import Hello from '../components/hello';
+import Worktray, {sampleWorkTrayColumns, sampleWorkTrayRows} from "../components/worktray";
 
 export default function Home() {
   return (
@@ -21,6 +22,10 @@ export default function Home() {
         <p className="description">
           <Hello greeting="Hello" name="Matt"></Hello>
         </p>
+        <Worktray
+          columns={sampleWorkTrayColumns}
+          rows={sampleWorkTrayRows}
+        />
 
       </main>
 

@@ -1,6 +1,6 @@
 const authorizer = require('node-lambda-authorizer')({
-  jwtSecret: process.env.jwtsecret,
-  allowedGroups: process.env.allowedGroups.split(',')
+  jwtSecret: process.env.JWT_SECRET,
+  allowedGroups: process.env.ALLOWED_GROUPS.split(',')
 });
 
 exports.handler = authorizer.handler;

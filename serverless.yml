@@ -5,22 +5,32 @@ provider:
   runtime: nodejs12.x
   region: eu-west-2
   api-name: hn-mat-service-api
-  stage: ${opt:stage, env:SLS_STAGE, 'dev'}
+  stage: dev
   dbname: matServiceDb
+  environment:
+    DB_USER: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_USERNAME, env:DB_USER}
+    DB_PASSWORD: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_PASSWORD~true, env:DB_PASSWORD}
 
 plugins:
+  - serverless-dotenv-plugin
+  - serverless-offline-ssm
   - serverless-offline
 
 functions:
   hn-mat-service:
-    name: ${self:service}-${self:provider.stage}
+    name: ${self:service}-${self:custom.stage}
     handler: src/lambda.handler
     events:
-    - http:
-        path: api/{proxy+}
-        method: ANY
-    - http: ANY /
-    - http: ANY /{proxy+}
+      - http:
+          path: /{proxy+}
+          method: ANY
+          authorizer: ${self:custom.authorizer.authorizer}
+
+  authorizer:
+    handler: authorizer.handler
+    environment:
+      JWT_SECRET: ${ssm:/${self:custom.stage}/jwt-secret~true, env:JWT_SECRET}
+      ALLOWED_GROUPS: ${ssm:/${self:custom.stage}/allowed-groups, env:ALLOWED_GROUPS}
 
 resources:
   Resources:
@@ -29,24 +39,36 @@ resources:
       Properties:
         GroupDescription: Access to Postgres
         SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: '5432'
-          ToPort: '5432'
-          CidrIp: 0.0.0.0/0
-
+          - IpProtocol: tcp
+            FromPort: '5432'
+            ToPort: '5432'
+            CidrIp: 0.0.0.0/0
     matServiceDb:
-      Type: "AWS::RDS::DBInstance"
+      Type: 'AWS::RDS::DBInstance'
       Properties:
-        DBInstanceIdentifier: "mat-service-db-${self:provider.stage}"
+        DBInstanceIdentifier: 'mat-service-db-${self:custom.stage}'
         DBName: ${self:provider.dbname}
         AllocatedStorage: 5
-        DBInstanceClass: "db.t2.micro"
-        Engine: "postgres"
-        EngineVersion: "11.7"
-        MasterUsername: ${ssm:/${self:provider.stage}-mat-service-db-MASTER_USERNAME}
-        MasterUserPassword: ${ssm:/${self:provider.stage}-mat-service-db-MASTER_PASSWORD~true}
+        DBInstanceClass: 'db.t2.micro'
+        Engine: 'postgres'
+        EngineVersion: '11.7'
+        MasterUsername: "DB_USER"
+        MasterUserPassword: "DB_PW"
         VPCSecurityGroups:
-        - Fn::GetAtt:
-          - matServiceDbSecurityGroup
-          - GroupId
-      DeletionPolicy: "Snapshot"
+          - Fn::GetAtt:
+              - matServiceDbSecurityGroup
+              - GroupId
+      DeletionPolicy: 'Snapshot'
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  serverless-offline-ssm:
+    stages:
+      - dev
+  authorizer:
+    authorizer:
+      name: authorizer
+      type: request
+      identitySource: ''
+      resultTtlInSeconds: 0
+      

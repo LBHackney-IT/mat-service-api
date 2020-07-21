@@ -4,29 +4,41 @@
 
 ## Getting Started
 
-First install dependencies:
+First install dependencies and set up the environment:
 
 ```bash
 npm install
+cp .env.sample .env
 ```
 
-To run the development server:
+To run the next.js development server:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-To run tests:
+To run serverless offline:
 
 ```bash
-npm run test
-npm run test:watch
-npm run test:coverage
+npm run build
+sls offline
 ```
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+To run unit tests:
+
+```bash
+npm run test:unit
+npm run test:unit:watch
+npm run test:unit:coverage
+```
+
+To run integration tests:
+
+```bash
+npm run build
+sls offline
+npm run test:integration
+```
 
 ## Related Projects
 

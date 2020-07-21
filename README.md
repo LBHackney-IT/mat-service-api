@@ -4,10 +4,11 @@
 
 ## Getting Started
 
-First install dependencies:
+First install dependencies and set up the environment:
 
 ```bash
 npm install
+cp .env.sample .env
 ```
 
 To run the next.js development server:

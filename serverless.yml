@@ -123,4 +123,4 @@ custom:
   certificate-arn:
     staging: arn:aws:acm:us-east-1:492942404536:certificate/bcfcfca4-138d-4995-8a67-1aec6011bde4
     production: arn:aws:acm:us-east-1:492942404536:certificate/bcfcfca4-138d-4995-8a67-1aec6011bde4
-      
+

@@ -8,11 +8,11 @@ provider:
   stage: dev
   dbname: matServiceDb
   environment:
-    DB_USER: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_USERNAME}
-    DB_PW: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_PASSWORD~true}
-    API_PATH: ${ssm:/${self:custom.stage}/api-root-path}
+    DB_USER: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_USERNAME, env:DB_USER}
+    DB_PASSWORD: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_PASSWORD~true, env:DB_PASSWORD}
 
 plugins:
+  - serverless-dotenv-plugin
   - serverless-offline-ssm
   - serverless-offline
 
@@ -22,26 +22,15 @@ functions:
     handler: src/lambda.handler
     events:
       - http:
-          path: api/{proxy+}
+          path: /{proxy+}
           method: ANY
-      - http: ANY /
-      - http: ANY /{proxy+}
+          authorizer: ${self:custom.authorizer.authorizer}
 
-mat-service-api-authorizer:
-  name: mat-service-api-authorizer-${self:custom.stage}
-  role: ${ssm:/${self:custom.stage}/lambdaRole}
-  handler: authorizer.handler
-  package:
-    include:
-      - authorizer.js
-      - node_modules/**
-  environment:
-    jwtsecret: ${ssm:/common/${self:custom.stage}/hackney-jwt-secret~true}
-    allowedGroups:
-      'Fn::Join':
-        - ','
-        - ${self:custom.allowedGroups.${self:custom.stage}}
-    ENV: ${self:custom.stage}
+  authorizer:
+    handler: authorizer.handler
+    environment:
+      JWT_SECRET: ${ssm:/${self:custom.stage}/jwt-secret~true, env:JWT_SECRET}
+      ALLOWED_GROUPS: ${ssm:/${self:custom.stage}/allowed-groups, env:ALLOWED_GROUPS}
 
 resources:
   Resources:
@@ -73,22 +62,13 @@ resources:
 
 custom:
   stage: ${opt:stage, self:provider.stage}
-  allowedGroups:
-    staging:
-      - contact-centre-staging
-      - benefit-counter-staging
-      - housing-counter-staging
-      - housing-officer-staging
-      - area-housing-manager-staging
-      - housing-needs-staging
-    production:
-      - contact-centre-production
-      - benefit-counter-production
-      - housing-counter-production
-      - housing-officer-production
-      - area-housing-manager-production
-      - housing-needs-production
   serverless-offline-ssm:
     stages:
       - dev
+  authorizer:
+    authorizer:
+      name: authorizer
+      type: request
+      identitySource: ''
+      resultTtlInSeconds: 0
       

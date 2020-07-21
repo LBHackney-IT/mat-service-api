@@ -90,7 +90,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - feature/cloudfront-distribution
       - permit-deploy-production:
           type: approval
           requires:

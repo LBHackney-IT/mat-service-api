@@ -53,7 +53,7 @@ resources:
         Engine: 'postgres'
         EngineVersion: '11.7'
         MasterUsername: ${self:provider.environment.DB_USER}
-        MasterUserPassword: ${self:provider.environment.DB_PW}
+        MasterUserPassword: ${self:provider.environment.DB_PASSWORD}
         VPCSecurityGroups:
           - Fn::GetAtt:
               - matServiceDbSecurityGroup

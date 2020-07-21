@@ -9,7 +9,7 @@ describe('get JWT from cookie', () => {
 
 	it(`rejects an invalid token`, async () => {
 		Cookies.get = jest.fn()
-			.mockImplementationOnce(() => `hackneyToken=${invalidGroupToken}`)
+			.mockImplementationOnce(() => invalidGroupToken)
 
 		expect(isLoggedIn()).toBeFalsy;
 	});
@@ -23,7 +23,7 @@ describe('get JWT from cookie', () => {
 
 	it(`accepts a valid token`, async () => {
 		Cookies.get = jest.fn()
-			.mockImplementationOnce(() => `hackneyToken=${validToken}`)
+			.mockImplementationOnce(() => validToken)
 
 		expect(isLoggedIn()).toBeTruthy;
 	});

@@ -6,13 +6,14 @@ const allowedGroups = process.env.ALLOWED_GROUPS?.split(',');
 
 const isLoggedIn = (): boolean => {
   const token = Cookies.get(tokenName);
+  console.log(token);
 
   if (!token) return false;
 
   const payload: any = jwt.decode(token);
+  console.log(payload);
 
-
-  if(allowedGroups === undefined) {
+  if (allowedGroups === undefined) {
     return false;
   }
 

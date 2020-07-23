@@ -43,7 +43,7 @@ jobs:
       
       - run:
           name: Run integration tests
-          command: npm run test:integration
+          command: API_PATH=${API_PATH_TEST} npm run test:integration
 
       - persist_to_workspace:
           root: ~/repo

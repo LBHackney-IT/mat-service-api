@@ -67,8 +67,8 @@ jobs:
             npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
       
       - run:
-        name: Run integration tests
-        command: API_PATH=${API_PATH_STAGING} npm run test:integration
+          name: Run integration tests
+          command: API_PATH=${API_PATH_STAGING} npm run test:integration
 
   deploy-production:
     executor: my-executor
@@ -88,8 +88,8 @@ jobs:
             npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
       
       - run:
-        name: Run integration tests
-        command: API_PATH=${API_PATH_PRODUCTION} npm run test:integration
+          name: Run integration tests
+          command: API_PATH=${API_PATH_PRODUCTION} npm run test:integration
 
 workflows:
   version: 2

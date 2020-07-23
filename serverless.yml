@@ -29,8 +29,8 @@ functions:
   authorizer:
     handler: authorizer.handler
     environment:
-      JWT_SECRET: ${ssm:/${self:custom.stage}/jwt-secret~true, env:JWT_SECRET}
-      ALLOWED_GROUPS: ${ssm:/${self:custom.stage}/allowed-groups, env:ALLOWED_GROUPS}
+      JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
+      ALLOWED_GROUPS: ${ssm:/${self:custom.stage}-${self:service}-allowed-groups, env:ALLOWED_GROUPS}
 
 resources:
   Resources:

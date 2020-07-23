@@ -17,12 +17,20 @@ plugins:
   - serverless-offline
 
 functions:
-  hn-mat-service:
-    name: ${self:service}-${self:custom.stage}
+  web:
+    name: ${self:service}-web-${self:custom.stage}
     handler: src/lambda.handler
     events:
       - http:
           path: /{proxy+}
+          method: ANY
+
+  api:
+    name: ${self:service}-api-${self:custom.stage}
+    handler: src/lambda.handler
+    events:
+      - http:
+          path: /api/{proxy+}
           method: ANY
           authorizer: ${self:custom.authorizer.authorizer}
 

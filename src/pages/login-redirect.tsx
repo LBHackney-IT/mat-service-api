@@ -1,61 +1,44 @@
 import React from 'react';
 import isLoggedIn from '../usecases/isLoggedIn';
-import { Header } from 'lbh-frontend-react';
+import Layout from '../components/layout';
+import { Paragraph, Heading, HeadingLevels, Link } from 'lbh-frontend-react';
 import cookie from 'cookie';
 
 const LoginRedirectPage: React.FC = () => {
   // document.title = 'Login - Manage A Tenancy';
   // Needs to be moved to a parent layout component;
 
-  // const uiPath = process.env.UI_PATH;
-
   return (
-    <div>
-      <Header serviceName="Manage A Tenancy" />
+    <Layout>
       <div className="lbh-container">
         <div className="loginPage">
-          <h1>Please log in</h1>
-          <a
+          <Heading level={HeadingLevels.H1}>Please log in</Heading>
+          <Link
             data-test="login-link"
-            href={`https://auth.hackney.gov.uk/auth?redirect_uri=http://localhost:3000`}
+            href={'https://auth.hackney.gov.uk/auth?redirect_uri=' + process.env.UI_PATH}
           >
             Log in with Google
-          </a>
+          </Link>
           <div className="privacy-notice">
-            <h3>Privacy Notice</h3>
-            <p>
+            <Heading level={HeadingLevels.H3}>Privacy Notice</Heading>
+            <Paragraph>
               We use Google Analytics and Hotjar to collect information about
               how you use this site. We do this to make sure it’s meeting your
               needs and to understand how we can make the website work better.
-            </p>
-            <p>
+            </Paragraph>
+            <Paragraph>
               Google Analytics stores information about what pages on this site
               you visit, how long you are on the site, how you got here and what
               you click on while you are here.
-            </p>
-            <p>
+            </Paragraph>
+            <Paragraph>
               Hotjar sets cookies to help us track behaviour across pages and to
               control visitor polls.
-            </p>
+            </Paragraph>
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
+    </Layout>
   );
 };
 

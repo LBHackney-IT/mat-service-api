@@ -39,7 +39,7 @@ jobs:
 
       - run:
           name: Run unit tests
-          command: npm run test
+          command: npm run test:unit
 
       - persist_to_workspace:
           root: ~/repo

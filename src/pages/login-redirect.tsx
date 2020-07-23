@@ -3,7 +3,7 @@ import isLoggedIn from '../usecases/isLoggedIn';
 import { Header } from 'lbh-frontend-react';
 import cookie from 'cookie';
 
-const LoginRedirectPage = () => {
+const LoginRedirectPage: React.FC = () => {
   // document.title = 'Login - Manage A Tenancy';
   // Needs to be moved to a parent layout component;
 

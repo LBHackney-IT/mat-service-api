@@ -1,6 +1,6 @@
 import 'jsdom-global/register';
 import React from 'react';
-import LoginRedirectPage, { getServerSideProps } from './login-redirect'
+import LoginRedirectPage, { getServerSideProps } from '../../pages/login-redirect'
 import { mount } from "enzyme";
 require('dotenv').config();
 
@@ -11,7 +11,7 @@ const invalidGroupToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4NTQyNzMzMzE0ODQ4MDg1NTIiLCJlbWFpbCI6InRlc3QudXNlckBoYWNrbmV5Lmdvdi51ayIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZ3JvdXBzIjpbImludmFsaWQgZ3JvdXAiXSwiaWF0IjoxNTk1MzQzMTEwfQ.S5EXHiUgJY0gKd48PLpmMt4C45DHmxCRwQTm1iq55Zo';
 
 describe('LoginRedirect', () => {
-  it("redirects to home page if already authenticated", async () => {
+  it("redirects to home page if already authenticated", () => {
 
     const anonymousReq = {
       headers: {
@@ -24,12 +24,12 @@ describe('LoginRedirect', () => {
       end: jest.fn()
     };
 
-    await getServerSideProps({ req: anonymousReq, res });
+    getServerSideProps({ req: anonymousReq, res });
 
     expect(res.writeHead).toHaveBeenCalledWith(302, {"Location": "/"});
   });
 
-  it("does not redirect to home page if in an invalid group", async () => {
+  it("does not redirect to home page if in an invalid group", () => {
 
     const anonymousReq = {
       headers: {
@@ -42,12 +42,12 @@ describe('LoginRedirect', () => {
       end: jest.fn()
     };
 
-    await getServerSideProps({ req: anonymousReq, res });
+    getServerSideProps({ req: anonymousReq, res });
 
     expect(res.writeHead).toHaveBeenCalledTimes(0);
   });
 
-  it("does not redirect to home page if there is no cookie", async () => {
+  it("does not redirect to home page if there is no cookie", () => {
 
     const anonymousReq = {
       headers: {
@@ -60,7 +60,7 @@ describe('LoginRedirect', () => {
       end: jest.fn()
     };
 
-    await getServerSideProps({ req: anonymousReq, res });
+    getServerSideProps({ req: anonymousReq, res });
 
     expect(res.writeHead).toHaveBeenCalledTimes(0);
   });

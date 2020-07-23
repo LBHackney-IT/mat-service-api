@@ -1,5 +1,4 @@
-import Cookies from 'js-cookie'
-import isLoggedIn from "./isLoggedIn"
+import isLoggedIn from "./isLoggedIn";
 
 const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4NTQyNzMzMzE0ODQ4MDg1NTIiLCJlbWFpbCI6InRlc3QudXNlckBoYWNrbmV5Lmdvdi51ayIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZ3JvdXBzIjpbImFyZWEtaG91c2luZy1tYW5hZ2VyLWRldiJdLCJpYXQiOjE1OTUzNDMxMTB9.RnwD8lgD6jGBmve3k0O8b6sOqGlInmGrXdg08I9t_9s';
 
@@ -7,24 +6,19 @@ const invalidGroupToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4
 
 describe('get JWT from cookie', () => {
 
-	it(`rejects an invalid token`, async () => {
-		Cookies.get = jest.fn()
-			.mockImplementationOnce(() => invalidGroupToken)
+	beforeEach(() => {
+		process.env.ALLOWED_GROUPS = 'housing-officer-dev,area-housing-manager-dev';
+	  });
 
-		expect(isLoggedIn()).toBeFalsy;
+	it(`rejects an invalid token`, async () => {
+		expect(isLoggedIn(invalidGroupToken)).toBeFalsy();
 	});
 
 	it(`rejects no token`, async () => {
-		Cookies.get = jest.fn()
-			.mockImplementationOnce(() => null)
-
-		expect(isLoggedIn()).toBeFalsy;
+		expect(isLoggedIn(undefined)).toBeFalsy();
 	});
 
 	it(`accepts a valid token`, async () => {
-		Cookies.get = jest.fn()
-			.mockImplementationOnce(() => validToken)
-
-		expect(isLoggedIn()).toBeTruthy;
+		expect(isLoggedIn(validToken)).toBeTruthy();
 	});
-})
+});

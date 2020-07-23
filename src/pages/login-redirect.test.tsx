@@ -1,6 +1,7 @@
 import 'jsdom-global/register';
-
-import { getServerSideProps } from './login-redirect'
+import React from 'react';
+import LoginRedirectPage, { getServerSideProps } from './login-redirect'
+import { mount } from "enzyme";
 require('dotenv').config();
 
 const validToken =
@@ -8,7 +9,6 @@ const validToken =
 
 const invalidGroupToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4NTQyNzMzMzE0ODQ4MDg1NTIiLCJlbWFpbCI6InRlc3QudXNlckBoYWNrbmV5Lmdvdi51ayIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZ3JvdXBzIjpbImludmFsaWQgZ3JvdXAiXSwiaWF0IjoxNTk1MzQzMTEwfQ.S5EXHiUgJY0gKd48PLpmMt4C45DHmxCRwQTm1iq55Zo';
-
 
 describe('LoginRedirect', () => {
   it("redirects to home page if already authenticated", async () => {
@@ -66,7 +66,7 @@ describe('LoginRedirect', () => {
   });
 
   it('has the correct feedback URI', () => {
-    const component = mount(<LoginRedirect />);
+    const component = mount(<LoginRedirectPage/>);
 
     process.env.UI_PATH = 'http://localhost:3000';
 

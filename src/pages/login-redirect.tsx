@@ -7,8 +7,6 @@ const LoginRedirectPage = () => {
   // document.title = 'Login - Manage A Tenancy';
   // Needs to be moved to a parent layout component;
 
-  // const redirect_uri = `${window.location.protocol}//${window.location.host}`;
-
   // const uiPath = process.env.UI_PATH;
 
   return (
@@ -61,7 +59,7 @@ const LoginRedirectPage = () => {
   );
 };
 
-export async function getServerSideProps(context: any) {
+export function getServerSideProps(context: any) {
   if (context.req.headers.cookie) {
     let parsedCookie = cookie.parse(context.req.headers.cookie);
 
@@ -72,11 +70,10 @@ export async function getServerSideProps(context: any) {
     ) {
       context.res.writeHead(302, { Location: '/' });
       context.res.end();
-      return;
     }
   }
 
-  return;
+  return { props: {} };
 }
 
 export default LoginRedirectPage;

@@ -1,17 +1,14 @@
-import Cookies from 'js-cookie';
 import jwt from 'jsonwebtoken';
 
-const tokenName = 'hackneyToken';
-const allowedGroups = process.env.ALLOWED_GROUPS?.split(',');
-
-const isLoggedIn = (): boolean => {
-  const token = Cookies.get(tokenName);
-  console.log(token);
+const isLoggedIn = (token: string | undefined): boolean => {
+  if(process.env.ALLOWED_GROUPS===undefined) {
+    return false;
+  }
+  const allowedGroups = process.env.ALLOWED_GROUPS.split(',');
 
   if (!token) return false;
 
   const payload: any = jwt.decode(token);
-  console.log(payload);
 
   if (allowedGroups === undefined) {
     return false;

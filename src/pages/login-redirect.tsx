@@ -1,20 +1,15 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 import isLoggedIn from '../usecases/isLoggedIn';
-import { useRouter } from 'next/router';
 import { Header } from 'lbh-frontend-react';
+import cookie from 'cookie';
 
 const LoginRedirectPage = () => {
   // document.title = 'Login - Manage A Tenancy';
   // Needs to be moved to a parent layout component;
-  if (isLoggedIn() === true) {
-    console.log('hello');
-    return <Redirect to="/" />;
-  }
 
   // const redirect_uri = `${window.location.protocol}//${window.location.host}`;
-  const router = useRouter();
-  const redirect_uri = process.env.UI_PATH + router.pathname;
+
+  // const uiPath = process.env.UI_PATH;
 
   return (
     <div>
@@ -23,7 +18,8 @@ const LoginRedirectPage = () => {
         <div className="loginPage">
           <h1>Please log in</h1>
           <a
-            href={`https://auth.hackney.gov.uk/auth?redirect_uri=${redirect_uri}`}
+            data-test="login-link"
+            href={`https://auth.hackney.gov.uk/auth?redirect_uri=http://localhost:3000`}
           >
             Log in with Google
           </a>
@@ -64,5 +60,23 @@ const LoginRedirectPage = () => {
     </div>
   );
 };
+
+export async function getServerSideProps(context: any) {
+  if (context.req.headers.cookie) {
+    let parsedCookie = cookie.parse(context.req.headers.cookie);
+
+    if (
+      parsedCookie &&
+      parsedCookie.hackneyToken &&
+      isLoggedIn(parsedCookie.hackneyToken) === true
+    ) {
+      context.res.writeHead(302, { Location: '/' });
+      context.res.end();
+      return;
+    }
+  }
+
+  return;
+}
 
 export default LoginRedirectPage;

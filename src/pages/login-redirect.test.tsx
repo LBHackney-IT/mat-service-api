@@ -1,50 +1,77 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import LoginRedirect from './login-redirect';
-import Cookies from 'js-cookie';
+import 'jsdom-global/register';
+
+import { getServerSideProps } from './login-redirect'
+require('dotenv').config();
 
 const validToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4NTQyNzMzMzE0ODQ4MDg1NTIiLCJlbWFpbCI6InRlc3QudXNlckBoYWNrbmV5Lmdvdi51ayIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZ3JvdXBzIjpbImFyZWEtaG91c2luZy1tYW5hZ2VyLWRldiJdLCJpYXQiOjE1OTUzNDMxMTB9.RnwD8lgD6jGBmve3k0O8b6sOqGlInmGrXdg08I9t_9s';
+  'hackneyToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4NTQyNzMzMzE0ODQ4MDg1NTIiLCJlbWFpbCI6InRlc3QudXNlckBoYWNrbmV5Lmdvdi51ayIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZ3JvdXBzIjpbImFyZWEtaG91c2luZy1tYW5hZ2VyLWRldiJdLCJpYXQiOjE1OTUzNDMxMTB9.RnwD8lgD6jGBmve3k0O8b6sOqGlInmGrXdg08I9t_9s';
 
 const invalidGroupToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4NTQyNzMzMzE0ODQ4MDg1NTIiLCJlbWFpbCI6InRlc3QudXNlckBoYWNrbmV5Lmdvdi51ayIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZ3JvdXBzIjpbImludmFsaWQgZ3JvdXAiXSwiaWF0IjoxNTk1MzQzMTEwfQ.S5EXHiUgJY0gKd48PLpmMt4C45DHmxCRwQTm1iq55Zo';
 
+
 describe('LoginRedirect', () => {
-  it('redirects to the home page when the user is logged in', () => {
-    Cookies.get = jest.fn().mockImplementationOnce(() => validToken);
+  it("redirects to home page if already authenticated", async () => {
 
-    const component = shallow(<LoginRedirect />);
+    const anonymousReq = {
+      headers: {
+        cookie: validToken
+      },
+    };
 
-    expect(component.find({ 'data-test': 'worktray-container' }).length).toBe(
-      1
-    );
+    let res = {
+      writeHead: jest.fn().mockReturnValue({ end: () => {} }),
+      end: jest.fn()
+    };
+
+    await getServerSideProps({ req: anonymousReq, res });
+
+    expect(res.writeHead).toHaveBeenCalledWith(302, {"Location": "/"});
   });
 
-  it("doesn't redirect to the home page when the user is logged in but is not in the required group(s)", () => {
-    Cookies.get = jest.fn().mockImplementationOnce(() => invalidGroupToken);
+  it("does not redirect to home page if in an invalid group", async () => {
 
-    const component = shallow(<LoginRedirect />);
+    const anonymousReq = {
+      headers: {
+        cookie: invalidGroupToken
+      },
+    };
 
-    expect(component.find({ 'data-test': 'worktray-container' }).length).toBe(
-      1
-    );
+    let res = {
+      writeHead: jest.fn().mockReturnValue({ end: () => {} }),
+      end: jest.fn()
+    };
+
+    await getServerSideProps({ req: anonymousReq, res });
+
+    expect(res.writeHead).toHaveBeenCalledTimes(0);
   });
 
-  it("doesn't redirect to the home page when the user is not logged in", () => {
-    Cookies.get = jest.fn().mockImplementationOnce(() => null);
+  it("does not redirect to home page if there is no cookie", async () => {
 
-    const component = shallow(<LoginRedirect />);
+    const anonymousReq = {
+      headers: {
+        cookie: undefined
+      },
+    };
 
-    expect(component.find({ 'data-test': 'worktray-container' }).length).toBe(
-      1
-    );
+    let res = {
+      writeHead: jest.fn().mockReturnValue({ end: () => {} }),
+      end: jest.fn()
+    };
+
+    await getServerSideProps({ req: anonymousReq, res });
+
+    expect(res.writeHead).toHaveBeenCalledTimes(0);
   });
 
   it('has the correct feedback URI', () => {
-    const component = shallow(<LoginRedirect />);
+    const component = mount(<LoginRedirect />);
 
-    expect(component.find({ 'data-test': 'worktray-container' }).length).toBe(
-      1
+    process.env.UI_PATH = 'http://localhost:3000';
+
+    expect(component.find({ 'data-test': 'login-link' }).at(0).props().href).toBe(
+      "https://auth.hackney.gov.uk/auth?redirect_uri=http://localhost:3000"
     );
   });
 });

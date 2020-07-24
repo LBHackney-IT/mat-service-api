@@ -4,27 +4,27 @@
 
 ## Getting Started
 
-First install dependencies and set up the environment:
+### First install dependencies and set up the environment
 
 ```bash
 npm install
 cp .env.sample .env
 ```
 
-To run the next.js development server:
+### To run the next.js development server
 
 ```bash
 npm run dev
 ```
 
-To run serverless offline:
+### To run serverless offline
 
 ```bash
 npm run build
 sls offline
 ```
 
-To run unit tests:
+### To run unit tests
 
 ```bash
 npm run test:unit
@@ -39,6 +39,22 @@ npm run build
 sls offline
 npm run test:integration
 ```
+
+### Releasing versions
+
+1. Decide on a new version number, where `x.y.z` is the new version
+   number, following [Semantic Versioning](https://semver.org/spec/v2.0.0.html). (The current version number can be found in `package.json`)
+
+2. Run the version bumping script:
+
+   ```sh
+   bin/bump-version "x.y.z"
+   ```
+
+3. Push the branch and create a pull request, copying the contents of this
+   version from the changelog into the description.
+
+4. Get the pull request reviewed and merge the pull request.
 
 ## Related Projects
 

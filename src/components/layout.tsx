@@ -1,15 +1,17 @@
 import React from 'react';
-import { Header } from 'lbh-frontend-react';
+import { Header, PhaseBanner, Container } from 'lbh-frontend-react';
 
 const Layout: React.FC = (props: any) => {
+
+    const feedbackLink = process.env.FEEDBACK_LINK ? process.env.FEEDBACK_LINK : "";
 
     return (
         <div>
             <Header serviceName="Manage A Tenancy" />
-            {/* <PhaseBanner phase="BETA" /> */}
-            <main className="lbh-main-wrapper" id="main-content">
+            <Container>
+                <PhaseBanner phase="BETA" url={feedbackLink} />
                 {props.children}
-            </main>
+            </Container>
         </div>
     );
 }

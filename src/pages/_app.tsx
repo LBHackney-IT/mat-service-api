@@ -5,8 +5,7 @@ import isLoggedIn from '../usecases/isLoggedIn';
 import { AppProps } from 'next/app';
 import '../global.scss';
 
-//const unauthenticatedLandingPage = '/login-redirect';
-const unauthenticatedLandingPage = process.env.LOGIN_PAGE;
+const unauthenticatedLandingPage = '/login-redirect';
 
 function MaTApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />
@@ -14,8 +13,12 @@ function MaTApp({ Component, pageProps }: AppProps) {
 
 MaTApp.getInitialProps = async (context: any) => {
 
+  console.log(unauthenticatedLandingPage);
+
   if (context.ctx.req.headers.cookie) {
     let parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
+
+    console.log(isLoggedIn(parsedCookie.hackneyToken));
 
     if (
       (parsedCookie &&
@@ -23,15 +26,15 @@ MaTApp.getInitialProps = async (context: any) => {
         isLoggedIn(parsedCookie.hackneyToken) === true) ||
       context.ctx.pathname == unauthenticatedLandingPage
     ) {
+      console.log("2");
       const appProps = await App.getInitialProps(context);
       return { ...appProps }
     }
-    else {
-      context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
-      context.ctx.res.end();
-      return {};
-    }
   }
+
+  context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
+  context.ctx.res.end();
+  return {};
 }
 
 export default MaTApp;

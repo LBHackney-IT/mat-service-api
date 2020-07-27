@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  cypress: cypress-io/cypress@1.25.1
+
 executors:
   my-executor:
     docker:
@@ -40,6 +43,10 @@ jobs:
       - run:
           name: Run unit tests
           command: npm run test
+
+      - cypress/run:
+          start: npm run cypress:open
+          wait-on: 'http://localhost:3000'
 
       - persist_to_workspace:
           root: ~/repo
@@ -98,5 +105,3 @@ workflows:
       - deploy-production:
           requires:
             - permit-deploy-production
-
-

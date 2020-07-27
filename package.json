@@ -14,7 +14,7 @@
     "dbmigrate": "db-migrate --migrations-dir 'db/migrations/'",
     "dbmigratetest": "db-migrate --migrations-dir 'db/migrations/' -e test",
     "dbmigratedry": "db-migrate --dry-run --migrations-dir 'db/migrations/'",
-    "cypress:open": "cypress open",
+    "cypress:open": "npx cypress open",
     "cypress:run": "cypress run"
   },
   "dependencies": {

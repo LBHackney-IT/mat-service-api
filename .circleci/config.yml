@@ -44,10 +44,6 @@ jobs:
           name: Run unit tests
           command: npm run test
 
-      - run:
-          start: npm run cypress:open
-          wait-on: 'http://localhost:3000'
-
       - persist_to_workspace:
           root: ~/repo
           paths: .

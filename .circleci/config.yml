@@ -28,9 +28,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo npm install --unsafe-perm=true --allow-root cypress
             sudo npm i --no-cache git
             sudo npm i
+            sudo npm install --unsafe-perm=true --allow-root cypress
 
       - save_cache:
           paths:

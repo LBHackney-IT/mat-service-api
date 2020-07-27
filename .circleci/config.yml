@@ -28,8 +28,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo npm i --no-cache git
             sudo npm install --unsafe-perm=true --allow-root cypress
+            sudo npm i --no-cache git
             sudo npm i
 
       - save_cache:

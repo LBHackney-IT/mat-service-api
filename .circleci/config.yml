@@ -44,7 +44,7 @@ jobs:
           name: Run unit tests
           command: npm run test
 
-      - cypress/run:
+      - run:
           start: npm run cypress:open
           wait-on: 'http://localhost:3000'
 

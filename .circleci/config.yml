@@ -42,6 +42,10 @@ jobs:
           command: npm run test:unit
       
       - run:
+          name: Setup sls offline for integration tests
+          command: npm run build && sls offline -s dev
+
+      - run:
           name: Run integration tests
           command: API_PATH=${API_PATH_TEST} npm run test:integration
 

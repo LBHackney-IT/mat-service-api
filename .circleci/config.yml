@@ -43,7 +43,7 @@ jobs:
       
       - run:
           name: Setup sls offline for integration tests
-          command: npm run build && ./repo/node_modules/serverless-offline/dist/ServerlessOffline.js -s dev
+          command: npm run build && sls offline
 
       - run:
           name: Run integration tests

@@ -39,7 +39,11 @@ jobs:
 
       - run:
           name: Run unit tests
-          command: npm run test
+          command: npm run test:unit
+      
+      - run:
+          name: Run integration tests
+          command: API_PATH=${API_PATH_TEST} npm run test:integration
 
       - persist_to_workspace:
           root: ~/repo
@@ -61,6 +65,10 @@ jobs:
           name: Deploy application
           command: |
             npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
+      
+      - run:
+          name: Run integration tests
+          command: API_PATH=${API_PATH_STAGING} npm run test:integration
 
   deploy-production:
     executor: my-executor
@@ -78,6 +86,10 @@ jobs:
           name: Deploy application
           command: |
             npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
+      
+      - run:
+          name: Run integration tests
+          command: API_PATH=${API_PATH_PRODUCTION} npm run test:integration
 
 workflows:
   version: 2

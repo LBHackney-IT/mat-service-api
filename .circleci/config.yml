@@ -88,6 +88,8 @@ workflows:
     jobs:
       - build_and_test
       - cypress/run:
+          requires:
+           - build_and_test
           start: next start
           wait-on: 'http://localhost:3000'
       - deploy-staging:

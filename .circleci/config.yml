@@ -11,7 +11,7 @@ executors:
     working_directory: ~/repo
 
 jobs:
-  build_and_test:
+  test:
     executor: my-executor
 
     steps:
@@ -86,16 +86,16 @@ workflows:
   version: 2
   continuous-delivery:
     jobs:
-      - build_and_test
+      - test
       - cypress/run:
           requires:
-           - build_and_test
+           - test
           build: npm run build
           start: npm run start
           wait-on: 'http://localhost:3000'
       - deploy-staging:
           requires:
-            - build_and_test
+            - test
           filters:
             branches:
               only:

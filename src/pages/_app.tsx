@@ -13,12 +13,8 @@ function MaTApp({ Component, pageProps }: AppProps) {
 
 MaTApp.getInitialProps = async (context: any) => {
 
-  console.log(unauthenticatedLandingPage);
-
   if (context.ctx.req.headers.cookie) {
     let parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
-
-    console.log(isLoggedIn(parsedCookie.hackneyToken));
 
     if (
       (parsedCookie &&
@@ -26,7 +22,6 @@ MaTApp.getInitialProps = async (context: any) => {
         isLoggedIn(parsedCookie.hackneyToken) === true) ||
       context.ctx.pathname == unauthenticatedLandingPage
     ) {
-      console.log("2");
       const appProps = await App.getInitialProps(context);
       return { ...appProps }
     }

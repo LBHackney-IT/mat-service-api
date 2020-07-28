@@ -79,7 +79,7 @@ module.exports = {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+  moduleNameMapper: {"\\.(scss|css|jpg|png|gif)$": "<rootDir>/jest.mock.js"},
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -119,7 +119,8 @@ module.exports = {
     "<rootDir>/src/components",
     "<rootDir>/src/gateways",
     "<rootDir>/src/pages",
-    "<rootDir>/src/usecases"
+    "<rootDir>/src/usecases",
+    "<rootDir>/src/tests"
   ],
 
   // Allows you to use a custom runner instead of Jest's default test runner

@@ -30,7 +30,6 @@ jobs:
           command: |
             sudo npm i --no-cache git
             sudo npm i
-            sudo npm install --unsafe-perm=true --allow-root cypress
 
       - save_cache:
           paths:
@@ -89,6 +88,8 @@ workflows:
     jobs:
       - build_and_test
       - cypress/run
+          start: next start
+          wait-on: 'http://localhost:3000'
       - deploy-staging:
           requires:
             - build_and_test

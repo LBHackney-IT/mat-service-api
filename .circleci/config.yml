@@ -88,6 +88,7 @@ workflows:
   continuous-delivery:
     jobs:
       - build_and_test
+      - cypress/run
       - deploy-staging:
           requires:
             - build_and_test

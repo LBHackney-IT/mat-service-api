@@ -11,7 +11,5 @@ describe('Work Tray Page Elements', () => {
     cy.contains("In Progress")
     cy.contains('Completed');
     cy.contains('All Items');
-    
-   
   });
 });

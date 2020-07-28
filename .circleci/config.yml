@@ -87,7 +87,7 @@ workflows:
   continuous-delivery:
     jobs:
       - build_and_test
-      - cypress/run
+      - cypress/run:
           start: next start
           wait-on: 'http://localhost:3000'
       - deploy-staging:

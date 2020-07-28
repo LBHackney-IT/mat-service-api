@@ -1,20 +1,9 @@
-const jwt = require('jsonwebtoken');
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
+import generateToken from '../tests/helpers/generateToken'
 require('dotenv').config();
 
 const apiPath = process.env.API_PATH;
 const jwtSecret = process.env.JWT_SECRET;
-
-function generateJWT(id, name, email, groups) {
-	let body = {
-		sub: id,
-		email: email,
-		iss: "Hackney",
-		name: name,
-		groups: groups
-	}
-	return jwt.sign(body, jwtSecret);
-}
 
 describe('authentication and authorisation', () => {
 
@@ -36,11 +25,12 @@ describe('authentication and authorisation', () => {
 
 	it(`fails when the user is authenticated and belongs to no groups`, async () => {
 
-		let token = generateJWT(
+		let token = generateToken(
 			"108854273331484808552",
 			"Test User",
 			"test.user@hackney.gov.uk",
-			[]);
+			[],
+			jwtSecret);
 
 		let response = await fetch(apiPath, {
 			method: 'GET',
@@ -62,11 +52,12 @@ describe('authentication and authorisation', () => {
 
 	it(`succeeds when the user is authenticated and belongs to the housing-officer-dev group`, async () => {
 
-		let token = generateJWT(
+		let token = generateToken(
 			"108854273331484808552",
 			"Test User",
 			"test.user@hackney.gov.uk",
-			["housing-officer-dev"]);
+			["housing-officer-dev"],
+			jwtSecret);
 
 		let response = await fetch(apiPath, {
 			method: 'GET',
@@ -88,11 +79,12 @@ describe('authentication and authorisation', () => {
 
 	it(`succeeds when the user is authenticated and belongs to the area-housing-manager-dev group`, async () => {
 
-		let token = generateJWT(
+		let token = generateToken(
 			"108854273331484808552",
 			"Test User",
 			"test.user@hackney.gov.uk",
-			["area-housing-manager-dev"]);
+			["area-housing-manager-dev"],
+			jwtSecret);
 
 		let response = await fetch(apiPath, {
 			method: 'GET',

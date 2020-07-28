@@ -90,6 +90,7 @@ workflows:
       - cypress/run:
           requires:
            - build_and_test
+          build: npm run build
           start: npm run start
           wait-on: 'http://localhost:3000'
       - deploy-staging:

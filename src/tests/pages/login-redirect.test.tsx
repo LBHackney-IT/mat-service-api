@@ -1,21 +1,26 @@
 import 'jsdom-global/register';
 import React from 'react';
 import LoginRedirectPage, { getServerSideProps } from '../../pages/login-redirect'
+import generateToken from '../helpers/generateToken'
 import { mount } from "enzyme";
 require('dotenv').config();
 
-const validToken =
-  'hackneyToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4NTQyNzMzMzE0ODQ4MDg1NTIiLCJlbWFpbCI6InRlc3QudXNlckBoYWNrbmV5Lmdvdi51ayIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZ3JvdXBzIjpbImFyZWEtaG91c2luZy1tYW5hZ2VyLWRldiJdLCJpYXQiOjE1OTUzNDMxMTB9.RnwD8lgD6jGBmve3k0O8b6sOqGlInmGrXdg08I9t_9s';
-
-const invalidGroupToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDg4NTQyNzMzMzE0ODQ4MDg1NTIiLCJlbWFpbCI6InRlc3QudXNlckBoYWNrbmV5Lmdvdi51ayIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdCBVc2VyIiwiZ3JvdXBzIjpbImludmFsaWQgZ3JvdXAiXSwiaWF0IjoxNTk1MzQzMTEwfQ.S5EXHiUgJY0gKd48PLpmMt4C45DHmxCRwQTm1iq55Zo';
+const jwtSecret = process.env.JWT_SECRET ? process.env.JWT_SECRET : "secret";
+const allowedGroups = process.env.ALLOWED_GROUPS ? process.env.ALLOWED_GROUPS.split(',') : [];
 
 describe('LoginRedirect', () => {
   it("redirects to home page if already authenticated", () => {
 
+    let token = generateToken(
+			"108854273331484808552",
+			"Test User",
+			"test.user@hackney.gov.uk",
+			allowedGroups,
+      jwtSecret);
+
     const anonymousReq = {
       headers: {
-        cookie: validToken
+        cookie: 'hackneyToken=' + token
       },
     };
 
@@ -31,9 +36,16 @@ describe('LoginRedirect', () => {
 
   it("does not redirect to home page if in an invalid group", () => {
 
+    let token = generateToken(
+			"108854273331484808552",
+			"Test User",
+			"test.user@hackney.gov.uk",
+			['invalid-group'],
+      jwtSecret);
+
     const anonymousReq = {
       headers: {
-        cookie: invalidGroupToken
+        cookie: 'hackneyToken=' + token
       },
     };
 

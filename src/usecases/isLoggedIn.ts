@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 const isLoggedIn = (token: string | undefined): boolean => {
-  if(process.env.ALLOWED_GROUPS===undefined) {
+  if (process.env.ALLOWED_GROUPS === undefined) {
     return false;
   }
   const allowedGroups = process.env.ALLOWED_GROUPS.split(',');

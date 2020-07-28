@@ -5,8 +5,6 @@ import { Paragraph, Heading, HeadingLevels, Link } from 'lbh-frontend-react';
 import cookie from 'cookie';
 
 const LoginRedirectPage: React.FC = () => {
-  // document.title = 'Login - Manage A Tenancy';
-  // Needs to be moved to a parent layout component;
 
   return (
     <Layout>

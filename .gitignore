@@ -2,3 +2,9 @@ node_modules
 jspm_packages
 .next
 .env
+
+# Cypress
+cypress.json
+cypress.env.json
+cypress/screenshots
+cypress/videos

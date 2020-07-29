@@ -11,6 +11,7 @@ provider:
     DB_USER: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_USERNAME, env:DB_USER}
     DB_PASSWORD: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_PASSWORD~true, env:DB_PASSWORD}
     UI_PATH: ${ssm:/${self:custom.stage}-mat-service-ui-path, env:UI_PATH}
+    ALLOWED_GROUPS: ${ssm:/${self:custom.stage}-${self:service}-allowed-groups, env:ALLOWED_GROUPS}
 
 plugins:
   - serverless-dotenv-plugin
@@ -39,7 +40,7 @@ functions:
     handler: authorizer.handler
     environment:
       JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
-      ALLOWED_GROUPS: ${ssm:/${self:custom.stage}-${self:service}-allowed-groups, env:ALLOWED_GROUPS}
+      #ALLOWED_GROUPS: ${ssm:/${self:custom.stage}-${self:service}-allowed-groups, env:ALLOWED_GROUPS}
 
 resources:
   Resources:

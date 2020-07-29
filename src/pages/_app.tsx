@@ -27,9 +27,15 @@ MaTApp.getInitialProps = async (context: any) => {
     }
   }
 
-  context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
-  context.ctx.res.end();
-  return {};
+  if(context.ctx.pathname !== '/login-redirect')
+  {
+    context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
+    context.ctx.res.end();
+    return {};
+  }
+  else{
+    return{};
+  }
 }
 
 export default MaTApp;

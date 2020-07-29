@@ -19,8 +19,7 @@ MaTApp.getInitialProps = async (context: any) => {
     if (
       (parsedCookie &&
         parsedCookie.hackneyToken &&
-        isLoggedIn(parsedCookie.hackneyToken) === true) ||
-      context.ctx.pathname == unauthenticatedLandingPage
+        isLoggedIn(parsedCookie.hackneyToken) === true) 
     ) {
       const appProps = await App.getInitialProps(context);
       return { ...appProps }

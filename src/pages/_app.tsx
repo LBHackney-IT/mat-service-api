@@ -30,10 +30,12 @@ MaTApp.getInitialProps = async (context: any) => {
   {
     context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
     context.ctx.res.end();
-    return {};
+    const appProps = await App.getInitialProps(context);
+    return { ...appProps }
   }
   else{
-    return{};
+    const appProps = await App.getInitialProps(context);
+    return { ...appProps }
   }
 }
 

@@ -40,6 +40,26 @@ sls offline
 npm run test:integration
 ```
 
+### To run Cypress tests
+
+Please ensure you have the development server running first
+
+```bash
+npm run dev
+```
+
+To run the tests in full mode which generates a browser
+
+```bash
+npm run cypress:open
+```
+
+To run the tests in the terminal without a browser
+
+```bash
+npm run cypress:run
+```
+
 ### Releasing versions
 
 1. Decide on a new version number, where `x.y.z` is the new version

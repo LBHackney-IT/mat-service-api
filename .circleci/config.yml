@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  cypress: cypress-io/cypress@1.25.1
+
 executors:
   my-executor:
     docker:
@@ -8,7 +11,7 @@ executors:
     working_directory: ~/repo
 
 jobs:
-  build_and_test:
+  test:
     executor: my-executor
 
     steps:
@@ -25,8 +28,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo npm i --no-cache git
-            sudo npm i
+            sudo CYPRESS_CACHE_FOLDER=~/repo npm i --no-cache git
+            sudo CYPRESS_CACHE_FOLDER=~/repo npm i
 
       - save_cache:
           paths:
@@ -40,7 +43,7 @@ jobs:
       - run:
           name: Run unit tests
           command: npm run test:unit
-      
+
       #- run:
       #    name: Run integration tests
       #    command: API_PATH=${API_PATH_TEST} npm run test:integration
@@ -65,7 +68,7 @@ jobs:
           name: Deploy application
           command: |
             npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
-      
+
       - run:
           name: Run integration tests
           command: API_PATH=${API_PATH_STAGING} npm run test:integration
@@ -86,7 +89,7 @@ jobs:
           name: Deploy application
           command: |
             npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
-      
+
       - run:
           name: Run integration tests
           command: API_PATH=${API_PATH_PRODUCTION} npm run test:integration
@@ -95,10 +98,15 @@ workflows:
   version: 2
   continuous-delivery:
     jobs:
-      - build_and_test
+      - test
+      - cypress/run:
+          requires:
+            - test
+          build: npm run build
+          start: npm run start
       - deploy-staging:
           requires:
-            - build_and_test
+            - test
           filters:
             branches:
               only:
@@ -110,5 +118,3 @@ workflows:
       - deploy-production:
           requires:
             - permit-deploy-production
-
-

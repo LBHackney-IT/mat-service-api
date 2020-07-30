@@ -102,6 +102,7 @@ workflows:
     jobs:
       - test
       - cypress/run:
+          executor: my-executor
           requires:
             - test
           build: npm run build

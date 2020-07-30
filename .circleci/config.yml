@@ -102,7 +102,7 @@ workflows:
           filters:
             branches:
               only:
-                - test/login-redirect
+                - master
       - permit-deploy-production:
           type: approval
           requires:

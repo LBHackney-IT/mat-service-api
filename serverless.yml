@@ -26,6 +26,7 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
+    - http: ANY /
 
   api:
     name: ${self:service}-api-${self:custom.stage}

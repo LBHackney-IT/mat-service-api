@@ -7,8 +7,8 @@ executors:
   my-executor:
     docker:
       - image: circleci/node:12.13
-    environment:
-      JWT_SECRET: $CYPRESS_JWT_SECRET
+    # environment:
+    #   JWT_SECRET: $CYPRESS_JWT_SECRET
 
     working_directory: ~/repo
 

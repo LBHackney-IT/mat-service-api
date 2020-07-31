@@ -8,7 +8,7 @@ executors:
     docker:
       - image: circleci/node:12.13
     environment:
-      JWT_SECRET: $JWT_SECRET
+      JWT_SECRET: $CYPRESS_JWT_SECRET
 
     working_directory: ~/repo
 
@@ -102,7 +102,6 @@ workflows:
     jobs:
       - test
       - cypress/run:
-          executor: my-executor
           requires:
             - test
           build: npm run build

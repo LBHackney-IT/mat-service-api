@@ -7,6 +7,8 @@ executors:
   my-executor:
     docker:
       - image: circleci/node:12.13
+    # environment:
+    #   JWT_SECRET: $CYPRESS_JWT_SECRET
 
     working_directory: ~/repo
 
@@ -99,11 +101,6 @@ workflows:
   continuous-delivery:
     jobs:
       - test
-      - cypress/run:
-          requires:
-            - test
-          build: npm run build
-          start: npm run start
       - deploy-staging:
           requires:
             - test
@@ -111,6 +108,10 @@ workflows:
             branches:
               only:
                 - master
+      - cypress/run:
+          store_artifacts: true
+          requires:
+            - deploy-staging
       - permit-deploy-production:
           type: approval
           requires:

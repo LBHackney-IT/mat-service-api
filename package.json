@@ -14,8 +14,10 @@
     "dbmigrate": "db-migrate --migrations-dir 'db/migrations/'",
     "dbmigratetest": "db-migrate --migrations-dir 'db/migrations/' -e test",
     "dbmigratedry": "db-migrate --dry-run --migrations-dir 'db/migrations/'",
-    "cypress:open": "npx cypress open",
-    "cypress:run": "cypress run"
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:open:dev": "cypress open --env JWT_SECRET=secret",
+    "cypress:run:dev": "cypress run  --env JWT_SECRET=secret"
   },
   "dependencies": {
     "@types/cookie": "^0.4.0",

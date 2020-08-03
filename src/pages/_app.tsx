@@ -19,17 +19,24 @@ MaTApp.getInitialProps = async (context: any) => {
     if (
       (parsedCookie &&
         parsedCookie.hackneyToken &&
-        isLoggedIn(parsedCookie.hackneyToken) === true) ||
-      context.ctx.pathname == unauthenticatedLandingPage
+        isLoggedIn(parsedCookie.hackneyToken) === true) 
     ) {
       const appProps = await App.getInitialProps(context);
       return { ...appProps }
     }
   }
 
-  context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
-  context.ctx.res.end();
-  return {};
+  if(context.ctx.pathname !== unauthenticatedLandingPage)
+  {
+    context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
+    context.ctx.res.end();
+    const appProps = await App.getInitialProps(context);
+    return { ...appProps }
+  }
+  else{
+    const appProps = await App.getInitialProps(context);
+    return { ...appProps }
+  }
 }
 
 export default MaTApp;

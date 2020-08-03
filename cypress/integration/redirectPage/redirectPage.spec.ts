@@ -17,6 +17,6 @@ describe('The Redirect Page', () => {
 
     cy.setCookie('hackneyToken', token);
 
-    cy.visit('http://localhost:3000/login-redirect');
+    cy.visit('/login-redirect');
   });
 });

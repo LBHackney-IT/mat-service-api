@@ -101,12 +101,6 @@ workflows:
   continuous-delivery:
     jobs:
       - test
-      - cypress/run:
-          store_artifacts: true
-          requires:
-            - test
-          build: npm run build
-          start: npm run start
       - deploy-staging:
           requires:
             - test
@@ -114,6 +108,10 @@ workflows:
             branches:
               only:
                 - master
+      - cypress/run:
+          store_artifacts: true
+          requires:
+            - deploy-staging
       - permit-deploy-production:
           type: approval
           requires:

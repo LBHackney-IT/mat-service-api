@@ -1,7 +1,7 @@
 import React from 'react';
 import App from 'next/app'
 import cookie from 'cookie';
-import isLoggedIn from '../usecases/isLoggedIn';
+import isLoggedIn from '../usecases/ui/isLoggedIn';
 import { AppProps } from 'next/app';
 import '../global.scss';
 
@@ -19,7 +19,7 @@ MaTApp.getInitialProps = async (context: any) => {
     if (
       (parsedCookie &&
         parsedCookie.hackneyToken &&
-        isLoggedIn(parsedCookie.hackneyToken) === true) 
+        isLoggedIn(parsedCookie.hackneyToken) === true)
     ) {
       const appProps = await App.getInitialProps(context);
       return { ...appProps }

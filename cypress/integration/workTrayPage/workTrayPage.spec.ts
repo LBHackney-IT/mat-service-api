@@ -1,4 +1,4 @@
-/// <reference types="cypress"/>
+
 require('dotenv').config();
 
 import generateToken from '../../../src/tests/helpers/generateToken';

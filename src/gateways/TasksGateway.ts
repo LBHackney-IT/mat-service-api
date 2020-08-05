@@ -1,28 +1,23 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
 interface GetTasksResponse {
   body: string | undefined;
   error: string | undefined;
 }
 
-interface Error {
-  message: string;
-}
-
 export interface TasksGatewayInterface {
-  getTasks(): Promise<AxiosResponse<GetTasksResponse>>;
+  getTasks(): any;
 }
 
 class TasksGateway implements TasksGatewayInterface {
-  public async getTasks(): Promise<AxiosResponse<GetTasksResponse>> {
+  public async getTasks() {
     const response = await axios
       .get('')
       .then((response) => {
         const data = response as AxiosResponse<GetTasksResponse>;
         return data;
       })
-      .catch((error: Error) => {
-        console.log(error);
+      .catch((error: AxiosError) => {
         return {
           body: undefined,
           error: error.message,

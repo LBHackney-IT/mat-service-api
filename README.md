@@ -42,6 +42,8 @@ npm run test:integration
 
 ### To run Cypress tests
 
+There is a CYPRESS-CIRCLECI.md file in the repo with detailed instructions on Cypress/CircleCi configuration and how Cypress tests run.
+
 Please ensure you have the development server running first
 
 ```bash

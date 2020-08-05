@@ -1,6 +1,7 @@
 import GetTasks from "./GetTasks";
 import TasksGateway from "../../gateways/TasksGateway";
 import { Task, Stage } from "../../interfaces/task";
+import MockTask from "../../tests/helpers/generateTask";
 jest.mock("../../gateways/TasksGateway");
 
 describe("GetTasks", () => {
@@ -10,21 +11,7 @@ describe("GetTasks", () => {
 
   it("Returns a response when no errors are found", async () => {
     const mockResponse: Task[] = [
-      {
-        id: "",
-        createdTime: new Date(),
-        category: "",
-        type: "",
-        resident: {
-          presentationName: "",
-          role: ""
-        },
-        address: {
-          presentationShort: "",
-        },
-        dueTime: new Date(),
-        stage: Stage.started
-      }
+      MockTask(),
     ]
 
     TasksGateway.mockImplementationOnce(() => {

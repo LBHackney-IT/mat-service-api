@@ -1,7 +1,8 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import { Task } from '../interfaces/task';
 
 interface GetTasksResponse {
-  body: string | undefined;
+  body: Task[] | undefined;
   error: string | undefined;
 }
 

@@ -1,7 +1,8 @@
 import TasksGateway, { TasksGatewayInterface } from "../../gateways/TasksGateway";
+import { Task } from "../../interfaces/task";
 
 interface GetTasksResponse {
-  body: string | undefined
+  body: Task[] | undefined
   error: number | undefined
 }
 
@@ -20,7 +21,7 @@ class GetTasks implements GetTasksInterface {
     switch(response.error) {
       case undefined:
         return  {
-          body: "",
+          body: response.body,
           error: undefined
         }
       case "NotAuthorised":

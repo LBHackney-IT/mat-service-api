@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import GetTasks from "../../usecases/api/GetTasks";
+import { Task } from '../../interfaces/task';
 
-type Data = string | undefined;
+type Data = Task[] | undefined;
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const getTasks = new GetTasks();

@@ -1,5 +1,6 @@
 import GetTasks from "./GetTasks";
 import TasksGateway from "../../gateways/TasksGateway";
+import { Task, Stage } from "../../interfaces/task";
 jest.mock("../../gateways/TasksGateway");
 
 describe("GetTasks", () => {
@@ -8,11 +9,29 @@ describe("GetTasks", () => {
   })
 
   it("Returns a response when no errors are found", async () => {
+    const mockResponse: Task[] = [
+      {
+        id: "",
+        createdTime: new Date(),
+        category: "",
+        type: "",
+        resident: {
+          presentationName: "",
+          role: ""
+        },
+        address: {
+          presentationShort: "",
+        },
+        dueTime: new Date(),
+        stage: Stage.started
+      }
+    ]
+
     TasksGateway.mockImplementationOnce(() => {
       return {
         getTasks: () => (
           {
-            body: "",
+            body: mockResponse,
             error: undefined
           }
         )
@@ -23,7 +42,7 @@ describe("GetTasks", () => {
     const response = await getTasks.execute();
 
     expect(TasksGateway).toHaveBeenCalledTimes(1);
-    expect(response).toEqual({body: "", error: undefined})
+    expect(response).toEqual({ body: mockResponse, error: undefined })
   })
 
   it("Returns a 500 error when errors are found", async () => {
@@ -42,7 +61,7 @@ describe("GetTasks", () => {
     const response = await getTasks.execute();
 
     expect(TasksGateway).toHaveBeenCalledTimes(1);
-    expect(response).toEqual({body: undefined, error: 500})
+    expect(response).toEqual({ body: undefined, error: 500 })
   })
 
   it("Returns a 401 error when errors is NotAuthorised", async () => {
@@ -61,6 +80,6 @@ describe("GetTasks", () => {
     const response = await getTasks.execute();
 
     expect(TasksGateway).toHaveBeenCalledTimes(1);
-    expect(response).toEqual({body: undefined, error: 401})
+    expect(response).toEqual({ body: undefined, error: 401 })
   })
 })

@@ -1,20 +1,21 @@
 import {Task, Stage} from "../../interfaces/task";
+import faker from "faker";
 
 const MockTask = (): Task => {
   return (
     {
-      id: "",
-      createdTime: new Date(),
-      category: "",
-      type: "",
+      id: faker.lorem.word(),
+      createdTime: faker.date.recent(),
+      category: faker.lorem.word(),
+      type: faker.lorem.word(),
       resident: {
-        presentationName: "",
-        role: ""
+        presentationName: faker.name.findName(),
+        role: faker.lorem.word()
       },
       address: {
-        presentationShort: "",
+        presentationShort: faker.address.streetAddress(),
       },
-      dueTime: new Date(),
+      dueTime: faker.date.future(),
       stage: Stage.started
     }
   )

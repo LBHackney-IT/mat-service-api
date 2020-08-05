@@ -6,7 +6,7 @@ interface GetTasksResponse {
 }
 
 interface GetTasksInterface {
-  execute(): GetTasksResponse
+  execute(): Promise<GetTasksResponse>
 }
 
 class GetTasks implements GetTasksInterface {
@@ -14,8 +14,8 @@ class GetTasks implements GetTasksInterface {
   constructor() {
     this.tasksGateway = new TasksGateway();
   }
-  public execute() :GetTasksResponse {
-    const response = this.tasksGateway.getTasks();
+  public async execute() :Promise<GetTasksResponse> {
+    const response = await this.tasksGateway.getTasks();
 
     switch(response.error) {
       case undefined:

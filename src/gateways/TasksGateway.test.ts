@@ -1,6 +1,5 @@
 import TasksGateway from './TasksGateway';
 import axios from 'axios';
-import { JsonWebTokenError } from 'jsonwebtoken';
 jest.mock('axios');
 
 describe('TasksGateway', () => {

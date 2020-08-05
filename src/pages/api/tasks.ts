@@ -1,13 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import GetTasks from "../../usecases/api/GetTasks";
 
-type Data = {
-  name: string
-}
+type Data = string | undefined;
 
-export default (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  const getTasks = new GetTasks();
   switch (req.method) {
     case 'GET':
-      res.status(200).json({ name: 'MaT' })
+      const response = await getTasks.execute();
+
+      if(response.error === undefined) {
+        res.status(200).json(response.body)
+      } else {
+        res.status(response.error).end()
+      }
       break
     default:
       res.setHeader('Allow', ['GET'])

@@ -12,6 +12,7 @@ describe("GetTasks", () => {
   it("Returns a response when no errors are found", async () => {
     const mockResponse: Task[] = [
       MockTask(),
+      MockTask()
     ]
 
     TasksGateway.mockImplementationOnce(() => {

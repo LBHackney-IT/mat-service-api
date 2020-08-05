@@ -1,5 +1,6 @@
 import TasksGateway from './TasksGateway';
 import axios from 'axios';
+import MockTask from '../tests/helpers/generateTask';
 jest.mock('axios');
 
 describe('TasksGateway', () => {
@@ -10,7 +11,7 @@ describe('TasksGateway', () => {
   describe('Get Tasks', () => {
     it('successfully fetches data from an API', async () => {
       const data = {
-        body: '',
+        body: [MockTask()],
         error: undefined,
       };
 

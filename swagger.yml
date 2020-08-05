@@ -3,17 +3,17 @@ info:
   version: 0.1.0
   title: MaT Service
   description: Manage A Tenancy
-basePath: /mat/api/
+# basePath: /mat/api/
 schemes:
  - https
 paths:
-  '/area':
+  '/areas':
     get:
       summary: List all areas
       responses:
         '200':
           description: Successful operation
-  '/area/{id}':
+  '/areas/{id}':
     parameters:
       - in: path
         name: id
@@ -25,7 +25,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/patch':
+  '/patches':
     get:
       summary: List all patches
       responses:
@@ -36,7 +36,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/patch/{id}':
+  '/patches/{id}':
     parameters:
       - in: path
         name: id
@@ -76,13 +76,28 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/task':
+  '/tasks':
+    get:
+      summary: Get all tasks
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/tasklist'
+        '401':
+          description: Unauthenticated
+          schema:
+            $ref: '#/definitions/error'
+        '500':
+          description: There was an error processing your request.
+          schema:
+            $ref: '#/definitions/error'
     post:
       summary: Create a new task
       responses:
         '200':
           description: Successful operation
-  '/task/{id}':
+  '/tasks/{id}':
     parameters:
       - in: path
         name: id
@@ -94,12 +109,22 @@ paths:
       responses:
         '200':
           description: Successful operation
+          schema:
+            $ref: '#/definitions/task'
+        '401':
+          description: Unauthenticated
+          schema:
+            $ref: '#/definitions/error'
+        '500':
+          description: There was an error processing your request.
+          schema:
+            $ref: '#/definitions/error'
     put:
       summary: Update an existing task
       responses:
         '200':
           description: Successful operation
-  '/tra':
+  '/tras':
     get:
       summary: List all TRAs
       responses:
@@ -110,7 +135,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/tra/{id}':
+  '/tras/{id}':
     parameters:
       - in: path
         name: id
@@ -132,7 +157,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/tra/{id}/meeting':
+  '/tras/{id}/meeting':
     parameters:
       - in: path
         name: id
@@ -149,7 +174,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/tra/{tra-id}/meeting/{meeting-id}':
+  '/tras/{tra-id}/meeting/{meeting-id}':
     parameters:
       - in: path
         name: tra-id
@@ -171,7 +196,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/tra/{tra-id}/meeting/{meeting-id}/issue':
+  '/tras/{tra-id}/meeting/{meeting-id}/issue':
     parameters:
       - in: path
         name: tra-id
@@ -193,7 +218,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/tra/{tra-id}meeting/{meeting-id}/issue/{issue-id}':
+  '/tras/{tra-id}meeting/{meeting-id}/issue/{issue-id}':
     parameters:
       - in: path
         name: tra-id
@@ -220,3 +245,152 @@ paths:
       responses:
         '200':
           description: Successful operation
+
+definitions:
+  task:
+    type: object
+    required:
+      - id
+      - createdTime
+      - category
+      - type
+      - resident
+      - address
+      - dueTime
+      - stage
+    description: 'A task relating to a resident and that requires action by LBH'
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: '5956eb7f-9edb-4e05-8934-8f2ee414cd81'
+        description: 'The id for the task'
+      createdTime:
+        type: string
+        format: iso8601
+        example: '2007-03-01T13:00:00Z'
+        description: 'The time at which the task was initially created'
+      category:
+        type: string
+        example: 'Tenancy Audit And Visits'
+        description: 'The category of task'
+      type:
+        type: string
+        example: 'Tenancy & Household Check'
+        description: 'The specific type of task'
+      resident: 
+        $ref: '#/definitions/person'
+      address:
+        $ref: '#/definitions/address'
+      dueTime:
+        type: string
+        format: iso8601
+        example: '2007-03-01T13:00:00Z'
+        description: 'The time at which the task is due to be completed'
+      dueState:
+        type: string
+        format: enum [imminent, overdue]
+        description: 'An optional flag indicating varying degrees of overdue state'
+      completedTime:
+        type: string
+        format: iso8601
+        example: '2007-03-01T13:00:00Z'
+        description: 'The time at which the task was completed'
+      stage:
+        type: string
+        format: enum [unstarted, started, validating, completed]
+      children:
+        type: array
+        items:
+          $ref: '#/definitions/task'
+        description: 'Zero or more child tasks'
+      parent:
+         $ref: '#/definitions/task'
+      referenceNumber:
+        type: string
+        description: ""
+               
+  tasklist:
+    type: array
+    items:
+      $ref: '#/definitions/task'
+    description: 'A collection of tasks'
+
+  person:
+    type: object
+    required:
+      - presentationName
+      - role
+      - dateOfBirth
+    properties:
+      presentationName:
+        type: string
+        example: 'Mr John Smith'
+        description: "The value to use when presenting the person's full name"
+      role:
+        type: string
+        format: enum [tenant]
+        example: 'tenant'
+        description: 'The role the person has in this task'
+      dateOfBirth:
+        type: string
+        format: iso8601
+        example: '2007-03-01'
+        description: 'The date on which the person was born'
+      mobileNumber:
+        type: string
+        example: "07707188934"
+        description: "The person's mobile phone number"
+      homePhoneNumber:
+        type: string
+        example: "0201234567"
+        description: "The person's home phone number"
+      workPhoneNumber:
+        type: string
+        example: "01301234567"
+        description: "The person's work phone number"
+      email:
+        type: string
+        example: "johnDoe@email.com"
+        description: "The person's email address"
+        
+        
+  tenancy:
+    type: object
+    properties:
+      type: 
+        type: string
+        format: enum [secure]
+        example: "secure"
+        description: ""
+      startDate:
+        type: string
+        format: iso8601
+        example: '2007-03-01'
+        description: 'The date on which the tenancy started'
+      residents:
+        type: array
+        items:
+          $ref: '#/definitions/person'
+        description: "The residents occupying the tenancy"
+      
+  
+  address:
+    type: object
+    properties:
+      presentationShort:
+        type: string
+        example: 'Flat 9, Made Up Court, 7 Fake Road'
+        description: 'A short, summarised representation of the address'
+        
+  error:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: '400'
+        description: 'HTTP response code'
+      message:
+        type: string
+        example: 'Mandatory parameter xxx was not provided'
+

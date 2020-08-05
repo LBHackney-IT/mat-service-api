@@ -11,7 +11,7 @@ export interface CrmTokenGatewayInterface {
 class CrmTokenGateway implements CrmTokenGatewayInterface {
   public async getCloudToken() {
     const apiUrl = process.env.CRM_CLOUD_URL ? process.env.CRM_CLOUD_URL : ""
-    const authorizationHeader = process.env.CRM_CLOUD_AUTHORIZATION
+    const authorizationHeader = process.env.CRM_CLOUD_AUTHORIZATION ? process.env.CRM_CLOUD_AUTHORIZATION : ""
     const response = await axios
       .get(apiUrl, {
         headers: {
@@ -20,7 +20,7 @@ class CrmTokenGateway implements CrmTokenGatewayInterface {
       })
       .then((response) => {
         const data = response as AxiosResponse<GetTokenResponse>;
-        return data;
+        return {token: data.data};
       })
       .catch((error: AxiosError) => {
         return { token: undefined };

@@ -11,16 +11,16 @@ describe('TasksGateway', () => {
   describe('Get Tasks', () => {
     it('successfully fetches data from an API', async () => {
       const token = faker.lorem.word();
-      const data = {
-        token: token
+      const crmResponse = {
+          data: token
       };
 
-      axios.get.mockResolvedValue(data);
+      axios.get.mockResolvedValue(crmResponse);
 
       const crmTokenGateway = new CrmTokenGateway();
       const response = await crmTokenGateway.getCloudToken();
 
-      expect(response).toEqual(data);
+      expect(response).toEqual({token: token});
     });
 
     it('returns an human readable error when unsuccessful', async () => {

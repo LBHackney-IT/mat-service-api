@@ -1,4 +1,4 @@
-import CrmTokenGateway from './crmTokenGateway_';
+import CrmTokenGateway from './crmTokenGateway';
 import axios from 'axios';
 import faker from "faker";
 jest.mock('axios');

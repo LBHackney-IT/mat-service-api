@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import GetCrmCloudToken from "../../usecases/api/getCrmCloudToken_";
+import GetCrmCloudToken from "../../usecases/api/getCrmCloudToken";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const getCrmCloudToken = new GetCrmCloudToken();

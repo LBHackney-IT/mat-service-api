@@ -1,5 +1,5 @@
-import GetCrmCloudToken from "./GetCrmCloudToken";
-import CrmTokenGateway from "../../gateways/CrmTokenGateway";
+import GetCrmCloudToken from "./getCrmCloudToken";
+import CrmTokenGateway from "../../gateways/crmTokenGateway";
 import faker from "faker";
 jest.mock("../../gateways/CrmTokenGateway");
 

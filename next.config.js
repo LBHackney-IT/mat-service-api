@@ -7,5 +7,5 @@ const withNextEnv = nextEnv();
 
 module.exports = withNextEnv({
     target: 'serverless',
-    assetPrefix: '.'
+    //assetPrefix: '.'
 });

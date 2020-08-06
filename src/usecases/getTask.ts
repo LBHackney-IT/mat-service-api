@@ -1,4 +1,4 @@
-import { Task } from "../interfaces/task";
+import { Stage, Task } from "../interfaces/task";
 
 interface GetTaskResponse {
   body: Task | undefined;
@@ -6,7 +6,7 @@ interface GetTaskResponse {
 }
 
 interface GetTaskInterface {
-  execute(): GetTaskResponse;
+  execute(): Promise<GetTaskResponse>;
 }
 
 class GetTask implements GetTaskInterface {
@@ -15,17 +15,18 @@ class GetTask implements GetTaskInterface {
     this.taskId = taskId;
   }
 
-  public execute(): GetTaskResponse {
-    if (this.taskId == '5956eb7f-9edb-4e05-8934-8f2ee414cd81') {
+  public async execute(): Promise<GetTaskResponse> {
+
+    if (this.taskId && this.taskId === '5956eb7f-9edb-4e05-8934-8f2ee414cd81') {
       const task = {
         id: '5956eb7f-9edb-4e05-8934-8f2ee414cd81',
-        createdTime: '2007-03-01T13:00:00Z',
+        createdTime: new Date('2007-03-01T13:00:00Z'),
         category: 'Tenancy Audit And Visits',
         type: 'Tenancy & Household Check',
         resident: {
           presentationName: 'Mr John Smith',
           role: 'tenant',
-          dateOfBirth: '2007-03-01',
+          dateOfBirth: new Date('2007-03-01'),
           mobileNumber: '07707188934',
           homePhoneNumber: '0201234567',
           workPhoneNumber: '01301234567',
@@ -34,10 +35,10 @@ class GetTask implements GetTaskInterface {
         address: {
           presentationShort: 'Flat 9, Made Up Court, 7 Fake Road',
         },
-        dueTime: '2007-03-01T13:00:00Z',
+        dueTime: new Date('2007-03-01T13:00:00Z'),
         dueState: 'string',
-        completedTime: '2007-03-01T13:00:00Z',
-        stage: 'string',
+        completedTime: new Date('2007-03-01T13:00:00Z'),
+        stage: Stage.unstarted,
         children: [],
         referenceNumber: 'string',
       };
@@ -46,12 +47,12 @@ class GetTask implements GetTaskInterface {
         body: task,
         error: undefined,
       };
+    } else {
+      return {
+        body: undefined,
+        error: 400,
+      };
     }
-
-    return {
-      body: '',
-      error: undefined,
-    };
   }
 }
 

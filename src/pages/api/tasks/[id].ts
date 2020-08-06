@@ -12,13 +12,16 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     : undefined;
 
   if (id !== undefined) {
+
     const getTask = new GetTask(id);
     const response = await getTask.execute();
 
-    if (response.error !== undefined) {
+    if (response.error === undefined) {
       res.status(200).json(response.body);
+    } else {
+      res.status(response.error).json(response.body);
     }
+  } else {
+    res.status(400).end();
   }
-
-  res.status(400).end();
 };

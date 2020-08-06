@@ -9,11 +9,11 @@ interface GetTasksResponse {
   error: string | undefined;
 }
 
-export interface TasksGatewayInterface {
+export interface CrmGatewayInterface {
   getTasks(): any;
 }
 
-class TasksGateway implements TasksGatewayInterface {
+class CrmGateway implements CrmGatewayInterface {
   public async getTasks(): Promise<GetTasksResponse> {
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
@@ -43,4 +43,4 @@ class TasksGateway implements TasksGatewayInterface {
   }
 }
 
-export default TasksGateway;
+export default CrmGateway;

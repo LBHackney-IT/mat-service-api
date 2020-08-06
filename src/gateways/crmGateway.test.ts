@@ -1,10 +1,10 @@
-import TasksGateway from './tasksGateway';
+import CrmGateway from './crmGateway';
 import axios from 'axios';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import crmResponseToTask from '../mappings/crmToTask';
 jest.mock('axios');
 
-describe('TasksGateway', () => {
+describe('CrmGateway', () => {
   beforeEach(() => {
     axios.mockClear();
   });
@@ -15,8 +15,8 @@ describe('TasksGateway', () => {
 
       axios.get.mockResolvedValue({data: data});
 
-      const tasksGateway = new TasksGateway();
-      const response = await tasksGateway.getTasks();
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getTasks();
 
       expect(response).toEqual({body: crmResponseToTask(data), error: undefined});
     });
@@ -30,8 +30,8 @@ describe('TasksGateway', () => {
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
-      const tasksGateway = new TasksGateway();
-      const response = await tasksGateway.getTasks();
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getTasks();
 
       expect(response).toEqual(errorResponse);
     });

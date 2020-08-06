@@ -1,4 +1,4 @@
-import TasksGateway, { TasksGatewayInterface } from "../../gateways/tasksGateway";
+import CrmGateway, { CrmGatewayInterface } from "../../gateways/crmGateway";
 import { Task } from "../../interfaces/task";
 
 interface GetTasksResponse {
@@ -11,9 +11,9 @@ interface GetTasksInterface {
 }
 
 class GetTasks implements GetTasksInterface {
-  tasksGateway: TasksGatewayInterface;
+  tasksGateway: CrmGatewayInterface;
   constructor() {
-    this.tasksGateway = new TasksGateway();
+    this.tasksGateway = new CrmGateway();
   }
   public async execute() :Promise<GetTasksResponse> {
     const response = await this.tasksGateway.getTasks();

@@ -1,12 +1,12 @@
 import GetTasks from "./getTasks";
-import TasksGateway from "../../gateways/tasksGateway";
+import CrmGateway from "../../gateways/crmGateway";
 import { Task } from "../../interfaces/task";
 import MockTask from "../../tests/helpers/generateTask";
-jest.mock("../../gateways/tasksGateway");
+jest.mock("../../gateways/crmGateway");
 
 describe("GetTasks", () => {
   beforeEach(() => {
-    TasksGateway.mockClear();
+    CrmGateway.mockClear();
   })
 
   it("Returns a response when no errors are found", async () => {
@@ -15,7 +15,7 @@ describe("GetTasks", () => {
       MockTask()
     ]
 
-    TasksGateway.mockImplementationOnce(() => {
+    CrmGateway.mockImplementationOnce(() => {
       return {
         getTasks: () => (
           {
@@ -29,12 +29,12 @@ describe("GetTasks", () => {
     const getTasks = new GetTasks();
     const response = await getTasks.execute();
 
-    expect(TasksGateway).toHaveBeenCalledTimes(1);
+    expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: mockResponse, error: undefined })
   })
 
   it("Returns a 500 error when errors are found", async () => {
-    TasksGateway.mockImplementationOnce(() => {
+    CrmGateway.mockImplementationOnce(() => {
       return {
         getTasks: () => (
           {
@@ -48,12 +48,12 @@ describe("GetTasks", () => {
     const getTasks = new GetTasks();
     const response = await getTasks.execute();
 
-    expect(TasksGateway).toHaveBeenCalledTimes(1);
+    expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 500 })
   })
 
   it("Returns a 401 error when errors is NotAuthorised", async () => {
-    TasksGateway.mockImplementationOnce(() => {
+    CrmGateway.mockImplementationOnce(() => {
       return {
         getTasks: () => (
           {
@@ -67,7 +67,7 @@ describe("GetTasks", () => {
     const getTasks = new GetTasks();
     const response = await getTasks.execute();
 
-    expect(TasksGateway).toHaveBeenCalledTimes(1);
+    expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 401 })
   })
 })

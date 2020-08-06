@@ -1,7 +1,7 @@
-import GetCrmCloudToken from "./GetCrmCloudToken";
-import CrmTokenGateway from "../../gateways/CrmTokenGateway";
+import GetCrmCloudToken from "./getCrmCloudToken_";
+import CrmTokenGateway from "../../gateways/crmTokenGateway_";
 import faker from "faker";
-jest.mock("../../gateways/CrmTokenGateway");
+jest.mock("../../gateways/crmTokenGateway_");
 
 describe("GetTasks", () => {
   beforeEach(() => {

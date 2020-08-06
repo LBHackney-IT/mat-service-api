@@ -1,8 +1,8 @@
-import GetTasks from "./GetTasks";
-import TasksGateway from "../../gateways/TasksGateway";
+import GetTasks from "./getTasks_";
+import TasksGateway from "../../gateways/tasksGateway_";
 import { Task } from "../../interfaces/task";
 import MockTask from "../../tests/helpers/generateTask";
-jest.mock("../../gateways/TasksGateway");
+jest.mock("../../gateways/tasksGateway_");
 
 describe("GetTasks", () => {
   beforeEach(() => {

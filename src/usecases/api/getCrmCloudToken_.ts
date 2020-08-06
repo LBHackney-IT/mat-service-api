@@ -1,4 +1,4 @@
-import CrmTokenGateway, { CrmTokenGatewayInterface } from "../../gateways/CrmTokenGateway";
+import CrmTokenGateway, { CrmTokenGatewayInterface } from "../../gateways/crmTokenGateway_";
 
 interface GetCrmCouldTokenResponse {
   token: string | undefined

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import GetTasks from "../../usecases/api/getTasks";
+import GetTasks from "../../usecases/api/getTasks_";
 import { Task } from '../../interfaces/task';
 
 type Data = Task[] | undefined;

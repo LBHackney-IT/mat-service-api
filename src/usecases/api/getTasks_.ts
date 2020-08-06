@@ -1,4 +1,4 @@
-import TasksGateway, { TasksGatewayInterface } from "../../gateways/TasksGateway";
+import TasksGateway, { TasksGatewayInterface } from "../../gateways/tasksGateway_";
 import { Task } from "../../interfaces/task";
 
 interface GetTasksResponse {

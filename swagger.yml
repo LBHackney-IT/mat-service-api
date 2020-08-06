@@ -66,7 +66,7 @@ paths:
           description: Successful operation
   '/scheduler':
     get:
-      summary: List all scheduled tasks 
+      summary: List all scheduled tasks
       responses:
         '200':
           description: Successful operation
@@ -270,7 +270,7 @@ definitions:
         type: string
         example: 'Tenancy & Household Check'
         description: 'The specific type of task'
-      resident: 
+      resident:
         $ref: '#/definitions/person'
       address:
         $ref: '#/definitions/address'
@@ -290,7 +290,7 @@ definitions:
         description: 'The time at which the task was completed'
       stage:
         type: string
-        format: enum [unstarted, started, validating, completed]
+        format: enum [inProgress, completed]
       children:
         type: array
         items:
@@ -298,7 +298,7 @@ definitions:
         description: 'Zero or more child tasks'
       parent:
          $ref: '#/definitions/task'
-         
+
   tasklist:
     type: array
     items:
@@ -317,7 +317,7 @@ definitions:
         format: enum [tenant]
         example: 'tenant'
         description: 'The role the resident has in this task'
-  
+
   address:
     type: object
     properties:
@@ -325,7 +325,7 @@ definitions:
         type: string
         example: 'Flat 9, Made Up Court, 7 Fake Road'
         description: 'A short, summarised representation of the address'
-        
+
   error:
     type: object
     properties:

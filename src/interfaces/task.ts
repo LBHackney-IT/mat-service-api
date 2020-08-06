@@ -17,8 +17,6 @@ export interface Task {
 }
 
 export enum Stage {
-  unstarted,
-  started,
-  validating,
+  inProgress,
   completed
 }

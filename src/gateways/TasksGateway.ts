@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import CrmTokenGateway from "./CrmTokenGateway";
 import { Task } from '../interfaces/task';
-import crmResponseToTask from '../mappings/crmToTask';
+import crmResponseToTask, { CrmResponseInterface } from '../mappings/crmToTask';
 import { getTasksQuery } from './xmlQueryStrings/getTasks';
 
 interface GetTasksResponse {
@@ -14,7 +14,7 @@ export interface TasksGatewayInterface {
 }
 
 class TasksGateway implements TasksGatewayInterface {
-  public async getTasks() {
+  public async getTasks(): Promise<GetTasksResponse> {
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
 
@@ -26,8 +26,8 @@ class TasksGateway implements TasksGatewayInterface {
         }
       })
       .then((response) => {
-        const data = response as AxiosResponse<GetTasksResponse>;
-        const tasks = crmResponseToTask(data.data);
+        const data = response.data as CrmResponseInterface;
+        const tasks = crmResponseToTask(data);
         return {
           body: tasks,
           error: undefined

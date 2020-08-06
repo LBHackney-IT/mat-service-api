@@ -16,7 +16,7 @@ export interface CrmResponseInterface {
 
 
 
-const crmResponseToTask = (crmResponse: any): Task[] => {
+const crmResponseToTask = (crmResponse: CrmResponseInterface): Task[] => {
   const taskArray: Task[] = [];
   crmResponse.value.forEach((element: any) => {
     const task: Task = {

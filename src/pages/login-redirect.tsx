@@ -1,5 +1,5 @@
 import React from 'react';
-import isLoggedIn from '../usecases/isLoggedIn';
+import isLoggedIn from '../usecases/ui/isLoggedIn';
 import Layout from '../components/layout';
 import { Paragraph, Heading, HeadingLevels, Link } from 'lbh-frontend-react';
 import cookie from 'cookie';

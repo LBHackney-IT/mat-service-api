@@ -51,7 +51,7 @@ describe('App', () => {
     expect(res.writeHead).toHaveBeenCalledWith(302, {"Location": '/login-redirect'});
   });
 
-  fit("does not redirect if authenticated and in a valid group", () => {
+  it("does not redirect if authenticated and in a valid group", () => {
 
     let token = generateToken(
 			"108854273331484808552",

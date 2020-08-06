@@ -1,4 +1,4 @@
-import TasksGateway from './tasksGateway';
+import TasksGateway from './TasksGateway';
 import axios from 'axios';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import crmResponseToTask from '../mappings/crmToTask';

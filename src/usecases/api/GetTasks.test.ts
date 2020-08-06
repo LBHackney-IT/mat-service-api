@@ -1,6 +1,6 @@
-import GetTasks from "./getTasks";
-import TasksGateway from "../../gateways/tasksGateway";
-import { Task, Stage } from "../../interfaces/task";
+import GetTasks from "./GetTasks";
+import TasksGateway from "../../gateways/TasksGateway";
+import { Task } from "../../interfaces/task";
 import MockTask from "../../tests/helpers/generateTask";
 jest.mock("../../gateways/TasksGateway");
 

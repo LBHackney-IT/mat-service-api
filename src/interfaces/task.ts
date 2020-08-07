@@ -16,7 +16,7 @@ export interface Task {
     presentationShort: string;
   };
   dueTime: Date;
-  dueState: string;
+  dueState: DueState;
   completedTime: Date;
   stage: Stage;
   children?: Task[];
@@ -29,4 +29,9 @@ export enum Stage {
   started,
   validating,
   completed,
+}
+
+export enum DueState {
+  imminent,
+  overdue
 }

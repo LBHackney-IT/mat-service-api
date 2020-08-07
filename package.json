@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@types/cookie": "^0.4.0",
+    "@types/faker": "^4.1.12",
     "@types/history": "^4.7.6",
     "@types/js-cookie": "^2.2.6",
     "@types/jsonwebtoken": "^8.5.0",
@@ -28,6 +29,7 @@
     "@types/react-router-dom": "^5.1.5",
     "cookie": "^0.4.1",
     "dotenv-load": "^2.0.0",
+    "faker": "^4.1.0",
     "govuk-frontend": "^3.7.0",
     "history": "^5.0.0",
     "isomorphic-unfetch": "^3.0.0",

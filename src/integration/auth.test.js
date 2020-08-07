@@ -9,6 +9,8 @@ describe('authentication and authorisation', () => {
 
 	it(`fails when the user is not authenticated`, async () => {
 
+		console.log(apiPath);
+
 		let response = await fetch(apiPath, {
 			method: 'GET'
 		}).then(async (res) => {

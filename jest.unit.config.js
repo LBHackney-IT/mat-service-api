@@ -120,7 +120,8 @@ module.exports = {
     "<rootDir>/src/gateways",
     "<rootDir>/src/pages",
     "<rootDir>/src/usecases",
-    "<rootDir>/src/tests"
+    "<rootDir>/src/tests",
+    "<rootDir>/src/mappings"
   ],
 
   // Allows you to use a custom runner instead of Jest's default test runner

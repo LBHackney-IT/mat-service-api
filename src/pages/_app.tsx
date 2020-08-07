@@ -1,7 +1,7 @@
 import React from 'react';
 import cookie from 'cookie';
-import isLoggedIn from '../usecases/isLoggedIn';
 import App, { AppProps, AppContext } from 'next/app';
+import isLoggedIn from '../usecases/ui/isLoggedIn';
 import '../global.scss';
 
 const unauthenticatedLandingPage = '/login-redirect';

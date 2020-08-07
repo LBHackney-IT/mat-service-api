@@ -1,4 +1,4 @@
-import { Task, Stage } from "../interfaces/task";
+import { Task, Stage, DueState } from "../interfaces/task";
 
 export interface CrmResponseInterface {
   "@odata.context": string,
@@ -26,13 +26,24 @@ const crmResponseToTask = (crmResponse: CrmResponseInterface): Task[] => {
       type: element["_hackney_incidentid_value@OData.Community.Display.V1.FormattedValue"],
       resident: {
         presentationName: element["_hackney_contactid_value@OData.Community.Display.V1.FormattedValue"],
-        role: ""
+        role: "",
+        dateOfBirth: new Date("2030-12-31"),
+        mobileNumber: "",
+        homePhoneNumber: "",
+        workPhoneNumber: "",
+        email: ""
       },
       address: {
         presentationShort: `${element["contact1_x002e_address1_line1"]}, ${element["contact1_x002e_address1_line2"]}`
       },
       dueTime: new Date("2030-12-31"),
-      stage: mapResponseToStage(element["hackney_process_stage"])
+      dueState: DueState.imminent,
+      completedTime: new Date("2030-12-31"),
+      stage: mapResponseToStage(element["hackney_process_stage"]),
+      children: [],
+      parent: undefined,
+      referenceNumber: ""
+
     }
     taskArray.push(task)
   })
@@ -44,10 +55,10 @@ export const mapResponseToStage = (stage: number): Stage => {
   switch (stage) {
     case 0:
       // Not completed 0
-      return Stage.inProgress
+      return Stage.started
     case 1:
       // Awaiting manager review 1
-      return Stage.inProgress
+      return Stage.started
     case 2:
       // Approved 2
       return Stage.completed
@@ -56,10 +67,10 @@ export const mapResponseToStage = (stage: number): Stage => {
       return Stage.completed
     case 4:
       // In-progress 4
-      return Stage.inProgress
+      return Stage.started
     case 5:
       // Awaiting manager review 5 - Special status for THC with unable to enter property journey
-      return Stage.inProgress
+      return Stage.validating
     case 6:
       // Approved 6 - Approved for Unable to enter property journey
       return Stage.completed
@@ -71,9 +82,9 @@ export const mapResponseToStage = (stage: number): Stage => {
       return Stage.completed
     case 9:
       // Escalated 9
-      return Stage.inProgress
+      return Stage.validating
     default:
-      return Stage.inProgress
+      return Stage.unstarted
   }
 }
 

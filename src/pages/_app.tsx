@@ -1,8 +1,7 @@
 import React from 'react';
-import App from 'next/app'
 import cookie from 'cookie';
+import App, { AppProps, AppContext } from 'next/app';
 import isLoggedIn from '../usecases/ui/isLoggedIn';
-import { AppProps } from 'next/app';
 import '../global.scss';
 
 const unauthenticatedLandingPage = '/login-redirect';
@@ -11,9 +10,14 @@ function MaTApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />
 }
 
-MaTApp.getInitialProps = async (context: any) => {
+MaTApp.getInitialProps = async (context: AppContext) => {
 
-  if (context.ctx.req.headers.cookie) {
+  const appProps = App.getInitialProps(context);
+
+  if (context.ctx &&
+    context.ctx.req &&
+    context.ctx.req.headers &&
+    context.ctx.req.headers.cookie) {
     let parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
 
     if (
@@ -21,20 +25,20 @@ MaTApp.getInitialProps = async (context: any) => {
         parsedCookie.hackneyToken &&
         isLoggedIn(parsedCookie.hackneyToken) === true)
     ) {
-      const appProps = await App.getInitialProps(context);
+
       return { ...appProps }
     }
   }
 
-  if(context.ctx.pathname !== unauthenticatedLandingPage)
-  {
+  if (context.ctx &&
+    context.ctx.res &&
+    context.ctx.pathname !== unauthenticatedLandingPage &&
+    !context.ctx.pathname.startsWith('/api')) {
     context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
     context.ctx.res.end();
-    const appProps = await App.getInitialProps(context);
     return { ...appProps }
   }
-  else{
-    const appProps = await App.getInitialProps(context);
+  else {
     return { ...appProps }
   }
 }

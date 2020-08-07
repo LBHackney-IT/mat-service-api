@@ -7,7 +7,7 @@ const jwtSecret = process.env.JWT_SECRET ? process.env.JWT_SECRET : "secret";
 const allowedGroups = process.env.ALLOWED_GROUPS ? process.env.ALLOWED_GROUPS.split(',') : [];
 
 describe('App', () => {
-  it("redirects to login redirect page if not already authenticated", () => {
+  it("redirects to login redirect page if not already authenticated", async () => {
 
     const req = {
       headers: {
@@ -19,13 +19,15 @@ describe('App', () => {
       end: jest.fn()
     };
 
-    MaTApp.getInitialProps({ctx: { req, res, pathname: "/" }});
+    expect.assertions(2);
+    
+    await MaTApp.getInitialProps({ctx: { req, res, pathname: "/" }});
 
     expect(res.writeHead).toHaveBeenCalled();
     expect(res.writeHead).toHaveBeenCalledWith(302, {"Location": '/login-redirect'});
   });
 
-  it("redirects to login redirect page if authenticated but not in a valid group", () => {
+  it("redirects to login redirect page if authenticated but not in a valid group", async () => {
 
     let token = generateToken(
 			"108854273331484808552",
@@ -45,13 +47,15 @@ describe('App', () => {
       end: jest.fn()
     };
 
-    MaTApp.getInitialProps({ctx: { req, res }});
+    expect.assertions(2);
+
+    await MaTApp.getInitialProps({ctx: { req, res, pathname: "/" }});
 
     expect(res.writeHead).toHaveBeenCalled();
     expect(res.writeHead).toHaveBeenCalledWith(302, {"Location": '/login-redirect'});
   });
 
-  it("does not redirect if authenticated and in a valid group", () => {
+  it("does not redirect if authenticated and in a valid group", async () => {
 
     let token = generateToken(
 			"108854273331484808552",
@@ -71,7 +75,9 @@ describe('App', () => {
       end: jest.fn()
     };
 
-    MaTApp.getInitialProps({ctx: { req, res }});
+    expect.assertions(1);
+
+    await MaTApp.getInitialProps({ctx: { req, res }});
 
     expect(res.writeHead).toHaveBeenCalledTimes(0);
   });

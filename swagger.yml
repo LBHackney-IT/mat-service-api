@@ -109,6 +109,16 @@ paths:
       responses:
         '200':
           description: Successful operation
+          schema:
+            $ref: '#/definitions/task'
+        '401':
+          description: Unauthenticated
+          schema:
+            $ref: '#/definitions/error'
+        '500':
+          description: There was an error processing your request.
+          schema:
+            $ref: '#/definitions/error'
     put:
       summary: Update an existing task
       responses:
@@ -236,9 +246,8 @@ paths:
         '200':
           description: Successful operation
 
-
-
 definitions:
+
   task:
     type: object
     required:
@@ -290,7 +299,7 @@ definitions:
         description: 'The time at which the task was completed'
       stage:
         type: string
-        format: enum [inProgress, completed]
+        format: enum [unstarted, started, validating, completed]
       children:
         type: array
         items:
@@ -298,7 +307,10 @@ definitions:
         description: 'Zero or more child tasks'
       parent:
          $ref: '#/definitions/task'
-
+      referenceNumber:
+        type: string
+        description: ""
+               
   tasklist:
     type: array
     items:
@@ -307,6 +319,10 @@ definitions:
 
   person:
     type: object
+    required:
+      - presentationName
+      - role
+      - dateOfBirth
     properties:
       presentationName:
         type: string
@@ -316,8 +332,48 @@ definitions:
         type: string
         format: enum [tenant]
         example: 'tenant'
-        description: 'The role the resident has in this task'
-
+        description: 'The role the person has in this task'
+      dateOfBirth:
+        type: string
+        format: iso8601
+        example: '2007-03-01'
+        description: 'The date on which the person was born'
+      mobileNumber:
+        type: string
+        example: "07707188934"
+        description: "The person's mobile phone number"
+      homePhoneNumber:
+        type: string
+        example: "0201234567"
+        description: "The person's home phone number"
+      workPhoneNumber:
+        type: string
+        example: "01301234567"
+        description: "The person's work phone number"
+      email:
+        type: string
+        example: "johnDoe@email.com"
+        description: "The person's email address"
+        
+  tenancy:
+    type: object
+    properties:
+      type: 
+        type: string
+        format: enum [secure]
+        example: "secure"
+        description: ""
+      startDate:
+        type: string
+        format: iso8601
+        example: '2007-03-01'
+        description: 'The date on which the tenancy started'
+      residents:
+        type: array
+        items:
+          $ref: '#/definitions/person'
+        description: "The residents occupying the tenancy"
+      
   address:
     type: object
     properties:
@@ -325,7 +381,7 @@ definitions:
         type: string
         example: 'Flat 9, Made Up Court, 7 Fake Road'
         description: 'A short, summarised representation of the address'
-
+        
   error:
     type: object
     properties:

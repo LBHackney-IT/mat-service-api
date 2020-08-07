@@ -1,4 +1,4 @@
-import { DueState, Stage, Task } from "../interfaces/task";
+import { DueState, Stage, Task } from "../../interfaces/task";
 
 interface GetTaskResponse {
   body: Task | undefined;
@@ -40,7 +40,7 @@ class GetTask implements GetTaskInterface {
         completedTime: new Date('2007-03-01T13:00:00Z'),
         stage: Stage.unstarted,
         children: [],
-        referenceNumber: 'string',
+        referenceNumber: "",
       };
 
       return {

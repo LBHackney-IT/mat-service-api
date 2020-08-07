@@ -27,7 +27,7 @@ const crmResponseToTask = (crmResponse: CrmResponseInterface): Task[] => {
       resident: {
         presentationName: element["_hackney_contactid_value@OData.Community.Display.V1.FormattedValue"],
         role: "",
-        dateOfBirth: new Date(),
+        dateOfBirth: new Date("2030-12-31"),
         mobileNumber: "",
         homePhoneNumber: "",
         workPhoneNumber: "",
@@ -38,7 +38,7 @@ const crmResponseToTask = (crmResponse: CrmResponseInterface): Task[] => {
       },
       dueTime: new Date("2030-12-31"),
       dueState: DueState.imminent,
-      completedTime: new Date(),
+      completedTime: new Date("2030-12-31"),
       stage: mapResponseToStage(element["hackney_process_stage"]),
       children: [],
       parent: undefined,

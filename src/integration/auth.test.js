@@ -2,14 +2,12 @@ import fetch from 'node-fetch';
 import generateToken from '../tests/helpers/generateToken'
 require('dotenv').config();
 
-const apiPath = process.env.API_PATH;
+const apiPath = process.env.API_PATH + "/healthcheck";
 const jwtSecret = process.env.JWT_SECRET;
 
 describe('authentication and authorisation', () => {
 
 	it(`fails when the user is not authenticated`, async () => {
-
-		console.log(apiPath);
 
 		let response = await fetch(apiPath, {
 			method: 'GET'

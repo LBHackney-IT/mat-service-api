@@ -1,5 +1,5 @@
 import GetTask from './getTask';
-import { Stage } from "../interfaces/task";
+import { DueState, Stage } from "../../interfaces/task";
 
 describe('GetTask', () => {
   it('Returns a valid response when given a valid id', async () => {
@@ -22,11 +22,11 @@ describe('GetTask', () => {
         presentationShort: 'Flat 9, Made Up Court, 7 Fake Road',
       },
       dueTime: new Date('2007-03-01T13:00:00Z'),
-      dueState: 'string',
+      dueState: DueState.imminent,
       completedTime: new Date('2007-03-01T13:00:00Z'),
       stage: Stage.unstarted,
       children: [],
-      referenceNumber: 'string',
+      referenceNumber: ""
     };
     const getTask = new GetTask(id);
     const response = await getTask.execute();

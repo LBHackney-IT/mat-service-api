@@ -1,4 +1,4 @@
-import { DueState, Stage, Task } from "../../interfaces/task";
+import { DueState, Stage, Task, TenancyType } from "../../interfaces/task";
 
 interface GetTaskResponse {
   body: Task | undefined;
@@ -41,6 +41,28 @@ class GetTask implements GetTaskInterface {
         stage: Stage.unstarted,
         children: [],
         referenceNumber: "",
+        tenancy: {
+          type: TenancyType.Secure,
+          startDate: new Date('2007-03-01T13:00:00Z'),
+          residents: [{
+            presentationName: 'Mr John Smith',
+            role: 'tenant',
+            dateOfBirth: new Date('2007-03-01'),
+            mobileNumber: '07707188934',
+            homePhoneNumber: '0201234567',
+            workPhoneNumber: '01301234567',
+            email: 'johnDoe@email.com',
+          },
+          {
+            presentationName: 'Mrs Jane Smith',
+            role: 'tenant',
+            dateOfBirth: new Date('2007-03-01'),
+            mobileNumber: '07707188934',
+            homePhoneNumber: '0201234567',
+            workPhoneNumber: '01301234567',
+            email: 'johnDoe@email.com',
+          }]
+        }
       };
 
       return {

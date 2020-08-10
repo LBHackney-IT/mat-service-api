@@ -1,5 +1,5 @@
 import GetTask from './getTask';
-import { DueState, Stage } from "../../interfaces/task";
+import { DueState, Stage, TenancyType } from "../../interfaces/task";
 
 describe('GetTask', () => {
   it('Returns a valid response when given a valid id', async () => {
@@ -26,7 +26,29 @@ describe('GetTask', () => {
       completedTime: new Date('2007-03-01T13:00:00Z'),
       stage: Stage.unstarted,
       children: [],
-      referenceNumber: ""
+      referenceNumber: "",
+      tenancy: {
+        type: TenancyType.Secure,
+        startDate: new Date('2007-03-01T13:00:00Z'),
+        residents: [{
+          presentationName: 'Mr John Smith',
+          role: 'tenant',
+          dateOfBirth: new Date('2007-03-01'),
+          mobileNumber: '07707188934',
+          homePhoneNumber: '0201234567',
+          workPhoneNumber: '01301234567',
+          email: 'johnDoe@email.com',
+        },
+        {
+          presentationName: 'Mrs Jane Smith',
+          role: 'tenant',
+          dateOfBirth: new Date('2007-03-01'),
+          mobileNumber: '07707188934',
+          homePhoneNumber: '0201234567',
+          workPhoneNumber: '01301234567',
+          email: 'johnDoe@email.com',
+        }]
+      }
     };
     const getTask = new GetTask(id);
     const response = await getTask.execute();
@@ -38,7 +60,7 @@ describe('GetTask', () => {
     const id = '90a0f5a8-0990-4058-860f-d594884ee300';
     const getTask = new GetTask(id);
     const response = await getTask.execute();
-    
+
     expect(response).toEqual({ body: undefined, error: 400 });
   });
 });

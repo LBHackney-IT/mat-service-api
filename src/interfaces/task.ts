@@ -3,15 +3,7 @@ export interface Task {
   createdTime: Date;
   category: string;
   type: string;
-  resident: {
-    presentationName: string;
-    role: string;
-    dateOfBirth: Date;
-    mobileNumber?: string;
-    homePhoneNumber?: string;
-    workPhoneNumber?: string;
-    email?: string;
-  };
+  resident: Resident;
   address: {
     presentationShort: string;
   };
@@ -22,6 +14,26 @@ export interface Task {
   children?: Task[];
   parent?: Task;
   referenceNumber: string;
+  tenancy?: {
+    type: TenancyType;
+    startDate: Date;
+    residents: Resident[];
+  }
+}
+
+export interface Resident {
+  presentationName: string;
+  role: string;
+  dateOfBirth: Date;
+  mobileNumber?: string;
+  homePhoneNumber?: string;
+  workPhoneNumber?: string;
+  email?: string;
+}
+
+export enum TenancyType {
+  Undefined,
+  Secure
 }
 
 export enum Stage {

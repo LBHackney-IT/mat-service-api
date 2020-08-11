@@ -11,7 +11,6 @@ describe("apiTaskToUiTask", () => {
     const convertedTask: Row[] = apiTaskToUiTask(apiResponse.data);
 
     let taskIndex = 0;
-    let cellIndex = 0;
     convertedTask.forEach((task: Row) => {
       const taskValue = apiResponse.data[taskIndex];
 

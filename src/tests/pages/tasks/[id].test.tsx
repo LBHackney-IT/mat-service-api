@@ -12,7 +12,5 @@ describe('Task Page', () => {
     };
 
     const props = await getServerSideProps({ req: {}, res: {} });
-
-    console.log(props);
   });
 });

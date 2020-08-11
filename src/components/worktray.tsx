@@ -14,7 +14,7 @@ interface Column {
   dueDateWarning?: boolean;
 }
 
-interface Row {
+export interface Row {
   cells: Cell[];
   cautionaryContactKey?: string;
   workItemLink: string;
@@ -33,6 +33,7 @@ enum Status {
 }
 
 const Worktray = (props: Props) => {
+
   return (
     <div data-test="worktray-container">
       <WorkTray

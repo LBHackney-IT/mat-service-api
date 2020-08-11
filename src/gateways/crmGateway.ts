@@ -17,7 +17,6 @@ class CrmGateway implements CrmGatewayInterface {
   public async getTasksByPatchId(patchId: string): Promise<GetTasksResponse> {
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
-
     const response = await axios
       .get(`${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${getTasksByPatchId}`, {
         headers: {

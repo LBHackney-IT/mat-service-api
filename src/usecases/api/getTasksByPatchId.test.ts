@@ -1,8 +1,9 @@
-import GetTasks from "./getTasks";
+import GetTasks from "./getTasksByPatchId";
 import CrmGateway from "../../gateways/crmGateway";
 import { Task } from "../../interfaces/task";
 import MockTask from "../../tests/helpers/generateTask";
 import { getTasksByPatchId } from "../../gateways/xmlQueryStrings/getTasksByPatchId";
+import GetTasksByPatchId from "./getTasksByPatchId";
 jest.mock("../../gateways/crmGateway");
 
 describe("GetTasks", () => {
@@ -29,7 +30,7 @@ describe("GetTasks", () => {
 
     const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1'
 
-    const getTasksByPatchId = new GetTasks(patchId);
+    const getTasksByPatchId = new GetTasksByPatchId(patchId);
     const response = await getTasksByPatchId.execute();
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);
@@ -48,7 +49,7 @@ describe("GetTasks", () => {
       }
     })
     const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1'
-    const getTasksByPatchId = new GetTasks(patchId);
+    const getTasksByPatchId = new GetTasksByPatchId(patchId);
     const response = await getTasksByPatchId.execute();
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);
@@ -67,7 +68,7 @@ describe("GetTasks", () => {
       }
     })
     const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1'
-    const getTasksByPatchId = new GetTasks(patchId);
+    const getTasksByPatchId = new GetTasksByPatchId(patchId);
     const response = await getTasksByPatchId.execute();
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);

@@ -10,7 +10,7 @@ interface GetTasksInterface {
   execute(): Promise<GetTasksResponse>
 }
 
-class GetTasks implements GetTasksInterface {
+class GetTasksByPatchId implements GetTasksInterface {
   tasksGateway: CrmGatewayInterface;
   patchId: string;
 
@@ -41,4 +41,4 @@ class GetTasks implements GetTasksInterface {
   }
 }
 
-export default GetTasks
+export default GetTasksByPatchId

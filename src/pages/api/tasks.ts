@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import GetTasks from "../../usecases/api/getTasks";
 import { Task } from '../../interfaces/task';
+import GetTasksByPatchId from '../../usecases/api/getTasksByPatchId';
 
 type Data = Task[] | undefined;
 
@@ -12,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     : undefined;
   
   if(patchId != undefined){
-    const getTasks = new GetTasks(patchId);
+    const getTasks = new GetTasksByPatchId(patchId);
     switch (req.method) {
       case 'GET':
         const response = await getTasks.execute();

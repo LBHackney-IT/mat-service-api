@@ -107,7 +107,7 @@ workflows:
           filters:
             branches:
               only:
-                - fix/add-env-vars-for-crm-gateway
+                - master
       - cypress/run:
           store_artifacts: true
           requires:

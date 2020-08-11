@@ -1,12 +1,23 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import Head from 'next/head';
 import Worktray, {
   sampleWorkTrayColumns,
-  sampleWorkTrayRows,
+  Row,
 } from '../components/worktray';
 import Layout from '../components/layout'
+import getTasks from "../usecases/ui/getTasks";
 
 export default function Home() {
+  const [tasks, setTasks] = useState<Row[]>([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const fetchedTasks = await getTasks();
+      setTasks(fetchedTasks);
+    }
+    fetchTasks();
+  }, [])
+
   return (
     <Layout>
       <div>
@@ -16,7 +27,7 @@ export default function Home() {
             <link rel="icon" href="/favicon.ico" />
           </Head>
           <main>
-            <Worktray columns={sampleWorkTrayColumns} rows={sampleWorkTrayRows} />
+            <Worktray columns={sampleWorkTrayColumns} rows={tasks} />
           </main>
         </div>
       </div>

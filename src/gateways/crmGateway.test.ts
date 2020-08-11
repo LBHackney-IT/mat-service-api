@@ -9,14 +9,15 @@ describe('CrmGateway', () => {
     axios.mockClear();
   });
 
-  describe('Get Tasks', () => {
+  describe('Get Tasks by patch id', () => {
     it('successfully fetches data from an API', async () => {
       const data = MockCrmTaskResponse()
+      const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1'
 
       axios.get.mockResolvedValue({data: data});
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getTasks();
+      const response = await crmGateway.getTasksByPatchId(patchId);
 
       expect(response).toEqual({body: crmResponseToTask(data), error: undefined});
     });
@@ -27,11 +28,12 @@ describe('CrmGateway', () => {
         body: undefined,
         error: errorMessage,
       };
+      const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1'      
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getTasks();
+      const response = await crmGateway.getTasksByPatchId(patchId);
 
       expect(response).toEqual(errorResponse);
     });

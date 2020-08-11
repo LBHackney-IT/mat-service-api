@@ -12,11 +12,14 @@ interface GetTasksInterface {
 
 class GetTasks implements GetTasksInterface {
   tasksGateway: CrmGatewayInterface;
-  constructor() {
+  patchId: string;
+
+  constructor(patchId: string) {
     this.tasksGateway = new CrmGateway();
+    this.patchId = patchId;
   }
   public async execute() :Promise<GetTasksResponse> {
-    const response = await this.tasksGateway.getTasks();
+    const response = await this.tasksGateway.getTasksByPatchId(this.patchId);
 
     switch(response.error) {
       case undefined:

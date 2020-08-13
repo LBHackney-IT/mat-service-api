@@ -27,7 +27,7 @@ return(
             <attribute name="hackney_traid" />
             <attribute name="hackney_issuelocation" />
             <filter>
-                <condition attribute="hackney_estateofficerpatchid" operator="eq" value="` + patchId + `" />
+                <condition attribute="hackney_estateofficerpatchid" operator="eq" value="${patchId}" />
             </filter>
             <link-entity name="contact" from="contactid" to="hackney_contactid" link-type="outer">
                 <attribute name="address1_line3" />

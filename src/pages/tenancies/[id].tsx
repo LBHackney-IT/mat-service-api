@@ -7,9 +7,9 @@ import {
   Paragraph,
   Label,
   Button,
+  NavigationBar,
 } from 'lbh-frontend-react';
 
-const TenancyPage = () => {
   return (
     <Layout>
       <Heading level={HeadingLevels.H2}>1 Hill Street N16 5TT</Heading>

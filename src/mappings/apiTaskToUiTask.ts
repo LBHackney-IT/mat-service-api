@@ -2,7 +2,7 @@ import { Row } from "../components/worktray";
 import { Stage, Task } from "../interfaces/task";
 import { Status } from "lbh-frontend-react";
 
-const apiTaskToUiTask = (apiTasks: Task[]) => {
+const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {
   const mappedTasks: Row[] = [];
 
   apiTasks.forEach((element: Task) => {

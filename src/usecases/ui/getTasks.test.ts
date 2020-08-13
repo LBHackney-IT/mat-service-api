@@ -10,6 +10,8 @@ describe("getTasks", () => {
   })
 
   it('successfully fetches data from an API', async () => {
+    process.env.NEXT_PUBLIC_API_PATH = "http://localhost:3000/api"
+
     const data = mockApiTaskResponse()
 
     axios.get.mockResolvedValue(data);

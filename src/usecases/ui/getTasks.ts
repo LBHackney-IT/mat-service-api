@@ -1,11 +1,15 @@
 import axios from 'axios';
 import apiTaskToUiTask from '../../mappings/apiTaskToUiTask';
+import { Row } from '../../components/worktray';
 
-const getTasks = async () => {
+const getTasks = async (): Promise<Row[]> => {
+  if(process.env.NEXT_PUBLIC_API_PATH === undefined) {
+    return [];
+  }
+
   const tasks: any = await axios
-    .get(`http://localhost:3000/api/tasks?patchId=hardcoded`)
+    .get(`${process.env.NEXT_PUBLIC_API_PATH}/tasks?patchId=hardcoded`)
     .then((response => {
-      console.log(response);
       return response;
     }))
 

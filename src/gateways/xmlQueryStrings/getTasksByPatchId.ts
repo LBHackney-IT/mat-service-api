@@ -1,1 +1,43 @@
-export const getTasksByPatchId = "<fetch%20top%3D%2710%27%3E%3Centity%20name%3D%27hackney_tenancymanagementinteractions%27%3E%20%3Cattribute%20name%3D%27hackney_contactid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_handleby%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_areaname%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_name%27%20%2F%3E%20%3Cattribute%20name%3D%27statecode%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_estateofficerpatchid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_natureofenquiry%27%20%2F%3E%20%3Cattribute%20name%3D%27createdon%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_estateofficer_createdbyid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_estateofficer_updatedbyid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_tenancymanagementinteractionsid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_enquirysubject%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_managerpropertypatchid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_contactid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_handlebyname%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_incidentid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_transferred%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_process_stage%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_household_interactionid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_parent_interactionid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_traid%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_issuelocation%27%20%2F%3E%3Cfilter%3E%3Ccondition%20attribute%3D%22hackney_estateofficerpatchid%22%20operator%3D%22eq%22%20value%3D%229cd3823d-8653-e811-8126-70106faaf8c1%22%20%2F%3E%3C%2Ffilter%3E%3Clink-entity%20name%3D%27contact%27%20from%3D%27contactid%27%20to%3D%27hackney_contactid%27%20link-type%3D%27outer%27%20%3E%20%3Cattribute%20name%3D%27address1_line3%27%20%2F%3E%20%3Cattribute%20name%3D%27address1_postalcode%27%20%2F%3E%20%3Cattribute%20name%3D%27address1_city%27%20%2F%3E%20%3Cattribute%20name%3D%27emailaddress1%27%20%2F%3E%20%3Cattribute%20name%3D%27telephone1%27%20%2F%3E%20%3Cattribute%20name%3D%27address1_line1%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_larn%27%20%2F%3E%20%3Cattribute%20name%3D%27hackney_uprn%27%20%2F%3E%20%3Cattribute%20name%3D%27address1_line2%27%20%2F%3E%3C%2Flink-entity%3E%3C%2Fentity%3E%3C%2Ffetch>"
+export const getTasksByPatchId = 
+`
+<fetch top="10">
+   <entity name="hackney_tenancymanagementinteractions">
+      <attribute name="hackney_contactid" />
+      <attribute name="hackney_handleby" />
+      <attribute name="hackney_areaname" />
+      <attribute name="hackney_name" />
+      <attribute name="statecode" />
+      <attribute name="hackney_estateofficerpatchid" />
+      <attribute name="hackney_natureofenquiry" />
+      <attribute name="createdon" />
+      <attribute name="hackney_estateofficer_createdbyid" />
+      <attribute name="hackney_estateofficer_updatedbyid" />
+      <attribute name="hackney_tenancymanagementinteractionsid" />
+      <attribute name="hackney_enquirysubject" />
+      <attribute name="hackney_managerpropertypatchid" />
+      <attribute name="hackney_contactid" />
+      <attribute name="hackney_handlebyname" />
+      <attribute name="hackney_incidentid" />
+      <attribute name="hackney_transferred" />
+      <attribute name="hackney_process_stage" />
+      <attribute name="hackney_household_interactionid" />
+      <attribute name="hackney_parent_interactionid" />
+      <attribute name="hackney_traid" />
+      <attribute name="hackney_issuelocation" />
+      <filter>
+         <condition attribute="hackney_estateofficerpatchid" operator="eq" value="{{patchId}}" />
+      </filter>
+      <link-entity name="contact" from="contactid" to="hackney_contactid" link-type="outer">
+         <attribute name="address1_line3" />
+         <attribute name="address1_postalcode" />
+         <attribute name="address1_city" />
+         <attribute name="emailaddress1" />
+         <attribute name="telephone1" />
+         <attribute name="address1_line1" />
+         <attribute name="hackney_larn" />
+         <attribute name="hackney_uprn" />
+         <attribute name="address1_line2" />
+      </link-entity>
+   </entity>
+</fetch>
+`

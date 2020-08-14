@@ -1,4 +1,4 @@
-import { Task, Stage, DueState } from "../../interfaces/task";
+import { Task, Stage, DueState, TenancyType } from "../../interfaces/task";
 import faker from "faker";
 
 const MockTask = (): Task => {
@@ -24,7 +24,12 @@ const MockTask = (): Task => {
       stage: Stage.started,
       dueState: DueState.imminent,
       completedTime: faker.date.recent(),
-      referenceNumber: faker.random.alphaNumeric()
+      referenceNumber: faker.random.alphaNumeric(),
+      tenancy: {
+        type: TenancyType.Secure,
+        startDate: faker.date.past(),
+        residents: []
+      }
     }
   )
 }

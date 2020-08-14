@@ -1,55 +1,81 @@
-import { Task, Stage, DueState } from "../interfaces/task";
+import { Task, Stage, DueState, TenancyType } from "../interfaces/task";
+import { CrmResponse } from '../gateways/crmGateway'
 
-export interface CrmResponseInterface {
-  "@odata.context": string,
-  value: {
-    "_hackney_contactid_value@OData.Community.Display.V1.FormattedValue": string,
-    "createdon@OData.Community.Display.V1.FormattedValue": string,
-    "_hackney_subjectid_value@OData.Community.Display.V1.FormattedValue": string,
-    "_hackney_incidentid_value@OData.Community.Display.V1.FormattedValue": string,
-    "hackney_tenancymanagementinteractionsid": string,
-    "contact1_x002e_address1_line1": string,
-    "contact1_x002e_address1_line2": string,
-    "hackney_process_stage": number,
-  }[]
+
+export const crmResponseToTask = (data: CrmResponse): Task => {
+
+  return convertCrmTaskToTask(data.value as CrmTaskValue);
 }
 
+export const crmResponseToTasks = (data: CrmResponse): Task[] => {
 
+  const crmTasks = data as CrmTasks;
 
-const crmResponseToTask = (crmResponse: CrmResponseInterface): Task[] => {
   const taskArray: Task[] = [];
-  crmResponse.value.forEach((element: any) => {
-    const task: Task = {
-      id: element.hackney_tenancymanagementinteractionsid,
-      createdTime: new Date(element["createdon@OData.Community.Display.V1.FormattedValue"]),
-      category: element["_hackney_subjectid_value@OData.Community.Display.V1.FormattedValue"],
-      type: element["_hackney_incidentid_value@OData.Community.Display.V1.FormattedValue"],
-      resident: {
-        presentationName: element["_hackney_contactid_value@OData.Community.Display.V1.FormattedValue"],
-        role: "",
-        dateOfBirth: new Date("2030-12-31"),
-        mobileNumber: "",
-        homePhoneNumber: "",
-        workPhoneNumber: "",
-        email: ""
-      },
-      address: {
-        presentationShort: `${element["contact1_x002e_address1_line1"]}, ${element["contact1_x002e_address1_line2"]}`
-      },
-      dueTime: new Date("2030-12-31"),
-      dueState: DueState.imminent,
-      completedTime: new Date("2030-12-31"),
-      stage: mapResponseToStage(element["hackney_process_stage"]),
-      children: [],
-      parent: undefined,
-      referenceNumber: ""
-
-    }
+  crmTasks.value.forEach((element: any) => {
+    const task: Task = convertCrmTaskToTask(element as CrmTaskValue);
     taskArray.push(task)
   })
-  return taskArray
+
+  return taskArray;
 }
 
+function convertCrmTaskToTask(crmTask: CrmTaskValue) {
+
+  const task: Task = {
+    id: crmTask["hackney_tenancymanagementinteractionsid"],
+    createdTime: new Date(crmTask["createdon@OData.Community.Display.V1.FormattedValue"]),
+    category: crmTask["_hackney_subjectid_value@OData.Community.Display.V1.FormattedValue"],
+    type: crmTask["_hackney_incidentid_value@OData.Community.Display.V1.FormattedValue"],
+    resident: {
+      presentationName: crmTask["_hackney_contactid_value@OData.Community.Display.V1.FormattedValue"],
+      role: "",
+      dateOfBirth: new Date("2030-12-31"),
+      mobileNumber: "",
+      homePhoneNumber: "",
+      workPhoneNumber: "",
+      email: ""
+    },
+    address: {
+      presentationShort: `${crmTask["contact1_x002e_address1_line1"]}, ${crmTask["contact1_x002e_address1_line2"]}`
+    },
+    dueTime: new Date("2030-12-31"),
+    dueState: DueState.imminent,
+    completedTime: new Date("2030-12-31"),
+    stage: mapResponseToStage(crmTask["hackney_process_stage"]),
+    children: [],
+    parent: undefined,
+    referenceNumber: "",
+    tenancy: {
+      type: TenancyType.Secure,
+      startDate: new Date("2030-12-31"),
+      residents: []
+    }
+  }
+
+  return task;
+}
+
+interface CrmTaskValue {
+  "_hackney_contactid_value@OData.Community.Display.V1.FormattedValue": string,
+  "createdon@OData.Community.Display.V1.FormattedValue": string,
+  "_hackney_subjectid_value@OData.Community.Display.V1.FormattedValue": string,
+  "_hackney_incidentid_value@OData.Community.Display.V1.FormattedValue": string,
+  "hackney_tenancymanagementinteractionsid": string,
+  "contact1_x002e_address1_line1": string,
+  "contact1_x002e_address1_line2": string,
+  "hackney_process_stage": number,
+}
+
+export interface CrmTask {
+  "@odata.context": string,
+  value: CrmTaskValue
+}
+
+export interface CrmTasks {
+  "@odata.context": string,
+  value: CrmTaskValue[]
+}
 
 export const mapResponseToStage = (stage: number): Stage => {
   switch (stage) {
@@ -87,5 +113,3 @@ export const mapResponseToStage = (stage: number): Stage => {
       return Stage.unstarted
   }
 }
-
-export default crmResponseToTask;

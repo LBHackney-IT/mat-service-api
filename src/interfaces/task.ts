@@ -14,7 +14,7 @@ export interface Task {
   children?: Task[];
   parent?: Task;
   referenceNumber: string;
-  tenancy?: {
+  tenancy: {
     type: TenancyType;
     startDate: Date;
     residents: Resident[];

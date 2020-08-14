@@ -1,4 +1,4 @@
-import crmResponseToTask, { mapResponseToStage } from "./crmToTask";
+import { crmResponseToTasks,  mapResponseToStage } from "./crmToTask";
 import MockCrmTaskResponse from "../tests/helpers/generateCrmTaskResponse";
 import { Task } from "../interfaces/task";
 
@@ -6,7 +6,7 @@ describe("crmResponseToTask", () => {
   it("returns a valid task when given a crmResponse", () => {
     const crmResponse = MockCrmTaskResponse();
 
-    const convertedTask: Task[] = crmResponseToTask(crmResponse);
+    const convertedTask: Task[] = crmResponseToTasks(crmResponse);
 
     let index = 0;
     convertedTask.forEach(task => {

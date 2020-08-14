@@ -5,6 +5,7 @@ import { Heading, HeadingLevels, List, Paragraph, Label } from 'lbh-frontend-rea
 import fetch from "isomorphic-unfetch";
 import absoluteUrl from "next-absolute-url";
 import { Task, TenancyType } from '../../interfaces/task'
+import ErrorPage from 'next/error';
 
 interface TaskProps {
   task: Task;
@@ -12,9 +13,12 @@ interface TaskProps {
 
 export default function TaskPage(props: TaskProps) {
 
-  
-  const residents = props.task.tenancy?.residents || [];
-  const startDate = props.task.tenancy ? new Date(props.task.tenancy?.startDate).toLocaleDateString() : "";
+  if (props.task === undefined) {
+
+    return <ErrorPage statusCode={404} />
+  }
+
+  const startDate = props.task.tenancy ? new Date(props.task.tenancy.startDate).toLocaleDateString() : "";
   const dueDate = props.task.dueTime ? new Date(props.task.dueTime).toLocaleDateString() : "";
 
   return (
@@ -25,12 +29,12 @@ export default function TaskPage(props: TaskProps) {
         <Label>Address</Label>
         {props.task.address.presentationShort}
         <Label>Tenancy type:</Label>
-        {TenancyType[props.task.tenancy?.type || 0]}
+        {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
         <Label>Tenancy start date:</Label>
         {startDate}
       </Paragraph>
       <Heading level={HeadingLevels.H3}>Residents</Heading>
-      <List items={residents.map(x => x.presentationName)}>
+      <List items={props.task.tenancy.residents.map(x => x.presentationName)}>
         <div></div>
       </List>
       <Heading level={HeadingLevels.H3}>Action</Heading>
@@ -54,13 +58,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const { origin } = absoluteUrl(context.req, "localhost:3000");
     const response = await fetch(`${origin}/api/tasks/` + taskId);
-    const task: Task = await response.json();
+    
+    if (response.status === 200) {
 
-    if (task) {
-      return { props: { task: task } };
+      const json = await response.json();
+
+      return { props: { task: json as Task } };
     }
   }
 
-  // TODO: return error page instead
-  return { props: { task: undefined } };
+  return { props: {} };
 }

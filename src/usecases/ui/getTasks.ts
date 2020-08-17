@@ -8,7 +8,7 @@ const getTasks = async (): Promise<Row[]> => {
   }
 
   const tasks: any = await axios
-    .get(`${process.env.NEXT_PUBLIC_API_PATH}/tasks?patchId=hardcoded`)
+    .get(`${process.env.NEXT_PUBLIC_API_PATH}/tasks?patchId=a739aa44-8553-e811-8126-70106faaf8c1`)
     .then((response => {
       return response;
     }))

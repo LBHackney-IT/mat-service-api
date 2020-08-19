@@ -1,4 +1,4 @@
-import MaTDatabaseGateway from '../../gateways/matDatabaseGateway'
+import PostgresGateway from '../../gateways/matDatabaseGateway'
 import { TRA } from '../../interfaces/tra'
 
 interface GetTRAsResponse{
@@ -22,14 +22,11 @@ class GetTRAsByPatchId implements GetTRAsInterface{
         //TODO: wrap this in try catch and build the response a below?
         try
         {
-            const dbInstance = await MaTDatabaseGateway.getInstance();
-            const results = await dbInstance.many('SELECT * FROM tra');
-
-            //TODO: map the db object to domain object
-            //TODO: what to return?
+            const gateway = new PostgresGateway();
+            const result = await gateway.getTrasByPatchId();
             return Promise.resolve({
-                body: results,
-                error: undefined
+                body: result.body,
+                error: result.error
             })
         }
         catch(error){
@@ -38,14 +35,14 @@ class GetTRAsByPatchId implements GetTRAsInterface{
                 error: 500
             })
         }
-      
+
         //console.dir(response);
         // switch(response.error){
         //     case undefined:
         //         return{
         //             body: response.body,
         //             error: undefined
-        //         }   
+        //         }
         //     case "NotAuthorised":
         //         return{
         //             body: undefined,
@@ -55,7 +52,7 @@ class GetTRAsByPatchId implements GetTRAsInterface{
         //         return{
         //             body: undefined,
         //             error: 500
-        //         }             
+        //         }
         // }
     }
 }

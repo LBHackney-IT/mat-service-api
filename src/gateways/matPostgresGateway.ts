@@ -1,4 +1,4 @@
-class PostgresGateway {
+class MatPostgresGateway {
   public async getTrasByPatchId() {
     let instance;
     if (!instance) {
@@ -37,4 +37,4 @@ class PostgresGateway {
   }
 }
 
-export default PostgresGateway;
+export default MatPostgresGateway;

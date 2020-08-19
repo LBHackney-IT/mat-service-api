@@ -1,4 +1,4 @@
-import PostgresGateway from '../../gateways/matDatabaseGateway'
+import MatPostgresGateway from '../../gateways/matPostgresGateway'
 import { TRA } from '../../interfaces/tra'
 
 interface GetTRAsResponse{
@@ -22,7 +22,7 @@ class GetTRAsByPatchId implements GetTRAsInterface{
         //TODO: wrap this in try catch and build the response a below?
         try
         {
-            const gateway = new PostgresGateway();
+            const gateway = new MatPostgresGateway();
             const result = await gateway.getTrasByPatchId();
             return Promise.resolve({
                 body: result.body,

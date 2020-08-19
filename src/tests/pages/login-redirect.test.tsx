@@ -83,7 +83,7 @@ describe('LoginRedirect', () => {
     process.env.UI_PATH = 'http://localhost:3000';
 
     expect(component.find({ 'data-test': 'login-link' }).at(0).props().href).toBe(
-      "https://auth.hackney.gov.uk/auth?redirect_uri=http://dev.hackney.gov.uk:3000"
+      "https://auth.hackney.gov.uk/auth?redirect_uri=http://localhost:3000"
     );
   });
 });

@@ -1,4 +1,4 @@
-import MaTDatabaseGateway, { MaTDatabaseGatewayInterface } from '../../gateways/matDatabaseGateway'
+import MaTDatabaseGateway from '../../gateways/matDatabaseGateway'
 import { TRA } from '../../interfaces/tra'
 
 interface GetTRAsResponse{
@@ -11,34 +11,52 @@ interface GetTRAsInterface{
 }
 
 class GetTRAsByPatchId implements GetTRAsInterface{
-    trasGateway: MaTDatabaseGatewayInterface;
+    trasGateway: undefined;
     patchId: string;
 
     constructor(patchId: string){
-        this.trasGateway = new MaTDatabaseGateway();
         this.patchId = patchId;
     }
 
     public async execute() :Promise<GetTRAsResponse>{
-        const response = await this.trasGateway.getTRAsByPatchId(this.patchId);
+        //TODO: wrap this in try catch and build the response a below?
+        try
+        {
+            const dbInstance = await MaTDatabaseGateway.getInstance();
+            const results = await dbInstance.many('SELECT * FROM tra');
 
-        switch(response.error){
-            case undefined:
-                return{
-                    body: response.body,
-                    error: undefined
-                }   
-            case "NotAuthorised":
-                return{
-                    body: undefined,
-                    error: 401
-                }
-            default:
-                return{
-                    body: undefined,
-                    error: 500
-                }             
+            //TODO: map the db object to domain object
+            //TODO: what to return?
+            return Promise.resolve({
+                body: results,
+                error: undefined
+            })
         }
+        catch(error){
+            return Promise.resolve({
+                body: undefined,
+                error: 500
+            })
+        }
+      
+        //console.dir(response);
+        // switch(response.error){
+        //     case undefined:
+        //         return{
+        //             body: response.body,
+        //             error: undefined
+        //         }   
+        //     case "NotAuthorised":
+        //         return{
+        //             body: undefined,
+        //             error: 401
+        //         }
+        //     default:
+        //         return{
+        //             body: undefined,
+        //             error: 500
+        //         }             
+        // }
     }
 }
 

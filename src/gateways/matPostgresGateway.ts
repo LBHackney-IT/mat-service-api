@@ -22,11 +22,12 @@ class MatPostgresGateway {
 
     try {
       const dbQuery = `
-        SELECT	TRA.Name,
-                TRAPatchAssociation.PatchCRMId
-        FROM	TRA INNER JOIN
-                TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId
-        WHERE TRAPatchAssociation.PatchCRMId = '${patchId}'
+      SELECT	TRA.Name,
+              TRA.TraId,
+              TRAPatchAssociation.PatchCRMId
+      FROM	TRA INNER JOIN
+              TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId
+      WHERE TRAPatchAssociation.PatchCRMId ='${patchId}'
       `;
     
       const results = await instance.many(dbQuery);

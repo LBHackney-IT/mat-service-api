@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { TRA } from '../../interfaces/tra';
-//import apiTRAToUiTRA from '../../mappings/apiTRAToUiTRA'
+import apiTRAToUiTRA from '../../mappings/apiTRAToUiTRA'
 
 const getTRAs = async (patchId: string): Promise<TRA[]> => {
     if(process.env.NEXT_PUBLIC_API_PATH === undefined){
@@ -12,7 +12,8 @@ const getTRAs = async (patchId: string): Promise<TRA[]> => {
         .then((response => {
             return response;
         }))
-    return tras.data;
+        
+    return apiTRAToUiTRA(tras.data);
 }
 
 export default getTRAs;

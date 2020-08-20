@@ -17,11 +17,11 @@ return(
             <attribute name="hackney_tenancymanagementinteractionsid" />
             <attribute name="hackney_enquirysubject" />
             <attribute name="hackney_managerpropertypatchid" />
-            <attribute name="hackney_contactid" />
             <attribute name="hackney_handlebyname" />
             <attribute name="hackney_incidentid" />
             <attribute name="hackney_transferred" />
             <attribute name="hackney_process_stage" />
+            <attribute name="hackney_processtype" />
             <attribute name="hackney_household_interactionid" />
             <attribute name="hackney_parent_interactionid" />
             <attribute name="hackney_traid" />
@@ -30,6 +30,7 @@ return(
                 <condition attribute="hackney_estateofficerpatchid" operator="eq" value="${patchId}" />
             </filter>
             <link-entity name="contact" from="contactid" to="hackney_contactid" link-type="outer">
+                <attribute name="fullname" />
                 <attribute name="address1_line3" />
                 <attribute name="address1_postalcode" />
                 <attribute name="address1_city" />

@@ -11,8 +11,8 @@ export interface CrmResponse {
 }
 
 export interface CrmGatewayInterface {
-  getTasksByPatchId(patchId: string): any;
-  getTask(taskId: string): any;
+  getTasksByPatchId(patchId: string): Promise<GetTasksResponse>;
+  getTask(taskId: string): Promise<GetTaskResponse> ;
 }
 
 interface GetTasksResponse {

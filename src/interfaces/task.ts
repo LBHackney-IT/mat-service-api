@@ -7,8 +7,8 @@ export interface Task {
   address: {
     presentationShort: string;
   };
-  dueTime: Date;
-  dueState: DueState;
+  dueTime?: Date;
+  dueState?: DueState;
   completedTime: Date;
   stage: Stage;
   children?: Task[];

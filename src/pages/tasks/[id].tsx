@@ -26,7 +26,7 @@ export default function TaskPage(props: TaskProps) {
       <Heading level={HeadingLevels.H2}>{props.task.type}</Heading>
       <Heading level={HeadingLevels.H3}>Tenancy</Heading>
       <Paragraph>
-        <Label>Address</Label>
+        <Label>Address:</Label>
         {props.task.address.presentationShort}
         <Label>Tenancy type:</Label>
         {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
@@ -39,7 +39,7 @@ export default function TaskPage(props: TaskProps) {
       </List>
       <Heading level={HeadingLevels.H3}>Action</Heading>
       <Paragraph>
-        <Label>Due</Label>
+        <Label>Due:</Label>
         {dueDate}
         <Label>Reference no.:</Label>
         {props.task.referenceNumber ? props.task.referenceNumber : "Unknown"}

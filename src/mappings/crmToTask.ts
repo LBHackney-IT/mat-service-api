@@ -31,8 +31,6 @@ export const crmResponseToTasks = (data: CrmResponse): Task[] => {
 
 function convertCrmTaskToTask(crmTask: CrmTaskValue) {
 
-  console.log(crmTask);
-
   const tenant = {
     presentationName: crmTask["contact1_x002e_fullname"],
     role: crmTask["contact1_x002e_hackney_responsible"] ? "Primary Tenant" : "Tenant",
@@ -45,7 +43,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
 
   const task: Task = {
     id: crmTask["hackney_tenancymanagementinteractionsid"],
-    createdTime: new Date(crmTask["createdon"]),
+    createdTime: new Date(crmTask.createdon),
     category: crmTask["hackney_processtype@OData.Community.Display.V1.FormattedValue"],
     type: "Undefined",
     resident: tenant,
@@ -83,7 +81,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
 
 interface CrmTaskValue {
   hackney_processtype: number,
-  "createdon": string,
+  createdon: string,
   "hackney_processtype@OData.Community.Display.V1.FormattedValue": string,
   "hackney_natureofenquiry@OData.Community.Display.V1.FormattedValue": string,
   "hackney_enquirysubject@OData.Community.Display.V1.FormattedValue": string,

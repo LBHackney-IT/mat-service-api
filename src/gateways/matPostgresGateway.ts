@@ -1,5 +1,5 @@
 class MatPostgresGateway {
-  public async getTrasByPatchId() {
+  public async getTrasByPatchId(patchId: string) {
     let instance;
     if (!instance) {
       const { default: pgp } = await import('pg-promise');
@@ -21,7 +21,15 @@ class MatPostgresGateway {
     }
 
     try {
-      const results = await instance.many('SELECT * FROM tra')
+      const dbQuery = `
+        SELECT	TRA.Name,
+                TRAPatchAssociation.PatchCRMId
+        FROM	TRA INNER JOIN
+                TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId
+        WHERE TRAPatchAssociation.PatchCRMId = '${patchId}'
+      `;
+    
+      const results = await instance.many(dbQuery);
 
       return Promise.resolve({
         body: results,

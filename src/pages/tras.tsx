@@ -9,7 +9,7 @@ export default function TRAs()
     const [tras, setTRAs] = useState<TRA[]>([]);
     useEffect(() => {
         const fetchTRAs = async () => {
-            const hardCodedPatchId = "a739aa44-8553-e811-8126-70106faaf8c1";
+            const hardCodedPatchId = "700aa678-df4d-e811-8122-70106faa1531";
             const fetchedTRAs = await getTRAs(hardCodedPatchId); 
             setTRAs(fetchedTRAs);
         }

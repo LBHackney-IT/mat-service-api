@@ -1,6 +1,0 @@
-/* Create TRA table*/
-CREATE TABLE TRA(
-	TRAId   INTEGER PRIMARY KEY NOT NULL,
-	Name    TEXT NOT NULL,
-	Email   TEXT NULL
-)

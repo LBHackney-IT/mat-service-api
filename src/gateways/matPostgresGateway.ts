@@ -1,7 +1,12 @@
-interface UserMapping {
+interface CheckUserMappingExistsResponse {
+  body: UserMappingTable[],
+  error: number | undefined
+}
+
+interface UserMappingTable {
   name: string,
   emailAddress: string,
-  crmId: string,
+  usercrmid: string,
   googleId: string,
 }
 
@@ -43,9 +48,34 @@ class MatPostgresGateway {
         error: undefined
       })
     }
-    catch(error) {
+    catch (error) {
       return Promise.resolve({
         body: undefined,
+        error: 500
+      })
+    }
+  }
+
+  public async getUserMapping(emailAddress: string): Promise<CheckUserMappingExistsResponse> {
+    await this.setupInstance();
+
+    try {
+      const results: UserMappingTable[] = await this.instance.one('SELECT * FROM usermappings WHERE emailaddress = $1', emailAddress)
+
+      return Promise.resolve({
+        body: results,
+        error: undefined
+      })
+    }
+    catch (error) {
+      if (error.message == "No data returned from the query.") {
+        return Promise.resolve({
+          body: [],
+          error: undefined
+        })
+      }
+      return Promise.resolve({
+        body: error,
         error: 500
       })
     }

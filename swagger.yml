@@ -157,6 +157,24 @@ paths:
       responses:
         '200':
           description: Successful operation
+  '/tras/{patchid}':
+    parameters:
+      - in: query
+        name: patchid
+        type: string
+        description: The id of a patch
+        required: true
+    get:
+      summary: Retrieve all TRAs in a given patch
+      responses:
+        '200':
+          description: Successful operation
+      responses:
+        '400':
+          description: patchid not provided
+      responses:
+        '500':
+          description: There was an error processing your request
   '/tras/{id}/meeting':
     parameters:
       - in: path

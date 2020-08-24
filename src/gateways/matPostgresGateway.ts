@@ -1,7 +1,19 @@
+interface UserMapping {
+  name: string,
+  emailAddress: string,
+  crmId: string,
+  googleId: string,
+}
+
 class MatPostgresGateway {
-  public async getTrasByPatchId() {
-    let instance;
-    if (!instance) {
+  instance: any;
+  constructor() {
+    this.instance;
+  }
+
+  async setupInstance() {
+    let db = this.instance;
+    if (!db) {
       const { default: pgp } = await import('pg-promise');
       let options = {
         connectionString: process.env.TEST_DATABASE_URL //TODO: update this to prod value
@@ -16,12 +28,15 @@ class MatPostgresGateway {
         options.password = process.env.PASSWORD;
         options.database = process.env.DATABASE;
       }
-      instance = pgp()(options);
-      delete instance.constructor;
+      this.instance = pgp()(options);
+      delete this.instance.constructor;
     }
+  }
 
+  public async getTrasByPatchId() {
+    await this.setupInstance();
     try {
-      const results = await instance.many('SELECT * FROM tra')
+      const results = await this.instance.many('SELECT * FROM tra')
 
       return Promise.resolve({
         body: results,

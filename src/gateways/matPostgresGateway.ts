@@ -43,23 +43,33 @@ class MatPostgresGateway {
     }
   }
 
-  public async getTrasByPatchId() {
+  public async getTrasByPatchId(patchId: string) {
     await this.setupInstance();
     try {
-      const results = await this.instance.many('SELECT * FROM tra')
+      const dbQuery = `
+      SELECT	TRA.Name,
+              TRA.TraId,
+              TRAPatchAssociation.PatchCRMId
+      FROM	TRA INNER JOIN
+              TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId
+      WHERE TRAPatchAssociation.PatchCRMId ='${patchId}'
+      `;
+    
+      const results = await this.instance.many(dbQuery);
 
       return Promise.resolve({
         body: results,
         error: undefined
       })
     }
-    catch (error) {
+    catch(error) {
       return Promise.resolve({
         body: undefined,
         error: 500
       })
     }
   }
+
 
   public async getUserMapping(emailAddress: string): Promise<GetUserMappingResponse> {
     await this.setupInstance();

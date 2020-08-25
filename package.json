@@ -42,6 +42,7 @@
     "next-absolute-url": "^1.2.2",
     "next-env": "^1.1.1",
     "node-lambda-authorizer": "LBHackney-IT/node-lambda-authorizer.git#master",
+    "pg-promise": "^10.5.8",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-router-dom": "^5.2.0",

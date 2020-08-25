@@ -12,7 +12,9 @@ export interface CrmResponse {
 
 export interface CrmGatewayInterface {
   getTasksByPatchId(patchId: string): Promise<GetTasksResponse>;
-  getTask(taskId: string): Promise<GetTaskResponse> ;
+  getTask(taskId: string): Promise<GetTaskResponse>;
+  getUser(emailAddress: string): any;
+  createUser(emailAddress: string): any;
 }
 
 interface GetTasksResponse {
@@ -87,8 +89,6 @@ class CrmGateway implements CrmGatewayInterface {
 
         const task =  crmResponseToTask(data);
 
-        console.log(task);
-
         return {
           body: task,
           error: undefined
@@ -103,6 +103,65 @@ class CrmGateway implements CrmGatewayInterface {
       });
 
     return response;
+
+  }
+
+  public async getUser(emailAddress: string) {
+
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const response = await axios
+      .get(``, {
+        headers: {
+          "Authorization": `Bearer ${this.crmApiToken.token}`,
+          "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
+        }
+      })
+      .then((response) => {
+        const data = response.data;
+        return {
+          body: data,
+          error: undefined
+        }
+      })
+      .catch((error) => {
+        return {
+          body: undefined,
+          error: error.message
+        };
+      });
+    return response;
+  }
+
+  public async createUser(emailAddress: string) {
+    
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const response = await axios.
+      put(``, {
+        headers: {
+          "Authorization": `Bearer ${this.crmApiToken.token}`,
+          "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
+        }
+      })
+      .then((response) => {
+        const data = response.data;
+        return {
+          body: data,
+          error: undefined
+        }
+      })
+      .catch(error => {
+        return {
+          body: undefined,
+          error: error.message
+        };
+      });
+      return response;
   }
 }
 

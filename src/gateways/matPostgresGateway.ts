@@ -25,7 +25,7 @@ class MatPostgresGateway {
       WHERE TRAPatchAssociation.PatchCRMId ='${patchId}'
       `;
     
-      const results = await instance.many(dbQuery) as TRAPatchMappingDBResponseInterface;
+      const results = await instance.many(dbQuery);
 
       return Promise.resolve({
         body: results,

@@ -1,7 +1,6 @@
 import MatPostgresGateway from "../../gateways/matPostgresGateway";
 
 interface CreateUserMapping {
-  body: any,
   error: number | undefined
 }
 
@@ -30,14 +29,12 @@ class CreateUserMapping implements CreateUserMappingInterface {
 
     if (result.error === undefined) {
       return Promise.resolve({
-        body: result,
-        error: result.error
+        error: undefined
       })
     }
 
     return Promise.resolve({
-      body: result,
-      error: result.error
+      error: 500
     })
   }
 }

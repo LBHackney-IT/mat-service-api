@@ -1,5 +1,10 @@
-interface CheckUserMappingExistsResponse {
+interface GetUserMappingResponse {
   body: UserMappingTable[],
+  error: number | undefined
+}
+
+export interface CreateUserMappingResponse {
+  body: any,
   error: number | undefined
 }
 
@@ -56,7 +61,7 @@ class MatPostgresGateway {
     }
   }
 
-  public async getUserMapping(emailAddress: string): Promise<CheckUserMappingExistsResponse> {
+  public async getUserMapping(emailAddress: string): Promise<GetUserMappingResponse> {
     await this.setupInstance();
 
     try {
@@ -74,6 +79,25 @@ class MatPostgresGateway {
           error: undefined
         })
       }
+      return Promise.resolve({
+        body: error,
+        error: 500
+      })
+    }
+  }
+
+  public async createUserMapping(userMapping: UserMappingTable): Promise<CreateUserMappingResponse> {
+    await this.setupInstance();
+
+    try {
+      const results = await this.instance.none('INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${name})', userMapping)
+
+      return Promise.resolve({
+        body: results,
+        error: undefined
+      })
+    }
+    catch(error) {
       return Promise.resolve({
         body: error,
         error: 500

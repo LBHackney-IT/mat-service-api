@@ -4,7 +4,7 @@ interface GetUserMappingResponse {
 }
 
 export interface CreateUserMappingResponse {
-  body: any,
+  body: UserMappingTable[],
   error: number | undefined
 }
 
@@ -80,7 +80,7 @@ class MatPostgresGateway {
         })
       }
       return Promise.resolve({
-        body: error,
+        body: [],
         error: 500
       })
     }

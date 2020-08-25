@@ -41,7 +41,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       const createUserMapping = new CreateUserMapping(userMapping);
       const postResponse = await createUserMapping.execute();
       if (postResponse.error === undefined) {
-        res.status(201)
+        res.status(201).end();
 
         break
       }

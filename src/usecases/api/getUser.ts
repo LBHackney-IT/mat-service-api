@@ -23,7 +23,6 @@ class GetUser implements GetUserInterface {
 
     switch(response.error) {
       case undefined:
-        console.log(response);
         return {
           body: response.body[0]["hackney_estateofficerid"],
           error: undefined

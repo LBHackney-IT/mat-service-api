@@ -1,9 +1,15 @@
 import { TRA } from '../interfaces/tra';
 
-const apiTRAToUiTRA = (tras: any[]): TRA[] => {
+export interface TRAPatchMappingDBResponseInterface{
+    traid: number,
+    name: string,
+    patchcrmid: string
+}
+
+const apiTRAToUiTRA = (tras: TRAPatchMappingDBResponseInterface[]): TRA[] => {
     const mappedTRAs: TRA[] = [];
 
-    tras.forEach((element: any) =>{
+    tras.forEach((element: TRAPatchMappingDBResponseInterface) =>{
         mappedTRAs.push({
             id: element.traid,
             name: element.name,

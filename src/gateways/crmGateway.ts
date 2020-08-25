@@ -85,8 +85,12 @@ class CrmGateway implements CrmGatewayInterface {
       .then((response) => {
         const data = response.data as CrmResponse;
 
+        const task =  crmResponseToTask(data);
+
+        console.log(task);
+
         return {
-          body: crmResponseToTask(data),
+          body: task,
           error: undefined
         };
       })

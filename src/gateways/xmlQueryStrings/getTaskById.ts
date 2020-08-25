@@ -30,7 +30,7 @@ const getTaskById = (taskId: string) => {
         <filter>
             <condition attribute="hackney_tenancymanagementinteractionsid" operator="eq" value="${taskId}"/>
         </filter>
-        <link-entity name="contact" from="hackney_household_contactid" to="hackney_household_interactionid" link-type="inner">
+        <link-entity name="contact" from="hackney_household_contactid" to="hackney_household_interactionid" link-type="outer">
             <attribute name="fullname" />
             <attribute name="address1_line3" />
             <attribute name="address1_postalcode" />
@@ -45,6 +45,9 @@ const getTaskById = (taskId: string) => {
             <attribute name="address1_line2" />
             <attribute name="birthdate" />
             <attribute name="hackney_responsible" />
+            <link-entity name="account" from="accountid" to="parentcustomerid" link-type="outer" >
+               <attribute name="housing_cot" />
+            </link-entity>
         </link-entity>
     </entity>
     </fetch>

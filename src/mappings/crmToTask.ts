@@ -59,7 +59,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     referenceNumber: crmTask["hackney_name"],
     tenancy: {
       type: TenancyType.Secure,
-      startDate: new Date("2030-12-31"),
+      startDate: new Date(crmTask["account2_x002e_housing_cot"]),
       residents: [tenant]
     }
   }
@@ -98,6 +98,7 @@ interface CrmTaskValue {
   "contact1_x002e_telephone2": string,
   "contact1_x002e_housing_telephone3": string,
   "contact1_x002e_mobilephone": string,
+  "account2_x002e_housing_cot": string,
   "hackney_process_stage": number,
   "hackney_name": string
 }

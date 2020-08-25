@@ -3,6 +3,7 @@ import CrmTokenGateway from "./crmTokenGateway";
 import { Task } from '../interfaces/task';
 import crmResponseToTask, { CrmResponseInterface } from '../mappings/crmToTask';
 import getTasksByPatchIdQuery from './xmlQueryStrings/getTasksByPatchId';
+import getUserByEmail from './xmlQueryStrings/getUserByEmail';
 
 interface GetTasksResponse {
   body: Task[] | undefined;
@@ -49,9 +50,10 @@ class CrmGateway implements CrmGatewayInterface {
   public async getUser(emailAddress: string) {
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
+    const crmQuery = getUserByEmail(emailAddress);
 
     const response = await axios
-      .get(``, {
+      .get(`${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`, {
         headers: {
           "Authorization": `Bearer ${crmApiToken.token}`,
           "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
@@ -60,7 +62,7 @@ class CrmGateway implements CrmGatewayInterface {
       .then((response) => {
         const data = response.data;
         return {
-          body: data,
+          body: data.value,
           error: undefined
         }
       })

@@ -25,7 +25,7 @@ MaTApp.getInitialProps = async (context: AppContext) => {
         parsedCookie.hackneyToken &&
         isLoggedIn(parsedCookie.hackneyToken) === true)
     ) {
-
+      // This is where we want to add the logic to check for a user mapping matching the google user in the postgres db
       return { ...appProps }
     }
   }

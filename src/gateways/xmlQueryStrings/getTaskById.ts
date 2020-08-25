@@ -23,15 +23,16 @@ const getTaskById = (taskId: string) => {
         <attribute name="hackney_process_stage" />
         <attribute name="hackney_processtype" />
         <attribute name="hackney_household_interactionid" />
-        <attribute name="hackney_parent_interactionid" />
+        <attribute name="hackney_parent_interactionid" alias="parent"/>
         <attribute name="hackney_traid" />
         <attribute name="hackney_issuelocation" />
-        <attribute name="hackney_completiondate" />
+        <attribute name="hackney_completiondate" alias="completionDate"/>
+        <attribute name="hackney_issuedeadlinedate" alias="dueDate"/>
         <filter>
             <condition attribute="hackney_tenancymanagementinteractionsid" operator="eq" value="${taskId}"/>
         </filter>
         <link-entity name="contact" from="hackney_household_contactid" to="hackney_household_interactionid" link-type="outer">
-            <attribute name="fullname" />
+            <attribute name="fullname" alias="name"/>
             <attribute name="address1_line3" />
             <attribute name="address1_postalcode" />
             <attribute name="address1_city" />
@@ -44,9 +45,9 @@ const getTaskById = (taskId: string) => {
             <attribute name="hackney_uprn" />
             <attribute name="address1_line2" />
             <attribute name="birthdate" />
-            <attribute name="hackney_responsible" />
+            <attribute name="hackney_responsible" alias="primaryTenant"/>
             <link-entity name="account" from="accountid" to="parentcustomerid" link-type="outer" >
-               <attribute name="housing_cot" />
+               <attribute name="housing_cot" alias="tenancyStartDate"/>
             </link-entity>
         </link-entity>
     </entity>

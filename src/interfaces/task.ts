@@ -12,7 +12,7 @@ export interface Task {
   completedTime: Date;
   stage: Stage;
   children?: Task[];
-  parent?: Task;
+  parent?: string;
   referenceNumber: string;
   tenancy: {
     type: TenancyType;

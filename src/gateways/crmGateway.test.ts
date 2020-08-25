@@ -19,7 +19,9 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksByPatchId(patchId);
 
-      expect(response).toStrictEqual({body: crmResponseToTasks(data), error: undefined});
+      const tasks = crmResponseToTasks(data);
+
+      expect(response).toStrictEqual({body: tasks, error: undefined});
     });
 
     it('returns an human readable error when unsuccessful', async () => {

@@ -12,8 +12,9 @@ const MockCrmTaskResponse = (): CrmResponse => {
         "hackney_enquirysubject@OData.Community.Display.V1.FormattedValue": faker.lorem.word(),
         "hackney_tenancymanagementinteractionsid": faker.lorem.word(),
         "hackney_process_stage": faker.random.number(9),
-        "hackney_completiondate": faker.date.recent(),
-        "contact1_x002e_fullname": faker.name.findName(),
+        "completionDate": faker.date.recent(),
+        "dueDate": faker.date.future(),
+        "name": faker.name.findName(),
         "contact1_x002e_address1_line1": faker.address.streetAddress(),
         "contact1_x002e_address1_line2": faker.address.streetAddress(),
         "contact1_x002e_hackney_responsible": "No",
@@ -23,7 +24,8 @@ const MockCrmTaskResponse = (): CrmResponse => {
         "contact1_x002e_telephone2": faker.phone.phoneNumber(),
         "contact1_x002e_housing_telephone3": faker.phone.phoneNumber(),
         "contact1_x002e_mobilephone": faker.phone.phoneNumber(),
-        "hackney_name": faker.random.alphaNumeric()
+        "hackney_name": faker.random.alphaNumeric(),
+        "tenancyStartDate": faker.date.past()
       }
       ]
     }

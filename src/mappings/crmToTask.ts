@@ -66,12 +66,15 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
 
   const processType = crmTask.hackney_processtype;
 
+  console.log(crmTask);
+
   switch (processType) {
     case 1: // Process
       task.type = crmTask["hackney_enquirysubject@OData.Community.Display.V1.FormattedValue"];
       break;
 
     case 2: // Post Visit Action
+    case 3: // ETRA
       task.type = crmTask["hackney_natureofenquiry@OData.Community.Display.V1.FormattedValue"];
       break;
   }

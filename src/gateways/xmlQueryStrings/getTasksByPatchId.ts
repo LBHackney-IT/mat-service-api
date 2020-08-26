@@ -30,7 +30,7 @@ return(
                 <condition attribute="hackney_estateofficerpatchid" operator="eq" value="${patchId}" />
             </filter>
             <link-entity name="contact" from="contactid" to="hackney_contactid" link-type="outer">
-                <attribute name="fullname" />
+                <attribute name="fullname" alias="name"/>
                 <attribute name="address1_line3" />
                 <attribute name="address1_postalcode" />
                 <attribute name="address1_city" />

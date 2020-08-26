@@ -76,14 +76,23 @@ class CrmGateway implements CrmGatewayInterface {
   }
 
   public async createUser(emailAddress: string) {
+    const crmUser = {
+      "hackney_name": "",
+      "hackney_firstname": "",
+      "hackney_lastname": "",
+      "hackney_emailaddress": emailAddress
+    }
+
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
 
     const response = await axios.
-      put(``, {
+      post(`${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers`, crmUser, {
         headers: {
           "Authorization": `Bearer ${crmApiToken.token}`,
-          "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
+          "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\"",
+          "OData-MaxVersion": "4.0",
+          "OData-Version": "4.0"
         }
       })
       .then((response) => {

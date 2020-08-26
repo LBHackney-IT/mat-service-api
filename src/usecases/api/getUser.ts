@@ -21,8 +21,11 @@ class GetUser implements GetUserInterface {
   public async execute(): Promise<GetUserResponse> {
     const response = await this.tasksGateway.getUser(this.emailAddress);
 
-    switch(response.error) {
+    switch (response.error) {
       case undefined:
+        if (response.body[0] === undefined) {
+          return { body: undefined, error: undefined }
+        }
         return {
           body: response.body[0]["hackney_estateofficerid"],
           error: undefined

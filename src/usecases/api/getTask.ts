@@ -1,4 +1,5 @@
-import { DueState, Stage, Task } from "../../interfaces/task";
+import CrmGateway, { CrmGatewayInterface } from "../../gateways/crmGateway";
+import { Task } from "../../interfaces/task";
 
 interface GetTaskResponse {
   body: Task | undefined;
@@ -10,48 +11,35 @@ interface GetTaskInterface {
 }
 
 class GetTask implements GetTaskInterface {
+
+  crmGateway: CrmGatewayInterface;
   taskId: string;
+
   constructor(taskId: string) {
+    this.crmGateway = new CrmGateway();
     this.taskId = taskId;
   }
 
   public async execute(): Promise<GetTaskResponse> {
 
-    if (this.taskId && this.taskId === '5956eb7f-9edb-4e05-8934-8f2ee414cd81') {
-      const task = {
-        id: '5956eb7f-9edb-4e05-8934-8f2ee414cd81',
-        createdTime: new Date('2007-03-01T13:00:00Z'),
-        category: 'Tenancy Audit And Visits',
-        type: 'Tenancy & Household Check',
-        resident: {
-          presentationName: 'Mr John Smith',
-          role: 'tenant',
-          dateOfBirth: new Date('2007-03-01'),
-          mobileNumber: '07707188934',
-          homePhoneNumber: '0201234567',
-          workPhoneNumber: '01301234567',
-          email: 'johnDoe@email.com',
-        },
-        address: {
-          presentationShort: 'Flat 9, Made Up Court, 7 Fake Road',
-        },
-        dueTime: new Date('2007-03-01T13:00:00Z'),
-        dueState: DueState.imminent,
-        completedTime: new Date('2007-03-01T13:00:00Z'),
-        stage: Stage.unstarted,
-        children: [],
-        referenceNumber: "",
-      };
+    const response = await this.crmGateway.getTask(this.taskId);
 
-      return {
-        body: task,
-        error: undefined,
-      };
-    } else {
-      return {
-        body: undefined,
-        error: 400,
-      };
+    switch(response.error) {
+      case undefined:
+        return  {
+          body: response.body,
+          error: undefined
+        }
+      case "NotAuthorised":
+        return {
+          body: undefined,
+          error: 401
+        }
+      default:
+        return {
+          body: undefined,
+          error: 500
+        }
     }
   }
 }

@@ -157,21 +157,21 @@ paths:
       responses:
         '200':
           description: Successful operation
-  '/tras/{patchid}':
+  '/tras/{emailAddress}':
     parameters:
       - in: query
-        name: patchid
+        name: emailAddress
         type: string
-        description: The id of a patch
+        description: The email address associated with the patch
         required: true
     get:
-      summary: Retrieve all TRAs in a given patch
+      summary: Retrieve all TRAs in a patch associated with the user with given email address
       responses:
         '200':
           description: Successful operation
       responses:
         '400':
-          description: patchid not provided
+          description: emailAddress not provided
       responses:
         '500':
           description: There was an error processing your request

@@ -26,17 +26,10 @@ class MatPostgresGateway {
     if (!db) {
       const { default: pgp } = await import('pg-promise');
       let options = {
-        connectionString: process.env.TEST_DATABASE_URL //TODO: update this to prod value
+        connectionString: process.env.TEST_DATABASE_URL
       };
-      if (process.env.NODE_ENV === 'test') { //TODO: add dev!?
-        options.connectionString = process.env.TEST_DATABASE_URL;
-      }
       if (process.env.NODE_ENV === 'production') {
-        delete options.connectionString;
-        options.host = process.env.HOST;
-        options.user = process.env.USERNAME;
-        options.password = process.env.PASSWORD;
-        options.database = process.env.DATABASE;
+        options.connectionString = process.env.DATABASE_URL
       }
       this.instance = pgp()(options);
       delete this.instance.constructor;
@@ -54,7 +47,6 @@ class MatPostgresGateway {
               TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId
       WHERE TRAPatchAssociation.PatchCRMId ='${patchId}'
       `;
-    
       const results = await this.instance.many(dbQuery);
 
       return Promise.resolve({

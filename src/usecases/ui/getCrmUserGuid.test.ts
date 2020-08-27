@@ -18,7 +18,7 @@ describe("getCrmUserGuid", () => {
     process.env.NEXT_PUBLIC_API_PATH = "http://localhost:3000/api";
     const guid = faker.lorem.word()
 
-    axios.get.mockResolvedValue(guid);
+    axios.get.mockResolvedValue({data: guid});
 
     const response = await getCrmUserGuid(faker.internet.email());
 

@@ -4,10 +4,16 @@ import { Task } from '../interfaces/task';
 import crmResponseToTask, { CrmResponseInterface } from '../mappings/crmToTask';
 import getTasksByPatchIdQuery from './xmlQueryStrings/getTasksByPatchId';
 import getPatchIdByOfficerId from './xmlQueryStrings/getPatchIdByOfficerId';
+import crmToPatchDetails, { PatchDetails } from '../mappings/crmToPatchDetails';
 
 interface GetTasksResponse {
   body: Task[] | undefined;
   error: string | undefined;
+}
+
+interface GetPatchByOfficerIdResponse{
+  body: PatchDetails | undefined,
+  error: string | undefined
 }
 
 export interface CrmGatewayInterface {
@@ -102,7 +108,7 @@ class CrmGateway implements CrmGatewayInterface {
       return response;
   }
 
-  public async getPatchByOfficerId(officerId: string){
+  public async getPatchByOfficerId(officerId: string): Promise<GetPatchByOfficerIdResponse>{
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
     const crmQuery = getPatchIdByOfficerId(officerId);
@@ -116,12 +122,9 @@ class CrmGateway implements CrmGatewayInterface {
     })
     .then((response) => {
       const data = response.data;
+      const patchDetails: PatchDetails = crmToPatchDetails(data);
       return {
-        body: { 
-          patchid: data.value[0].hackney_estateofficerpatchid,
-          patchname: data.value[0].hackney_name,
-          officername: data.value[0]['_hackney_patchid_value@OData.Community.Display.V1.FormattedValue']
-        },
+        body: patchDetails,
         error: undefined
       };
     })
@@ -131,7 +134,8 @@ class CrmGateway implements CrmGatewayInterface {
         error: error.message,
       };
     });
-  return response;
+  
+    return response;
 
   }
 }

@@ -11,7 +11,7 @@ const userMappingExists = async(emailAddress: string): Promise<boolean> => {
       return response;
     }))
 
-  return response.body;
+  return response.data.body;
 }
 
 export default userMappingExists;

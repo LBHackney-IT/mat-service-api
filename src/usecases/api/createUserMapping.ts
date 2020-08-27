@@ -5,10 +5,10 @@ interface CreateUserMapping {
 }
 
 interface UserMapping {
-  name: any;
-  emailAddress: any;
-  usercrmid: any;
-  googleId: any;
+  name: string;
+  emailAddress: string;
+  usercrmid: string;
+  googleId: string;
 }
 
 interface CreateUserMappingInterface {

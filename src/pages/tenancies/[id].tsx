@@ -29,7 +29,7 @@ class TenancyPage extends React.Component {
         <Radios
           name="processes"
           items={this.itemTypes(this.isCollapsed())}
-          onChange={(value: any): void => { this.setState({ process: value }); }}
+          onChange={(value: any): void => { this.setState({ process: value, subProcess: undefined }); }}
           required={true} />
         <Button
           className="govuk-button lbh-button"
@@ -38,14 +38,14 @@ class TenancyPage extends React.Component {
           Select process
        </Button>
       </Layout>
-    );  
+    );
   }
 
-  isCollapsed() : boolean {
+  isCollapsed(): boolean {
     return (this.state.process !== "thc");
   }
 
-  isReadyToSubmit() : boolean { 
+  isReadyToSubmit(): boolean {
     return this.state.process && (this.isCollapsed() || this.state.subProcess);
   }
 

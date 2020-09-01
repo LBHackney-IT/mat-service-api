@@ -5,7 +5,7 @@ import MockTRA from "../../tests/helpers/generateTRA";
 
 jest.mock("../../gateways/matPostgresGateway");
 
-describe("GetTRAs", () => {
+describe("GetTRAsByPatchId", () => {
   beforeEach(() => {
     MatPostgresGateway.mockClear();
   })

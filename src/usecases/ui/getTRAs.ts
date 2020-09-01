@@ -21,10 +21,10 @@ const getTRAs = async (): Promise<TRAdetails> => {
         .then((response => {
             return response;
         }))
-        
-    const data = response.data;
-    const traObjects: TRAPatchMappingResponseInterface[] = data.tras;
-    const tras: TRA[] = apiTRAToUiTRA(traObjects);
+
+        const data = response.data;
+        const traObjects: TRAPatchMappingResponseInterface[] = data.tras;
+        const tras: TRA[] = apiTRAToUiTRA(traObjects);
 
     return {
         tras: tras,

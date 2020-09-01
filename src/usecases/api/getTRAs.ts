@@ -43,7 +43,7 @@ class GetTRAs implements GetTRAsInterface{
 
             let tras;
 
-            if(userPatch !== undefined && userPatch.body !== undefined && userPatch.body.patchid !== undefined){ //good grief
+            if(userPatch !== undefined && userPatch.body !== undefined && userPatch.body.patchid !== undefined){ 
                 tras = await matGateway.getTrasByPatchId(userPatch.body.patchid);
             }
             else{

@@ -7,6 +7,7 @@ import userMappingExists from '../usecases/ui/userMappingExists';
 import getCrmUserGuid from '../usecases/ui/getCrmUserGuid';
 import jwt from 'jsonwebtoken';
 import createUserMapping, { UserMapping } from '../usecases/ui/createUserMapping';
+import createCrmUser from '../usecases/ui/createCrmUser';
 
 const unauthenticatedLandingPage = '/login-redirect';
 
@@ -62,23 +63,30 @@ interface HackneyToken {
 const userMappingManagement = async (parsedCookie: { [key: string]: string; }) => {
   const hackneyToken = jwt.decode(parsedCookie.hackneyToken) as HackneyToken;
   if (hackneyToken.email) {
-    const existingUserToken = await userMappingExists(hackneyToken.email);
-    if (existingUserToken) {
+    const existingUserMapping = await userMappingExists(hackneyToken.email);
+    if (existingUserMapping) {
       return;
     } else {
       const crmUserGuid = await getCrmUserGuid(hackneyToken.email);
+      let crmId;
       if (crmUserGuid === undefined) {
-        // Add usecase for creating the crm user here if it doesn't exist
-      }
-      else {
-        const userMapping: UserMapping = {
-          name: hackneyToken.name,
-          emailAddress: hackneyToken.email,
-          googleId: hackneyToken.iat.toString(),
-          usercrmid: crmUserGuid
+        const splitName = hackneyToken.name.split(' ')
+        const user = {
+          fullName: hackneyToken.name,
+          firstName: splitName[0],
+          familyName: splitName[splitName.length - 1],
+          emailAddress: hackneyToken.email
         }
-        await createUserMapping(userMapping)
+        crmId = await createCrmUser(user);
       }
+      const userMapping: UserMapping = {
+        name: hackneyToken.name,
+        emailAddress: hackneyToken.email,
+        googleId: hackneyToken.iat.toString(),
+        usercrmid: crmUserGuid ? crmUserGuid : crmId
+      }
+      await createUserMapping(userMapping)
+
     }
   }
 }

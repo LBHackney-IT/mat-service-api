@@ -13,7 +13,7 @@ interface GetTasksResponse {
 export interface CrmGatewayInterface {
   getTasksByPatchId(patchId: string): any;
   getUser(emailAddress: string): any;
-  createUser(emailAddress: string, firstName: string, lastName: string): any;
+  createUser(emailAddress: string, fullName: string, firstName: string, familyName: string): any;
 }
 
 class CrmGateway implements CrmGatewayInterface {
@@ -75,13 +75,15 @@ class CrmGateway implements CrmGatewayInterface {
     return response;
   }
 
-  public async createUser(emailAddress: string, firstName: string, lastName: string) {
+  public async createUser(emailAddress: string, fullName: string, firstName: string, familyName: string) {
     const crmUser = {
-      "hackney_name": `${firstName} ${lastName}`,
+      "hackney_name": fullName,
       "hackney_firstname": firstName,
-      "hackney_lastname": lastName,
+      "hackney_lastname": familyName,
       "hackney_emailaddress": emailAddress
     }
+
+    console.log(crmUser);
 
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
@@ -97,12 +99,14 @@ class CrmGateway implements CrmGatewayInterface {
       })
       .then((response) => {
         const data = response.data;
+        console.log("SUCCESS", data)
         return {
           body: data,
           error: undefined
         }
       })
       .catch(error => {
+        console.log("ERROR", error);
         return {
           body: undefined,
           error: error.message

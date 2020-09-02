@@ -15,6 +15,17 @@ interface UserMappingTable {
   googleId: string,
 }
 
+interface GetTRAPatchMappingResponse{
+  body: TRAPatchMapping[],
+  error: number | undefined
+}
+
+interface TRAPatchMapping {
+  name: string,
+  traid: number,
+  patchcrmid: string
+}
+
 class MatPostgresGateway {
   instance: any;
   constructor() {
@@ -36,7 +47,7 @@ class MatPostgresGateway {
     }
   }
 
-  public async getTrasByPatchId(patchId: string) {
+  public async getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse> {
     await this.setupInstance();
     try {
       const dbQuery = `
@@ -47,7 +58,7 @@ class MatPostgresGateway {
               TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId
       WHERE TRAPatchAssociation.PatchCRMId ='${patchId}'
       `;
-      const results = await this.instance.many(dbQuery);
+      const results: TRAPatchMapping[] = await this.instance.many(dbQuery);
 
       return Promise.resolve({
         body: results,
@@ -56,7 +67,7 @@ class MatPostgresGateway {
     }
     catch(error) {
       return Promise.resolve({
-        body: undefined,
+        body: [],
         error: 500
       })
     }

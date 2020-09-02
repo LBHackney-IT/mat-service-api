@@ -22,6 +22,11 @@ class CreateITVTasks implements CreateITVTasksInterface {
   public async execute(): Promise<CreateITVTasksResponse> {
     const response = await this.v1MatAPIGateway.getNewTenancies();
 
+    // Check if no error
+    // Filter out all non-introductory tenancies
+    // Loop over the remaining introductory tenancies, convert to tmi objects
+    // Send to the api endpoint to create a tmi
+
     switch (response.error) {
       case undefined:
         return {

@@ -103,7 +103,6 @@ class CrmGateway implements CrmGatewayInterface {
         }
       })
       .catch(error => {
-        console.log("ERROR", error);
         return {
           body: undefined,
           error: error.message

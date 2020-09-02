@@ -83,8 +83,6 @@ class CrmGateway implements CrmGatewayInterface {
       "hackney_emailaddress": emailAddress
     }
 
-    console.log(crmUser);
-
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
 
@@ -98,8 +96,7 @@ class CrmGateway implements CrmGatewayInterface {
         }
       })
       .then((response) => {
-        const data = response.data;
-        console.log("SUCCESS", data)
+        const data = response.headers.location.match(/\((.*?)\)/)[1];
         return {
           body: data,
           error: undefined

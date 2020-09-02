@@ -13,7 +13,7 @@ export interface Tenancy {
   accountCreatedOn: Date;
   housingTenure: string;
   patchId: string;
-  areaId: 0;
+  areaId: number;
   managerId: string;
   householdId: string;
   tagReference: string;

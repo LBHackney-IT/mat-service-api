@@ -8,6 +8,9 @@ import getTaskById from './xmlQueryStrings/getTaskById';
 
 export interface v1MatAPIGatewayInterface {
   getNewTenancies(): Promise<GetNewTenanciesResponse>;
+  createTenancyManagementInteraction(
+    tmi: TenancyManagementInteraction
+  ): Promise<createTenancyManagementInteractionResponse>;
 }
 
 interface GetNewTenanciesResponse {
@@ -21,25 +24,25 @@ interface createTenancyManagementInteractionResponse {
 }
 
 class v1MatAPIGateway implements v1MatAPIGatewayInterface {
-
   public async getNewTenancies(): Promise<GetNewTenanciesResponse> {
-
     const response = await axios
-      .get(`${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`, {
-        headers: {
-          "Authorization": `Bearer ${this.crmApiToken.token}`
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.crmApiToken.token}`,
+          },
         }
-      })
+      )
       .then((response) => {
         const task = response.data as GetNewTenanciesResponse;
 
         return {
           body: task,
-          error: undefined
+          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
-
         return {
           body: undefined,
           error: error.message,
@@ -47,13 +50,14 @@ class v1MatAPIGateway implements v1MatAPIGatewayInterface {
       });
 
     return response;
-
   }
 
-  public async createTenancyManagementInteraction(tmi: TenancyManagementInteraction): Promise<createTenancyManagementInteractionResponse> {
+  public async createTenancyManagementInteraction(
+    tmi: TenancyManagementInteraction
+  ): Promise<createTenancyManagementInteractionResponse> {
     return {
       body: [],
-      error: undefined
+      error: undefined,
     };
   }
 }

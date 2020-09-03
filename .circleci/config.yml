@@ -107,7 +107,7 @@ workflows:
           filters:
             branches:
               only:
-                - fix/resolve-db-config-issue
+                - master
       - cypress/run:
           store_artifacts: true
           requires:

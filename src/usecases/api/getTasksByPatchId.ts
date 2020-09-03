@@ -11,15 +11,16 @@ interface GetTasksInterface {
 }
 
 class GetTasksByPatchId implements GetTasksInterface {
-  tasksGateway: CrmGatewayInterface;
+  crmGateway: CrmGatewayInterface;
   patchId: string;
 
   constructor(patchId: string) {
-    this.tasksGateway = new CrmGateway();
+    this.crmGateway = new CrmGateway();
     this.patchId = patchId;
   }
-  public async execute() :Promise<GetTasksResponse> {
-    const response = await this.tasksGateway.getTasksByPatchId(this.patchId);
+  public async execute(): Promise<GetTasksResponse> {
+
+    const response = await this.crmGateway.getTasksByPatchId(this.patchId);
 
     switch(response.error) {
       case undefined:
@@ -41,4 +42,4 @@ class GetTasksByPatchId implements GetTasksInterface {
   }
 }
 
-export default GetTasksByPatchId
+export default GetTasksByPatchId;

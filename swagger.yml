@@ -328,6 +328,8 @@ definitions:
       referenceNumber:
         type: string
         description: ""
+      tenancy:
+        $ref: '#/definitions/tenancy'
                
   tasklist:
     type: array

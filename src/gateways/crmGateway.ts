@@ -1,14 +1,18 @@
 import axios, { AxiosError } from 'axios';
-import CrmTokenGateway from "./crmTokenGateway";
+import CrmTokenGateway, { CrmTokenGatewayInterface } from "./crmTokenGateway";
 import { Task } from '../interfaces/task';
-import crmResponseToTask, { CrmResponseInterface } from '../mappings/crmToTask';
+import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchIdQuery from './xmlQueryStrings/getTasksByPatchId';
+<<<<<<< HEAD
 import getPatchIdByOfficerId from './xmlQueryStrings/getPatchIdByOfficerId';
 import crmToPatchDetails, { PatchDetails } from '../mappings/crmToPatchDetails';
+=======
+import getTaskById from './xmlQueryStrings/getTaskById';
+>>>>>>> master
 
-interface GetTasksResponse {
-  body: Task[] | undefined;
-  error: string | undefined;
+export interface CrmResponse {
+  "@odata.context": string,
+  value: object | object[]
 }
 
 interface GetPatchByOfficerIdResponse{
@@ -17,30 +21,52 @@ interface GetPatchByOfficerIdResponse{
 }
 
 export interface CrmGatewayInterface {
-  getTasksByPatchId(patchId: string): any;
+  getTasksByPatchId(patchId: string): Promise<GetTasksResponse>;
+  getTask(taskId: string): Promise<GetTaskResponse>;
   getUser(emailAddress: string): any;
   createUser(emailAddress: string): any;
   getPatchByOfficerId(emailAddress: string): any;
 }
 
+interface GetTasksResponse {
+  body: Task[] | undefined;
+  error: string | undefined;
+}
+
+interface GetTaskResponse {
+  body: Task | undefined;
+  error: string | undefined;
+}
+
 class CrmGateway implements CrmGatewayInterface {
+
+  crmTokenGateway: CrmTokenGatewayInterface;
+  crmApiToken: any;
+
+  constructor() {
+    this.crmTokenGateway = new CrmTokenGateway();
+    this.crmApiToken = undefined
+  }
+
   public async getTasksByPatchId(patchId: string): Promise<GetTasksResponse> {
-    const crmTokenGateway = new CrmTokenGateway();
-    const crmApiToken = await crmTokenGateway.getCloudToken();
+
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
     const crmQuery = getTasksByPatchIdQuery(patchId);
 
     const response = await axios
       .get(`${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`, {
         headers: {
-          "Authorization": `Bearer ${crmApiToken.token}`,
+          "Authorization": `Bearer ${this.crmApiToken.token}`,
           "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
         }
       })
       .then((response) => {
-        const data = response.data as CrmResponseInterface;
-        const tasks = crmResponseToTask(data);
+        const data = response.data as CrmResponse;
         return {
-          body: tasks,
+          body: crmResponseToTasks(data),
           error: undefined
         };
       })
@@ -50,18 +76,57 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
+
+    return response;
+  }
+
+  public async getTask(taskId: string): Promise<GetTaskResponse> {
+
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const crmQuery = getTaskById(taskId);
+
+    const response = await axios
+      .get(`${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`, {
+        headers: {
+          "Authorization": `Bearer ${this.crmApiToken.token}`,
+          "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
+        }
+      })
+      .then((response) => {
+        const data = response.data as CrmResponse;
+
+        const task =  crmResponseToTask(data);
+
+        return {
+          body: task,
+          error: undefined
+        };
+      })
+      .catch((error: AxiosError) => {
+
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+
     return response;
 
   }
 
   public async getUser(emailAddress: string) {
-    const crmTokenGateway = new CrmTokenGateway();
-    const crmApiToken = await crmTokenGateway.getCloudToken();
+
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
 
     const response = await axios
       .get(``, {
         headers: {
-          "Authorization": `Bearer ${crmApiToken.token}`,
+          "Authorization": `Bearer ${this.crmApiToken.token}`,
           "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
         }
       })
@@ -82,13 +147,15 @@ class CrmGateway implements CrmGatewayInterface {
   }
 
   public async createUser(emailAddress: string) {
-    const crmTokenGateway = new CrmTokenGateway();
-    const crmApiToken = await crmTokenGateway.getCloudToken();
+    
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
 
     const response = await axios.
       put(``, {
         headers: {
-          "Authorization": `Bearer ${crmApiToken.token}`,
+          "Authorization": `Bearer ${this.crmApiToken.token}`,
           "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
         }
       })

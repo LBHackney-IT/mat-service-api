@@ -1,7 +1,7 @@
 import CrmGateway from './crmGateway';
 import axios from 'axios';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
-import crmResponseToTask from '../mappings/crmToTask';
+import { crmResponseToTasks } from '../mappings/crmToTask';
 jest.mock('axios');
 
 describe('CrmGateway', () => {
@@ -19,7 +19,9 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksByPatchId(patchId);
 
-      expect(response).toEqual({body: crmResponseToTask(data), error: undefined});
+      const tasks = crmResponseToTasks(data);
+
+      expect(response).toStrictEqual({body: tasks, error: undefined});
     });
 
     it('returns an human readable error when unsuccessful', async () => {

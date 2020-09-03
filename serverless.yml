@@ -115,6 +115,8 @@ resources:
 
 custom:
   stage: ${opt:stage, self:provider.stage}
+  serverless-offline:
+      noPrependStageInUrl: true
   serverless-offline-ssm:
     stages:
       - dev

@@ -1,5 +1,5 @@
 import faker from "faker";
-import { Task, Stage, DueState } from "../../interfaces/task";
+import { Task, Stage, DueState, TenancyType } from "../../interfaces/task";
 
 interface ApiTaskResponse {
   data: Task[],
@@ -36,6 +36,11 @@ const mockApiTaskResponse = (): ApiTaskResponse => {
           },
           stage: Stage.started,
           type: faker.lorem.word(),
+          tenancy: {
+            type: TenancyType.Secure,
+            startDate: faker.date.past(),
+            residents: []
+          }
         }
       ],
       status: 200,

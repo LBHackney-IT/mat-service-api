@@ -34,6 +34,7 @@ MaTApp.getInitialProps = async (context: AppContext) => {
     context.ctx.res &&
     context.ctx.pathname !== unauthenticatedLandingPage &&
     !context.ctx.pathname.startsWith('/api')) {
+    console.log("No valid token - redirecting from " + context.ctx.pathname);
     context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
     context.ctx.res.end();
     return { ...appProps }

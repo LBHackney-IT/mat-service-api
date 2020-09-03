@@ -3,12 +3,9 @@ import CrmTokenGateway, { CrmTokenGatewayInterface } from "./crmTokenGateway";
 import { Task } from '../interfaces/task';
 import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchIdQuery from './xmlQueryStrings/getTasksByPatchId';
-<<<<<<< HEAD
 import getPatchIdByOfficerId from './xmlQueryStrings/getPatchIdByOfficerId';
 import crmToPatchDetails, { PatchDetails } from '../mappings/crmToPatchDetails';
-=======
 import getTaskById from './xmlQueryStrings/getTaskById';
->>>>>>> master
 
 export interface CrmResponse {
   "@odata.context": string,

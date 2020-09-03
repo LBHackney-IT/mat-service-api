@@ -61,48 +61,6 @@ const content = [
   },
 ];
 
-  const TileOne = (
-    <div>
-      <Paragraph>Date of birth: 01/08/2000</Paragraph>
-      <Paragraph>Mobile: 077070087654</Paragraph>
-      <Paragraph>Home: 020888812334</Paragraph>
-      <Paragraph>Work: 020777756789</Paragraph>
-      <Paragraph>
-        Email: <a href="mailto:someone@email.com">fake@dummy.com</a>
-      </Paragraph>
-    </div>
-  );
-  const TileTwo = (
-    <div>
-      <Paragraph>Date of birth: 10/06/2010</Paragraph>
-      <Paragraph>Mobile: 073070087234</Paragraph>
-      <Paragraph>Home: 020888812334</Paragraph>
-      <Paragraph>Work: 020777756543</Paragraph>
-      <Paragraph>
-        Email: <a href="mailto:someone@email.com">fake@dummy.com</a>
-      </Paragraph>
-    </div>
-  );
-
-  const content = [
-    {
-      link: 'www.google.com',
-      title: 'Mrs Sally Fisher',
-      children: TileOne,
-    },
-    {
-      link: 'www.facebook.com',
-      title: 'Ms Joan Fisher',
-      children: TileTwo,
-    },
-    {
-      link: 'www.hotmail.com',
-      title: 'Mr John Fisher',
-      children: TileOne,
-    },
-  ];
-
-
 
 export default function TaskPage(props: TaskProps) {
   if (props.task === undefined) {

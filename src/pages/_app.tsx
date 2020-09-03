@@ -86,7 +86,6 @@ const userMappingManagement = async (parsedCookie: { [key: string]: string; }) =
         usercrmid: crmUserGuid ? crmUserGuid : crmId
       }
       await createUserMapping(userMapping)
-
     }
   }
 }

@@ -21,7 +21,8 @@ const createUserMapping = async (userMapping: UserMapping) => {
 
   const response = await axios
     .post(`${process.env.NEXT_PUBLIC_API_PATH}/userMappings`, requestBody)
-    .then((response => { return response }))
+    .then((response => { return true }))
+    .catch((error => { return false }))
 
   return response;
 }

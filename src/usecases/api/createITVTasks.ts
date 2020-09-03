@@ -40,7 +40,7 @@ class CreateITVTasksUseCase implements CreateITVTasksInterface {
           };
       }
     }
-    if (!tenancies.body) {
+    if (!tenancies.result) {
       return {
         body: undefined,
         error: 500,
@@ -48,7 +48,7 @@ class CreateITVTasksUseCase implements CreateITVTasksInterface {
     }
 
     // Filter out all non-introductory tenancies
-    let introductoryTenancies = tenancies.body.filter((tenancy) => {
+    let introductoryTenancies = tenancies.result.filter((tenancy) => {
       return tenancy.housingTenure === 'INT';
     });
 

@@ -1,10 +1,6 @@
 import axios, { AxiosError } from 'axios';
-import CrmTokenGateway, { CrmTokenGatewayInterface } from './crmTokenGateway';
 import { Tenancy } from '../interfaces/tenancy';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
-import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
-import getTasksByPatchIdQuery from './xmlQueryStrings/getTasksByPatchId';
-import getTaskById from './xmlQueryStrings/getTaskById';
 
 export interface v1MatAPIGatewayInterface {
   getNewTenancies(): Promise<GetNewTenanciesResponse>;
@@ -13,39 +9,46 @@ export interface v1MatAPIGatewayInterface {
   ): Promise<createTenancyManagementInteractionResponse>;
 }
 
-interface GetNewTenanciesResponse {
-  body: Tenancy[] | undefined;
+export interface GetNewTenanciesResponse {
+  result: Tenancy[] | undefined;
   error: string | undefined;
 }
 
-interface createTenancyManagementInteractionResponse {
-  body: any | undefined;
+export interface createTenancyManagementInteractionResponse {
   error: string | undefined;
 }
 
-class v1MatAPIGateway implements v1MatAPIGatewayInterface {
+export interface v1MatAPIGatewayOptions {
+  v1MatApiUrl: string,
+  v1MatApiToken: string
+}
+
+export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
+  v1MatApiUrl: string;
+  v1MatApiToken: string;
+
+  constructor(options: v1MatAPIGatewayOptions ){
+    this.v1MatApiUrl = options.v1MatApiUrl;
+    this.v1MatApiToken = options.v1MatApiToken;
+  }
+
   public async getNewTenancies(): Promise<GetNewTenanciesResponse> {
     const response = await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        `${this.v1MatApiUrl}/v1/tenancy/new`,
         {
           headers: {
-            Authorization: `Bearer ${this.crmApiToken.token}`,
+            "x-api-key": `${this.v1MatApiToken}`
           },
         }
       )
       .then((response) => {
-        const task = response.data as GetNewTenanciesResponse;
-
-        return {
-          body: task,
-          error: undefined,
-        };
+        return <GetNewTenanciesResponse>(<unknown>response);
       })
       .catch((error: AxiosError) => {
         return {
-          body: undefined,
           error: error.message,
+          result: undefined
         };
       });
 
@@ -55,11 +58,27 @@ class v1MatAPIGateway implements v1MatAPIGatewayInterface {
   public async createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse> {
-    return {
-      body: [],
-      error: undefined,
-    };
+    const response = await axios
+      .post(
+        `${this.v1MatApiUrl}/v1/TenancyManagementInteractions/CreateTenancyManagementInteraction`,
+        tmi,
+        {
+          headers: {
+            "x-api-key": `${this.v1MatApiToken}`
+          },
+        }
+      )
+      .then(_ => {
+        return {
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          error: error.message,
+        };
+      });
+
+    return response;
   }
 }
-
-export default v1MatAPIGateway;

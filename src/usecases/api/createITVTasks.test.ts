@@ -7,8 +7,7 @@ describe('createITVTasks', () => {
   it('should retrieve new tenancies and create ITV tasks for them', async () => {
     const tenancies = [MockTenancy(true), MockTenancy(true)];
     const getNewTenancies = jest.fn(async () => ({
-      body: tenancies,
-      error: undefined,
+      result: tenancies
     }));
 
     const createTenancyManagementInteraction = jest.fn(async (tmi: TenancyManagementInteraction) => ({
@@ -26,7 +25,6 @@ describe('createITVTasks', () => {
     })
 
     await createITVTasks.execute();
-console.log(createTenancyManagementInteraction.mock.calls[0])
     expect(getNewTenancies).toHaveBeenCalledTimes(1);
     expect(createTenancyManagementInteraction).toHaveBeenCalledTimes(2);
     expect(createTenancyManagementInteraction.mock.calls[0][0]).toEqual(tenancyToITVTask(tenancies[0]))
@@ -36,8 +34,7 @@ console.log(createTenancyManagementInteraction.mock.calls[0])
   it('should only create tasks for introductory tenancies', async () => {
     const tenancies = [MockTenancy(true), MockTenancy(false), MockTenancy(true)];
     const getNewTenancies = jest.fn(async () => ({
-      body: tenancies,
-      error: undefined,
+      result: tenancies
     }));
 
     const createTenancyManagementInteraction = jest.fn(async (tmi: TenancyManagementInteraction) => ({

@@ -37,11 +37,8 @@ class MatPostgresGateway {
     if (!db) {
       const { default: pgp } = await import('pg-promise');
       let options = {
-        connectionString: process.env.TEST_DATABASE_URL
+        connectionString: process.env.DATABASE_URL
       };
-      if (process.env.NODE_ENV === 'production') {
-        options.connectionString = process.env.DATABASE_URL
-      }
       this.instance = pgp()(options);
       delete this.instance.constructor;
     }
@@ -49,16 +46,9 @@ class MatPostgresGateway {
 
   public async getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse> {
     await this.setupInstance();
+    
     try {
-      const dbQuery = `
-      SELECT	TRA.Name,
-              TRA.TraId,
-              TRAPatchAssociation.PatchCRMId
-      FROM	TRA INNER JOIN
-              TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId
-      WHERE TRAPatchAssociation.PatchCRMId ='${patchId}'
-      `;
-      const results: TRAPatchMapping[] = await this.instance.many(dbQuery);
+      const results: TRAPatchMapping[] = await this.instance.many('SELECT  TRA.Name, TRA.TraId, TRAPatchAssociation.PatchCRMId FROM	TRA INNER JOIN TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId WHERE TRAPatchAssociation.PatchCRMId = ${id}', { id: patchId } );
 
       return Promise.resolve({
         body: results,

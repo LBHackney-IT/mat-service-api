@@ -40,6 +40,7 @@ functions:
       CRM_API_URL: ${ssm:/${self:custom.stage}-${self:service}-crm-api-url, env:CRM_API_URL}
       CRM_CLOUD_AUTHORIZATION: ${ssm:/${self:custom.stage}-${self:service}-crm-cloud-authorization~true, env:CRM_CLOUD_AUTHORIZATION}
       CRM_CLOUD_URL:  ${ssm:/${self:custom.stage}-${self:service}-crm-cloud-url, env:CRM_CLOUD_URL}
+      DATABASE_URL:  ${ssm:/${self:custom.stage}-${self:service}-database-url, env:DATABASE_URL}
 
   authorizer:
     handler: authorizer.handler

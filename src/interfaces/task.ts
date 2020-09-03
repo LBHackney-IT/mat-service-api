@@ -33,7 +33,8 @@ export interface Resident {
 
 export enum TenancyType {
   Undefined,
-  Secure
+  Secure,
+  Introductory
 }
 
 export enum Stage {

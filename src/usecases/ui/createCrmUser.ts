@@ -22,6 +22,7 @@ const createCrmUser = async (user: User) => {
   const response = await axios
     .post(`${process.env.NEXT_PUBLIC_API_PATH}/user`, requestBody)
     .then((response => { return response }))
+    .catch((error => { return false }))
 
   return response;
 }

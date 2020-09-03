@@ -38,7 +38,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         `${this.v1MatApiUrl}/v1/tenancy/new`,
         {
           headers: {
-            "x-api-key": `${this.v1MatApiToken}`
+            "Authorization": `Bearer ${this.v1MatApiToken}`
           },
         }
       )
@@ -64,7 +64,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         tmi,
         {
           headers: {
-            "x-api-key": `${this.v1MatApiToken}`
+            "Authorization": `Bearer ${this.v1MatApiToken}`
           },
         }
       )

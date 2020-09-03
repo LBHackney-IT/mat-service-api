@@ -25,7 +25,7 @@ describe('v1MatAPIGateway', () => {
         'http://dummy-api.com/v1/tenancy/new',
         {
           headers: {
-            'x-api-key': dummyToken,
+            'Authorization': `Bearer ${dummyToken}`,
           },
         }
       );
@@ -71,7 +71,7 @@ describe('v1MatAPIGateway', () => {
         dummyPayload,
         {
           headers: {
-            'x-api-key': dummyToken,
+            'Authorization': `Bearer ${dummyToken}`,
           },
         }
       );

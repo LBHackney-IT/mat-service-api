@@ -10,6 +10,14 @@ interface GetTasksResponse {
   error: string | undefined;
 }
 
+export interface CrmGatewayGetUserResponse {
+  body: {
+    "@odata.etag": string,
+    "hackney_estateofficerid": string
+  }[];
+  error?: string
+}
+
 export interface CrmGatewayInterface {
   getTasksByPatchId(patchId: string): any;
   getUser(emailAddress: string): any;
@@ -47,7 +55,7 @@ class CrmGateway implements CrmGatewayInterface {
 
   }
 
-  public async getUser(emailAddress: string) {
+  public async getUser(emailAddress: string): Promise<CrmGatewayGetUserResponse> {
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
     const crmQuery = getUserByEmail(emailAddress);

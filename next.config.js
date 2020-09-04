@@ -7,5 +7,8 @@ const withNextEnv = nextEnv();
 
 module.exports = withNextEnv({
     target: 'serverless',
-    //assetPrefix: '.'
+    webpack: (config, { webpack }) => {
+        config.plugins.push(new webpack.IgnorePlugin(/^pg-native$/));
+      return config
+    }
 });

@@ -1,18 +1,36 @@
 import axios from 'axios';
+import { TRAdetails } from '../../interfaces/tra';
+import apiTRAToUiTRA from '../../mappings/apiTRAToUiTRA'
+import getEmailAddress from './getEmailAddress';
 import { TRA } from '../../interfaces/tra';
-//import apiTRAToUiTRA from '../../mappings/apiTRAToUiTRA'
+import { TRAPatchMappingResponseInterface } from '../../mappings/apiTRAToUiTRA'
 
-const getTRAs = async (patchId: string): Promise<TRA[]> => {
-    if(process.env.NEXT_PUBLIC_API_PATH === undefined){
-        return [];
+const getTRAs = async (): Promise<TRAdetails> => {
+    const emailAddress = getEmailAddress(); 
+    
+    if(process.env.NEXT_PUBLIC_API_PATH === undefined || emailAddress === undefined){
+         return  {
+            tras: [],
+            officername: "",
+            patchname: ""
+        };
     }
 
-    const tras: any = await axios
-        .get(`${process.env.NEXT_PUBLIC_API_PATH}/tras?patchId=${patchId}`)
+    const response: any = await axios
+        .get(`${process.env.NEXT_PUBLIC_API_PATH}/tras?emailAddress=${emailAddress}`)
         .then((response => {
             return response;
         }))
-    return tras.data;
+
+        const data = response.data;
+        const traObjects: TRAPatchMappingResponseInterface[] = data.tras;
+        const tras: TRA[] = apiTRAToUiTRA(traObjects);
+
+    return {
+        tras: tras,
+        officername: data.officername,
+        patchname: data.patchname
+    }
 }
 
 export default getTRAs;

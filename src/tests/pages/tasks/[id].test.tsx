@@ -1,16 +1,16 @@
 import 'jsdom-global/register';
 import React from 'react';
 import TaskPage, { getServerSideProps } from '../../../pages/tasks/[id]'
+import MockTask from '../../helpers/generateTask'
 import { mount } from "enzyme";
 require('dotenv').config();
 
 describe('Task Page', () => {
-  it("has id in props", async () => {
+  it('allows us to set props', () => {
+    const task = MockTask();
 
-    let res = {
-      status: jest.fn()
-    };
+    const component = mount(<TaskPage task={task} />);
 
-    const props = await getServerSideProps({ req: {}, res: {} });
+    expect(component.props().task).toEqual(task);
   });
 });

@@ -12,11 +12,12 @@ provider:
     DB_PASSWORD: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_PASSWORD~true, env:DB_PASSWORD}
     UI_PATH: ${ssm:/${self:custom.stage}-mat-service-ui-path, env:UI_PATH}
     ALLOWED_GROUPS: ${ssm:/${self:custom.stage}-${self:service}-allowed-groups, env:ALLOWED_GROUPS}
-    
+
 plugins:
   - serverless-dotenv-plugin
   - serverless-offline-ssm
   - serverless-offline
+  - serverless-offline-scheduler
 
 functions:
   web:
@@ -47,6 +48,14 @@ functions:
     environment:
       JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
 
+  createItvTasks:
+    handler: src/lambda.createItvTasks
+    # events:
+    #   - schedule: rate(1 minute)
+    environment:
+      V1_MAT_API_URL: ${ssm:/${self:custom.stage}-${self:service}-v1-mat-api-url, env:V1_MAT_API_URL}
+      V1_MAT_API_TOKEN: ${ssm:/${self:custom.stage}-${self:service}-v1-mat-api-token, env:V1_MAT_API_TOKEN}
+
 resources:
   Resources:
     matServiceDbSecurityGroup:
@@ -74,7 +83,7 @@ resources:
               - matServiceDbSecurityGroup
               - GroupId
       DeletionPolicy: 'Snapshot'
-      
+
     CloudFrontDistribution:
       Type: AWS::CloudFront::Distribution
       Properties:
@@ -117,7 +126,7 @@ resources:
 custom:
   stage: ${opt:stage, self:provider.stage}
   serverless-offline:
-      noPrependStageInUrl: true
+    noPrependStageInUrl: true
   serverless-offline-ssm:
     stages:
       - dev

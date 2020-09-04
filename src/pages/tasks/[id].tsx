@@ -10,7 +10,7 @@ import {
 } from 'lbh-frontend-react';
 // import fetch from 'isomorphic-unfetch';
 // import absoluteUrl from 'next-absolute-url';
-import { Task, TenancyType } from '../../interfaces/task';
+import { Task, TenancyType, Resident } from '../../interfaces/task';
 import ErrorPage from 'next/error';
 import HardcodedTask from '../../tests/helpers/hardcodedTask';
 
@@ -19,6 +19,24 @@ interface TaskProps {
 }
 
 const mockTask: Task = HardcodedTask();
+
+const mapResidents = (residents: Resident[]) => {
+  const tileArray: any[] = [];
+  console.log(residents);
+  residents.forEach((resident) => {
+    tileArray.push(
+      <Tile link={resident.email} title={resident.presentationName}>
+        <Paragraph>{resident.role}</Paragraph>
+        <Paragraph>2/2/90</Paragraph>
+        <Paragraph>{resident.mobileNumber}</Paragraph>
+        <Paragraph>{resident.homePhoneNumber}</Paragraph>
+        <Paragraph>{resident.workPhoneNumber}</Paragraph>
+        <Paragraph>{resident.email}</Paragraph>
+      </Tile>
+    );
+  });
+  return tileArray;
+};
 
 export default function TaskPage(props: TaskProps) {
   if (props.task === undefined) {
@@ -38,9 +56,7 @@ export default function TaskPage(props: TaskProps) {
         {props.task.tenancy.startDate}
       </Paragraph>
       <Heading level={HeadingLevels.H3}>Residents</Heading>
-      <Tile>
-        <div>{props.task.tenancy.residents[0].presentationName}</div>
-      </Tile>
+      {mapResidents(props.task.tenancy.residents)}
       <Heading level={HeadingLevels.H3}>Action</Heading>
       <Paragraph>
         <Label>Due:</Label>

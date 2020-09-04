@@ -30,7 +30,7 @@ const HardcodedTask = (): Task => {
         {
           presentationName: 'Mr Adam Fisher',
           role: 'Head Tenant',
-          dateOfBirth: new Date(Date.parse('1956-04-30T')),
+          dateOfBirth: new Date('1956-04-30T'),
           mobileNumber: '07707088123',
           homePhoneNumber: '0200708812',
           workPhoneNumber: '0200708999',
@@ -39,7 +39,7 @@ const HardcodedTask = (): Task => {
         {
           presentationName: 'Mrs Jane Fisher',
           role: 'Tenant',
-          dateOfBirth: new Date(Date.parse('1960-06-25T')),
+          dateOfBirth: new Date('1956-05-30T'),
           mobileNumber: '077070888888',
           homePhoneNumber: '0200708812',
           workPhoneNumber: '',

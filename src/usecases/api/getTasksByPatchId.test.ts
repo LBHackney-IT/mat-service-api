@@ -1,8 +1,6 @@
-import GetTasks from "./getTasksByPatchId";
 import CrmGateway from "../../gateways/crmGateway";
 import { Task } from "../../interfaces/task";
 import MockTask from "../../tests/helpers/generateTask";
-import { getTasksByPatchId } from "../../gateways/xmlQueryStrings/getTasksByPatchId";
 import GetTasksByPatchId from "./getTasksByPatchId";
 jest.mock("../../gateways/crmGateway");
 
@@ -74,5 +72,5 @@ describe("GetTasks", () => {
     expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 401 })
   })
-  
+
 })

@@ -1,4 +1,7 @@
 import { Task, Stage, DueState, TenancyType } from '../../interfaces/task';
+const json = '"2014-01-01T23:28:56.782Z"';
+
+const dateStr = JSON.parse(json);
 
 const HardcodedTask = (): Task => {
   return {
@@ -30,7 +33,7 @@ const HardcodedTask = (): Task => {
         {
           presentationName: 'Mr Adam Fisher',
           role: 'Head Tenant',
-          dateOfBirth: new Date('1956-04-30T'),
+          dateOfBirth: dateStr,
           mobileNumber: '07707088123',
           homePhoneNumber: '0200708812',
           workPhoneNumber: '0200708999',
@@ -39,7 +42,7 @@ const HardcodedTask = (): Task => {
         {
           presentationName: 'Mrs Jane Fisher',
           role: 'Tenant',
-          dateOfBirth: new Date('1956-05-30T'),
+          dateOfBirth: dateStr,
           mobileNumber: '077070888888',
           homePhoneNumber: '0200708812',
           workPhoneNumber: '',

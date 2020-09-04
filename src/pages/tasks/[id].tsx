@@ -27,7 +27,7 @@ const mapResidents = (residents: Resident[]) => {
     tileArray.push(
       <Tile link={resident.email} title={resident.presentationName}>
         <Paragraph>{resident.role}</Paragraph>
-        <Paragraph>2/2/90</Paragraph>
+        <Paragraph>{resident.dateOfBirth}</Paragraph>
         <Paragraph>{resident.mobileNumber}</Paragraph>
         <Paragraph>{resident.homePhoneNumber}</Paragraph>
         <Paragraph>{resident.workPhoneNumber}</Paragraph>

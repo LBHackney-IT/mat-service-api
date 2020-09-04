@@ -3,6 +3,8 @@ import CrmTokenGateway, { CrmTokenGatewayInterface } from "./crmTokenGateway";
 import { Task } from '../interfaces/task';
 import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchIdQuery from './xmlQueryStrings/getTasksByPatchId';
+import getPatchIdByOfficerId from './xmlQueryStrings/getPatchIdByOfficerId';
+import crmToPatchDetails, { PatchDetails } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
 
 export interface CrmResponse {
@@ -10,11 +12,17 @@ export interface CrmResponse {
   value: object | object[]
 }
 
+interface GetPatchByOfficerIdResponse{
+  body: PatchDetails | undefined,
+  error: string | undefined
+}
+
 export interface CrmGatewayInterface {
   getTasksByPatchId(patchId: string): Promise<GetTasksResponse>;
   getTask(taskId: string): Promise<GetTaskResponse>;
   getUser(emailAddress: string): any;
   createUser(emailAddress: string): any;
+  getPatchByOfficerId(emailAddress: string): any;
 }
 
 interface GetTasksResponse {
@@ -162,6 +170,37 @@ class CrmGateway implements CrmGatewayInterface {
         };
       });
       return response;
+  }
+
+  public async getPatchByOfficerId(officerId: string): Promise<GetPatchByOfficerIdResponse>{
+    const crmTokenGateway = new CrmTokenGateway();
+    const crmApiToken = await crmTokenGateway.getCloudToken();
+    const crmQuery = getPatchIdByOfficerId(officerId);
+
+    const response = await axios
+    .get(`${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficerpatchs?fetchXml=${crmQuery}`, {
+      headers: {
+        "Authorization": `Bearer ${crmApiToken.token}`,
+        "Prefer": "odata.include-annotations=\"OData.Community.Display.V1.FormattedValue\""
+      }
+    })
+    .then((response) => {
+      const data = response.data;
+      const patchDetails: PatchDetails = crmToPatchDetails(data);
+      return {
+        body: patchDetails,
+        error: undefined
+      };
+    })
+    .catch((error: AxiosError) => {
+      return {
+        body: undefined,
+        error: error.message,
+      };
+    });
+  
+    return response;
+
   }
 }
 

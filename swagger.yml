@@ -157,6 +157,24 @@ paths:
       responses:
         '200':
           description: Successful operation
+  '/tras/{emailAddress}':
+    parameters:
+      - in: query
+        name: emailAddress
+        type: string
+        description: The email address associated with the patch
+        required: true
+    get:
+      summary: Retrieve all TRAs in a patch associated with the user with given email address
+      responses:
+        '200':
+          description: Successful operation
+      responses:
+        '400':
+          description: emailAddress not provided
+      responses:
+        '500':
+          description: There was an error processing your request
   '/tras/{id}/meeting':
     parameters:
       - in: path

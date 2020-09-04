@@ -19,11 +19,11 @@ class GetTRAsByPatchId implements GetTRAsInterface{
     }
 
     public async execute() :Promise<GetTRAsResponse>{
-        //TODO: wrap this in try catch and build the response a below?
         try
         {
             const gateway = new MatPostgresGateway();
-            const result = await gateway.getTrasByPatchId();
+            const result = await gateway.getTrasByPatchId(this.patchId);
+            
             return Promise.resolve({
                 body: result.body,
                 error: result.error
@@ -35,25 +35,6 @@ class GetTRAsByPatchId implements GetTRAsInterface{
                 error: 500
             })
         }
-
-        //console.dir(response);
-        // switch(response.error){
-        //     case undefined:
-        //         return{
-        //             body: response.body,
-        //             error: undefined
-        //         }
-        //     case "NotAuthorised":
-        //         return{
-        //             body: undefined,
-        //             error: 401
-        //         }
-        //     default:
-        //         return{
-        //             body: undefined,
-        //             error: 500
-        //         }
-        // }
     }
 }
 

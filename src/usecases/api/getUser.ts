@@ -23,7 +23,7 @@ class GetUser implements GetUserInterface {
 
     switch (response.error) {
       case undefined:
-        if (response.body[0] === undefined) {
+        if (response.body === undefined || response.body[0] === undefined) {
           return { body: undefined, error: 404 }
         }
         return {

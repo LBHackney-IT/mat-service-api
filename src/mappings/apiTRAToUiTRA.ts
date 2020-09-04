@@ -7,16 +7,11 @@ export interface TRAPatchMappingResponseInterface{
 }
 
 const apiTRAToUiTRA = (tras: TRAPatchMappingResponseInterface[]): TRA[] => {
-    const mappedTRAs: TRA[] = [];
-
-    tras.forEach((element: TRAPatchMappingResponseInterface) =>{
-        mappedTRAs.push({
-            id: element.traid,
-            name: element.name,
-            patchid: element.patchcrmid
-        })
-    })
-    return mappedTRAs;
+    return tras.map(tra => ({
+        id: tra.traid,
+        name: tra.name,
+        patchid: tra.patchcrmid
+    }))
 }
 
 export default apiTRAToUiTRA;

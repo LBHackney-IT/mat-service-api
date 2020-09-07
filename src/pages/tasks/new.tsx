@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, NextRouter } from 'next/router';
 import Layout from '../../components/layout';
 import { Button, Heading, HeadingLevels, Radios } from 'lbh-frontend-react';
 import createTask from '../../usecases/ui/createTask';
 
 interface NewProcessProps {
-  router: any;
+  router: NextRouter;
 }
 
 class NewProcessPage extends React.Component {
@@ -17,8 +17,10 @@ class NewProcessPage extends React.Component {
 
   createTaskHandler() {
     const tagRef = this.props.router.query.tag_ref;
+    const uprn = this.props.router.query.uprn;
     createTask({
       tagRef,
+      uprn,
       process: this.state.process,
       subProcess: this.state.subProcess,
     })
@@ -70,21 +72,21 @@ class NewProcessPage extends React.Component {
         label: {
           children: 'Home Check',
         },
-        value: 'homecheck',
+        value: '100000052',
       },
       {
         id: 'itv',
         label: {
           children: 'Introductory Tenancy Visit',
         },
-        value: 'itv',
+        value: '100000060',
       },
       {
         id: 'thc',
         label: {
           children: 'Tenancy & Household Check',
         },
-        value: 'thc',
+        value: '100000156',
         childrenWhenChecked: children,
       },
     ];

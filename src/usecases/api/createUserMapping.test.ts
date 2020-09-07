@@ -1,7 +1,7 @@
 import MatPostgresGateway from "../../gateways/matPostgresGateway";
 import faker from "faker";
 import CreateUserMapping from "./createUserMapping";
-import { create, maxBy } from "cypress/types/lodash";
+
 jest.mock("../../gateways/matPostgresGateway");
 
 describe("createUserMapping", () => {

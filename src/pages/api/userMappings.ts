@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import CheckUserMappingExists, { CheckUserMappingExistsResponse } from "../../usecases/api/checkUserMappingExists";
 import CreateUserMapping from "../../usecases/api/createUserMapping";
-import { post } from "cypress/types/jquery";
 
 type Data = CheckUserMappingExistsResponse;
 

@@ -11,17 +11,27 @@ interface CreateUserInterface {
 
 class CreateUser implements CreateUserInterface {
   tasksGateway: CrmGatewayInterface;
-  emailAddress: string;
+  user: {
+    emailAddress: string,
+    fullName: string,
+    firstName: string,
+    familyName: string
+  };
 
-  constructor(emailAddress: string) {
+  constructor(user: {
+    emailAddress: string,
+    fullName: string,
+    firstName: string,
+    familyName: string
+  }) {
     this.tasksGateway = new CrmGateway();
-    this.emailAddress = emailAddress;
+    this.user = user;
   }
 
   public async execute(): Promise<CreateUserResponse> {
-    const response = await this.tasksGateway.createUser(this.emailAddress);
+    const response = await this.tasksGateway.createUser(this.user.emailAddress, this.user.fullName, this.user.firstName, this.user.familyName);
 
-    switch(response.error) {
+    switch (response.error) {
       case undefined:
         return {
           body: response.body,

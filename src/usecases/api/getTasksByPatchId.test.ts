@@ -72,5 +72,5 @@ describe("GetTasks", () => {
     expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 401 })
   })
-  
+
 })

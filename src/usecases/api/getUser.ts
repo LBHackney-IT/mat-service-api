@@ -1,8 +1,8 @@
-import CrmGateway, { CrmGatewayInterface } from "../../gateways/crmGateway";
+import CrmGateway, { CrmGatewayInterface, CrmGatewayGetUserResponse } from "../../gateways/crmGateway";
 
 interface GetUserResponse {
-  body: any | undefined
-  error: number | undefined
+  body?: string
+  error?: number
 }
 
 interface GetUserInterface {
@@ -19,12 +19,15 @@ class GetUser implements GetUserInterface {
   }
 
   public async execute(): Promise<GetUserResponse> {
-    const response = await this.tasksGateway.getUser(this.emailAddress);
+    const response: CrmGatewayGetUserResponse = await this.tasksGateway.getUser(this.emailAddress);
 
-    switch(response.error) {
+    switch (response.error) {
       case undefined:
+        if (response.body === undefined || response.body[0] === undefined) {
+          return { body: undefined, error: 404 }
+        }
         return {
-          body: response.body,
+          body: response.body[0]["hackney_estateofficerid"],
           error: undefined
         }
       case "NotAuthorised":

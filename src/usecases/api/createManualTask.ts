@@ -5,15 +5,22 @@ import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
 interface TmiData {
   title: string;
   description: string;
+  enquirySubject: string;
 }
 
 const tmiLookup: { [key: string]: TmiData } = {
-  '100000052': { title: 'Home Check', description: 'Starting a home check' },
-  '100000060': {
+  homecheck: {
+    enquirySubject: '100000052',
+    title: 'Home Check',
+    description: 'Starting a home check',
+  },
+  itv: {
+    enquirySubject: '100000060',
     title: 'Introductory Tenancy Visit',
     description: 'Starting an introductory tenancy visit',
   },
-  '100000156': {
+  thc: {
+    enquirySubject: '100000156',
     title: 'Tenancy & Household Check',
     description: 'Starting a tenancy & household check',
   },
@@ -54,7 +61,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     );
 
     const tmi: TenancyManagementInteraction = {
-      enquirySubject: processData.process,
+      enquirySubject: tmiLookup[processData.process].enquirySubject,
       reasonForStartingProcess: processData.subProcess,
       subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
       natureofEnquiry: '15',

@@ -72,21 +72,21 @@ class NewProcessPage extends React.Component {
         label: {
           children: 'Home Check',
         },
-        value: '100000052',
+        value: 'homecheck',
       },
       {
         id: 'itv',
         label: {
           children: 'Introductory Tenancy Visit',
         },
-        value: '100000060',
+        value: 'itv',
       },
       {
         id: 'thc',
         label: {
           children: 'Tenancy & Household Check',
         },
-        value: '100000156',
+        value: 'thc',
         childrenWhenChecked: children,
       },
     ];

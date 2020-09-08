@@ -51,13 +51,6 @@ jobs:
           root: ~/repo
           paths: .
 
-  branch-commit:
-    executor: my-executor
-
-    steps:
-      - cypress/run:
-          store_artifacts: false
-
   deploy-staging:
     executor: my-executor
 
@@ -108,16 +101,26 @@ workflows:
   continuous-delivery:
     jobs:
       - test
-      - branch-commit:
+      - deploy-staging:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - cypress/run:
+          store_artifacts: false
+          start: npm run dev
           requires:
             - test
           filters:
             branches:
               ignore:
                 - master
-      - deploy-staging:
+      - cypress/run:
+          store_artifacts: true
           requires:
-            - test
+            - deploy-staging
           filters:
             branches:
               only:

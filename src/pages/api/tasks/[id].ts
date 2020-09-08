@@ -9,7 +9,7 @@ interface Error {
 type Data = Task | Error;
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  
+
   const id = req.query.id
     ? Array.isArray(req.query.id)
       ? req.query.id[0]
@@ -20,7 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     const getTask = new GetTask(id);
     const response = await getTask.execute();
-    
+
     if (response.body) {
       res.status(200).json(response.body);
     } else {

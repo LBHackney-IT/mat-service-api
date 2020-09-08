@@ -67,11 +67,11 @@ export default function TaskPage(props: TaskProps) {
           <Label>Related item:</Label>
           {props.task.parent ? props.task.parent : 'None'}
       </Paragraph>
-      {/* <style jsx>{`
+      <style jsx>{`
         .tile-container {
         display: flex;
         }
-    `}</style> */}
+    `}</style>
     </Layout>
   );
 

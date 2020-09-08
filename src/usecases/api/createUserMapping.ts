@@ -1,6 +1,6 @@
 import MatPostgresGateway from "../../gateways/matPostgresGateway";
 
-interface CreateUserMapping {
+interface CreateUserMappingResponse {
   error: number | undefined
 }
 
@@ -12,7 +12,7 @@ interface UserMapping {
 }
 
 interface CreateUserMappingInterface {
-  execute(): Promise<CreateUserMapping>
+  execute(): Promise<CreateUserMappingResponse>
 }
 
 class CreateUserMapping implements CreateUserMappingInterface {

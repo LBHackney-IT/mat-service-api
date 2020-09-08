@@ -19,7 +19,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         const response = await getUser.execute();
 
         if (response.error === undefined) {
-          res.status(200).json(response.body)
+          res.status(200).json({data: response.body})
         } else {
           res.status(response.error).end()
         }

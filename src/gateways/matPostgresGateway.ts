@@ -1,5 +1,5 @@
 interface GetUserMappingResponse {
-  body: UserMappingTable[],
+  body: UserMappingTable | undefined,
   error: number | undefined
 }
 
@@ -68,22 +68,22 @@ class MatPostgresGateway {
     await this.setupInstance();
 
     try {
-      const results: UserMappingTable[] = await this.instance.one('SELECT * FROM usermappings WHERE emailaddress = $1', emailAddress)
+      const result: UserMappingTable = await this.instance.one('SELECT * FROM usermappings WHERE emailaddress = $1', emailAddress)
 
       return Promise.resolve({
-        body: results,
+        body: result,
         error: undefined
       })
     }
     catch (error) {
       if (error.message == "No data returned from the query.") {
         return Promise.resolve({
-          body: [],
+          body: undefined,
           error: undefined
         })
       }
       return Promise.resolve({
-        body: [],
+        body: undefined,
         error: 500
       })
     }

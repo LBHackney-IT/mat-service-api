@@ -26,7 +26,7 @@ class CheckUserMappingExists implements CheckUserMappingExistsInterface {
         error: result.error
       })
     }
-    if (result.body.length === 0) {
+    if (result.body) {
       return Promise.resolve({
         body: false,
         error: undefined

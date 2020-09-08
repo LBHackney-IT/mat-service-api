@@ -1,6 +1,6 @@
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
-import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
+import GetUser from './getUser';
 
 interface TmiData {
   title: string;
@@ -44,6 +44,8 @@ interface CreateManualTaskData {
   uprn: string;
   process: string;
   subProcess?: number;
+  officerEmail: string;
+  officerName: string;
 }
 
 class CreateManualTaskUseCase implements CreateManualTaskInterface {
@@ -60,6 +62,9 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       processData.uprn
     );
 
+    const getUser = new GetUser(processData.officerEmail);
+    const officer = await getUser.execute();
+
     const tmi: TenancyManagementInteraction = {
       enquirySubject: tmiLookup[processData.process].enquirySubject,
       reasonForStartingProcess: processData.subProcess,
@@ -67,18 +72,18 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       natureofEnquiry: '15',
       source: '1',
       contactId: contact.contactId,
-      estateOfficerId: 'TBC',
-      estateOfficerName: 'TBC',
-      officerPatchId: 'TBC',
-      areaName: 0,
-      householdId: 'TBC',
+      estateOfficerId: officer.officerId, // Needs checking
+      estateOfficerName: processData.officerName,
+      officerPatchId: officer.officerPatchId, // Needs checking
+      areaName: 0, // Needs setting
+      householdId: contact.houseRef,
       serviceRequest: {
         title: tmiLookup[processData.process].title,
         description: tmiLookup[processData.process].description,
-        contactId: 'TBC',
+        contactId: contact.contactId,
         subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
-        enquiryType: 'TBC',
-        createdBy: 'TBC',
+        enquiryType: 'TBC', // Needs setting
+        createdBy: officer.officerId, // Needs checking
         childRequests: [],
       },
     };

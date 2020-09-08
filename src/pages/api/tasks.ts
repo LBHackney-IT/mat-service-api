@@ -3,12 +3,15 @@ import { Task } from '../../interfaces/task';
 import GetTasksByPatchId from '../../usecases/api/getTasksByPatchId';
 import CreateManualTaskUseCase from '../../usecases/api/createManualTask';
 import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
+const { getTokenPayload } = require('node-lambda-authorizer')({
+  jwtSecret: process.env.JWT_SECRET,
+});
 
 type Data = Task[] | undefined;
 
 const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
-    return res.status(204).end();
+    return res.status(500).end();
   }
 
   const gateway: v1MatAPIGateway = new v1MatAPIGateway({
@@ -18,12 +21,16 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   const createTask = new CreateManualTaskUseCase({ gateway });
 
+  const userToken = getTokenPayload(req);
+
   createTask
     .execute({
       process: req.body.process,
       subProcess: <number>req.body.subProcess,
       tagRef: req.body.tag_ref,
       uprn: req.body.uprn,
+      officerEmail: userToken.email,
+      officerName: userToken.name,
     })
     .then((response) => {
       res.status(204).end();

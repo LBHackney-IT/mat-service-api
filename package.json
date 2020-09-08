@@ -21,6 +21,7 @@
 		"cypress:run:dev": "cypress run  --env JWT_SECRET=secret"
 	},
 	"dependencies": {
+		"@types/classnames": "^2.2.10",
 		"@types/cookie": "^0.4.0",
 		"@types/faker": "^4.1.12",
 		"@types/history": "^4.7.6",

@@ -89,7 +89,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
     uprn: string
   ): Promise<createTenancyManagementInteractionResponse> {
     const response = await axios
-      .get(`${this.v1MatApiUrl}/v1/Contacts/GetContactsByUprn?uprn=${uprn}`, {
+      .get(`${this.v1MatApiUrl}/v1/Contacts/GetContactsByUprn?urpn=${uprn}`, {
         headers: {
           Authorization: `Bearer ${this.v1MatApiToken}`,
         },

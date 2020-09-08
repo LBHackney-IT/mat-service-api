@@ -4,20 +4,25 @@ import Layout from '../../components/layout';
 import { Button, Heading, HeadingLevels, Radios } from 'lbh-frontend-react';
 import createTask from '../../usecases/ui/createTask';
 
-interface NewProcessProps {
+type Props = {
   router: NextRouter;
-}
+};
+type State = {
+  process?: string;
+  subProcess?: string;
+};
 
-class NewProcessPage extends React.Component {
-  constructor(props: NewProcessProps) {
+class NewProcessPage extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { process: undefined };
     this.createTaskHandler = this.createTaskHandler.bind(this);
   }
 
   createTaskHandler() {
-    const tagRef = this.props.router.query.tag_ref;
-    const uprn = this.props.router.query.uprn;
+    if (!this.state.process) return;
+    const tagRef = this.props.router.query.tag_ref as string;
+    const uprn = this.props.router.query.uprn as string;
     createTask({
       tagRef,
       uprn,
@@ -60,7 +65,8 @@ class NewProcessPage extends React.Component {
   }
 
   isReadyToSubmit(): boolean {
-    return this.state.process && (this.isCollapsed() || this.state.subProcess);
+    return (this.state.process &&
+      (this.isCollapsed() || this.state.subProcess)) as boolean;
   }
 
   itemTypes(collapsed: boolean) {

@@ -1,8 +1,13 @@
 import axios from 'axios';
-import { Row } from '../../components/worktray';
 
-const createTask = async (task) => {
-  console.log(task);
+interface Task {
+  tagRef: string;
+  uprn: string;
+  process: string;
+  subProcess?: string;
+}
+
+const createTask = async (task: Task) => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) return null;
 
   return await axios

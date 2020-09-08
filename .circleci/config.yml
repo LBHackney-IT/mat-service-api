@@ -7,9 +7,6 @@ executors:
   my-executor:
     docker:
       - image: circleci/node:12.13
-    # environment:
-    #   JWT_SECRET: $CYPRESS_JWT_SECRET
-
     working_directory: ~/repo
 
 jobs:
@@ -49,6 +46,10 @@ jobs:
       - run:
           name: Run unit tests
           command: npm run test:unit
+
+      - cypress/run:
+          start: npm run dev
+          store_artifacts: false
 
       - persist_to_workspace:
           root: ~/repo

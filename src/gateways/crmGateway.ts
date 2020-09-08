@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import CrmTokenGateway, { CrmTokenGatewayInterface } from "./crmTokenGateway";
 import { Task } from '../interfaces/task';
 import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
-import getTasksByPatchIdQuery from './xmlQueryStrings/getTasksByPatchId';
+import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
 import getPatchIdByOfficerId from './xmlQueryStrings/getPatchIdByOfficerId';
 import crmToPatchDetails, { PatchDetails } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
@@ -18,7 +18,7 @@ interface GetPatchByOfficerIdResponse{
 }
 
 export interface CrmGatewayInterface {
-  getTasksByPatchId(patchId: string): Promise<GetTasksResponse>;
+  getTasksForAPatch(patchId: string, officerId: string, isManager: boolean): Promise<GetTasksResponse>;
   getTask(taskId: string): Promise<GetTaskResponse>;
   getUser(emailAddress: string): any;
   createUser(emailAddress: string): any;
@@ -45,14 +45,13 @@ class CrmGateway implements CrmGatewayInterface {
     this.crmApiToken = undefined
   }
 
-  public async getTasksByPatchId(patchId: string): Promise<GetTasksResponse> {
+  public async getTasksForAPatch(patchId: string, officerId: string, isManager: boolean): Promise<GetTasksResponse> {
 
     if (!this.crmApiToken) {
       this.crmApiToken = await this.crmTokenGateway.getCloudToken();
     }
 
-    const crmQuery = getTasksByPatchIdQuery(patchId);
-
+    const crmQuery = getTasksByPatchAndOfficerIdQuery(patchId, officerId, isManager);
     const response = await axios
       .get(`${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`, {
         headers: {

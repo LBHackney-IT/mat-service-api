@@ -1,3 +1,9 @@
+export interface MatPostgresGatewayInterface{
+  getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>,
+  getUserMapping(emailAddress: string): Promise<GetUserMappingResponse>,
+  createUserMapping(userMapping: UserMappingTable): Promise<CreateUserMappingResponse>
+}
+
 interface GetUserMappingResponse {
   body: UserMappingTable[],
   error: number | undefined

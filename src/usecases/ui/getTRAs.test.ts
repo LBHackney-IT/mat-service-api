@@ -5,7 +5,7 @@ import getEmailAddress from './getEmailAddress';
 import apiTRAToUiTRA from '../../mappings/apiTRAToUiTRA';
 
 jest.mock('axios');
-jest.mock('../ui/getEmailAddress.ts')
+jest.mock('./getEmailAddress.ts')
 jest.mock('../../mappings/apiTRAToUiTRA.ts')
 
 const mockCRMPatchId = faker.random.uuid()

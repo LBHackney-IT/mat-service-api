@@ -8,8 +8,9 @@ require('dotenv').config();
 describe('Task Page', () => {
   it("has an empty test to allow pass", () => {
     // currently, the Paragraph component from lbh-frontend-react doesn't allow multiple elements.
-    // a fix needs to occur there first before we can actually test here.
+    // a fix needs to occur there first before we can actually test here as we're getting type errors from Paragraph.
   })
+
   // it('allows us to set props', () => {
   //   const task = MockTask();
 

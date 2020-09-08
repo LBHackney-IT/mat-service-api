@@ -71,9 +71,6 @@ jobs:
       - run:
           name: Run integration tests
           command: API_PATH=${API_PATH_STAGING} npm run test:integration
-      
-      - cypress/run:
-          store_artifacts: true
 
   deploy-production:
     executor: my-executor

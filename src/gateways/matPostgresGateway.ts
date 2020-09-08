@@ -1,5 +1,11 @@
+export interface MatPostgresGatewayInterface{
+  getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>,
+  getUserMapping(emailAddress: string): Promise<GetUserMappingResponse>,
+  createUserMapping(userMapping: UserMappingTable): Promise<CreateUserMappingResponse>
+}
+
 interface GetUserMappingResponse {
-  body: UserMappingTable[],
+  body: UserMappingTable | undefined,
   error: number | undefined
 }
 
@@ -15,6 +21,17 @@ interface UserMappingTable {
   googleId: string,
 }
 
+interface GetTRAPatchMappingResponse{
+  body: TRAPatchMapping[],
+  error: number | undefined
+}
+
+interface TRAPatchMapping {
+  name: string,
+  traid: number,
+  patchcrmid: string
+}
+
 class MatPostgresGateway {
   instance: any;
   constructor() {
@@ -26,61 +43,53 @@ class MatPostgresGateway {
     if (!db) {
       const { default: pgp } = await import('pg-promise');
       let options = {
-        connectionString: process.env.TEST_DATABASE_URL //TODO: update this to prod value
+        connectionString: process.env.DATABASE_URL
       };
-      if (process.env.NODE_ENV === 'test') { //TODO: add dev!?
-        options.connectionString = process.env.TEST_DATABASE_URL;
-      }
-      if (process.env.NODE_ENV === 'production') {
-        delete options.connectionString;
-        options.host = process.env.HOST;
-        options.user = process.env.USERNAME;
-        options.password = process.env.PASSWORD;
-        options.database = process.env.DATABASE;
-      }
       this.instance = pgp()(options);
       delete this.instance.constructor;
     }
   }
 
-  public async getTrasByPatchId() {
+  public async getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse> {
     await this.setupInstance();
+    
     try {
-      const results = await this.instance.many('SELECT * FROM tra')
+      const results: TRAPatchMapping[] = await this.instance.many('SELECT  TRA.Name, TRA.TraId, TRAPatchAssociation.PatchCRMId FROM	TRA INNER JOIN TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId WHERE TRAPatchAssociation.PatchCRMId = ${id}', { id: patchId } );
 
       return Promise.resolve({
         body: results,
         error: undefined
       })
     }
-    catch (error) {
+    catch(error) {
       return Promise.resolve({
-        body: undefined,
+        body: [],
         error: 500
       })
     }
   }
 
+
   public async getUserMapping(emailAddress: string): Promise<GetUserMappingResponse> {
     await this.setupInstance();
 
     try {
-      const results: UserMappingTable[] = await this.instance.one('SELECT * FROM usermappings WHERE emailaddress = $1', emailAddress)
+      const result: UserMappingTable = await this.instance.one('SELECT * FROM usermappings WHERE emailaddress = $1', emailAddress)
 
       return Promise.resolve({
-        body: results,
+        body: result,
         error: undefined
       })
     }
     catch (error) {
       if (error.message == "No data returned from the query.") {
         return Promise.resolve({
-          body: [],
+          body: undefined,
           error: undefined
         })
       }
       return Promise.resolve({
-        body: [],
+        body: undefined,
         error: 500
       })
     }

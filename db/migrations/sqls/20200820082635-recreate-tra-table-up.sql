@@ -1,0 +1,8 @@
+/* Replace with your SQL commands */
+CREATE TABLE TRA(
+    Id SERIAL PRIMARY KEY NOT NULL,
+	TRAId   INTEGER NOT NULL,
+	Name    TEXT NOT NULL,
+	AreaId INTEGER NOT NULL,
+	Email   TEXT NULL
+)

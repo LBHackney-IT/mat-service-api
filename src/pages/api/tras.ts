@@ -1,22 +1,21 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { TRA } from '../../interfaces/tra';
-import GetTRAsByPatchId from '../../usecases/api/getTRAsByPatchId';
+import GetTRAs from "../../usecases/api/getTRAs";
+import { officerPatchAssociationInterface } from '../../usecases/api/getTRAs'
 
-type Data = TRA[] | undefined;
+type Data = officerPatchAssociationInterface | undefined
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-    const patchId = req.query.patchId
-        ? Array.isArray(req.query.patchId)
-            ? req.query.patchId[0]
-            : req.query.patchId
+    const emailAddress = req.query.emailAddress
+        ? Array.isArray(req.query.emailAddress)
+            ? req.query.emailAddress[0]
+            : req.query.emailAddress
         : undefined;
 
-    if(patchId != undefined){
-        const getTRAs = new GetTRAsByPatchId(patchId);
+    if(emailAddress != undefined){
+        const getTRAs = new GetTRAs(emailAddress)
         switch (req.method){
             case 'GET':
                 const response = await getTRAs.execute();
-                
                 if(response.error === undefined){
                     res.status(200).json(response.body)
                 }

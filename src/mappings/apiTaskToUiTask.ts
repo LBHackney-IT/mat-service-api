@@ -21,7 +21,7 @@ const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {
           value: element.resident.presentationName
         },
         { key: "address", value: element.address.presentationShort },
-        { key: "dueCompletion", value: new Date(element.dueTime) }
+        { key: "dueCompletion", value: (element.dueTime ? new Date(element.dueTime) : "Unknown")}
       ],
       workItemStatus: element.stage == Stage.completed ? Status.complete : Status.inProgress,
       workItemId: element.id,

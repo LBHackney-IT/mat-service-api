@@ -1,11 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import Worktray, {
-  sampleWorkTrayColumns,
-  Row,
-} from '../components/worktray';
-import Layout from '../components/layout'
-import getTasksByOfficerEmail from "../usecases/ui/getTasksByOfficerEmail";
+import Worktray, { sampleWorkTrayColumns, Row } from '../components/worktray';
+import Layout from '../components/layout';
+import getTasksByOfficerEmail from '../usecases/ui/getTasksByOfficerEmail';
 
 export default function Home() {
   const [tasks, setTasks] = useState<Row[]>([]);
@@ -14,9 +11,9 @@ export default function Home() {
     const fetchTasks = async () => {
       const fetchedTasks = await getTasksByOfficerEmail();
       setTasks(fetchedTasks);
-    }
+    };
     fetchTasks();
-  }, [])
+  }, []);
 
   return (
     <Layout>

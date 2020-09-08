@@ -81,8 +81,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const taskId = context.query ? context.query.id : undefined;
 
   if (taskId) {
-    const trueResponse = await getTaskById(`${taskId}`);
-    return { props: { task: trueResponse as Task } };
+    const response = await getTaskById(`${taskId}`);
+    if(response !== undefined) {
+      return { props: { task: response as Task } };
+    }
   }
 
   return { props: {} };

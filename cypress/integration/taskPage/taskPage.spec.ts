@@ -5,8 +5,6 @@ import generateToken from '../../../src/tests/helpers/generateToken';
 
 const jwtSecret = Cypress.env('JWT_SECRET');
 
-console.log(jwtSecret);
-
 describe('Task Page Elements', () => {
   it('', () => {
     let token = generateToken(

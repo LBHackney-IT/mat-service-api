@@ -52,12 +52,12 @@ export default function TaskPage(props: TaskProps) {
       <Heading level={HeadingLevels.H2}>{props.task.type}</Heading>
       <Heading level={HeadingLevels.H3}>Tenancy</Heading>
       <Paragraph>
-          <Label>Address:</Label>
-          {props.task.address.presentationShort}
-          <Label>Tenancy type:</Label>
-          {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
-          <Label>Tenancy start date:</Label>
-          {moment(props.task.tenancy.startDate).format("DD/MM/YYYY")}
+        <Label>Address:</Label>
+        {props.task.address.presentationShort}
+        <Label>Tenancy type:</Label>
+        {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
+        <Label>Tenancy start date:</Label>
+        {props.task.tenancy.startDate ? moment(props.task.tenancy.startDate).format("DD/MM/YYYY") : "n/a"}
       </Paragraph>
       <Heading level={HeadingLevels.H3}>Residents</Heading>
       <div className="tile-container">
@@ -65,12 +65,12 @@ export default function TaskPage(props: TaskProps) {
       </div>
       <Heading level={HeadingLevels.H3}>Action</Heading>
       <Paragraph>
-          <Label>Due:</Label>
-          {props.task.dueTime}
-          <Label>Reference no.:</Label>
-          {props.task.referenceNumber ? props.task.referenceNumber : 'Unknown'}
-          <Label>Related item:</Label>
-          {props.task.parent ? props.task.parent : 'None'}
+        <Label>Due:</Label>
+        {props.task.dueTime ? props.task.dueTime : "n/a"}
+        <Label>Reference number:</Label>
+        {props.task.referenceNumber ? props.task.referenceNumber : 'n/a'}
+        <Label>Related item:</Label>
+        {props.task.parent ? props.task.parent : "n/a"}
       </Paragraph>
       <style jsx>{`
         .tile-container {
@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (taskId) {
     const response = await getTaskById(`${taskId}`);
-    if(response !== undefined) {
+    if (response !== undefined) {
       return { props: { task: response as Task } };
     }
   }

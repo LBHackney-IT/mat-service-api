@@ -25,12 +25,12 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       tagRef: req.body.tag_ref,
       uprn: req.body.uprn,
     })
-    .then((response) => {})
-    .catch((error) => {});
-
-  console.log(req.body);
-
-  res.status(204).end();
+    .then((response) => {
+      res.status(204).end();
+    })
+    .catch((error) => {
+      res.status(500).end();
+    });
 };
 
 const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {

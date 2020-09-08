@@ -3,55 +3,56 @@ import CRMGateway from '../../gateways/crmGateway'
 import { TRAPatchMappingResponseInterface } from '../../mappings/apiTRAToUiTRA'
 
 
-export interface officerPatchAssociationInterface{
+export interface officerPatchAssociationInterface {
     patchname: string,
     tras: TRAPatchMappingResponseInterface[],
     officername: string
 }
 
-interface GetTRAsResponseInterface{
+interface GetTRAsResponseInterface {
     body: officerPatchAssociationInterface | undefined
     error: number | undefined
 }
 
-interface GetTRAsInterface{
+interface GetTRAsInterface {
     execute(): Promise<GetTRAsResponseInterface>
 }
 
-class GetTRAs implements GetTRAsInterface{
+class GetTRAs implements GetTRAsInterface {
     emailAddress: string;
 
-    constructor(emailAddress: string){
+    constructor(emailAddress: string) {
         this.emailAddress = emailAddress;
     }
 
-    public async execute(): Promise<GetTRAsResponseInterface>
-    {
-        if(this.emailAddress === undefined){
+    public async execute(): Promise<GetTRAsResponseInterface> {
+        if (this.emailAddress === undefined) {
             return Promise.resolve({
                 body: undefined,
                 error: 400
             })
         }
-        try
-        {
+        try {
             const matGateway = new MatPostgresGateway();
             const crmGateway = new CRMGateway();
-            
+
             const userDetails = await matGateway.getUserMapping(this.emailAddress);
+
+            if (!userDetails.body) throw new Error("User not found");
+
             const userPatch = await crmGateway.getPatchByOfficerId(userDetails.body.usercrmid)
 
             let tras;
 
-            if(userPatch !== undefined && userPatch.body !== undefined && userPatch.body.patchid !== undefined){ 
+            if (userPatch !== undefined && userPatch.body !== undefined && userPatch.body.patchid !== undefined) {
                 tras = await matGateway.getTrasByPatchId(userPatch.body.patchid);
             }
-            else{
+            else {
                 return Promise.resolve({
-                    body:  {
+                    body: {
                         patchname: "",
                         tras: [],
-                        officername: "" 
+                        officername: ""
                     },
                     error: undefined
                 })
@@ -60,7 +61,7 @@ class GetTRAs implements GetTRAsInterface{
             const traDetails = {
                 patchname: userPatch.body.patchname,
                 tras: tras.body,
-                officername: userPatch.body.officername                 
+                officername: userPatch.body.officername
             }
 
             return Promise.resolve({
@@ -68,7 +69,7 @@ class GetTRAs implements GetTRAsInterface{
                 error: undefined
             })
         }
-        catch(error){
+        catch (error) {
             return Promise.resolve({
                 body: undefined,
                 error: 500

@@ -3,8 +3,6 @@ import Head from 'next/head';
 import Worktray, { sampleWorkTrayColumns, Row } from '../components/worktray';
 import Layout from '../components/layout';
 import getTasksByOfficerEmail from '../usecases/ui/getTasksByOfficerEmail';
-import { NavigationBar } from 'lbh-frontend-react';
-import pageRedirect from '../tests/helpers/pageRedirect';
 
 export default function Home() {
   const [tasks, setTasks] = useState<Row[]>([]);
@@ -19,7 +17,6 @@ export default function Home() {
 
   return (
     <Layout>
-      <NavigationBar targets={pageRedirect} />
       <div>
         <div className="container">
           <Head>

@@ -126,7 +126,7 @@ describe('v1MatAPIGateway', () => {
 
       const response = await gateway.getContactsByUprn('12345678901');
 
-      expect(response.body).toEqual(dummyResponse);
+      expect(response.body).toEqual(dummyResponse.results);
     });
 
     it('returns an human readable error when unsuccessful', async () => {

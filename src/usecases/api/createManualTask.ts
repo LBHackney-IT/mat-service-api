@@ -36,7 +36,7 @@ interface CreateManualTaskOptions {
 }
 
 interface CreateManualTaskInterface {
-  execute(): Promise<CreateManualTaskResponse>;
+  execute(processData: CreateManualTaskData): Promise<CreateManualTaskResponse>;
 }
 
 interface CreateManualTaskData {

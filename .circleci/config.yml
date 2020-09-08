@@ -41,7 +41,7 @@ jobs:
 
       - run:
           name: Run prettier
-          command: prettier -c .
+          command: npm run prettier:test
 
       - run:
           name: Build application

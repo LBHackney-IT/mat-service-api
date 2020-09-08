@@ -5,8 +5,6 @@ import generateToken from '../../../src/tests/helpers/generateToken';
 
 const jwtSecret = Cypress.env('JWT_SECRET');
 
-console.log(jwtSecret);
-
 describe('Tenancy Page Elements', () => {
   it('', () => {
     let token = generateToken(
@@ -18,10 +16,8 @@ describe('Tenancy Page Elements', () => {
     );
 
     cy.setCookie('hackneyToken', token);
-    cy.visit('/tenancies/0383aee7-5a13-4b3b-ac5f-4cfbffc13429');
+    cy.visit('/tasks/new?tag_ref=1234567-1&uprn=12345678901');
 
     cy.contains('Create New Process');
-    cy.contains('Tenancy');
-    cy.contains('Processes');
   });
 });

@@ -19,7 +19,7 @@ describe('CrmGateway', () => {
       axios.get.mockResolvedValue({data: data});
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getTasksByPatchId(patchId);
+      const response = await crmGateway.getTasksForAPatch(patchId);
 
       const tasks = crmResponseToTasks(data);
 
@@ -37,7 +37,7 @@ describe('CrmGateway', () => {
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getTasksByPatchId(patchId);
+      const response = await crmGateway.getTasksForAPatch(patchId);
 
       expect(response).toEqual(errorResponse);
     });

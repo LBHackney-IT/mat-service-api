@@ -5,14 +5,14 @@ import Worktray, {
   Row,
 } from '../components/worktray';
 import Layout from '../components/layout'
-import getTasks from "../usecases/ui/getTasks";
+import getTasksByOfficerEmail from "../usecases/ui/getTasksByOfficerEmail";
 
 export default function Home() {
   const [tasks, setTasks] = useState<Row[]>([]);
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const fetchedTasks = await getTasks();
+      const fetchedTasks = await getTasksByOfficerEmail();
       setTasks(fetchedTasks);
     }
     fetchTasks();

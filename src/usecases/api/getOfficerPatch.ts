@@ -1,59 +1,59 @@
 import { MatPostgresGatewayInterface } from "../../gateways/matPostgresGateway";
 import { CrmGatewayInterface } from "../../gateways/crmGateway";
 
-interface OfficerPatchInterface{
+interface OfficerPatchInterface {
     officerCrmId: string,
     patchId: string
 }
 
-interface GetOfficerPatchResponse{
+interface GetOfficerPatchResponse {
     body?: OfficerPatchInterface,
     error?: number
 }
 
-interface GetOfficerPatchOptions{
+interface GetOfficerPatchOptions {
     emailAddress: string;
     crmGateway: CrmGatewayInterface;
     matPostgresGateway: MatPostgresGatewayInterface;
 }
 
-interface GetOfficerPatchInterface{
+interface GetOfficerPatchInterface {
     execute(): Promise<GetOfficerPatchResponse>;
 }
 
-class GetOfficerPatch implements GetOfficerPatchInterface{
+class GetOfficerPatch implements GetOfficerPatchInterface {
     emailAddress: string;
     crmGateway: CrmGatewayInterface;
     matPostgresGateway: MatPostgresGatewayInterface;
 
-    constructor(options: GetOfficerPatchOptions){
+    constructor(options: GetOfficerPatchOptions) {
         this.emailAddress = options.emailAddress;
         this.crmGateway = options.crmGateway;
         this.matPostgresGateway = options.matPostgresGateway;
     }
 
-    public async execute(): Promise<GetOfficerPatchResponse>{
+    public async execute(): Promise<GetOfficerPatchResponse> {
         let userPatch;
 
         const userDetails = await this.matPostgresGateway.getUserMapping(this.emailAddress);
 
-        if(userDetails.body.usercrmid){
+        if (userDetails.body && userDetails.body.usercrmid) {
             userPatch = await this.crmGateway.getPatchByOfficerId(userDetails.body.usercrmid)
         }
-        else{
-            return{
+        else {
+            return {
                 body: undefined,
-                error: undefined
+                error: 404
             }
         }
-      
-        const OfficerPatchDetails: OfficerPatchInterface = { 
+
+        const OfficerPatchDetails: OfficerPatchInterface = {
             officerCrmId: userDetails.body.usercrmid,
             patchId: userPatch.body.patchid
         }
-        
-        return{
-            body:  OfficerPatchDetails,
+
+        return {
+            body: OfficerPatchDetails,
             error: undefined
         }
     }
@@ -61,4 +61,3 @@ class GetOfficerPatch implements GetOfficerPatchInterface{
 
 export default GetOfficerPatch;
 
- 

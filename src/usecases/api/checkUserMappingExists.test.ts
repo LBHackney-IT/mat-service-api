@@ -12,7 +12,7 @@ describe("checkUserMappingExists", () => {
     MatPostgresGateway.mockImplementationOnce(() => {
       return {
         getUserMapping: () => ({
-          body: [],
+          body: undefined,
           error: undefined
         })
       }
@@ -38,7 +38,7 @@ describe("checkUserMappingExists", () => {
     MatPostgresGateway.mockImplementationOnce(() => {
       return {
         getUserMapping: () => ({
-          body: [randomUserMapping],
+          body: randomUserMapping,
           error: undefined
         })
       }

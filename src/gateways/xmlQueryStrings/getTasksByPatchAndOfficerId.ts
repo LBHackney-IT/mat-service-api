@@ -3,7 +3,7 @@ const getTasksByPatchAndOfficerIdQuery = (patchId: string, officerId: string, is
 return(
     isManager === false ?     
     `
-        <fetch top="100">
+        <fetch>
             <entity name="hackney_tenancymanagementinteractions">
                 <attribute name="hackney_contactid" />
                 <attribute name="hackney_handleby" />
@@ -63,7 +63,7 @@ return(
         `
         :
         `
-        <fetch top="100">
+        <fetch>
             <entity name="hackney_tenancymanagementinteractions">
                 <attribute name="hackney_contactid" />
                 <attribute name="hackney_handleby" />

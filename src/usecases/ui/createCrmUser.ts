@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export interface User {
   fullName: string;
@@ -16,15 +16,19 @@ const createCrmUser = async (user: User) => {
     fullName: user.fullName,
     emailAddress: user.emailAddress,
     firstName: user.firstName,
-    familyName: user.familyName
-  }
+    familyName: user.familyName,
+  };
 
   const response = await axios
     .post(`${process.env.NEXT_PUBLIC_API_PATH}/user`, requestBody)
-    .then((response => { return response }))
-    .catch((error => { return false }))
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return false;
+    });
 
   return response;
-}
+};
 
 export default createCrmUser;

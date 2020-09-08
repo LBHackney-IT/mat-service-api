@@ -1,6 +1,5 @@
 const getPatchIdByOfficerId = (officerId: string) => {
-    return(
-        `<fetch>
+  return `<fetch>
         <entity name='hackney_estateofficerpatch' >
           <attribute name='hackney_name' />
           <attribute name='hackney_patchid' />
@@ -9,8 +8,7 @@ const getPatchIdByOfficerId = (officerId: string) => {
           </filter>
           <link-entity name='hackney_estateofficer' from='hackney_estateofficerid' to='hackney_patchid' />
         </entity>
-      </fetch>`
-    )
-}
+      </fetch>`;
+};
 
 export default getPatchIdByOfficerId;

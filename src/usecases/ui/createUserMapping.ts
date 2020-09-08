@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export interface UserMapping {
   name: string;
@@ -16,15 +16,19 @@ const createUserMapping = async (userMapping: UserMapping) => {
     name: userMapping.name,
     emailAddress: userMapping.emailAddress,
     usercrmid: userMapping.usercrmid,
-    googleId: userMapping.googleId
-  }
+    googleId: userMapping.googleId,
+  };
 
   const response = await axios
     .post(`${process.env.NEXT_PUBLIC_API_PATH}/userMappings`, requestBody)
-    .then((response => { return true }))
-    .catch((error => { return false }))
+    .then((response) => {
+      return true;
+    })
+    .catch((error) => {
+      return false;
+    });
 
   return response;
-}
+};
 
 export default createUserMapping;

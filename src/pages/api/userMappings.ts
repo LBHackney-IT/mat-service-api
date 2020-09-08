@@ -1,6 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import CheckUserMappingExists, { CheckUserMappingExistsResponse } from "../../usecases/api/checkUserMappingExists";
-import CreateUserMapping from "../../usecases/api/createUserMapping";
+import { NextApiRequest, NextApiResponse } from 'next';
+import CheckUserMappingExists, {
+  CheckUserMappingExistsResponse,
+} from '../../usecases/api/checkUserMappingExists';
+import CreateUserMapping from '../../usecases/api/createUserMapping';
 
 type Data = CheckUserMappingExistsResponse;
 
@@ -13,21 +15,21 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
           : req.query.emailAddress
         : undefined;
 
-      if(emailAddress !== undefined) {
+      if (emailAddress !== undefined) {
         const checkUserMappingExists = new CheckUserMappingExists(emailAddress);
         const getResponse = await checkUserMappingExists.execute();
         if (getResponse.error === undefined) {
-          res.status(200).json(getResponse)
+          res.status(200).json(getResponse);
 
-          break
+          break;
         }
         res.status(getResponse.error).end();
 
-        break
+        break;
       }
 
       res.status(400).end();
-      break
+      break;
 
     case 'POST':
       const userMapping = {
@@ -42,12 +44,11 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       if (postResponse.error === undefined) {
         res.status(201).end();
 
-        break
+        break;
       }
       res.status(postResponse.error).end();
     default:
-      res.setHeader('Allow', ['GET', 'POST'])
-      res.status(405).end(`Method ${req.method} Not Allowed`)
+      res.setHeader('Allow', ['GET', 'POST']);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-
-}
+};

@@ -1,6 +1,6 @@
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
-import {tenancyToITVTask} from '../../mappings/tenancyToITVTask';
+import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
 
 interface CreateITVTasksResponse {
   body: any | undefined;
@@ -58,14 +58,14 @@ class CreateITVTasksUseCase implements CreateITVTasksInterface {
     );
 
     // Send to the api endpoint to create a tmi
-    for(const tmi of tmiObjects){
+    for (const tmi of tmiObjects) {
       await this.v1MatAPIGateway.createTenancyManagementInteraction(tmi);
-    };
+    }
 
     return {
       body: true,
-      error: undefined
-    }
+      error: undefined,
+    };
   }
 }
 

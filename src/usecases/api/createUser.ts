@@ -1,8 +1,8 @@
-import CrmGateway, { CrmGatewayInterface } from "../../gateways/crmGateway";
+import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
 
 interface CreateUserResponse {
-  body: any | undefined
-  error: number | undefined
+  body: any | undefined;
+  error: number | undefined;
 }
 
 interface CreateUserInterface {
@@ -12,43 +12,48 @@ interface CreateUserInterface {
 class CreateUser implements CreateUserInterface {
   tasksGateway: CrmGatewayInterface;
   user: {
-    emailAddress: string,
-    fullName: string,
-    firstName: string,
-    familyName: string
+    emailAddress: string;
+    fullName: string;
+    firstName: string;
+    familyName: string;
   };
 
   constructor(user: {
-    emailAddress: string,
-    fullName: string,
-    firstName: string,
-    familyName: string
+    emailAddress: string;
+    fullName: string;
+    firstName: string;
+    familyName: string;
   }) {
     this.tasksGateway = new CrmGateway();
     this.user = user;
   }
 
   public async execute(): Promise<CreateUserResponse> {
-    const response = await this.tasksGateway.createUser(this.user.emailAddress, this.user.fullName, this.user.firstName, this.user.familyName);
+    const response = await this.tasksGateway.createUser(
+      this.user.emailAddress,
+      this.user.fullName,
+      this.user.firstName,
+      this.user.familyName
+    );
 
     switch (response.error) {
       case undefined:
         return {
           body: response.body,
-          error: undefined
-        }
-      case "NotAuthorised":
+          error: undefined,
+        };
+      case 'NotAuthorised':
         return {
           body: undefined,
-          error: 401
-        }
+          error: 401,
+        };
       default:
         return {
           body: undefined,
-          error: 500
-        }
+          error: 500,
+        };
     }
   }
 }
 
-export default CreateUser
+export default CreateUser;

@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
 interface GetTokenResponse {
-  token: string | undefined
+  token: string | undefined;
 }
 
 export interface CrmTokenGatewayInterface {
@@ -10,17 +10,19 @@ export interface CrmTokenGatewayInterface {
 
 class CrmTokenGateway implements CrmTokenGatewayInterface {
   public async getCloudToken() {
-    const apiUrl = process.env.CRM_CLOUD_URL ? process.env.CRM_CLOUD_URL : ""
-    const authorizationHeader = process.env.CRM_CLOUD_AUTHORIZATION ? process.env.CRM_CLOUD_AUTHORIZATION : ""
+    const apiUrl = process.env.CRM_CLOUD_URL ? process.env.CRM_CLOUD_URL : '';
+    const authorizationHeader = process.env.CRM_CLOUD_AUTHORIZATION
+      ? process.env.CRM_CLOUD_AUTHORIZATION
+      : '';
     const response = await axios
       .get(apiUrl, {
         headers: {
-          'Authorization': authorizationHeader
-        }
+          Authorization: authorizationHeader,
+        },
       })
       .then((response) => {
         const data = response as AxiosResponse<GetTokenResponse>;
-        return {token: data.data};
+        return { token: data.data };
       })
       .catch((error: AxiosError) => {
         return { token: undefined };

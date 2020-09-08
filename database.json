@@ -1,22 +1,21 @@
 {
-    "test": {
-      "url": { "ENV": "TEST_DATABASE_URL" },
-      "user": {"ENV": "TEST_DATABASE_USERNAME"},
-      "password": {"ENV": "TEST_DATABASE_PASSWORD"}
-    },
-    "development": {
-      "url": { "ENV": "TEST_DATABASE_URL" },
-      "user": {"ENV": "TEST_DATABASE_USERNAME"},
-      "password": {"ENV": "TEST_DATABASE_PASSWORD"}
-    },
-    "production": {
-      "url": { "ENV": "PRODUCTION_DATABASE_URL" },
-      "user": {"ENV": "PRODUCTION_DATABASE_USERNAME"},
-      "password": {"ENV": "PRODUCTION_DATABASE_PASSWORD"},
-      "ssl": {
-        "rejectUnauthorized": false
-      }
-    },
-    "sql-file": true
-  }
-  
+  "test": {
+    "url": { "ENV": "TEST_DATABASE_URL" },
+    "user": { "ENV": "TEST_DATABASE_USERNAME" },
+    "password": { "ENV": "TEST_DATABASE_PASSWORD" }
+  },
+  "development": {
+    "url": { "ENV": "TEST_DATABASE_URL" },
+    "user": { "ENV": "TEST_DATABASE_USERNAME" },
+    "password": { "ENV": "TEST_DATABASE_PASSWORD" }
+  },
+  "production": {
+    "url": { "ENV": "PRODUCTION_DATABASE_URL" },
+    "user": { "ENV": "PRODUCTION_DATABASE_USERNAME" },
+    "password": { "ENV": "PRODUCTION_DATABASE_PASSWORD" },
+    "ssl": {
+      "rejectUnauthorized": false
+    }
+  },
+  "sql-file": true
+}

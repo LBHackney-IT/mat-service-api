@@ -1,8 +1,10 @@
-const getTasksByPatchAndOfficerIdQuery = (patchId: string, officerId: string, isManager: boolean) => { 
-
-return(
-    isManager === false ?     
-    `
+const getTasksByPatchAndOfficerIdQuery = (
+  patchId: string,
+  officerId: string,
+  isManager: boolean
+) => {
+  return isManager === false
+    ? `
         <fetch>
             <entity name="hackney_tenancymanagementinteractions">
                 <attribute name="hackney_contactid" />
@@ -61,8 +63,7 @@ return(
             </entity>
         </fetch>
         `
-        :
-        `
+    : `
         <fetch>
             <entity name="hackney_tenancymanagementinteractions">
                 <attribute name="hackney_contactid" />
@@ -105,8 +106,7 @@ return(
                 <order attribute="createdon" descending="true" />                
             </entity>
         </fetch>
-        `
-    )
-}
+        `;
+};
 
 export default getTasksByPatchAndOfficerIdQuery;

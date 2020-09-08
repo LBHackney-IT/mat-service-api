@@ -24,18 +24,18 @@ const mapResidents = (residents: Resident[]) => {
   const tileArray: any[] = [];
   residents.forEach((resident) => {
     tileArray.push(
-      <Tile link={resident.email} title={resident.presentationName} >
+      <Tile link={resident.email} title={resident.presentationName}>
         <Paragraph>{resident.role}</Paragraph>
         <Label>Date of birth:</Label>
-        {moment(resident.dateOfBirth).format("DD/MM/YYYY")}
+        {moment(resident.dateOfBirth).format('DD/MM/YYYY')}
         <Label>Mobile:</Label>
-        {resident.mobileNumber ? resident.mobileNumber : "n/a"}
+        {resident.mobileNumber ? resident.mobileNumber : 'n/a'}
         <Label>Home:</Label>
-        {resident.homePhoneNumber ? resident.homePhoneNumber : "n/a"}
+        {resident.homePhoneNumber ? resident.homePhoneNumber : 'n/a'}
         <Label>Work:</Label>
-        {resident.workPhoneNumber ? resident.workPhoneNumber : "n/a"}
+        {resident.workPhoneNumber ? resident.workPhoneNumber : 'n/a'}
         <Label>Email:</Label>
-        {resident.email ? resident.email : "n/a"}
+        {resident.email ? resident.email : 'n/a'}
       </Tile>
     );
   });
@@ -57,7 +57,9 @@ export default function TaskPage(props: TaskProps) {
         <Label>Tenancy type:</Label>
         {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
         <Label>Tenancy start date:</Label>
-        {props.task.tenancy.startDate ? moment(props.task.tenancy.startDate).format("DD/MM/YYYY") : "n/a"}
+        {props.task.tenancy.startDate
+          ? moment(props.task.tenancy.startDate).format('DD/MM/YYYY')
+          : 'n/a'}
       </Paragraph>
       <Heading level={HeadingLevels.H3}>Residents</Heading>
       <div className="tile-container">
@@ -66,20 +68,19 @@ export default function TaskPage(props: TaskProps) {
       <Heading level={HeadingLevels.H3}>Action</Heading>
       <Paragraph>
         <Label>Due:</Label>
-        {props.task.dueTime ? props.task.dueTime : "n/a"}
+        {props.task.dueTime ? props.task.dueTime : 'n/a'}
         <Label>Reference number:</Label>
         {props.task.referenceNumber ? props.task.referenceNumber : 'n/a'}
         <Label>Related item:</Label>
-        {props.task.parent ? props.task.parent : "n/a"}
+        {props.task.parent ? props.task.parent : 'n/a'}
       </Paragraph>
       <style jsx>{`
         .tile-container {
-        display: flex;
+          display: flex;
         }
-    `}</style>
+      `}</style>
     </Layout>
   );
-
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

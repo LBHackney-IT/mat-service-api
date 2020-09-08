@@ -1,12 +1,12 @@
-import MatPostgresGateway from '../../gateways/matPostgresGateway'
+import MatPostgresGateway from '../../gateways/matPostgresGateway';
 
 export interface CheckUserMappingExistsResponse {
-  body: boolean,
-  error: number | undefined
+  body: boolean;
+  error: number | undefined;
 }
 
 interface CheckUserMappingExistsInterface {
-  execute(): Promise<CheckUserMappingExistsResponse>
+  execute(): Promise<CheckUserMappingExistsResponse>;
 }
 
 class CheckUserMappingExists implements CheckUserMappingExistsInterface {
@@ -23,19 +23,19 @@ class CheckUserMappingExists implements CheckUserMappingExistsInterface {
     if (result.error !== undefined) {
       return Promise.resolve({
         body: false,
-        error: result.error
-      })
+        error: result.error,
+      });
     }
     if (!result.body) {
       return Promise.resolve({
         body: false,
-        error: undefined
-      })
+        error: undefined,
+      });
     }
     return Promise.resolve({
       body: true,
-      error: undefined
-    })
+      error: undefined,
+    });
   }
 }
 

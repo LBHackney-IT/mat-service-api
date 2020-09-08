@@ -1,7 +1,5 @@
 const getTaskById = (taskId: string) => {
-
-  return (
-    `
+  return `
     <fetch>
     <entity name="hackney_tenancymanagementinteractions">
         <attribute name="hackney_contactid" />
@@ -52,8 +50,7 @@ const getTaskById = (taskId: string) => {
         </link-entity>
     </entity>
     </fetch>
-    `
-  )
-}
+    `;
+};
 
 export default getTaskById;

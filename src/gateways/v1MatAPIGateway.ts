@@ -8,6 +8,7 @@ export interface v1MatAPIGatewayInterface {
   createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
+  getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
 }
 
 export interface GetNewTenanciesResponse {
@@ -24,8 +25,13 @@ export interface v1MatAPIGatewayOptions {
   v1MatApiToken: string;
 }
 
-export interface GetContactsByUprnResponse {
+interface GetContactsByUprnAPIResponse {
   results?: Contact[];
+  error?: string;
+}
+
+export interface GetContactsByUprnResponse {
+  body?: Contact[];
   error?: string;
 }
 
@@ -87,7 +93,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
 
   public async getContactsByUprn(
     uprn: string
-  ): Promise<createTenancyManagementInteractionResponse> {
+  ): Promise<GetContactsByUprnResponse> {
     const response = await axios
       .get(`${this.v1MatApiUrl}/v1/Contacts/GetContactsByUprn?urpn=${uprn}`, {
         headers: {
@@ -95,8 +101,9 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         },
       })
       .then((response) => {
+        const data = response as GetContactsByUprnAPIResponse;
         return {
-          body: response as GetContactsByUprnResponse,
+          body: data.results,
           error: undefined,
         };
       })

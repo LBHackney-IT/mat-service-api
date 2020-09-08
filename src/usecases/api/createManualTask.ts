@@ -58,12 +58,22 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
   public async execute(
     processData: CreateManualTaskData
   ): Promise<CreateManualTaskResponse> {
-    const contact = await this.v1MatAPIGateway.getContactsByUprn(
+    const contacts = await this.v1MatAPIGateway.getContactsByUprn(
       processData.uprn
     );
+    if (contacts.error) return contacts as CreateManualTaskResponse;
+    if (
+      (contacts && contacts.body && contacts.body.length === 0) ||
+      !contacts ||
+      !contacts.body
+    ) {
+      return { error: 404, body: undefined };
+    }
 
+    const contact = contacts.body[0];
     const getUser = new GetUser(processData.officerEmail);
-    const officer = await getUser.execute();
+    const officerId = await getUser.execute();
+    if (!officerId.body) return { error: 404, body: undefined };
 
     const tmi: TenancyManagementInteraction = {
       enquirySubject: tmiLookup[processData.process].enquirySubject,
@@ -72,9 +82,9 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       natureofEnquiry: '15',
       source: '1',
       contactId: contact.contactId,
-      estateOfficerId: officer.officerId, // Needs checking
+      estateOfficerId: officerId.body, // Needs checking
       estateOfficerName: processData.officerName,
-      officerPatchId: officer.officerPatchId, // Needs checking
+      officerPatchId: 'TBC', // Needs checking
       areaName: 0, // Needs setting
       householdId: contact.houseRef,
       serviceRequest: {
@@ -83,7 +93,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
         contactId: contact.contactId,
         subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
         enquiryType: 'TBC', // Needs setting
-        createdBy: officer.officerId, // Needs checking
+        createdBy: officerId.body, // Needs checking
         childRequests: [],
       },
     };

@@ -1,5 +1,5 @@
 export interface Contact {
-  contactId?: string;
+  contactId: string;
   emailAddress: string | null;
   uprn: string;
   addressLine1: string;
@@ -25,5 +25,5 @@ export interface Contact {
   relationship: string | null;
   extendedrelationship: string | null;
   responsible: boolean;
-  age?: string;;
+  age?: string;
 }

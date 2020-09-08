@@ -40,6 +40,10 @@ jobs:
           command: npm run lint
 
       - run:
+          name: Run prettier
+          command: prettier -c .
+
+      - run:
           name: Build application
           command: npm run build
 

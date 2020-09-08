@@ -26,11 +26,16 @@ const mapResidents = (residents: Resident[]) => {
     tileArray.push(
       <Tile link={resident.email} title={resident.presentationName} >
         <Paragraph>{resident.role}</Paragraph>
-        <Paragraph>Date of birth: {moment(resident.dateOfBirth).format("DD/MM/YYYY")}</Paragraph>
-        <Paragraph>Mobile: {resident.mobileNumber}</Paragraph>
-        <Paragraph>Home: {resident.homePhoneNumber}</Paragraph>
-        <Paragraph>Work: {resident.workPhoneNumber}</Paragraph>
-        <Paragraph>Email: {resident.email}</Paragraph>
+        <Label>Date of birth:</Label>
+        {moment(resident.dateOfBirth).format("DD/MM/YYYY")}
+        <Label>Mobile:</Label>
+        {resident.mobileNumber ? resident.mobileNumber : "n/a"}
+        <Label>Home:</Label>
+        {resident.homePhoneNumber ? resident.homePhoneNumber : "n/a"}
+        <Label>Work:</Label>
+        {resident.workPhoneNumber ? resident.workPhoneNumber : "n/a"}
+        <Label>Email:</Label>
+        {resident.email ? resident.email : "n/a"}
       </Tile>
     );
   });

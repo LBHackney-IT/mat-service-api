@@ -47,13 +47,16 @@ jobs:
           name: Run unit tests
           command: npm run test:unit
 
-      - cypress/run:
-          start: npm run dev
-          store_artifacts: false
-
       - persist_to_workspace:
           root: ~/repo
           paths: .
+
+  branch-commit:
+    executor: my-executor
+
+    steps:
+      - cypress/run:
+          store_artifacts: false
 
   deploy-staging:
     executor: my-executor
@@ -75,6 +78,9 @@ jobs:
       - run:
           name: Run integration tests
           command: API_PATH=${API_PATH_STAGING} npm run test:integration
+      
+      - cypress/run:
+          store_artifacts: true
 
   deploy-production:
     executor: my-executor
@@ -102,6 +108,13 @@ workflows:
   continuous-delivery:
     jobs:
       - test
+      - branch-commit:
+          requires:
+            - test
+          filters:
+            branches:
+              ignore:
+                - master
       - deploy-staging:
           requires:
             - test
@@ -109,10 +122,6 @@ workflows:
             branches:
               only:
                 - master
-      - cypress/run:
-          store_artifacts: true
-          requires:
-            - deploy-staging
       - permit-deploy-production:
           type: approval
           requires:

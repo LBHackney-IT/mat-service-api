@@ -43,12 +43,12 @@ jobs:
           command: npm run lint
 
       - run:
+          name: Build application
+          command: npm run build
+
+      - run:
           name: Run unit tests
           command: npm run test:unit
-
-      #- run:
-      #    name: Run integration tests
-      #    command: API_PATH=${API_PATH_TEST} npm run test:integration
 
       - persist_to_workspace:
           root: ~/repo

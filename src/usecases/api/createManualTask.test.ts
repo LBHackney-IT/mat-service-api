@@ -1,14 +1,18 @@
 import CreateManualTaskUseCase from './createManualTask';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import GetUser from './getUser';
+import GetOfficerPatch from './getOfficerPatch';
 jest.mock('./getUser');
+jest.mock('./getOfficerPatch');
 
 describe('createManualTasks', () => {
   let usecase: CreateManualTaskUseCase;
   let dummyGateway: v1MatAPIGatewayInterface;
   let dummyGetUser = { execute: jest.fn() };
+  let dummyGetOfficerPatch = { execute: jest.fn() };
   let dummyCallData: any;
   let dummyOfficerId = 'dummyOfficerId';
+  let dummyOfficerPatchData;
 
   beforeEach(() => {
     dummyCallData = {
@@ -18,7 +22,11 @@ describe('createManualTasks', () => {
       officerEmail: 'fake@email.com',
       officerName: 'Fake Name',
     };
+    dummyOfficerPatchData = {
+      patchId: 'ID1',
+    };
     GetUser.mockImplementationOnce(() => dummyGetUser);
+    GetOfficerPatch.mockImplementationOnce(() => dummyGetOfficerPatch);
     dummyGateway = {
       getNewTenancies: jest.fn(),
       getContactsByUprn: jest.fn(),
@@ -26,6 +34,7 @@ describe('createManualTasks', () => {
     };
     usecase = new CreateManualTaskUseCase({ gateway: dummyGateway });
   });
+
   it('should use the correct data for the TMI', async () => {
     dummyGateway.getContactsByUprn.mockResolvedValue({
       body: [
@@ -36,6 +45,9 @@ describe('createManualTasks', () => {
       ],
     });
     dummyGetUser.execute.mockResolvedValue({ body: dummyOfficerId });
+    dummyGetOfficerPatch.execute.mockResolvedValue({
+      body: dummyOfficerPatchData,
+    });
     const result = await usecase.execute(dummyCallData);
     expect(dummyGateway.getContactsByUprn).toHaveBeenCalledWith(
       dummyCallData.uprn
@@ -43,21 +55,21 @@ describe('createManualTasks', () => {
     expect(
       dummyGateway.createTenancyManagementInteraction
     ).toHaveBeenCalledWith({
-      areaName: 0,
+      areaName: 1,
       contactId: 'dummyContactId',
       enquirySubject: '100000052',
       estateOfficerId: dummyOfficerId,
       estateOfficerName: 'Fake Name',
       householdId: 'dummyHouseRef',
       natureofEnquiry: '15',
-      officerPatchId: 'TBC',
+      officerPatchId: 'ID1',
       reasonForStartingProcess: undefined,
+      processType: 1,
       serviceRequest: {
         childRequests: [],
         contactId: 'dummyContactId',
         createdBy: dummyOfficerId,
         description: 'Starting a home check',
-        enquiryType: 'TBC',
         subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
         title: 'Home Check',
       },

@@ -11,6 +11,14 @@ npm install
 cp .env.sample .env
 ```
 
+### To run the database
+
+```bash
+npm run db:start
+```
+
+This will start postgres in a docker container and apply any required migrations.
+
 ### To run the next.js development server
 
 ```bash

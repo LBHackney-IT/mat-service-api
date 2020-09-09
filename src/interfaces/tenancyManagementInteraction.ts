@@ -32,7 +32,7 @@ export interface TenancyManagementInteraction {
   };
   status?: number;
   parentInteractionId?: string;
-  processType?: number;
+  processType: number;
   householdId?: string | null;
   processStage?: number;
   reasonForStartingProcess?: number;

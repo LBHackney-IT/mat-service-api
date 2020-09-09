@@ -87,6 +87,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       officerPatchId: 'TBC', // Needs checking
       areaName: 0, // Needs setting
       householdId: contact.houseRef,
+      processType: 1,
       serviceRequest: {
         title: tmiLookup[processData.process].title,
         description: tmiLookup[processData.process].description,

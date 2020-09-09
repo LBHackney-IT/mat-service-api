@@ -1,0 +1,13 @@
+version: '3'
+services:
+  db:
+    image: postgres:12
+    ports:
+      - '10201:5432'
+    volumes:
+      - ./.data/volumes/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: mat_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mat_service

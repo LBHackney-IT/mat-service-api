@@ -94,6 +94,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
   public async getContactsByUprn(
     uprn: string
   ): Promise<GetContactsByUprnResponse> {
+    // Note: urpn is not a typo here - the v1 MaT API contains the typo and we have to use it
     const response = await axios
       .get(`${this.v1MatApiUrl}/v1/Contacts/GetContactsByUprn?urpn=${uprn}`, {
         headers: {

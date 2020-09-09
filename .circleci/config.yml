@@ -126,6 +126,7 @@ workflows:
           type: approval
           requires:
             - deploy-staging
+            - cypress/run
       - deploy-production:
           requires:
             - permit-deploy-production

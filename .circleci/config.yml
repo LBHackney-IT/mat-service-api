@@ -106,6 +106,7 @@ workflows:
               only:
                 - master
       - cypress/run:
+          name: cypress-branch
           store_artifacts: false
           start: npm run dev
           requires:
@@ -115,6 +116,7 @@ workflows:
               ignore:
                 - master
       - cypress/run:
+          name: cypress-master
           store_artifacts: true
           requires:
             - deploy-staging
@@ -126,6 +128,7 @@ workflows:
           type: approval
           requires:
             - deploy-staging
+            - cypress-master
       - deploy-production:
           requires:
             - permit-deploy-production

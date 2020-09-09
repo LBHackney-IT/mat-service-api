@@ -1,14 +1,12 @@
 const getUserByEmail = (emailAddress: string) => {
-  return (
-    `<fetch>
+  return `<fetch>
       <entity name="hackney_estateofficer" >
         <attribute name="hackney_estateofficerid" />
         <filter>
           <condition attribute="hackney_emailaddress" operator="eq" value="${emailAddress}" />
         </filter>
       </entity>
-    </fetch>`
-  )
-}
+    </fetch>`;
+};
 
 export default getUserByEmail;

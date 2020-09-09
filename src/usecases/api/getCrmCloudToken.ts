@@ -1,11 +1,13 @@
-import CrmTokenGateway, { CrmTokenGatewayInterface } from "../../gateways/crmTokenGateway";
+import CrmTokenGateway, {
+  CrmTokenGatewayInterface,
+} from '../../gateways/crmTokenGateway';
 
 interface GetCrmCouldTokenResponse {
-  token: string | undefined
+  token: string | undefined;
 }
 
 interface GetCrmCloudTokenInterface {
-  execute(): Promise<GetCrmCouldTokenResponse>
+  execute(): Promise<GetCrmCouldTokenResponse>;
 }
 
 class GetCrmCloudToken implements GetCrmCloudTokenInterface {
@@ -13,18 +15,18 @@ class GetCrmCloudToken implements GetCrmCloudTokenInterface {
   constructor() {
     this.crmTokenGateway = new CrmTokenGateway();
   }
-  public async execute() :Promise<GetCrmCouldTokenResponse> {
+  public async execute(): Promise<GetCrmCouldTokenResponse> {
     const response = await this.crmTokenGateway.getCloudToken();
 
-    switch(response.error) {
+    switch (response.error) {
       case undefined:
-        return  {
-          token: response.token
-        }
+        return {
+          token: response.token,
+        };
       default:
         return {
-          token: undefined
-        }
+          token: undefined,
+        };
     }
   }
 }

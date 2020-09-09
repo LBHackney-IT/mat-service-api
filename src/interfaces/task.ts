@@ -18,7 +18,7 @@ export interface Task {
     type: TenancyType;
     startDate: Date;
     residents: Resident[];
-  }
+  };
 }
 
 export interface Resident {
@@ -34,7 +34,7 @@ export interface Resident {
 export enum TenancyType {
   Undefined,
   Secure,
-  Introductory
+  Introductory,
 }
 
 export enum Stage {
@@ -46,5 +46,5 @@ export enum Stage {
 
 export enum DueState {
   imminent,
-  overdue
+  overdue,
 }

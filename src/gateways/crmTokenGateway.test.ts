@@ -1,6 +1,6 @@
 import CrmTokenGateway from './crmTokenGateway';
 import axios from 'axios';
-import faker from "faker";
+import faker from 'faker';
 jest.mock('axios');
 
 describe('TasksGateway', () => {
@@ -12,7 +12,7 @@ describe('TasksGateway', () => {
     it('successfully fetches data from an API', async () => {
       const token = faker.lorem.word();
       const crmResponse = {
-          data: token
+        data: token,
       };
 
       axios.get.mockResolvedValue(crmResponse);
@@ -20,13 +20,13 @@ describe('TasksGateway', () => {
       const crmTokenGateway = new CrmTokenGateway();
       const response = await crmTokenGateway.getCloudToken();
 
-      expect(response).toEqual({token: token});
+      expect(response).toEqual({ token: token });
     });
 
     it('returns an human readable error when unsuccessful', async () => {
       const errorMessage = 'Network Error';
       const errorResponse = {
-        token: undefined
+        token: undefined,
       };
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));

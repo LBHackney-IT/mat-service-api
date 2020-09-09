@@ -1,5 +1,5 @@
-import CrmGateway, { CrmGatewayInterface } from "../../gateways/crmGateway";
-import { Task } from "../../interfaces/task";
+import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { Task } from '../../interfaces/task';
 
 interface GetTaskResponse {
   body: Task | undefined;
@@ -11,7 +11,6 @@ interface GetTaskInterface {
 }
 
 class GetTask implements GetTaskInterface {
-
   crmGateway: CrmGatewayInterface;
   taskId: string;
 
@@ -21,25 +20,24 @@ class GetTask implements GetTaskInterface {
   }
 
   public async execute(): Promise<GetTaskResponse> {
-
     const response = await this.crmGateway.getTask(this.taskId);
 
-    switch(response.error) {
+    switch (response.error) {
       case undefined:
-        return  {
+        return {
           body: response.body,
-          error: undefined
-        }
-      case "NotAuthorised":
+          error: undefined,
+        };
+      case 'NotAuthorised':
         return {
           body: undefined,
-          error: 401
-        }
+          error: 401,
+        };
       default:
         return {
           body: undefined,
-          error: 500
-        }
+          error: 500,
+        };
     }
   }
 }

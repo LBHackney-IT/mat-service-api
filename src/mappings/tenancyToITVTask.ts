@@ -1,7 +1,9 @@
 import { Tenancy } from '../interfaces/tenancy';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
 
-export const tenancyToITVTask = (tenancy: Tenancy): TenancyManagementInteraction => {
+export const tenancyToITVTask = (
+  tenancy: Tenancy
+): TenancyManagementInteraction => {
   return {
     transferred: undefined,
     status: undefined,
@@ -37,8 +39,8 @@ export const tenancyToITVTask = (tenancy: Tenancy): TenancyManagementInteraction
       transferred: undefined,
       createdBy: undefined,
       childRequests: undefined,
-      subject: 'c1f72d01-28dc-e711-8115-70106faa6a11'
+      subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
     },
-    processType: 1
+    processType: 1,
   };
 };

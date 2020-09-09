@@ -1,6 +1,6 @@
 import CrmGateway from './crmGateway';
 import axios from 'axios';
-import faker from "faker";
+import faker from 'faker';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
 import { crmResponseToTasks } from '../mappings/crmToTask';
@@ -13,17 +13,17 @@ describe('CrmGateway', () => {
 
   describe('Get Tasks by patch id', () => {
     it('successfully fetches data from an API', async () => {
-      const data = MockCrmTaskResponse()
-      const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1'
+      const data = MockCrmTaskResponse();
+      const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1';
 
-      axios.get.mockResolvedValue({data: data});
+      axios.get.mockResolvedValue({ data: data });
 
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksForAPatch(patchId);
 
       const tasks = crmResponseToTasks(data);
 
-      expect(response).toStrictEqual({body: tasks, error: undefined});
+      expect(response).toStrictEqual({ body: tasks, error: undefined });
     });
 
     it('returns an human readable error when unsuccessful', async () => {
@@ -32,7 +32,7 @@ describe('CrmGateway', () => {
         body: undefined,
         error: errorMessage,
       };
-      const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1'
+      const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1';
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
@@ -43,20 +43,20 @@ describe('CrmGateway', () => {
     });
   });
 
-  describe("Get User by email", () => {
-    it("sucessfully fetches data from the API", async () => {
+  describe('Get User by email', () => {
+    it('sucessfully fetches data from the API', async () => {
       const data = MockCrmUserResponse();
       const emailAddress = faker.internet.email();
 
-      axios.get.mockResolvedValue({data: data});
+      axios.get.mockResolvedValue({ data: data });
 
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getUser(emailAddress);
 
-      expect(response).toEqual({body: data.value, error: undefined})
-    })
+      expect(response).toEqual({ body: data.value, error: undefined });
+    });
 
-    it("returns an error from the API", async () => {
+    it('returns an error from the API', async () => {
       const emailAddress = faker.internet.email();
       const error = faker.lorem.words();
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
@@ -64,7 +64,7 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getUser(emailAddress);
 
-      expect(response).toEqual({body: undefined, error: error})
-    })
-  })
+      expect(response).toEqual({ body: undefined, error: error });
+    });
+  });
 });

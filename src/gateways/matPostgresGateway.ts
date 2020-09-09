@@ -1,35 +1,37 @@
-export interface MatPostgresGatewayInterface{
-  getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>,
-  getUserMapping(emailAddress: string): Promise<GetUserMappingResponse>,
-  createUserMapping(userMapping: UserMappingTable): Promise<CreateUserMappingResponse>
+export interface MatPostgresGatewayInterface {
+  getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>;
+  getUserMapping(emailAddress: string): Promise<GetUserMappingResponse>;
+  createUserMapping(
+    userMapping: UserMappingTable
+  ): Promise<CreateUserMappingResponse>;
 }
 
 interface GetUserMappingResponse {
-  body: UserMappingTable | undefined,
-  error: number | undefined
+  body: UserMappingTable | undefined;
+  error: number | undefined;
 }
 
 export interface CreateUserMappingResponse {
-  body: UserMappingTable[],
-  error: number | undefined
+  body: UserMappingTable[];
+  error: number | undefined;
 }
 
 interface UserMappingTable {
-  name: string,
-  emailAddress: string,
-  usercrmid: string,
-  googleId: string,
+  name: string;
+  emailAddress: string;
+  usercrmid: string;
+  googleId: string;
 }
 
-interface GetTRAPatchMappingResponse{
-  body: TRAPatchMapping[],
-  error: number | undefined
+interface GetTRAPatchMappingResponse {
+  body: TRAPatchMapping[];
+  error: number | undefined;
 }
 
 interface TRAPatchMapping {
-  name: string,
-  traid: number,
-  patchcrmid: string
+  name: string;
+  traid: number;
+  patchcrmid: string;
 }
 
 class MatPostgresGateway {
@@ -43,74 +45,85 @@ class MatPostgresGateway {
     if (!db) {
       const { default: pgp } = await import('pg-promise');
       let options = {
-        connectionString: process.env.DATABASE_URL
+        connectionString: process.env.DATABASE_URL,
       };
       this.instance = pgp()(options);
       delete this.instance.constructor;
     }
   }
 
-  public async getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse> {
+  public async getTrasByPatchId(
+    patchId: string
+  ): Promise<GetTRAPatchMappingResponse> {
     await this.setupInstance();
-    
+
     try {
-      const results: TRAPatchMapping[] = await this.instance.many('SELECT  TRA.Name, TRA.TraId, TRAPatchAssociation.PatchCRMId FROM	TRA INNER JOIN TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId WHERE TRAPatchAssociation.PatchCRMId = ${id}', { id: patchId } );
+      const results: TRAPatchMapping[] = await this.instance.many(
+        'SELECT  TRA.Name, TRA.TraId, TRAPatchAssociation.PatchCRMId FROM	TRA INNER JOIN TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId WHERE TRAPatchAssociation.PatchCRMId = ${id}',
+        { id: patchId }
+      );
 
       return Promise.resolve({
         body: results,
-        error: undefined
-      })
-    }
-    catch(error) {
+        error: undefined,
+      });
+    } catch (error) {
       return Promise.resolve({
         body: [],
-        error: 500
-      })
+        error: 500,
+      });
     }
   }
 
-
-  public async getUserMapping(emailAddress: string): Promise<GetUserMappingResponse> {
+  public async getUserMapping(
+    emailAddress: string
+  ): Promise<GetUserMappingResponse> {
     await this.setupInstance();
 
     try {
-      const result: UserMappingTable = await this.instance.one('SELECT * FROM usermappings WHERE emailaddress = $1', emailAddress)
+      const result: UserMappingTable = await this.instance.one(
+        'SELECT * FROM usermappings WHERE emailaddress = $1',
+        emailAddress
+      );
 
       return Promise.resolve({
         body: result,
-        error: undefined
-      })
-    }
-    catch (error) {
-      if (error.message == "No data returned from the query.") {
+        error: undefined,
+      });
+    } catch (error) {
+      if (error.message == 'No data returned from the query.') {
         return Promise.resolve({
           body: undefined,
-          error: undefined
-        })
+          error: undefined,
+        });
       }
       return Promise.resolve({
         body: undefined,
-        error: 500
-      })
+        error: 500,
+      });
     }
   }
 
-  public async createUserMapping(userMapping: UserMappingTable): Promise<CreateUserMappingResponse> {
+  public async createUserMapping(
+    userMapping: UserMappingTable
+  ): Promise<CreateUserMappingResponse> {
     await this.setupInstance();
 
     try {
-      const results = await this.instance.none('INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${name})', userMapping)
+      const results = await this.instance.none(
+        'INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${name})',
+        userMapping
+      );
 
       return Promise.resolve({
         body: results,
-        error: undefined
-      })
-    }
-    catch(error) {
+        error: undefined,
+      });
+    } catch (error) {
       return Promise.resolve({
         body: error,
-        error: 500
-      })
+        error: 500,
+      });
     }
   }
 }

@@ -1,7 +1,7 @@
-import MatPostgresGateway from "../../gateways/matPostgresGateway";
+import MatPostgresGateway from '../../gateways/matPostgresGateway';
 
 interface CreateUserMappingResponse {
-  error: number | undefined
+  error: number | undefined;
 }
 
 interface UserMapping {
@@ -12,14 +12,14 @@ interface UserMapping {
 }
 
 interface CreateUserMappingInterface {
-  execute(): Promise<CreateUserMappingResponse>
+  execute(): Promise<CreateUserMappingResponse>;
 }
 
 class CreateUserMapping implements CreateUserMappingInterface {
   userMapping: UserMapping;
 
   constructor(userMapping: UserMapping) {
-    this.userMapping = userMapping
+    this.userMapping = userMapping;
   }
 
   public async execute() {
@@ -29,13 +29,13 @@ class CreateUserMapping implements CreateUserMappingInterface {
 
     if (result.error === undefined) {
       return Promise.resolve({
-        error: undefined
-      })
+        error: undefined,
+      });
     }
 
     return Promise.resolve({
-      error: 500
-    })
+      error: 500,
+    });
   }
 }
 

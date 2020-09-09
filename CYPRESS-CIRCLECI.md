@@ -23,7 +23,6 @@ orbs:
 
 Cypress does not have automatic access to the application package.json dependencies cached by CircleCI. CircleCI caches these dependencies in order to optimize its builds, removing the need to fetch and download these dependencies on each build.
 
-
 We had to set the Cypress cache folder to the working directory:
 
 ```bash
@@ -34,12 +33,11 @@ We had to set the Cypress cache folder to the working directory:
             sudo CYPRESS_CACHE_FOLDER=~/repo npm i
 ```
 
-
 ## CIRCLECI PROJECT ENVIRONMENTAL VARIABLES:
 
 As CircleCI has no access to env vars from the local dev environment, it is necessary to add them to the CircleCI project environmental variable section.
 
-Env vars required by Cypress should be prefixed with "CYPRESS_" to allow Cypress to recognise them.
+Env vars required by Cypress should be prefixed with "CYPRESS\_" to allow Cypress to recognise them.
 
 ```bash
 CYPRESS_BASE_URL
@@ -92,7 +90,6 @@ Once you select which test you wish to run the browser displaying the page will 
 
 The tests run automatically once everything on the page has loaded. Cypress waits for several seconds to ensure any latency doesn’t cause failing tests. If there are click events that result in a new page being rendered, Cypress will also take this into account and wait for everything to load before completing the tests.
 
-
 For the headless mode, which will run the tests in your terminal:
 
 ```bash
@@ -100,5 +97,3 @@ npm run cypress:run:dev
 ```
 
 [Cypress Documentation on writing your first test file](https://docs.cypress.io/guides/getting-started/writing-your-first-test.html#Add-a-test-file)
-
-

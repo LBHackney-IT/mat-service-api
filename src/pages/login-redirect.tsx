@@ -5,7 +5,6 @@ import { Paragraph, Heading, HeadingLevels, Link } from 'lbh-frontend-react';
 import cookie from 'cookie';
 
 const LoginRedirectPage: React.FC = () => {
-
   return (
     <Layout>
       <div className="lbh-container">
@@ -13,7 +12,10 @@ const LoginRedirectPage: React.FC = () => {
           <Heading level={HeadingLevels.H1}>Please log in</Heading>
           <Link
             data-test="login-link"
-            href={'https://auth.hackney.gov.uk/auth?redirect_uri=' + process.env.UI_PATH}
+            href={
+              'https://auth.hackney.gov.uk/auth?redirect_uri=' +
+              process.env.UI_PATH
+            }
           >
             Log in with Google
           </Link>

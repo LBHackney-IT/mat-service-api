@@ -2,3 +2,5 @@ node_modules
 jspm_packages
 .next
 package-lock.json
+false
+coverage

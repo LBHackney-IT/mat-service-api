@@ -13,7 +13,7 @@
     "test:integration": "jest --config ./jest.integration.config.js",
     "lint": "eslint",
     "prettier:test": "npx prettier -c .",
-    "prettier:fix": "npx prettier -w .",
+    "prettier:fix": "npx prettier --write .",
     "dbmigrate": "db-migrate --migrations-dir 'db/migrations/'",
     "dbmigratetest": "db-migrate --migrations-dir 'db/migrations/' -e test",
     "dbmigratedry": "db-migrate --dry-run --migrations-dir 'db/migrations/'",

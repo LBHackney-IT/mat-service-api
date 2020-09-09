@@ -74,9 +74,6 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     }
 
     const contact = contacts.body[0];
-    const getUser = new GetUser(processData.officerEmail);
-    const officerId = await getUser.execute();
-    if (!officerId.body) return { error: 404, body: undefined };
 
     const crmGateway = new CrmGateway();
     const matPostgresGateway = new MatPostgresGateway();
@@ -85,8 +82,8 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       crmGateway,
       matPostgresGateway,
     });
-    const officerPatchDetails = await getOfficerPatchId.execute();
-    if (!officerPatchDetails.body || officerPatchDetails.error)
+    const officerDetails = await getOfficerPatchId.execute();
+    if (!officerDetails.body || officerDetails.error)
       return { error: 404, body: undefined };
 
     const tmi: TenancyManagementInteraction = {
@@ -96,9 +93,9 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       natureofEnquiry: '15',
       source: '1',
       contactId: contact.contactId,
-      estateOfficerId: officerId.body,
+      estateOfficerId: officerDetails.body.officerCrmId,
       estateOfficerName: processData.officerName,
-      officerPatchId: officerPatchDetails.body.patchId,
+      officerPatchId: officerDetails.body.patchId,
       areaName: 1, // TODO: Needs fetching from the crm
       householdId: contact.houseRef,
       processType: 1,
@@ -107,7 +104,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
         description: tmiLookup[processData.process].description,
         contactId: contact.contactId,
         subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
-        createdBy: officerId.body,
+        createdBy: officerDetails.body.officerCrmId,
         childRequests: [],
       },
     };

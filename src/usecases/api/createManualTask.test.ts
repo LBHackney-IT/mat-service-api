@@ -1,18 +1,15 @@
 import CreateManualTaskUseCase from './createManualTask';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
-import GetUser from './getUser';
 import GetOfficerPatch from './getOfficerPatch';
-jest.mock('./getUser');
 jest.mock('./getOfficerPatch');
 
 describe('createManualTasks', () => {
   let usecase: CreateManualTaskUseCase;
   let dummyGateway: v1MatAPIGatewayInterface;
-  let dummyGetUser = { execute: jest.fn() };
   let dummyGetOfficerPatch = { execute: jest.fn() };
   let dummyCallData: any;
   let dummyOfficerId = 'dummyOfficerId';
-  let dummyOfficerPatchData;
+  let dummyOfficerPatchData: any;
 
   beforeEach(() => {
     dummyCallData = {
@@ -24,8 +21,8 @@ describe('createManualTasks', () => {
     };
     dummyOfficerPatchData = {
       patchId: 'ID1',
+      officerCrmId: dummyOfficerId,
     };
-    GetUser.mockImplementationOnce(() => dummyGetUser);
     GetOfficerPatch.mockImplementationOnce(() => dummyGetOfficerPatch);
     dummyGateway = {
       getNewTenancies: jest.fn(),
@@ -44,7 +41,6 @@ describe('createManualTasks', () => {
         },
       ],
     });
-    dummyGetUser.execute.mockResolvedValue({ body: dummyOfficerId });
     dummyGetOfficerPatch.execute.mockResolvedValue({
       body: dummyOfficerPatchData,
     });
@@ -106,7 +102,6 @@ describe('createManualTasks', () => {
         },
       ],
     });
-    dummyGetUser.execute.mockResolvedValue({ body: dummyOfficerId });
     await usecase.execute(dummyCallData);
     const gwCall =
       dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];
@@ -125,7 +120,6 @@ describe('createManualTasks', () => {
         },
       ],
     });
-    dummyGetUser.execute.mockResolvedValue({ body: dummyOfficerId });
     await usecase.execute(dummyCallData);
     const gwCall =
       dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];
@@ -147,7 +141,6 @@ describe('createManualTasks', () => {
         },
       ],
     });
-    dummyGetUser.execute.mockResolvedValue({ body: dummyOfficerId });
     await usecase.execute(dummyCallData);
     const gwCall =
       dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];

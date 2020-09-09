@@ -48,6 +48,7 @@ functions:
     environment:
       JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
 
+
   # createItvTasks:
   #   handler: src/lambda.createItvTasks
   #   # events:

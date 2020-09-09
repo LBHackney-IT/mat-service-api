@@ -32,8 +32,8 @@ export interface TenancyManagementInteraction {
   };
   status?: number;
   parentInteractionId?: string;
-  processType?: number;
-  householdId?: string;
+  processType: number;
+  householdId?: string | null;
   processStage?: number;
   reasonForStartingProcess?: number;
 }

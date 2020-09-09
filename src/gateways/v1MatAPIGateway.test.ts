@@ -25,7 +25,7 @@ describe('v1MatAPIGateway', () => {
         'http://dummy-api.com/v1/tenancy/new',
         {
           headers: {
-            'Authorization': `Bearer ${dummyToken}`,
+            Authorization: `Bearer ${dummyToken}`,
           },
         }
       );
@@ -71,7 +71,7 @@ describe('v1MatAPIGateway', () => {
         dummyPayload,
         {
           headers: {
-            'Authorization': `Bearer ${dummyToken}`,
+            Authorization: `Bearer ${dummyToken}`,
           },
         }
       );
@@ -95,6 +95,47 @@ describe('v1MatAPIGateway', () => {
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 
       const response = await gateway.getNewTenancies();
+
+      expect(response).toEqual(errorResponse);
+    });
+  });
+
+  describe('getContactsByUprn', () => {
+    it('makes the request to the correct URL with the correct token', () => {
+      axios.get.mockResolvedValue(Promise.resolve({ results: [] }));
+      gateway.getContactsByUprn('12345678901');
+      expect(axios.get).toHaveBeenCalledWith(
+        'http://dummy-api.com/v1/Contacts/GetContactsByUprn?urpn=12345678901',
+        {
+          headers: {
+            Authorization: `Bearer ${dummyToken}`,
+          },
+        }
+      );
+    });
+
+    it('successfully returns data from an API', async () => {
+      const dummyResponse = {
+        results: [
+          { contactId: faker.lorem.word() },
+          { contactId: faker.lorem.word() },
+        ],
+      };
+
+      axios.get.mockResolvedValue(dummyResponse);
+
+      const response = await gateway.getContactsByUprn('12345678901');
+
+      expect(response.body).toEqual(dummyResponse.results);
+    });
+
+    it('returns an human readable error when unsuccessful', async () => {
+      const error = 'Network Error';
+      const errorResponse = { error };
+
+      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+
+      const response = await gateway.getContactsByUprn('12345678901');
 
       expect(response).toEqual(errorResponse);
     });

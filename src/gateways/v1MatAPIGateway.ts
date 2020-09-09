@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { Tenancy } from '../interfaces/tenancy';
+import { Contact } from '../interfaces/contact';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
 
 export interface v1MatAPIGatewayInterface {
@@ -7,6 +8,7 @@ export interface v1MatAPIGatewayInterface {
   createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
+  getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
 }
 
 export interface GetNewTenanciesResponse {
@@ -19,36 +21,43 @@ export interface createTenancyManagementInteractionResponse {
 }
 
 export interface v1MatAPIGatewayOptions {
-  v1MatApiUrl: string,
-  v1MatApiToken: string
+  v1MatApiUrl: string;
+  v1MatApiToken: string;
+}
+
+interface GetContactsByUprnAPIResponse {
+  results?: Contact[];
+  error?: string;
+}
+
+export interface GetContactsByUprnResponse {
+  body?: Contact[];
+  error?: string;
 }
 
 export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
   v1MatApiUrl: string;
   v1MatApiToken: string;
 
-  constructor(options: v1MatAPIGatewayOptions ){
+  constructor(options: v1MatAPIGatewayOptions) {
     this.v1MatApiUrl = options.v1MatApiUrl;
     this.v1MatApiToken = options.v1MatApiToken;
   }
 
   public async getNewTenancies(): Promise<GetNewTenanciesResponse> {
     const response = await axios
-      .get(
-        `${this.v1MatApiUrl}/v1/tenancy/new`,
-        {
-          headers: {
-            "Authorization": `Bearer ${this.v1MatApiToken}`
-          },
-        }
-      )
+      .get(`${this.v1MatApiUrl}/v1/tenancy/new`, {
+        headers: {
+          Authorization: `Bearer ${this.v1MatApiToken}`,
+        },
+      })
       .then((response) => {
         return <GetNewTenanciesResponse>(<unknown>response);
       })
       .catch((error: AxiosError) => {
         return {
           error: error.message,
-          result: undefined
+          result: undefined,
         };
       });
 
@@ -64,12 +73,38 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         tmi,
         {
           headers: {
-            "Authorization": `Bearer ${this.v1MatApiToken}`
+            Authorization: `Bearer ${this.v1MatApiToken}`,
           },
         }
       )
-      .then(_ => {
+      .then((_) => {
         return {
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async getContactsByUprn(
+    uprn: string
+  ): Promise<GetContactsByUprnResponse> {
+    // Note: urpn is not a typo here - the v1 MaT API contains the typo and we have to use it
+    const response = await axios
+      .get(`${this.v1MatApiUrl}/v1/Contacts/GetContactsByUprn?urpn=${uprn}`, {
+        headers: {
+          Authorization: `Bearer ${this.v1MatApiToken}`,
+        },
+      })
+      .then((response) => {
+        const data = response as GetContactsByUprnAPIResponse;
+        return {
+          body: data.results,
           error: undefined,
         };
       })

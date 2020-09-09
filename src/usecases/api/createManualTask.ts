@@ -1,6 +1,9 @@
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import GetUser from './getUser';
+import GetOfficerPatch from './getOfficerPatch';
+import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import CrmGateway from '../../gateways/crmGateway';
 
 interface TmiData {
   title: string;
@@ -75,6 +78,17 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     const officerId = await getUser.execute();
     if (!officerId.body) return { error: 404, body: undefined };
 
+    const crmGateway = new CrmGateway();
+    const matPostgresGateway = new MatPostgresGateway();
+    const getOfficerPatchId = new GetOfficerPatch({
+      emailAddress: processData.officerEmail,
+      crmGateway,
+      matPostgresGateway,
+    });
+    const officerPatchDetails = await getOfficerPatchId.execute();
+    if (!officerPatchDetails.body || officerPatchDetails.error)
+      return { error: 404, body: undefined };
+
     const tmi: TenancyManagementInteraction = {
       enquirySubject: tmiLookup[processData.process].enquirySubject,
       reasonForStartingProcess: processData.subProcess,
@@ -82,10 +96,10 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       natureofEnquiry: '15',
       source: '1',
       contactId: contact.contactId,
-      estateOfficerId: officerId.body, // Needs checking
+      estateOfficerId: officerId.body,
       estateOfficerName: processData.officerName,
-      officerPatchId: 'TBC', // Needs checking
-      areaName: 0, // Needs setting
+      officerPatchId: officerPatchDetails.body.patchId,
+      areaName: 1, // TODO: Needs fetching from the crm
       householdId: contact.houseRef,
       processType: 1,
       serviceRequest: {
@@ -93,8 +107,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
         description: tmiLookup[processData.process].description,
         contactId: contact.contactId,
         subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
-        enquiryType: 'TBC', // Needs setting
-        createdBy: officerId.body, // Needs checking
+        createdBy: officerId.body,
         childRequests: [],
       },
     };

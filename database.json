@@ -1,18 +1,12 @@
 {
   "test": {
-    "url": { "ENV": "TEST_DATABASE_URL" },
-    "user": { "ENV": "TEST_DATABASE_USERNAME" },
-    "password": { "ENV": "TEST_DATABASE_PASSWORD" }
+    "url": { "ENV": "DATABASE_URL" }
   },
   "development": {
-    "url": { "ENV": "TEST_DATABASE_URL" },
-    "user": { "ENV": "TEST_DATABASE_USERNAME" },
-    "password": { "ENV": "TEST_DATABASE_PASSWORD" }
+    "url": { "ENV": "DATABASE_URL" }
   },
   "production": {
-    "url": { "ENV": "PRODUCTION_DATABASE_URL" },
-    "user": { "ENV": "PRODUCTION_DATABASE_USERNAME" },
-    "password": { "ENV": "PRODUCTION_DATABASE_PASSWORD" },
+    "url": { "ENV": "DATABASE_URL" },
     "ssl": {
       "rejectUnauthorized": false
     }

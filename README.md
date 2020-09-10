@@ -17,7 +17,11 @@ cp .env.sample .env
 npm run db:start
 ```
 
-This will start postgres in a docker container and apply any required migrations.
+This will start postgres in a docker container and apply any required migrations. You can seed the database with data using:
+
+```bash
+npm run db:seed
+```
 
 ### To run the next.js development server
 

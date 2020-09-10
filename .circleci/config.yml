@@ -112,7 +112,7 @@ workflows:
       - cypress/run:
           name: cypress-branch
           store_artifacts: false
-          start: npm run db:start && npm run dev
+          start: npm run db:start && npm run db:seed && npm run dev
           requires:
             - test
           filters:

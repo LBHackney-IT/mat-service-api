@@ -23,15 +23,17 @@ describe('Work Tray Page Elements', () => {
     cy.contains('All Items');
 
     // Completed Tab
-    cy.get('ul li:nth-child(2)').click();
+    cy.get('.worktray-container ul li:nth-child(2)').click();
 
     // All Items
-    cy.get('ul li:last').click();
+    cy.get('.worktray-container ul li:last').click();
 
     // Name Column
-    cy.get('th.govuk-table__header:nth-child(3)').dblclick();
+    cy.get(
+      '.worktray-container th.govuk-table__header:nth-child(3)'
+    ).dblclick();
 
     // Date/Completion Column
-    cy.get('th.govuk-table__header:last').dblclick();
+    // cy.get('.worktray-container th.govuk-table__header:last').dblclick();
   });
 });

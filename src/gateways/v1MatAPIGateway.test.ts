@@ -116,17 +116,19 @@ describe('v1MatAPIGateway', () => {
 
     it('successfully returns data from an API', async () => {
       const dummyResponse = {
-        results: [
-          { contactId: faker.lorem.word() },
-          { contactId: faker.lorem.word() },
-        ],
+        data: {
+          results: [
+            { contactId: faker.lorem.word() },
+            { contactId: faker.lorem.word() },
+          ],
+        },
       };
 
       axios.get.mockResolvedValue(dummyResponse);
 
       const response = await gateway.getContactsByUprn('12345678901');
 
-      expect(response.body).toEqual(dummyResponse.results);
+      expect(response.body).toEqual(dummyResponse.data.results);
     });
 
     it('returns an human readable error when unsuccessful', async () => {

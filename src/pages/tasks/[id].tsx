@@ -17,9 +17,6 @@ import moment from 'moment';
 interface TaskProps {
   task: Task;
 }
-
-const mockTask: Task = HardcodedTask();
-
 const mapResidents = (residents: Resident[]) => {
   const tileArray: any[] = [];
   residents.forEach((resident) => {
@@ -47,49 +44,73 @@ export default function TaskPage(props: TaskProps) {
     return <ErrorPage statusCode={404} />;
   }
 
+  const renderTenancy = () => {
+    return (
+      <div>
+        <Heading level={HeadingLevels.H3}>Tenancy</Heading>
+        <Paragraph>
+          <Label>Address:</Label>
+          {props.task.address.presentationShort}
+          <Label>Tenancy type:</Label>
+          {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
+          <Label>Tenancy start date:</Label>
+          {props.task.tenancy.startDate
+            ? moment(props.task.tenancy.startDate).format('DD/MM/YYYY')
+            : 'n/a'}
+        </Paragraph>
+      </div>
+    );
+  };
+
+  const renderAction = () => {
+    return (
+      <div>
+        <Heading level={HeadingLevels.H3}>Action</Heading>
+        <Paragraph>
+          <Label>Due:</Label>
+          {props.task.dueTime ? props.task.dueTime : 'n/a'}
+          <Label>Reference number:</Label>
+          {props.task.referenceNumber ? props.task.referenceNumber : 'n/a'}
+          <Label>Related item:</Label>
+          {props.task.parent ? props.task.parent : 'n/a'}
+        </Paragraph>
+      </div>
+    );
+  };
+
+  const renderNotes = () => {
+    return (
+      <div>
+        <Heading level={HeadingLevels.H4}>Notes</Heading>
+        <Paragraph>
+          <span className="strong">14/09/2029:</span> Created by [Housing
+          Officer's Name]
+          <br />
+          Notes about the action. Writtern when the related process was being
+          carried out.
+        </Paragraph>
+        <Paragraph>
+          <span className="strong">15/09/2029:</span> Created by [Housing
+          Officer's Name]
+          <br />
+          Additional notes about the action. Writtern when the related process
+          was being carried out.
+        </Paragraph>
+      </div>
+    );
+  };
+
   return (
     <Layout>
       <Heading level={HeadingLevels.H2}>{props.task.type}</Heading>
-      <Heading level={HeadingLevels.H3}>Tenancy</Heading>
-      <Paragraph>
-        <Label>Address:</Label>
-        {props.task.address.presentationShort}
-        <Label>Tenancy type:</Label>
-        {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
-        <Label>Tenancy start date:</Label>
-        {props.task.tenancy.startDate
-          ? moment(props.task.tenancy.startDate).format('DD/MM/YYYY')
-          : 'n/a'}
-      </Paragraph>
+      {renderTenancy()}
       <Heading level={HeadingLevels.H3}>Residents</Heading>
       <div className="tile-container">
         {mapResidents(props.task.tenancy.residents)}
       </div>
-      <Heading level={HeadingLevels.H3}>Action</Heading>
-      <Paragraph>
-        <Label>Due:</Label>
-        {props.task.dueTime ? props.task.dueTime : 'n/a'}
-        <Label>Reference number:</Label>
-        {props.task.referenceNumber ? props.task.referenceNumber : 'n/a'}
-        <Label>Related item:</Label>
-        {props.task.parent ? props.task.parent : 'n/a'}
-      </Paragraph>
+      {renderAction()}
+      {renderNotes()}
 
-      <Heading level={HeadingLevels.H4}>Notes</Heading>
-      <Paragraph>
-        <span className="strong">14/09/2029:</span> Created by [Housing
-        Officer's Name]
-        <br />
-        Notes about the action. Writtern when the related process was being
-        carried out.
-      </Paragraph>
-      <Paragraph>
-        <span className="strong">15/09/2029:</span> Created by [Housing
-        Officer's Name]
-        <br />
-        Additional notes about the action. Writtern when the related process was
-        being carried out.
-      </Paragraph>
       <style jsx>{`
         .strong {
           font-weight: 600;

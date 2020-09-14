@@ -28,10 +28,10 @@ describe('apiTaskToUiTask', () => {
   });
 
   it('gives an empty array when response data is empty', () => {
-    const apiResponse = {data: []}
+    const apiResponse = { data: [] };
 
     const convertedTask: Row[] = apiTaskToUiTask(apiResponse.data);
 
     expect(convertedTask).toEqual([]);
-  })
+  });
 });

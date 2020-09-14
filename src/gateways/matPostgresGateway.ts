@@ -34,6 +34,12 @@ interface TRAPatchMapping {
   patchcrmid: string;
 }
 
+interface PostgresOptions {
+  connectionString: string;
+  user?: string;
+  password?: string;
+}
+
 class MatPostgresGateway {
   instance: any;
   constructor() {
@@ -41,12 +47,17 @@ class MatPostgresGateway {
   }
 
   async setupInstance() {
+    if (!process.env.DATABASE_URL) return;
+
     let db = this.instance;
     if (!db) {
       const { default: pgp } = await import('pg-promise');
-      let options = {
+      let options: PostgresOptions = {
         connectionString: process.env.DATABASE_URL,
       };
+      if (process.env.DB_USER) options.user = process.env.DB_USER;
+      if (process.env.DB_PASSWORD) options.password = process.env.DB_PASSWORD;
+
       this.instance = pgp()(options);
       delete this.instance.constructor;
     }

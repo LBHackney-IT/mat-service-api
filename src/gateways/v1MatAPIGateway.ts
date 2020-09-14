@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { Tenancy } from '../interfaces/tenancy';
-import { Contact } from '../interfaces/contact';
+import V1ApiContact from '../interfaces/v1ApiContact';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
 
 export interface v1MatAPIGatewayInterface {
@@ -26,12 +26,12 @@ export interface v1MatAPIGatewayOptions {
 }
 
 interface GetContactsByUprnAPIResponse {
-  results?: Contact[];
+  results?: V1ApiContact[];
   error?: string;
 }
 
 export interface GetContactsByUprnResponse {
-  body?: Contact[];
+  body?: V1ApiContact[];
   error?: string;
 }
 
@@ -102,7 +102,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         },
       })
       .then((response) => {
-        const data = response as GetContactsByUprnAPIResponse;
+        const data = response.data as GetContactsByUprnAPIResponse;
         return {
           body: data.results,
           error: undefined,

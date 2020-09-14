@@ -5,7 +5,7 @@ import { Status } from 'lbh-frontend-react';
 const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {
   const mappedTasks: Row[] = [];
 
-  if(apiTasks.length === 0) {
+  if (apiTasks.length === 0) {
     return [];
   }
 

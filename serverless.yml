@@ -80,6 +80,7 @@ resources:
         EngineVersion: '11.7'
         MasterUsername: ${self:provider.environment.DB_USER}
         MasterUserPassword: ${self:provider.environment.DB_PASSWORD}
+        StorageType: gp2
         VPCSecurityGroups:
           - Fn::GetAtt:
               - matServiceDbSecurityGroup

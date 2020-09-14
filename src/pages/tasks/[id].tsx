@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Layout from '../../components/layout';
 import { GetServerSideProps } from 'next';
 import {
@@ -7,12 +7,15 @@ import {
   Paragraph,
   Label,
   Tile,
+  Button,
+  ErrorMessage,
 } from 'lbh-frontend-react';
 import { Task, TenancyType, Resident } from '../../interfaces/task';
 import ErrorPage from 'next/error';
 import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
 import getAuthToken from '../../usecases/api/getAuthToken';
+import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
 
 interface TaskProps {
@@ -25,7 +28,7 @@ const mapResidents = (residents: Resident[]) => {
   const tileArray: any[] = [];
   residents.forEach((resident) => {
     tileArray.push(
-      <Tile link={resident.email} title={resident.presentationName}>
+      <Tile link={`mailto:${resident.email}`} title={resident.presentationName}>
         <Paragraph>{resident.role}</Paragraph>
         <Label>Date of birth:</Label>
         {moment(resident.dateOfBirth).format('DD/MM/YYYY')}
@@ -44,6 +47,16 @@ const mapResidents = (residents: Resident[]) => {
 };
 
 export default function TaskPage(props: TaskProps) {
+  const [error, setError] = useState('none');
+
+  const sendToManager = () => {
+    sendTaskToManager(props.task.id)
+      .then(() => {})
+      .catch(() => {
+        setError('sendToManagerError');
+      });
+  };
+
   if (props.task === undefined) {
     return <ErrorPage statusCode={404} />;
   }
@@ -75,9 +88,26 @@ export default function TaskPage(props: TaskProps) {
         <Label>Related item:</Label>
         {props.task.parent ? props.task.parent : 'n/a'}
       </Paragraph>
+      <div>
+        <Button
+          onClick={sendToManager}
+          className="govuk-button--secondary lbh-button--secondary sendToManager"
+        >
+          Send action to manager (optional)
+        </Button>
+        {error === 'sendToManagerError' && (
+          <ErrorMessage className="sendToManagerError">
+            Error sending action to manager
+          </ErrorMessage>
+        )}
+      </div>
       <style jsx>{`
         .tile-container {
           display: flex;
+        }
+        .sendToManager,
+        sendToManagerError {
+          display: inline;
         }
       `}</style>
     </Layout>

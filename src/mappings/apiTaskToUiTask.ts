@@ -5,11 +5,7 @@ import { Status } from 'lbh-frontend-react';
 const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {
   const mappedTasks: Row[] = [];
 
-  if (apiTasks.length === 0) {
-    return [];
-  }
-
-  apiTasks.forEach((element: Task) => {
+  apiTasks.map((element: Task) => {
     mappedTasks.push({
       cells: [
         {
@@ -36,6 +32,7 @@ const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {
       workItemLink: `/tasks/${element.id}`,
     });
   });
+
   return mappedTasks;
 };
 

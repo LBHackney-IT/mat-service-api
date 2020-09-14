@@ -1,12 +1,36 @@
 {
   "test": {
-    "url": { "ENV": "DATABASE_URL" }
+    "user": { "ENV": "DB_USER" },
+    "password": { "ENV": "DB_PASSWORD" },
+    "host": { "ENV": "DB_HOST" },
+    "database": { "ENV": "DB_NAME" },
+    "port": { "ENV": "DB_PORT" },
+    "driver": "postgres"
   },
   "development": {
-    "url": { "ENV": "DATABASE_URL" }
+    "user": { "ENV": "DB_USER" },
+    "password": { "ENV": "DB_PASSWORD" },
+    "host": { "ENV": "DB_HOST" },
+    "database": { "ENV": "DB_NAME" },
+    "port": { "ENV": "DB_PORT" },
+    "driver": "postgres"
+  },
+  "staging": {
+    "user": { "ENV": "DB_USER" },
+    "password": { "ENV": "DB_PASSWORD" },
+    "host": { "ENV": "DB_HOST" },
+    "database": { "ENV": "DB_NAME" },
+    "driver": "postgres",
+    "ssl": {
+      "rejectUnauthorized": false
+    }
   },
   "production": {
-    "url": { "ENV": "DATABASE_URL" },
+    "user": { "ENV": "DB_USER" },
+    "password": { "ENV": "DB_PASSWORD" },
+    "host": { "ENV": "DB_HOST" },
+    "database": { "ENV": "DB_NAME" },
+    "driver": "postgres",
     "ssl": {
       "rejectUnauthorized": false
     }

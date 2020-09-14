@@ -10,7 +10,7 @@ const { getTokenPayload } = require('node-lambda-authorizer')({
   jwtSecret: process.env.JWT_SECRET,
 });
 
-type Data = Task[] | undefined;
+type Data = Task[] | { error: string } | undefined;
 
 const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
@@ -83,7 +83,8 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       res.status(response.error).end();
     }
   } else {
-    res.status(400).end();
+    console.log(userPatch);
+    res.status(400).json({ error: 'No user patch found' });
   }
 };
 

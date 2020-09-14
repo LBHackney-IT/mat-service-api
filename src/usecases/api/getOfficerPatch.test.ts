@@ -30,8 +30,13 @@ describe('GetOfficerPatch', () => {
 
     const getPatchByOfficerId = jest.fn(async () => ({
       body: {
-        officercrmid: mockOfficerCrmId,
-        patchid: mockPatchId,
+        patchId: mockPatchId,
+        patchName: undefined,
+        officerName: undefined,
+        officerId: mockOfficerCrmId,
+        isManager: undefined,
+        areaManagerId: undefined,
+        areaId: undefined,
       },
       error: undefined,
     }));
@@ -56,7 +61,7 @@ describe('GetOfficerPatch', () => {
     expect(getUserMapping).toHaveBeenCalledTimes(1);
     expect(getPatchByOfficerId).toHaveBeenCalledTimes(1);
 
-    expect(response.body?.officerCrmId).toEqual(mockOfficerCrmId);
+    expect(response.body?.officerId).toEqual(mockOfficerCrmId);
     expect(response.body?.patchId).toEqual(mockPatchId);
   });
 
@@ -81,8 +86,13 @@ describe('GetOfficerPatch', () => {
     //mock response from crm gw method
     const getPatchByOfficerId = jest.fn(async () => ({
       body: {
-        officercrmid: undefined,
-        patchid: undefined,
+        patchId: undefined,
+        patchName: undefined,
+        officerName: undefined,
+        officerId: undefined,
+        isManager: undefined,
+        areaManagerId: undefined,
+        areaId: undefined,
       },
       error: undefined,
     }));
@@ -107,7 +117,7 @@ describe('GetOfficerPatch', () => {
     expect(getUserMapping).toHaveBeenCalledTimes(1);
     expect(getPatchByOfficerId).toHaveBeenCalledTimes(0);
 
-    expect(response.body?.officerCrmId).toEqual(undefined);
+    expect(response.body?.officerId).toEqual(undefined);
     expect(response.body?.patchId).toEqual(undefined);
   });
 
@@ -132,8 +142,13 @@ describe('GetOfficerPatch', () => {
     //mock response from crm gw method
     const getPatchByOfficerId = jest.fn(async () => ({
       body: {
-        officercrmid: mockOfficerCrmId,
-        patchid: undefined,
+        patchId: undefined,
+        patchName: undefined,
+        officerName: undefined,
+        officerId: mockOfficerCrmId,
+        isManager: undefined,
+        areaManagerId: undefined,
+        areaId: undefined,
       },
       error: undefined,
     }));
@@ -158,7 +173,7 @@ describe('GetOfficerPatch', () => {
     expect(getUserMapping).toHaveBeenCalledTimes(1);
     expect(getPatchByOfficerId).toHaveBeenCalledTimes(1);
 
-    expect(response.body?.officerCrmId).toEqual(mockOfficerCrmId);
+    expect(response.body?.officerId).toEqual(mockOfficerCrmId);
     expect(response.body?.patchId).toEqual(undefined);
   });
 });

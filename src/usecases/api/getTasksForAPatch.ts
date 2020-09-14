@@ -8,9 +8,10 @@ interface GetTasksResponse {
 
 interface GetTasksForAPatchOptions {
   crmGateway: CrmGatewayInterface;
-  patchId: string;
+  patchId?: string;
   officerId: string;
   isManager: boolean;
+  areaManagerId: string;
 }
 
 interface GetTasksInterface {
@@ -19,21 +20,24 @@ interface GetTasksInterface {
 
 class GetTasksForAPatch implements GetTasksInterface {
   crmGateway: CrmGatewayInterface;
-  patchId: string;
+  patchId?: string;
   officerId: string;
   isManager: boolean;
+  areaManagerId: string;
 
   constructor(options: GetTasksForAPatchOptions) {
     this.crmGateway = options.crmGateway;
     this.patchId = options.patchId;
     this.officerId = options.officerId;
     this.isManager = options.isManager;
+    this.areaManagerId = options.areaManagerId;
   }
   public async execute(): Promise<GetTasksResponse> {
     const response = await this.crmGateway.getTasksForAPatch(
-      this.patchId,
       this.officerId,
-      this.isManager
+      this.isManager,
+      this.areaManagerId,
+      this.patchId
     );
     switch (response.error) {
       case undefined:

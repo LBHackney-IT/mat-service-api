@@ -35,21 +35,21 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "combined-package-lock.txt" }}
 
-      - run:
-          name: Run linter
-          command: npm run lint
+      # - run:
+      #     name: Run linter
+      #     command: npm run lint
 
-      - run:
-          name: Run prettier
-          command: npm run prettier:test
+      # - run:
+      #     name: Run prettier
+      #     command: npm run prettier:test
 
-      - run:
-          name: Build application
-          command: npm run build
+      # - run:
+      #     name: Build application
+      #     command: npm run build
 
-      - run:
-          name: Run unit tests
-          command: npm run test:unit
+      # - run:
+      #     name: Run unit tests
+      #     command: npm run test:unit
 
       - persist_to_workspace:
           root: ~/repo
@@ -108,31 +108,31 @@ workflows:
           filters:
             branches:
               only:
-                - master
-      - cypress/run:
-          name: cypress-branch
-          store_artifacts: false
-          start: npm run dev
-          requires:
-            - test
-          filters:
-            branches:
-              ignore:
-                - master
-      - cypress/run:
-          name: cypress-master
-          store_artifacts: true
-          requires:
-            - deploy-staging
-          filters:
-            branches:
-              only:
-                - master
-      - permit-deploy-production:
-          type: approval
-          requires:
-            - deploy-staging
-            - cypress-master
-      - deploy-production:
-          requires:
-            - permit-deploy-production
+                - fix-production
+      # - cypress/run:
+      #     name: cypress-branch
+      #     store_artifacts: false
+      #     start: npm run dev
+      #     requires:
+      #       - test
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
+      # - cypress/run:
+      #     name: cypress-master
+      #     store_artifacts: true
+      #     requires:
+      #       - deploy-staging
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      # - permit-deploy-production:
+      #     type: approval
+      #     requires:
+      #       - deploy-staging
+      #       - cypress-master
+      # - deploy-production:
+      #     requires:
+      #       - permit-deploy-production

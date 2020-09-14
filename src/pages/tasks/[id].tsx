@@ -74,7 +74,26 @@ export default function TaskPage(props: TaskProps) {
         <Label>Related item:</Label>
         {props.task.parent ? props.task.parent : 'n/a'}
       </Paragraph>
+
+      <Heading level={HeadingLevels.H4}>Notes</Heading>
+      <Paragraph>
+        <span className="strong">14/09/2029:</span> Created by [Housing
+        Officer's Name]
+        <br />
+        Notes about the action. Writtern when the related process was being
+        carried out.
+      </Paragraph>
+      <Paragraph>
+        <span className="strong">15/09/2029:</span> Created by [Housing
+        Officer's Name]
+        <br />
+        Additional notes about the action. Writtern when the related process was
+        being carried out.
+      </Paragraph>
       <style jsx>{`
+        .strong {
+          font-weight: 600;
+        }
         .tile-container {
           display: flex;
         }

@@ -12,6 +12,7 @@ import { Task, TenancyType, Resident } from '../../interfaces/task';
 import ErrorPage from 'next/error';
 import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
+import getAuthToken from '../../usecases/api/getAuthToken';
 import moment from 'moment';
 
 interface TaskProps {
@@ -85,9 +86,10 @@ export default function TaskPage(props: TaskProps) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const taskId = context.query ? context.query.id : undefined;
+  const token = getAuthToken(context.req.headers);
 
-  if (taskId) {
-    const response = await getTaskById(`${taskId}`);
+  if (taskId && token) {
+    const response = await getTaskById(`${taskId}`, token);
     if (response !== undefined) {
       return { props: { task: response as Task } };
     }

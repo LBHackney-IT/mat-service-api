@@ -12,7 +12,7 @@ import { Task, TenancyType, Resident } from '../../interfaces/task';
 import ErrorPage from 'next/error';
 import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
-import Dropdown from '../../components/dropdown2';
+import Dropdown from '../../components/dropdown';
 import moment from 'moment';
 
 interface TaskProps {
@@ -43,11 +43,13 @@ const mapResidents = (residents: Resident[]) => {
   return tileArray;
 };
 
-const housingOfficers = ["Joe Bloggs", "Mary Berry", "Santa Claus"]
+const housingOfficers = ['Joe Bloggs', 'Mary Berry', 'Santa Claus'];
 
-const onSelectedChange(housingOfficer): void => {
-  
-}
+const updateHousingOfficer = (housingOfficer: string) => {
+  // call use case that updates housing officer
+  // ui usecase ui UC that hits api endpoint
+  console.log('ID page', housingOfficer);
+};
 
 export default function TaskPage(props: TaskProps) {
   if (props.task === undefined) {
@@ -81,7 +83,11 @@ export default function TaskPage(props: TaskProps) {
         <Label>Related item:</Label>
         {props.task.parent ? props.task.parent : 'n/a'}
       </Paragraph>
-      <Dropdown housingOfficers={housingOfficers} selected={housingOfficers[1]} onSelectedChange={onSelectedChange}/>
+      <Dropdown
+        housingOfficers={housingOfficers}
+        selected={housingOfficers[1]}
+        onSelectedChange={updateHousingOfficer}
+      />
       <style jsx>{`
         .tile-container {
           display: flex;

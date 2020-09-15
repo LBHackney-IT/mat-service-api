@@ -3,6 +3,7 @@ jspm_packages
 .next
 .env
 .data
+.vscode
 
 # Cypress
 cypress.json

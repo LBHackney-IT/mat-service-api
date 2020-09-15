@@ -3,7 +3,7 @@ import CRMGateway from '../../gateways/crmGateway';
 import { TRAPatchMappingResponseInterface } from '../../mappings/apiTRAToUiTRA';
 
 export interface officerPatchAssociationInterface {
-  patchname: string;
+  patchname?: string;
   tras: TRAPatchMappingResponseInterface[];
   officername: string;
 }
@@ -48,9 +48,9 @@ class GetTRAs implements GetTRAsInterface {
       if (
         userPatch !== undefined &&
         userPatch.body !== undefined &&
-        userPatch.body.patchid !== undefined
+        userPatch.body.patchId !== undefined
       ) {
-        tras = await matGateway.getTrasByPatchId(userPatch.body.patchid);
+        tras = await matGateway.getTrasByPatchId(userPatch.body.patchId);
       } else {
         return Promise.resolve({
           body: {
@@ -62,10 +62,10 @@ class GetTRAs implements GetTRAsInterface {
         });
       }
 
-      const traDetails = {
-        patchname: userPatch.body.patchname,
+      const traDetails: officerPatchAssociationInterface = {
+        patchname: userPatch.body.patchName,
         tras: tras.body,
-        officername: userPatch.body.officername,
+        officername: userPatch.body.officerName,
       };
 
       return Promise.resolve({

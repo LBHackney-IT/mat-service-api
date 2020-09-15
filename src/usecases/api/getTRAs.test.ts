@@ -50,9 +50,13 @@ describe('GetTRAs', () => {
       return {
         getPatchByOfficerId: () => ({
           body: {
-            patchid: mockCRMPatchId,
-            patchname: mockPatchName,
-            officername: mockOfficerName,
+            patchId: mockCRMPatchId,
+            patchName: mockPatchName,
+            officerName: mockOfficerName,
+            officerId: 'dummyId',
+            isManager: true,
+            areaManagerId: 'dummyAreaManagerId',
+            areaId: 5,
           },
           error: undefined,
         }),

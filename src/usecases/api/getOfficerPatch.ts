@@ -1,13 +1,9 @@
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-
-interface OfficerPatchInterface {
-  officerCrmId: string;
-  patchId: string;
-}
+import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
 
 interface GetOfficerPatchResponse {
-  body?: OfficerPatchInterface;
+  body?: PatchDetailsInterface;
   error?: number;
 }
 
@@ -33,14 +29,14 @@ class GetOfficerPatch implements GetOfficerPatchInterface {
   }
 
   public async execute(): Promise<GetOfficerPatchResponse> {
-    let userPatch;
+    let officerPatch;
 
     const userDetails = await this.matPostgresGateway.getUserMapping(
       this.emailAddress
     );
 
     if (userDetails.body && userDetails.body.usercrmid) {
-      userPatch = await this.crmGateway.getPatchByOfficerId(
+      officerPatch = await this.crmGateway.getPatchByOfficerId(
         userDetails.body.usercrmid
       );
     } else {
@@ -50,11 +46,7 @@ class GetOfficerPatch implements GetOfficerPatchInterface {
       };
     }
 
-    const OfficerPatchDetails: OfficerPatchInterface = {
-      officerCrmId: userDetails.body.usercrmid,
-      patchId: userPatch.body.patchid,
-    };
-
+    const OfficerPatchDetails: PatchDetailsInterface = officerPatch.body;
     return {
       body: OfficerPatchDetails,
       error: undefined,

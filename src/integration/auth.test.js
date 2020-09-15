@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import generateToken from '../tests/helpers/generateToken';
 require('dotenv').config();
 
-const apiPath = process.env.API_PATH + '/healthcheck';
+const apiPath = process.env.INTEGRATION_TEST_API_PATH + '/healthcheck';
 const jwtSecret = process.env.JWT_SECRET;
 
 describe('authentication and authorisation', () => {

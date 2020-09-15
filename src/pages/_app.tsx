@@ -89,7 +89,7 @@ const userMappingManagement = async (parsedCookie: {
         name: hackneyToken.name,
         emailAddress: hackneyToken.email,
         googleId: hackneyToken.iat.toString(),
-        usercrmid: crmUserGuid ? crmUserGuid : crmId,
+        usercrmid: crmUserGuid ? crmUserGuid.data : crmId,
       };
       await createUserMapping(userMapping);
     }

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Layout from '../../components/layout';
 import { GetServerSideProps } from 'next';
 import {
@@ -45,9 +45,8 @@ const mapResidents = (residents: Resident[]) => {
 
 const housingOfficers = ['Joe Bloggs', 'Mary Berry', 'Santa Claus'];
 
-
 export default function TaskPage(props: TaskProps) {
-  const [currentlySelected, setCurrentlySelected] = useState("Mary Berry")
+  const [currentlySelected, setCurrentlySelected] = useState('Mary Berry');
 
   const updateHousingOfficer = (housingOfficer: string) => {
     // call use case that updates housing officer

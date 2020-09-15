@@ -21,7 +21,8 @@ describe('createManualTasks', () => {
     };
     dummyOfficerPatchData = {
       patchId: 'ID1',
-      officerCrmId: dummyOfficerId,
+      officerId: dummyOfficerId,
+      areaId: 5,
     };
     GetOfficerPatch.mockImplementationOnce(() => dummyGetOfficerPatch);
     dummyGateway = {
@@ -48,10 +49,11 @@ describe('createManualTasks', () => {
     expect(dummyGateway.getContactsByUprn).toHaveBeenCalledWith(
       dummyCallData.uprn
     );
+
     expect(
       dummyGateway.createTenancyManagementInteraction
     ).toHaveBeenCalledWith({
-      areaName: 1,
+      areaName: 5,
       contactId: 'dummyContactId',
       enquirySubject: '100000052',
       estateOfficerId: dummyOfficerId,

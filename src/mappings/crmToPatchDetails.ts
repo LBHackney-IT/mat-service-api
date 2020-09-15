@@ -1,29 +1,64 @@
-export interface PatchDetails {
-  patchid: string;
-  patchname: string;
-  officername: string;
+export interface PatchDetailsInterface {
+  patchId?: string;
+  patchName?: string;
+  officerName: string;
+  officerId: string;
+  isManager: boolean;
+  areaManagerId?: string;
+  areaId?: number;
 }
 
-interface cmrResponseInterface {
+interface crmResponseInterface {
   '@odata.context': string;
   value: {
-    hackney_estateofficerpatchid: string;
     hackney_name: string;
-    '_hackney_patchid_value@OData.Community.Display.V1.FormattedValue': string;
+    hackney_estateofficerid: string;
+    'officermanagerId@OData.Community.Display.V1.FormattedValue'?: string;
+    officerManagerId?: string;
+    officerPatchId?: string;
+    'officerAreaId@OData.Community.Display.V1.FormattedValue'?: string;
+    officerAreaId?: number; //populated for officers and used for areaId
+    areaId?: number; //populated for managers and used for areaId
+    officerPatchName?: string;
+    managerId?: string;
   }[];
 }
 
-const crmToTaskDetails = (crmResponse: cmrResponseInterface): PatchDetails => {
-  const patchDetails: PatchDetails = {
-    officername:
-      crmResponse.value[0][
-        '_hackney_patchid_value@OData.Community.Display.V1.FormattedValue'
-      ],
-    patchname: crmResponse.value[0].hackney_name,
-    patchid: crmResponse.value[0].hackney_estateofficerpatchid,
+const crmToPatchDetails = (
+  crmResponse: crmResponseInterface
+): PatchDetailsInterface => {
+  const patchDetails: PatchDetailsInterface = {
+    patchId: crmResponse.value[0].officerPatchId,
+    patchName: crmResponse.value[0].officerPatchName,
+    officerName: crmResponse.value[0].hackney_name,
+    officerId: crmResponse.value[0].hackney_estateofficerid,
+    isManager: crmResponse.value[0].managerId !== undefined ? true : false,
+    areaManagerId: getAreaManagerId(crmResponse),
+    areaId: getAreaId(crmResponse),
   };
 
   return patchDetails;
 };
 
-export default crmToTaskDetails;
+const getAreaManagerId = (crmResponse: crmResponseInterface) => {
+  let areaManagerId = undefined;
+
+  if (crmResponse.value[0].managerId != undefined) {
+    areaManagerId = crmResponse.value[0].managerId;
+  } else if (crmResponse.value[0]['officerManagerId'] != undefined) {
+    areaManagerId = crmResponse.value[0]['officerManagerId'];
+  }
+  return areaManagerId;
+};
+
+const getAreaId = (crmResponse: crmResponseInterface) => {
+  let areaId = undefined;
+  if (crmResponse.value[0].officerAreaId != undefined) {
+    areaId = crmResponse.value[0].officerAreaId;
+  } else if (crmResponse.value[0].areaId != undefined) {
+    areaId = crmResponse.value[0].areaId;
+  }
+  return areaId;
+};
+
+export default crmToPatchDetails;

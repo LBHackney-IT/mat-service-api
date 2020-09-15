@@ -29,6 +29,15 @@ const Dropdown = ({
     onSelectedChange(housingOfficer);
   };
 
+  const style = {
+    width: '30%',
+    height: '50px',
+    fontSize: '20px',
+    border: '3px solid black',
+    padding: '10px',
+    fontFamily: 'Open Sans',
+  };
+
   const renderedOfficers = (
     <select
       defaultValue={currentlySelected}
@@ -36,6 +45,7 @@ const Dropdown = ({
       id="housingOfficer"
       name="housingOfficer"
       className="govuk-select govuk-!-width-full lbh-select"
+      style={style}
     >
       {housingOfficers.map((housingOfficer) => {
         return (

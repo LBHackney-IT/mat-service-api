@@ -7,10 +7,10 @@ import {
   Paragraph,
   Label,
   Tile,
+  Button,
 } from 'lbh-frontend-react';
 import { Task, TenancyType, Resident } from '../../interfaces/task';
 import ErrorPage from 'next/error';
-import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
 import moment from 'moment';
 
@@ -86,16 +86,26 @@ export default function TaskPage(props: TaskProps) {
           <span className="strong">14/09/2029:</span> Created by [Housing
           Officer's Name]
           <br />
-          Notes about the action. Writtern when the related process was being
+          Notes about the action. Written when the related process was being
           carried out.
         </Paragraph>
         <Paragraph>
           <span className="strong">15/09/2029:</span> Created by [Housing
           Officer's Name]
           <br />
-          Additional notes about the action. Writtern when the related process
+          Additional notes about the action. Written when the related process
           was being carried out.
         </Paragraph>
+      </div>
+    );
+  };
+
+  const renderNotesUpdate = () => {
+    return (
+      <div>
+        <Heading level={HeadingLevels.H4}>Update Notes</Heading>
+        <textarea className={'govuk-input lbh-input text-area'} />
+        <Button>Save Update</Button>
       </div>
     );
   };
@@ -110,6 +120,7 @@ export default function TaskPage(props: TaskProps) {
       </div>
       {renderAction()}
       {renderNotes()}
+      {renderNotesUpdate()}
 
       <style jsx>{`
         .strong {
@@ -117,6 +128,9 @@ export default function TaskPage(props: TaskProps) {
         }
         .tile-container {
           display: flex;
+        }
+        .text-area {
+          height: 10em;
         }
       `}</style>
     </Layout>

@@ -23,5 +23,8 @@ describe('Task Page Elements', () => {
     cy.contains('Residents');
     cy.contains('Action');
     cy.contains('Notes');
+    cy.contains('Update Notes');
+
+    cy.contains('Save Update');
   });
 });

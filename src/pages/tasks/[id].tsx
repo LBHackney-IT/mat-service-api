@@ -8,11 +8,13 @@ import {
   Label,
   Tile,
   Button,
+  ErrorMessage,
 } from 'lbh-frontend-react';
 import { Task, TenancyType, Resident } from '../../interfaces/task';
 import ErrorPage from 'next/error';
 import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
+import isClosedTask from '../../usecases/ui/isClosedTask';
 import moment from 'moment';
 import { FaExclamation } from 'react-icons/fa';
 
@@ -45,6 +47,16 @@ const mapResidents = (residents: Resident[]) => {
 };
 
 export default function TaskPage(props: TaskProps) {
+  const [error, setError] = useState('none');
+
+  const closeTask = () => {
+    isClosedTask(props.task.id)
+      .then(() => {})
+      .catch(() => {
+        setError('sendToManagerError');
+      });
+  };
+
   if (props.task === undefined) {
     return <ErrorPage statusCode={404} />;
   }
@@ -77,13 +89,21 @@ export default function TaskPage(props: TaskProps) {
         {props.task.parent ? props.task.parent : 'n/a'}
       </Paragraph>
       <div className="closeTaskButton">
-        <Button className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary">
+        <Button
+          onClick={closeTask}
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary"
+        >
           Close action
         </Button>
         <Paragraph className="warningText">
           <FaExclamation />
           Once an action has been closed it cannot be reopened
         </Paragraph>
+        {error === 'closeTaskError' && (
+          <ErrorMessage className="closeTaskError">
+            Error closing task
+          </ErrorMessage>
+        )}
       </div>
       <style jsx>{`
         .tile-container {

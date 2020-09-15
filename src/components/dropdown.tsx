@@ -35,13 +35,11 @@ const Dropdown = ({
       onChange={(e) => updateSelectedHousingOfficer(e.target.value)}
       id="housingOfficer"
       name="housingOfficer"
+      className="govuk-select govuk-!-width-full lbh-select"
     >
       {housingOfficers.map((housingOfficer) => {
         return (
-          <option
-            value={housingOfficer}
-            key={housingOfficer}
-          >
+          <option value={housingOfficer} key={housingOfficer}>
             {housingOfficer}
           </option>
         );
@@ -50,16 +48,9 @@ const Dropdown = ({
   );
 
   return (
-    <div className="govuk-form-group">
-      <div className="govuk-select">
-        <div className="label">Select</div>
-        <div className="text">{setCurrentlySelected}</div>
-        <div
-          onClick={() => setOpen(!open)}
-        >
-          {renderedOfficers}
-        </div>
-      </div>
+    <div className="govuk-form-group lbh-form-group">
+      <div className="label">Select</div>
+      <div onClick={() => setOpen(!open)}>{renderedOfficers}</div>
     </div>
   );
 };

@@ -91,7 +91,7 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       res.status(response.error).end();
     }
   } else {
-    console.log(userPatch);
+    console.log(officerPatch);
     res.status(400).json({ error: 'No user patch found' });
   }
 };

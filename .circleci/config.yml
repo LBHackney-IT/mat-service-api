@@ -70,7 +70,7 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
+            NEXT_PUBLIC_API_PATH=BUILD_NEXT_PUBLIC_API_PATH npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
 
       - run:
           name: Run integration tests

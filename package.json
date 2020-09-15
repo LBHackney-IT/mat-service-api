@@ -15,7 +15,7 @@
     "lint": "eslint",
     "prettier:test": "npx prettier -c .",
     "prettier:fix": "npx prettier --write .",
-    "db:start": "docker-compose up -d db && ./db/wait_for_postgres.sh && npm run db:migrate:up",
+    "db:start": "docker-compose up -d db && ./db/wait_for_postgres.sh && npm run db:migrate:up -e development up",
     "db:migrate": "db-migrate --migrations-dir 'db/migrations/'",
     "db:migrate:up": "db-migrate --migrations-dir 'db/migrations/' up",
     "db:migrate:test": "db-migrate --migrations-dir 'db/migrations/' -e test",

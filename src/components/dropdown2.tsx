@@ -5,23 +5,13 @@ interface DropdownProps {
   /**
    * An object with props of an array of Housing Officers, a selected value to indicate which option is selected and a callback function passed into the Dropdown component
    */
-  name: HousingOfficers[];
+  housingOfficers: string[];
   selected: string;
-  onSelectedChange(): string
+  onSelectedChange(housingOfficer: string): void;
 }
 
-interface HousingOfficers {
-  officer: string;
-}
-
-interface onSelectedChange {
-function: string;
-}
-
-
-const housingOfficerArr=["joe blogsd", "mart berry"]
-
-const Dropdown = ({ housingOfficers, selected, onSelectedChange }) => {
+const Dropdown = ({ housingOfficers, selected, onSelectedChange }: DropdownProps) => {
+  
   const [open, setOpen] = useState(false);
   const [currentlySelected, setCurrentlySelected] = useState(selected);
 
@@ -32,7 +22,7 @@ const Dropdown = ({ housingOfficers, selected, onSelectedChange }) => {
     });
   }, []);
   
-  const renderedOptions = housingOfficers.map((housingOfficer) => {
+  const renderedOfficers = housingOfficers.map((housingOfficer) => {
     if (housingOfficer === currentlySelected) {
       return null;
     }
@@ -56,12 +46,12 @@ const Dropdown = ({ housingOfficers, selected, onSelectedChange }) => {
           // className={`ui selection dropdown ${open ? 'visible active' : ''}`}
         >
           <AiFillCaretDown />
-          <div className="text">{selected.label}</div>
+          <div className="text">{setCurrentlySelected}</div>
           <div
             onClick={() => setOpen(!open)}
             // className={`menu ${open ? 'visible transition' : ''}`}
           >
-            {renderedOptions}
+            {renderedOfficers}
           </div>
         </div>
       </div>

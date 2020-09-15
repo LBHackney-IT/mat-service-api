@@ -18,38 +18,43 @@ function MaTApp({ Component, pageProps }: AppProps) {
 }
 
 MaTApp.getInitialProps = async (context: AppContext) => {
+  console.log('Calling GetInitialProps on main app');
   const appProps = App.getInitialProps(context);
+  try {
+    if (
+      context.ctx &&
+      context.ctx.req &&
+      context.ctx.req.headers &&
+      context.ctx.req.headers.cookie
+    ) {
+      let parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
 
-  if (
-    context.ctx &&
-    context.ctx.req &&
-    context.ctx.req.headers &&
-    context.ctx.req.headers.cookie
-  ) {
-    let parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
+      if (
+        parsedCookie &&
+        parsedCookie.hackneyToken &&
+        isLoggedIn(parsedCookie.hackneyToken) === true
+      ) {
+        console.log('Calling userMappingManagement from GetInitialProps');
+        userMappingManagement(parsedCookie);
+        return { ...appProps };
+      }
+    }
 
     if (
-      parsedCookie &&
-      parsedCookie.hackneyToken &&
-      isLoggedIn(parsedCookie.hackneyToken) === true
+      context.ctx &&
+      context.ctx.res &&
+      context.ctx.pathname !== unauthenticatedLandingPage &&
+      !context.ctx.pathname.startsWith('/api')
     ) {
-      userMappingManagement(parsedCookie);
+      console.log('No valid token - redirecting from ' + context.ctx.pathname);
+      context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
+      context.ctx.res.end();
+      return { ...appProps };
+    } else {
       return { ...appProps };
     }
-  }
-
-  if (
-    context.ctx &&
-    context.ctx.res &&
-    context.ctx.pathname !== unauthenticatedLandingPage &&
-    !context.ctx.pathname.startsWith('/api')
-  ) {
-    console.log('No valid token - redirecting from ' + context.ctx.pathname);
-    context.ctx.res.writeHead(302, { Location: unauthenticatedLandingPage });
-    context.ctx.res.end();
-    return { ...appProps };
-  } else {
-    return { ...appProps };
+  } catch (e) {
+    console.log('Error in GetInitialProps', e);
   }
 };
 
@@ -67,13 +72,16 @@ interface HackneyToken {
 const userMappingManagement = async (parsedCookie: {
   [key: string]: string;
 }) => {
+  console.log('Calling userMappingManagement on main app');
   const hackneyToken = jwt.decode(parsedCookie.hackneyToken) as HackneyToken;
   if (hackneyToken.email) {
     const existingUserMapping = await userMappingExists(hackneyToken.email);
     if (existingUserMapping) {
+      console.log('userMappingManagement: user already exists');
       return;
     } else {
       const crmUserGuid = await getCrmUserGuid(hackneyToken.email);
+      console.log('crmUserGuid:', crmUserGuid);
       let crmId;
       if (crmUserGuid === undefined) {
         const splitName = hackneyToken.name.split(' ');

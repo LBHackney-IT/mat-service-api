@@ -19,9 +19,6 @@ const getTasksByOfficerEmail = async (): Promise<Row[]> => {
     )
     .then((response) => {
       return response.data;
-    })
-    .catch((error) => {
-      return [];
     });
 
   return apiTaskToUiTask(tasks);

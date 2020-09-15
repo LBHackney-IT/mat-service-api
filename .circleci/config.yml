@@ -80,8 +80,21 @@ jobs:
     executor: my-executor
 
     steps:
-      - attach_workspace:
-          at: ~/repo
+      - checkout
+
+      - run:
+          name: Concatenate all package-lock.json files into single file for checksum
+          command: cat package-lock.json > combined-package-lock.txt
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "combined-package-lock.txt" }}
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo CYPRESS_CACHE_FOLDER=~/repo npm i --no-cache git
+            sudo CYPRESS_CACHE_FOLDER=~/repo npm i
 
       - run:
           name: Set AWS credentials
@@ -91,7 +104,7 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            rm -rf ./project && NEXT_PUBLIC_API_PATH=$API_PATH_PRODUCTION npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
+            NEXT_PUBLIC_API_PATH=$API_PATH_PRODUCTION npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
 
       - run:
           name: Run integration tests

@@ -13,6 +13,7 @@ provider:
     DB_PASSWORD: ${ssm:/${self:custom.stage}-mat-service-db-DB_PASSWORD~true, env:DB_PASSWORD}
     UI_PATH: ${ssm:/${self:custom.stage}-mat-service-ui-path, env:UI_PATH}
     ALLOWED_GROUPS: ${ssm:/${self:custom.stage}-${self:service}-allowed-groups, env:ALLOWED_GROUPS}
+    NEXT_PUBLIC_API_PATH: https://${self:custom.aliases.${self:custom.stage}}/api
 
 plugins:
   - serverless-dotenv-plugin

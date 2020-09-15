@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import Layout from '../../components/layout';
 import { GetServerSideProps } from 'next';
 import {
@@ -45,13 +45,16 @@ const mapResidents = (residents: Resident[]) => {
 
 const housingOfficers = ['Joe Bloggs', 'Mary Berry', 'Santa Claus'];
 
-const updateHousingOfficer = (housingOfficer: string) => {
-  // call use case that updates housing officer
-  // ui usecase ui UC that hits api endpoint
-  console.log('ID page', housingOfficer);
-};
 
 export default function TaskPage(props: TaskProps) {
+  const [currentlySelected, setCurrentlySelected] = useState("Mary Berry")
+
+  const updateHousingOfficer = (housingOfficer: string) => {
+    // call use case that updates housing officer
+    // ui usecase ui UC that hits api endpoint
+    setCurrentlySelected(housingOfficer);
+  };
+
   if (props.task === undefined) {
     return <ErrorPage statusCode={404} />;
   }
@@ -85,7 +88,7 @@ export default function TaskPage(props: TaskProps) {
       </Paragraph>
       <Dropdown
         housingOfficers={housingOfficers}
-        selected={housingOfficers[1]}
+        selected={currentlySelected}
         onSelectedChange={updateHousingOfficer}
       />
       <style jsx>{`

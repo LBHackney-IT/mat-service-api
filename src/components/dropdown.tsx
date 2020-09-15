@@ -24,39 +24,23 @@ const Dropdown = ({
     });
   }, []);
 
-  // const renderedOfficers = housingOfficers.map((housingOfficer) => {
-  //   console.log('Before', housingOfficer);
-  //   if (housingOfficer === currentlySelected) {
-  //     console.log('Dropdown', housingOfficer);
-  //     return null;
-  //   }
-  //   return (
-  //     <div
-  //       key={housingOfficer}
-  //       className="item"
-  //       onClick={() => onSelectedChange(housingOfficer)}
-  //     >
-  //       <option value={housingOfficer}>{housingOfficer}</option>
-  //     </div>
-  //   );
-  //   console.log('After on click', housingOfficer);
-  // });
+  const updateSelectedHousingOfficer = (housingOfficer: string) => {
+    setCurrentlySelected(housingOfficer);
+    onSelectedChange(housingOfficer);
+  };
 
   const renderedOfficers = (
-    <select id="housingOfficer" name="housingOfficer">
+    <select
+      defaultValue={currentlySelected}
+      onChange={(e) => updateSelectedHousingOfficer(e.target.value)}
+      id="housingOfficer"
+      name="housingOfficer"
+    >
       {housingOfficers.map((housingOfficer) => {
-        console.log('Before', housingOfficer);
-
-        if (housingOfficer === currentlySelected) {
-          console.log('Dropdown', housingOfficer);
-          return null;
-        }
-
         return (
           <option
             value={housingOfficer}
             key={housingOfficer}
-            onClick={() => onSelectedChange(housingOfficer)}
           >
             {housingOfficer}
           </option>
@@ -69,17 +53,11 @@ const Dropdown = ({
     <div className="govuk-form-group">
       <div className="govuk-select">
         <div className="label">Select</div>
+        <div className="text">{setCurrentlySelected}</div>
         <div
           onClick={() => setOpen(!open)}
-          // className={`ui selection dropdown ${open ? 'visible active' : ''}`}
         >
-          <div className="text">{setCurrentlySelected}</div>
-          <div
-            onClick={() => setOpen(!open)}
-            // className={`menu ${open ? 'visible transition' : ''}`}
-          >
-            {renderedOfficers}
-          </div>
+          {renderedOfficers}
         </div>
       </div>
     </div>

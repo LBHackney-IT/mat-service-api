@@ -26,6 +26,7 @@ const Dropdown = ({ options, selected, onSelectedChange }: DropdownProps) => {
   };
 
   const style = {
+    background: 'white',
     fontSize: '19px',
     fontFamily: 'Open Sans',
     height: '50px',

@@ -1,6 +1,5 @@
 import { Paragraph } from 'lbh-frontend-react';
 import React, { useState, useEffect } from 'react';
-import Select from '@govuk-react/select';
 
 interface DropdownProps {
   /**

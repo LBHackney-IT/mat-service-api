@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Select from '@govuk-react/select';
 import Layout from '../../components/layout';
 import { GetServerSideProps } from 'next';
 import {
@@ -7,6 +8,7 @@ import {
   Paragraph,
   Label,
   Tile,
+  Button,
 } from 'lbh-frontend-react';
 import { Task, TenancyType, Resident } from '../../interfaces/task';
 import ErrorPage from 'next/error';
@@ -14,6 +16,9 @@ import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
 import Dropdown from '../../components/dropdown';
 import getAuthToken from '../../usecases/api/getAuthToken';
+import updateOfficerForTask, {
+  updateHousingOfficer,
+} from '../../usecases/ui/updateHousingOfficerForTask';
 import moment from 'moment';
 
 interface TaskProps {
@@ -49,10 +54,19 @@ const housingOfficers = ['Joe Bloggs', 'Mary Berry', 'Santa Claus'];
 export default function TaskPage(props: TaskProps) {
   const [currentlySelected, setCurrentlySelected] = useState('Mary Berry');
 
-  const updateHousingOfficer = (housingOfficer: string) => {
-    // call use case that updates housing officer
-    // ui usecase ui UC that hits api endpoint
+  const updateCurrentlySelectedOfficer = (housingOfficer: string) => {
     setCurrentlySelected(housingOfficer);
+  };
+
+  const officerDetails: updateHousingOfficer = {
+    taskId: props.task.id,
+    housingOfficer: currentlySelected,
+  };
+
+  const updateOfficer = () => {
+    // call use case that updates housing officer
+    // ui usecase that hits api endpoint
+    updateOfficerForTask(officerDetails);
   };
 
   if (props.task === undefined) {
@@ -86,14 +100,25 @@ export default function TaskPage(props: TaskProps) {
         <Label>Related item:</Label>
         {props.task.parent ? props.task.parent : 'n/a'}
       </Paragraph>
-      <Dropdown
-        options={housingOfficers}
-        selected={currentlySelected}
-        onSelectedChange={updateHousingOfficer}
-      />
+      <div className="sendActionButton">
+        <Dropdown
+          options={housingOfficers}
+          selected={currentlySelected}
+          onSelectedChange={updateCurrentlySelectedOfficer}
+        />
+        <Button
+          onClick={updateOfficer}
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary"
+        >
+          Send action to officer
+        </Button>
+      </div>
       <style jsx>{`
         .tile-container {
           display: flex;
+        }
+        .sendActionButton {
+          display: inline-flex;
         }
       `}</style>
     </Layout>

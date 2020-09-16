@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Select from '@govuk-react/select';
 import Layout from '../../components/layout';
 import { GetServerSideProps } from 'next';
 import {

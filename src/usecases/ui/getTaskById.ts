@@ -9,7 +9,7 @@ const getTaskById = async (
     return undefined;
   }
 
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+  const headers = token ? { Cookie: `hackneyToken=${token};` } : undefined;
 
   const response = await axios
     .get(`${process.env.NEXT_PUBLIC_API_PATH}/tasks/${taskId}`, {

@@ -87,7 +87,7 @@ export default function TaskPage(props: TaskProps) {
         {props.task.parent ? props.task.parent : 'n/a'}
       </Paragraph>
       <Dropdown
-        housingOfficers={housingOfficers}
+        options={housingOfficers}
         selected={currentlySelected}
         onSelectedChange={updateHousingOfficer}
       />

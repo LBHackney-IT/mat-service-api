@@ -5,13 +5,13 @@ interface DropdownProps {
   /**
    * An object with props of an array of Housing Officers, a selected value to indicate which option is selected and a callback function passed into the Dropdown component
    */
-  housingOfficers: string[];
+  options: string[];
   selected: string;
   onSelectedChange: (housingOfficer: string) => void;
 }
 
 const Dropdown = ({
-  housingOfficers,
+  options,
   selected,
   onSelectedChange,
 }: DropdownProps) => {
@@ -47,7 +47,7 @@ const Dropdown = ({
       className="govuk-select govuk-!-width-full lbh-select"
       style={style}
     >
-      {housingOfficers.map((housingOfficer) => {
+      {options.map((housingOfficer) => {
         return (
           <option value={housingOfficer} key={housingOfficer}>
             {housingOfficer}

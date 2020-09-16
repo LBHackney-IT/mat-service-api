@@ -125,8 +125,9 @@ export default function TaskPage(props: TaskProps) {
           width: 15%;
         }
         .submit {
-          margin-top: 65px;
+          margin-top: 75px;
           font-size: 19px;
+          width: 30%;
         }
       `}</style>
     </Layout>

@@ -6,7 +6,7 @@ import generateToken from '../../../src/tests/helpers/generateToken';
 const jwtSecret = Cypress.env('JWT_SECRET');
 
 describe('Task Page Elements', () => {
-  it.skip('', () => {
+  it('', () => {
     let token = generateToken(
       '108854273331484808552',
       'Test User',
@@ -22,5 +22,14 @@ describe('Task Page Elements', () => {
     cy.contains('Tenancy');
     cy.contains('Residents');
     cy.contains('Action');
+  });
+
+  it('Displays clickable elements', () => {
+    cy.get('#housingOfficerDropdown').should('have.value', 'Mary Berry');
+
+    cy.get('#housingOfficerDropdown').select('Joe Bloggs');
+    cy.get('#housingOfficerDropdown').should('have.value', 'Joe Bloggs');
+
+    cy.get('.submit').contains('Send action to officer');
   });
 });

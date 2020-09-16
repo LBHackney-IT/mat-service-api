@@ -59,6 +59,7 @@ export default function TaskPage(props: TaskProps) {
 
   const officerDetails: updateHousingOfficer = {
     taskId: props.task.id,
+
     housingOfficer: currentlySelected,
   };
 

@@ -40,9 +40,10 @@ const Dropdown = ({ options, selected, onSelectedChange }: DropdownProps) => {
       <select
         defaultValue={currentlySelected}
         onChange={(e) => updateSelectedHousingOfficer(e.target.value)}
-        id="housingOfficer"
-        name="housingOfficer"
+        id="housingOfficerDropdown"
+        name="housingOfficerDropdown"
         style={style}
+        className="dropdown"
       >
         {options.map((housingOfficer) => {
           return (

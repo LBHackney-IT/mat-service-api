@@ -10,10 +10,28 @@ executors:
     working_directory: ~/repo
 
 commands:
-  deploy-staging:
+  deploy:
+    parameters:
+      environment:
+        type: string
+      api_path:
+        type: string
     steps:
-      - attach_workspace:
-          at: ~/repo
+      - checkout
+
+      - run:
+          name: Concatenate all package-lock.json files into single file for checksum
+          command: cat package-lock.json > combined-package-lock.txt
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "combined-package-lock.txt" }}
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo CYPRESS_CACHE_FOLDER=~/repo npm i --no-cache git
+            sudo CYPRESS_CACHE_FOLDER=~/repo npm i
 
       - run:
           name: Set AWS credentials
@@ -23,11 +41,11 @@ commands:
       - run:
           name: Deploy application
           command: |
-            NEXT_PUBLIC_API_PATH=$API_PATH_STAGING npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
+            NEXT_PUBLIC_API_PATH=${<< parameters.api_path >>} npm run build && ./node_modules/serverless/bin/serverless.js deploy -s << parameters.environment >>
 
       - run:
           name: Run integration tests
-          command: INTEGRATION_TEST_API_PATH=${API_PATH_STAGING} npm run test:integration
+          command: INTEGRATION_TEST_API_PATH=${<< parameters.api_path >>} npm run test:integration
 
 jobs:
   test:
@@ -78,46 +96,25 @@ jobs:
   deploy-staging:
     executor: my-executor
     steps:
-      - deploy-staging
+      - deploy:
+          environment: staging
+          api_path: API_PATH_STAGING
 
   temp-deploy-staging:
     executor: my-executor
     steps:
-      - deploy-staging
+      - deploy:
+          environment: staging
+          api_path: API_PATH_STAGING
 
   deploy-production:
     executor: my-executor
 
     steps:
+      - deploy:
+          environment: production
+          api_path: API_PATH_PRODUCTION
       - checkout
-
-      - run:
-          name: Concatenate all package-lock.json files into single file for checksum
-          command: cat package-lock.json > combined-package-lock.txt
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "combined-package-lock.txt" }}
-
-      - run:
-          name: Install dependencies
-          command: |
-            sudo CYPRESS_CACHE_FOLDER=~/repo npm i --no-cache git
-            sudo CYPRESS_CACHE_FOLDER=~/repo npm i
-
-      - run:
-          name: Set AWS credentials
-          command: |
-            pushd ~ && ./repo/node_modules/serverless/bin/serverless.js config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
-
-      - run:
-          name: Deploy application
-          command: |
-            NEXT_PUBLIC_API_PATH=$API_PATH_PRODUCTION npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
-
-      - run:
-          name: Run integration tests
-          command: INTEGRATION_TEST_API_PATH=${API_PATH_PRODUCTION} npm run test:integration
 
 workflows:
   version: 2

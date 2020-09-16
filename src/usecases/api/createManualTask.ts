@@ -86,29 +86,37 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     if (!officerDetails.body || officerDetails.error)
       return { error: 404, body: undefined };
 
-    const tmi: TenancyManagementInteraction = {
-      enquirySubject: tmiLookup[processData.process].enquirySubject,
-      reasonForStartingProcess: processData.subProcess,
-      subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
-      natureofEnquiry: '15',
-      source: '1',
-      contactId: contact.contactId,
-      estateOfficerId: officerDetails.body.officerCrmId,
-      estateOfficerName: processData.officerName,
-      officerPatchId: officerDetails.body.patchId,
-      areaName: 1, // TODO: Needs fetching from the crm
-      householdId: contact.houseRef,
-      processType: 1,
-      serviceRequest: {
-        title: tmiLookup[processData.process].title,
-        description: tmiLookup[processData.process].description,
-        contactId: contact.contactId,
-        subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
-        createdBy: officerDetails.body.officerCrmId,
-        childRequests: [],
-      },
-    };
+    let tmi: TenancyManagementInteraction;
 
+    if (
+      officerDetails.body.areaId === undefined ||
+      officerDetails.body.patchId === undefined
+    ) {
+      return { error: 400, body: undefined };
+    } else {
+      tmi = {
+        enquirySubject: tmiLookup[processData.process].enquirySubject,
+        reasonForStartingProcess: processData.subProcess,
+        subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
+        natureofEnquiry: '15',
+        source: '1',
+        contactId: contact.contactId,
+        estateOfficerId: officerDetails.body.officerId,
+        estateOfficerName: processData.officerName,
+        officerPatchId: officerDetails.body.patchId,
+        areaName: officerDetails.body.areaId,
+        householdId: contact.houseRef,
+        processType: 1,
+        serviceRequest: {
+          title: tmiLookup[processData.process].title,
+          description: tmiLookup[processData.process].description,
+          contactId: contact.contactId,
+          subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
+          createdBy: officerDetails.body.officerId,
+          childRequests: [],
+        },
+      };
+    }
     // Send to the api endpoint to create a tmi
     await this.v1MatAPIGateway.createTenancyManagementInteraction(tmi);
 

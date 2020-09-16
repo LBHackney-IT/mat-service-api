@@ -1,5 +1,5 @@
+import { Paragraph } from 'lbh-frontend-react';
 import React, { useState, useEffect } from 'react';
-import { AiFillCaretDown } from 'react-icons/ai';
 
 interface DropdownProps {
   /**
@@ -59,7 +59,9 @@ const Dropdown = ({
 
   return (
     <div className="govuk-form-group lbh-form-group">
-      <div className="label">Select</div>
+      <div className="label">
+        <Paragraph>Select</Paragraph>
+      </div>
       <div onClick={() => setOpen(!open)}>{renderedOfficers}</div>
     </div>
   );

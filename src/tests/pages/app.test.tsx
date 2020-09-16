@@ -78,10 +78,11 @@ describe('App', () => {
       writeHead: jest.fn().mockReturnValue({ end: () => {} }),
       end: jest.fn(),
     };
+    let pathname = '/foo';
 
     expect.assertions(1);
 
-    await MaTApp.getInitialProps({ ctx: { req, res } });
+    await MaTApp.getInitialProps({ ctx: { req, res, pathname } });
 
     expect(res.writeHead).toHaveBeenCalledTimes(0);
   });

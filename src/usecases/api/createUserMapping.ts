@@ -4,7 +4,7 @@ interface CreateUserMappingResponse {
   error: number | undefined;
 }
 
-interface UserMapping {
+export interface UserMapping {
   name: string;
   emailAddress: string;
   usercrmid: string;

@@ -81,10 +81,8 @@ describe('LoginRedirect', () => {
   });
 
   it('has the correct feedback URI', () => {
-    const component = mount(<LoginRedirectPage />);
-
     process.env.UI_PATH = 'http://localhost:3000';
-
+    const component = mount(<LoginRedirectPage />);
     expect(
       component.find({ 'data-test': 'login-link' }).at(0).props().href
     ).toBe(

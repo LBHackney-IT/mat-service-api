@@ -34,6 +34,14 @@ interface TRAPatchMapping {
   patchcrmid: string;
 }
 
+interface PostgresOptions {
+  user: string;
+  password: string;
+  host: string;
+  port: string;
+  database: string;
+}
+
 class MatPostgresGateway {
   instance: any;
   constructor() {
@@ -41,12 +49,26 @@ class MatPostgresGateway {
   }
 
   async setupInstance() {
+    if (
+      !process.env.DB_HOST ||
+      !process.env.DB_PASSWORD ||
+      !process.env.DB_USER ||
+      !process.env.DB_NAME
+    ) {
+      return;
+    }
+
     let db = this.instance;
     if (!db) {
       const { default: pgp } = await import('pg-promise');
       let options = {
-        connectionString: process.env.DATABASE_URL,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
+        database: process.env.DB_NAME,
       };
+
       this.instance = pgp()(options);
       delete this.instance.constructor;
     }
@@ -68,6 +90,7 @@ class MatPostgresGateway {
         error: undefined,
       });
     } catch (error) {
+      console.log('Error:', error.message);
       return Promise.resolve({
         body: [],
         error: 500,
@@ -97,6 +120,7 @@ class MatPostgresGateway {
           error: undefined,
         });
       }
+      console.log('Error:', error.message);
       return Promise.resolve({
         body: undefined,
         error: 500,
@@ -120,6 +144,7 @@ class MatPostgresGateway {
         error: undefined,
       });
     } catch (error) {
+      console.log('Error:', error.message);
       return Promise.resolve({
         body: error,
         error: 500,

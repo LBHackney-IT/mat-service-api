@@ -5,8 +5,15 @@ export interface updateHousingOfficer {
   housingOfficer: string;
 }
 
-const updateOfficerForTask = async (update: updateHousingOfficer) => {
+const updateOfficerForTask = async (
+  updateHousingOfficer: updateHousingOfficer
+) => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) return null;
+
+  const update = {
+    taskId: updateHousingOfficer.taskId,
+    housingOfficer: updateHousingOfficer.housingOfficer,
+  };
 
   return await axios
     .post(
@@ -15,6 +22,9 @@ const updateOfficerForTask = async (update: updateHousingOfficer) => {
     )
     .then((response) => {
       return response;
+    })
+    .catch((error) => {
+      return error;
     });
 };
 

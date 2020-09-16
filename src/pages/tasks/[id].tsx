@@ -100,15 +100,16 @@ export default function TaskPage(props: TaskProps) {
         <Label>Related item:</Label>
         {props.task.parent ? props.task.parent : 'n/a'}
       </Paragraph>
-      <div className="sendActionButton">
+      <div className="clickablesContainer">
         <Dropdown
           options={housingOfficers}
           selected={currentlySelected}
           onSelectedChange={updateCurrentlySelectedOfficer}
         />
+        <span className="divider"></span>
         <Button
           onClick={updateOfficer}
-          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary"
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary submit"
         >
           Send action to officer
         </Button>
@@ -117,8 +118,15 @@ export default function TaskPage(props: TaskProps) {
         .tile-container {
           display: flex;
         }
-        .sendActionButton {
-          display: inline-flex;
+        .clickablesContainer {
+          display: flex;
+        }
+        .divider {
+          width: 15%;
+        }
+        .submit {
+          margin-top: 65px;
+          font-size: 19px;
         }
       `}</style>
     </Layout>

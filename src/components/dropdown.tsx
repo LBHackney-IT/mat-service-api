@@ -27,19 +27,13 @@ const Dropdown = ({ options, selected, onSelectedChange }: DropdownProps) => {
   };
 
   const style = {
-    // width: '30%'//,
-    // height: '50px',
-    // fontSize: '20px',
-    // border: '3px solid black',
-    // padding: '10px',
-    // fontFamily: 'Open Sans',
-
-    fontWeight: '400px',
-    fontSize: '16px',
-    lineHeight: 1.25, // max-width: 100%;
-    height: '80px',
-    padding: '5px',
-    border: '2px solid #0b0c0c',
+    fontSize: '19px',
+    fontFamily: 'Open Sans',
+    height: '50px',
+    width: '150%',
+    padding: '10px',
+    paddingRight: '50px',
+    border: '3px solid #0b0c0c',
   };
 
   const renderedOfficers = (

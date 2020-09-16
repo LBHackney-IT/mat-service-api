@@ -23,24 +23,27 @@ MaTApp.getInitialProps = async (context: AppContext) => {
     return { ...appProps };
   }
 
+  if (
+    context.ctx.pathname === unauthenticatedLandingPage ||
+    context.ctx.pathname.startsWith('/api')
+  ) {
+    return { ...appProps };
+  }
+
   if (context.ctx.req.headers && context.ctx.req.headers.cookie) {
     let parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
 
-    if (!parsedCookie || !parsedCookie.hackneyToken) {
-      redirect(context.ctx.res);
-    }
-
     if (
-      context.ctx.pathname !== unauthenticatedLandingPage &&
-      !context.ctx.pathname.startsWith('/api') &&
+      !parsedCookie ||
+      !parsedCookie.hackneyToken ||
       !isLoggedIn(parsedCookie.hackneyToken)
     ) {
-      redirect(context.ctx.res);
+      return redirect(context.ctx.res);
     } else {
       return { ...appProps };
     }
   }
-  redirect(context.ctx.res);
+  return redirect(context.ctx.res);
 };
 
 export default MaTApp;

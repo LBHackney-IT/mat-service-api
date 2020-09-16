@@ -9,6 +9,26 @@ executors:
       - image: circleci/node:12.13
     working_directory: ~/repo
 
+commands:
+  deploy-staging:
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Set AWS credentials
+          command: |
+            pushd ~ && ./repo/node_modules/serverless/bin/serverless.js config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
+
+      - run:
+          name: Deploy application
+          command: |
+            NEXT_PUBLIC_API_PATH=$API_PATH_STAGING npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
+
+      - run:
+          name: Run integration tests
+          command: INTEGRATION_TEST_API_PATH=${API_PATH_STAGING} npm run test:integration
+
 jobs:
   test:
     executor: my-executor
@@ -57,24 +77,13 @@ jobs:
 
   deploy-staging:
     executor: my-executor
-
     steps:
-      - attach_workspace:
-          at: ~/repo
+      - deploy-staging
 
-      - run:
-          name: Set AWS credentials
-          command: |
-            pushd ~ && ./repo/node_modules/serverless/bin/serverless.js config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
-
-      - run:
-          name: Deploy application
-          command: |
-            NEXT_PUBLIC_API_PATH=$API_PATH_STAGING npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
-
-      - run:
-          name: Run integration tests
-          command: INTEGRATION_TEST_API_PATH=${API_PATH_STAGING} npm run test:integration
+  temp-deploy-staging:
+    executor: my-executor
+    steps:
+      - deploy-staging
 
   deploy-production:
     executor: my-executor
@@ -146,6 +155,18 @@ workflows:
           requires:
             - deploy-staging
             - cypress-master
+      - permit-deploy-staging:
+          name: permit-deploy-staging
+          type: approval
+          requires:
+            - cypress-branch
+          filters:
+            branches:
+              ignore:
+                - master
+      - temp-deploy-staging:
+          requires:
+            - permit-deploy-staging
       - deploy-production:
           requires:
             - permit-deploy-production

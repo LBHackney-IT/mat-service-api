@@ -19,13 +19,11 @@ const getTasksByOfficerEmail = async (): Promise<Row[]> => {
       `${process.env.NEXT_PUBLIC_API_PATH}/tasks?emailAddress=${emailAddress}`
     )
     .then((response) => {
-      console.log(response);
-
-      return response;
+      return response.data;
     });
   console.log(apiTaskToUiTask(tasks.data));
 
-  return apiTaskToUiTask(tasks.data);
+  return apiTaskToUiTask(tasks);
 };
 
 export default getTasksByOfficerEmail;

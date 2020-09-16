@@ -6,18 +6,24 @@ provider:
   region: eu-west-2
   api-name: hn-mat-service-api
   stage: dev
-  dbname: matServiceDb
   environment:
-    DB_USER: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_USERNAME, env:DB_USER}
-    DB_PASSWORD: ${ssm:/${self:custom.stage}-mat-service-db-MASTER_PASSWORD~true, env:DB_PASSWORD}
+    DB_NAME: matServiceDb
+    DB_USER: MatServiceDbAdmin
+    DB_HOST: ${ssm:/${self:custom.stage}-mat-service-db-DB_HOST, env:DB_HOST}
+    DB_PASSWORD: ${ssm:/${self:custom.stage}-mat-service-db-DB_PASSWORD~true, env:DB_PASSWORD}
     UI_PATH: ${ssm:/${self:custom.stage}-mat-service-ui-path, env:UI_PATH}
     ALLOWED_GROUPS: ${ssm:/${self:custom.stage}-${self:service}-allowed-groups, env:ALLOWED_GROUPS}
+    NEXT_PUBLIC_API_PATH: https://${self:custom.aliases.${self:custom.stage}}/api
 
 plugins:
   - serverless-dotenv-plugin
   - serverless-offline-ssm
   - serverless-offline
   - serverless-offline-scheduler
+
+package:
+  exclude:
+    - ./project
 
 functions:
   web:
@@ -41,7 +47,6 @@ functions:
       CRM_API_URL: ${ssm:/${self:custom.stage}-${self:service}-crm-api-url, env:CRM_API_URL}
       CRM_CLOUD_AUTHORIZATION: ${ssm:/${self:custom.stage}-${self:service}-crm-cloud-authorization~true, env:CRM_CLOUD_AUTHORIZATION}
       CRM_CLOUD_URL: ${ssm:/${self:custom.stage}-${self:service}-crm-cloud-url, env:CRM_CLOUD_URL}
-      DATABASE_URL: ${ssm:/${self:custom.stage}-${self:service}-database-url, env:DATABASE_URL}
 
   authorizer:
     handler: authorizer.handler
@@ -72,13 +77,14 @@ resources:
       Type: 'AWS::RDS::DBInstance'
       Properties:
         DBInstanceIdentifier: 'mat-service-db-${self:custom.stage}'
-        DBName: ${self:provider.dbname}
+        DBName: ${self:provider.environment.DB_NAME}
         AllocatedStorage: 5
         DBInstanceClass: 'db.t2.micro'
         Engine: 'postgres'
         EngineVersion: '11.7'
         MasterUsername: ${self:provider.environment.DB_USER}
         MasterUserPassword: ${self:provider.environment.DB_PASSWORD}
+        StorageType: gp2
         VPCSecurityGroups:
           - Fn::GetAtt:
               - matServiceDbSecurityGroup

@@ -26,4 +26,12 @@ describe('apiTaskToUiTask', () => {
       expect(task.cells[4].value).toEqual(new Date(taskValue.dueTime));
     });
   });
+
+  it('gives an empty array when response data is empty', () => {
+    const apiResponse = { data: [] };
+
+    const convertedTask: Row[] = apiTaskToUiTask(apiResponse.data);
+
+    expect(convertedTask).toEqual([]);
+  });
 });

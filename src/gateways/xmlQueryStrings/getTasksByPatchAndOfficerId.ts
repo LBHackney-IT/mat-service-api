@@ -1,7 +1,8 @@
 const getTasksByPatchAndOfficerIdQuery = (
-  patchId: string,
   officerId: string,
-  isManager: boolean
+  isManager: boolean,
+  areaManagerId: string,
+  patchId?: string
 ) => {
   return isManager === false
     ? `
@@ -89,7 +90,7 @@ const getTasksByPatchAndOfficerIdQuery = (
                 <attribute name="hackney_traid" />
                 <attribute name="hackney_issuelocation" />
                 <filter>
-                    <condition attribute="hackney_estateofficerpatchid" operator="eq" value="${patchId}" />
+                    <condition attribute="hackney_managerpropertypatchid" operator="eq" value="${areaManagerId}" />
                 </filter>
                 <link-entity name="contact" from="contactid" to="hackney_contactid" link-type="outer">
                     <attribute name="fullname" alias="name"/>

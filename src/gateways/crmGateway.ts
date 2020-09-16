@@ -4,8 +4,10 @@ import { Task } from '../interfaces/task';
 import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
 import getUserByEmail from './xmlQueryStrings/getUserByEmail';
-import getPatchIdByOfficerId from './xmlQueryStrings/getPatchIdByOfficerId';
-import crmToPatchDetails, { PatchDetails } from '../mappings/crmToPatchDetails';
+import getPatchByOfficerId from './xmlQueryStrings/getPatchByOfficerId';
+import crmToPatchDetails, {
+  PatchDetailsInterface,
+} from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
 
 export interface CrmResponse {
@@ -14,7 +16,7 @@ export interface CrmResponse {
 }
 
 interface GetPatchByOfficerIdResponse {
-  body: PatchDetails | undefined;
+  body: PatchDetailsInterface | undefined;
   error: string | undefined;
 }
 
@@ -28,9 +30,10 @@ export interface CrmGatewayGetUserResponse {
 
 export interface CrmGatewayInterface {
   getTasksForAPatch(
-    patchId: string,
     officerId: string,
-    isManager: boolean
+    isManager: boolean,
+    areaManagerId: string,
+    patchId?: string
   ): Promise<GetTasksResponse>;
   getTask(taskId: string): Promise<GetTaskResponse>;
   getUser(emailAddress: string): any;
@@ -63,19 +66,22 @@ class CrmGateway implements CrmGatewayInterface {
   }
 
   public async getTasksForAPatch(
-    patchId: string,
     officerId: string,
-    isManager: boolean
+    isManager: boolean,
+    areaManagerId: string,
+    patchId?: string
   ): Promise<GetTasksResponse> {
     if (!this.crmApiToken) {
       this.crmApiToken = await this.crmTokenGateway.getCloudToken();
     }
 
     const crmQuery = getTasksByPatchAndOfficerIdQuery(
-      patchId,
       officerId,
-      isManager
+      isManager,
+      areaManagerId,
+      patchId
     );
+
     const response = await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
@@ -227,11 +233,11 @@ class CrmGateway implements CrmGatewayInterface {
   ): Promise<GetPatchByOfficerIdResponse> {
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
-    const crmQuery = getPatchIdByOfficerId(officerId);
+    const crmQuery = getPatchByOfficerId(officerId);
 
     const response = await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficerpatchs?fetchXml=${crmQuery}`,
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         {
           headers: {
             Authorization: `Bearer ${crmApiToken.token}`,
@@ -242,7 +248,8 @@ class CrmGateway implements CrmGatewayInterface {
       )
       .then((response) => {
         const data = response.data;
-        const patchDetails: PatchDetails = crmToPatchDetails(data);
+        const patchDetails: PatchDetailsInterface = crmToPatchDetails(data);
+
         return {
           body: patchDetails,
           error: undefined,

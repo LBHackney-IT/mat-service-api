@@ -4,13 +4,15 @@ import GetTasksForAPatch from '../../usecases/api/getTasksForAPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
+import setupUser from '../../usecases/api/setupUser';
 import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
 import CreateManualTaskUseCase from '../../usecases/api/createManualTask';
+import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
 const { getTokenPayload } = require('node-lambda-authorizer')({
   jwtSecret: process.env.JWT_SECRET,
 });
 
-type Data = Task[] | undefined;
+type Data = Task[] | { error: string } | undefined;
 
 const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
@@ -44,46 +46,61 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 };
 
 const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  // Ensure the user is correctly set up
+  const setupUserResult = await setupUser(<string>req.cookies.hackneyToken);
+  if (setupUserResult.error) {
+    console.log(setupUserResult.error);
+    return res.status(400).end();
+  }
+
   const emailAddress = req.query.emailAddress
     ? Array.isArray(req.query.emailAddress)
       ? req.query.emailAddress[0]
       : req.query.emailAddress
     : undefined;
 
-  let userPatch;
+  let officerPatch;
   const crmGateway = new CrmGateway();
   const matPostgresGateway = new MatPostgresGateway();
 
   if (emailAddress !== undefined) {
-    const getUserPatch = new GetOfficerPatch({
+    const getOfficerPatch = new GetOfficerPatch({
       emailAddress,
       crmGateway,
       matPostgresGateway,
     });
-    userPatch = await getUserPatch.execute();
+    officerPatch = await getOfficerPatch.execute();
   }
+  if (officerPatch !== undefined && officerPatch.body !== undefined) {
+    const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
+    let patchId = officerPatchDetails.patchId;
+    const officerId = officerPatchDetails.officerId;
+    const isManager = officerPatchDetails.isManager;
+    const areaManagerId =
+      officerPatchDetails.areaManagerId !== undefined
+        ? officerPatchDetails.areaManagerId
+        : ''; //crm query will handle officer/manager queries
+    let getTasks;
+    let response;
 
-  if (userPatch !== undefined && userPatch.body !== undefined) {
-    const officerPatchDetails = userPatch.body;
-    const patchId = officerPatchDetails.patchId;
-    const officerId = officerPatchDetails.officerCrmId;
-    const isManager = false; //TODO: agree on the logic to determine whether the logged in officer is a manager
-
-    const getTasks = new GetTasksForAPatch({
+    getTasks = new GetTasksForAPatch({
       patchId,
       officerId,
       isManager,
+      areaManagerId,
       crmGateway,
     });
 
-    const response = await getTasks.execute();
-    if (response.error === undefined) {
+    response = await getTasks.execute();
+
+    if (response && response.error === undefined) {
       res.status(200).json(response.body);
-    } else {
+    } else if (response && response.error) {
       res.status(response.error).end();
     }
   } else {
-    res.status(400).end();
+    console.log(officerPatch);
+    res.status(400).json({ error: 'No user patch found' });
   }
 };
 

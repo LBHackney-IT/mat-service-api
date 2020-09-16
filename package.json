@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:debug": "NODE_OPTIONS='--inspect' next dev",
+    "dev": "next dev -p 3100",
+    "dev:debug": "NODE_OPTIONS='--inspect' next dev -p 3100",
     "build": "next build",
     "start": "next start",
     "serverless:offline": "npm run build && serverless offline",
@@ -15,7 +15,7 @@
     "lint": "eslint",
     "prettier:test": "npx prettier -c .",
     "prettier:fix": "npx prettier --write .",
-    "db:start": "docker-compose up -d db && ./db/wait_for_postgres.sh && npm run db:migrate:up",
+    "db:start": "docker-compose up -d db && ./db/wait_for_postgres.sh && npm run db:migrate:up -e development up",
     "db:migrate": "db-migrate --migrations-dir 'db/migrations/'",
     "db:migrate:up": "db-migrate --migrations-dir 'db/migrations/' up",
     "db:migrate:test": "db-migrate --migrations-dir 'db/migrations/' -e test",
@@ -43,7 +43,7 @@
     "isomorphic-unfetch": "^3.0.0",
     "js-cookie": "^2.2.1",
     "lbh-frontend": "^3.0.0",
-    "lbh-frontend-react": "^0.5.4",
+    "lbh-frontend-react": "^0.5.5",
     "moment": "^2.27.0",
     "next": "9.4.4",
     "next-absolute-url": "^1.2.2",
@@ -73,11 +73,13 @@
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^7.4.0",
+    "husky": "^4.3.0",
     "jest": "^26.1.0",
     "jsdom": "16.3.0",
     "jsdom-global": "3.0.2",
     "node-mocks-http": "^1.8.1",
     "prettier": "^2.1.1",
+    "pretty-quick": "^3.0.2",
     "serverless": "^1.74.1",
     "serverless-dotenv-plugin": "^2.4.2",
     "serverless-offline": "^6.4.0",
@@ -89,6 +91,11 @@
   "jest": {
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
     }
   }
 }

@@ -13,15 +13,7 @@ const pageRedirect = [
   },
   {
     name: 'Residents',
-    url: '/residents',
-  },
-  {
-    name: 'Tenant and Resident Associations',
-    url: '/TRA',
-  },
-  {
-    name: 'Administration',
-    url: '/Administration',
+    url: 'https://beta.singleview.hackney.gov.uk',
   },
 ];
 

@@ -53,9 +53,7 @@ const Dropdown = ({ options, selected, onChange }: DropdownProps) => {
 
   return (
     <div className="govuk-form-group lbh-form-group">
-      <Label id="selectLabel" for="selectOption">
-        Select
-      </Label>
+      <Label id="selectLabel">Select</Label>
       <div>{renderedOfficers}</div>
     </div>
   );

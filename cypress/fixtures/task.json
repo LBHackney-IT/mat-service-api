@@ -1,0 +1,34 @@
+{
+  "id": "6790f691-116f-e811-8133-70106faa6a11",
+  "createdTime": "2018-06-13T13:56:34.000Z",
+  "category": "Process",
+  "type": "Tenancy and household check",
+  "resident": {
+    "presentationName": "James Cagney",
+    "role": "Primary Tenant",
+    "dateOfBirth": "1991-08-11T00:00:00.000Z",
+    "workPhoneNumber": "07778765432",
+    "email": "james.cagney@yahoo.co.uk"
+  },
+  "address": { "presentationShort": "FLAT 33 KNIGHT COURT, GALES TERRACE" },
+  "dueTime": null,
+  "dueState": 0,
+  "completedTime": null,
+  "stage": 0,
+  "children": [],
+  "referenceNumber": "CAS-00000-V2L7P6",
+  "incidentId": "11111111-116f-e811-812b-70106faa6a31",
+  "tenancy": {
+    "type": 1,
+    "startDate": "2013-08-26T00:00:00.000Z",
+    "residents": [
+      {
+        "presentationName": "James Cagney",
+        "role": "Primary Tenant",
+        "dateOfBirth": "1991-08-11T00:00:00.000Z",
+        "workPhoneNumber": "07778765432",
+        "email": "james.cagney@yahoo.co.uk"
+      }
+    ]
+  }
+}

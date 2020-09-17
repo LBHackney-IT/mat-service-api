@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Layout from '../../components/layout';
 import { GetServerSideProps } from 'next';
 import {
@@ -25,9 +26,8 @@ interface TaskProps {
 const mockTask: Task = HardcodedTask();
 
 const mapResidents = (residents: Resident[]) => {
-  const tileArray: any[] = [];
-  residents.forEach((resident) => {
-    tileArray.push(
+  return residents.map((resident) => {
+    return (
       <Tile link={`mailto:${resident.email}`} title={resident.presentationName}>
         <Paragraph>{resident.role}</Paragraph>
         <Label>Date of birth:</Label>
@@ -43,87 +43,85 @@ const mapResidents = (residents: Resident[]) => {
       </Tile>
     );
   });
-  return tileArray;
 };
 
 export default function TaskPage(props: TaskProps) {
   const [error, setError] = useState('none');
+  const [task, setTask] = useState(undefined);
+
+  const router = useRouter();
+  useEffect(() => {
+    console.log(process);
+    if (!task) {
+      getTaskById(`${router.query.id}`)
+        .then((task) => {
+          setTask(task);
+        })
+        .catch((e) => {});
+    }
+  });
 
   const sendToManager = () => {
-    sendTaskToManager(props.task.id)
+    sendTaskToManager(task.id)
       .then(() => {})
       .catch(() => {
         setError('sendToManagerError');
       });
   };
-
-  if (props.task === undefined) {
-    return <ErrorPage statusCode={404} />;
+  if (task) {
+    return (
+      <Layout>
+        <Heading level={HeadingLevels.H2}>{task.type}</Heading>
+        <Heading level={HeadingLevels.H3}>Tenancy</Heading>
+        <Paragraph>
+          <Label>Address:</Label>
+          {task.address.presentationShort}
+          <Label>Tenancy type:</Label>
+          {TenancyType[task.tenancy.type ? task.tenancy.type : 0]}
+          <Label>Tenancy start date:</Label>
+          {task.tenancy.startDate
+            ? moment(task.tenancy.startDate).format('DD/MM/YYYY')
+            : 'n/a'}
+        </Paragraph>
+        <Heading level={HeadingLevels.H3}>Residents</Heading>
+        <div className="tile-container">
+          {mapResidents(task.tenancy.residents)}
+        </div>
+        <Heading level={HeadingLevels.H3}>Action</Heading>
+        <Paragraph>
+          <Label>Due:</Label>
+          {task.dueTime ? task.dueTime : 'n/a'}
+          <Label>Reference number:</Label>
+          {task.referenceNumber ? task.referenceNumber : 'n/a'}
+          <Label>Related item:</Label>
+          {task.parent ? task.parent : 'n/a'}
+        </Paragraph>
+        <div>
+          <Button
+            onClick={sendToManager}
+            className="govuk-button--secondary lbh-button--secondary sendToManager"
+          >
+            Send action to manager (optional)
+          </Button>
+          {error === 'sendToManagerError' && (
+            <ErrorMessage className="sendToManagerError">
+              Error sending action to manager
+            </ErrorMessage>
+          )}
+        </div>
+        <style jsx>{`
+          .tile-container {
+            display: flex;
+          }
+          .sendToManager,
+          sendToManagerError {
+            display: inline;
+          }
+        `}</style>
+      </Layout>
+    );
+  } else {
+    // We should be returning a loading page
+    return null;
   }
-
-  return (
-    <Layout>
-      <Heading level={HeadingLevels.H2}>{props.task.type}</Heading>
-      <Heading level={HeadingLevels.H3}>Tenancy</Heading>
-      <Paragraph>
-        <Label>Address:</Label>
-        {props.task.address.presentationShort}
-        <Label>Tenancy type:</Label>
-        {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
-        <Label>Tenancy start date:</Label>
-        {props.task.tenancy.startDate
-          ? moment(props.task.tenancy.startDate).format('DD/MM/YYYY')
-          : 'n/a'}
-      </Paragraph>
-      <Heading level={HeadingLevels.H3}>Residents</Heading>
-      <div className="tile-container">
-        {mapResidents(props.task.tenancy.residents)}
-      </div>
-      <Heading level={HeadingLevels.H3}>Action</Heading>
-      <Paragraph>
-        <Label>Due:</Label>
-        {props.task.dueTime ? props.task.dueTime : 'n/a'}
-        <Label>Reference number:</Label>
-        {props.task.referenceNumber ? props.task.referenceNumber : 'n/a'}
-        <Label>Related item:</Label>
-        {props.task.parent ? props.task.parent : 'n/a'}
-      </Paragraph>
-      <div>
-        <Button
-          onClick={sendToManager}
-          className="govuk-button--secondary lbh-button--secondary sendToManager"
-        >
-          Send action to manager (optional)
-        </Button>
-        {error === 'sendToManagerError' && (
-          <ErrorMessage className="sendToManagerError">
-            Error sending action to manager
-          </ErrorMessage>
-        )}
-      </div>
-      <style jsx>{`
-        .tile-container {
-          display: flex;
-        }
-        .sendToManager,
-        sendToManagerError {
-          display: inline;
-        }
-      `}</style>
-    </Layout>
-  );
 }
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const taskId = context.query ? context.query.id : undefined;
-  const token = getAuthToken(context.req.headers);
-
-  if (taskId && token) {
-    const response = await getTaskById(`${taskId}`, token);
-    if (response !== undefined) {
-      return { props: { task: response as Task } };
-    }
-  }
-
-  return { props: {} };
-};

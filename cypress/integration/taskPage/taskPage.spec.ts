@@ -25,10 +25,10 @@ describe('Task Page Elements', () => {
   });
 
   it('Displays clickable elements', () => {
-    cy.get('#selectOption').should('have.value', 'Mary Berry');
+    cy.get('#selectOption').should('contain', 'Mary Berry');
 
     cy.get('#selectOption').select('Joe Bloggs');
-    cy.get('#selectOption').should('have.value', 'Joe Bloggs');
+    cy.get('#selectOption').should('have.value', '1');
 
     cy.get('.submit').contains('Send action to officer');
   });

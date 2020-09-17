@@ -1,11 +1,11 @@
-import { Paragraph, Label } from 'lbh-frontend-react';
+import { Label } from 'lbh-frontend-react';
 import React, { useState, useEffect } from 'react';
 
 interface DropdownProps {
   /**
    * An object with props of consisting of a two dimensional array, an array of two item arrays, each representing the value and the display text, a selected value to indicate which option is currently selected and a callback function passed into the Dropdown component
    */
-  options: any[];
+  options: string[][];
   selected: string;
   onChange: (option: string) => void;
 }
@@ -39,10 +39,13 @@ const Dropdown = ({ options, selected, onChange }: DropdownProps) => {
         className="dropdown"
       >
         {options.map((option) => {
-          console.log('OPTION', option);
-          const [key, value] = Object.entries(option)[1];
-          console.log('LOOK HERE', key, value);
-          return <option value={option}>{option}</option>;
+          const [key, displayValue] = option;
+
+          return (
+            <option value={key} key={key}>
+              {displayValue}
+            </option>
+          );
         })}
       </select>
     </div>
@@ -50,7 +53,7 @@ const Dropdown = ({ options, selected, onChange }: DropdownProps) => {
 
   return (
     <div className="govuk-form-group lbh-form-group">
-      <Label id="selectLabel " for="selectOption">
+      <Label id="selectLabel" for="selectOption">
         Select
       </Label>
       <div>{renderedOfficers}</div>

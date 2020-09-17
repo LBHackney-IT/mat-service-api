@@ -1,18 +1,18 @@
 import axios from 'axios';
 
-export interface updateHousingOfficer {
+export interface updateTaskWithHousingOfficer {
   taskId: string;
-  housingOfficerName: string;
+  housingOfficerId: string;
 }
 
 const updateOfficerForTask = async (
-  selectedHousingOfficer: updateHousingOfficer
+  selectedHousingOfficerAndTask: updateTaskWithHousingOfficer
 ) => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) return null;
 
   const update = {
-    taskId: selectedHousingOfficer.taskId,
-    housingOfficerName: selectedHousingOfficer.housingOfficerName,
+    taskId: selectedHousingOfficerAndTask.taskId,
+    housingOfficerId: selectedHousingOfficerAndTask.housingOfficerId,
   };
 
   return await axios

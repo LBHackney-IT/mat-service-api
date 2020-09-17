@@ -16,7 +16,7 @@ import getTaskById from '../../usecases/ui/getTaskById';
 import Dropdown from '../../components/dropdown';
 import getAuthToken from '../../usecases/api/getAuthToken';
 import updateOfficerForTask, {
-  updateHousingOfficer,
+  updateTaskWithHousingOfficer,
 } from '../../usecases/ui/updateHousingOfficerForTask';
 import moment from 'moment';
 
@@ -53,28 +53,26 @@ const housingOfficers = [
   ['2', 'Mary Berry'],
   ['3', 'Santa Claus'],
 ];
-
-console.table('DIMENSIONAL', housingOfficers);
-console.log('SPECIFIC', housingOfficers[1][1]);
-// Should return 'Mary Berry'
-let defaultSelection = housingOfficers[1][1];
+// Should return '2, Mary Berry'
+const defaultSelection = housingOfficers[1];
 
 export default function TaskPage(props: TaskProps) {
-  const [currentlySelected, setCurrentlySelected] = useState(defaultSelection);
+  const [currentlySelected, setCurrentlySelected] = useState(
+    defaultSelection[0]
+  );
 
-  const updateCurrentlySelectedOfficer = (housingOfficer: string) => {
-    setCurrentlySelected(housingOfficer);
-  };
-
-  const officerDetails: updateHousingOfficer = {
+  const officerAndTaskDetails: updateTaskWithHousingOfficer = {
     taskId: props.task.id,
-    housingOfficerName: currentlySelected,
+    housingOfficerId: currentlySelected,
   };
 
   const updateOfficer = () => {
-    // call use case that updates housing officer
-    // ui usecase that hits api endpoint
-    updateOfficerForTask(officerDetails);
+    updateOfficerForTask(officerAndTaskDetails);
+  };
+
+  const updateCurrentlySelectedOfficer = (housingOfficer: string) => {
+    setCurrentlySelected(housingOfficer);
+    updateOfficer();
   };
 
   if (props.task === undefined) {

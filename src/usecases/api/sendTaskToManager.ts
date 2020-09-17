@@ -68,7 +68,7 @@ class SendTaskToManagerUseCase implements SendTaskToManagerInterface {
     };
 
     const result = await this.v1ApiGateway.transferCall(updateObject);
-    console.log(result);
+
     if (result.body) {
       return {
         body: true,

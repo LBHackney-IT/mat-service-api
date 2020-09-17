@@ -141,7 +141,6 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
-        console.log(error);
         return {
           error: error.message,
         };

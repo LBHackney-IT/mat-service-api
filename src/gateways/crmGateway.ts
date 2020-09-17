@@ -4,6 +4,8 @@ import { Task } from '../interfaces/task';
 import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
 import getUserByEmail from './xmlQueryStrings/getUserByEmail';
+import getOfficerByAreaIdQuery from './xmlQueryStrings/getOfficerByAreaId';
+
 import getPatchByOfficerId from './xmlQueryStrings/getPatchByOfficerId';
 import crmToPatchDetails, {
   PatchDetailsInterface,
@@ -17,6 +19,16 @@ export interface CrmResponse {
 
 interface GetPatchByOfficerIdResponse {
   body: PatchDetailsInterface | undefined;
+  error: string | undefined;
+}
+
+export interface OfficerInterface {
+  name: string;
+  patchId: string;
+}
+
+export interface GetOfficersByAreaIdResponse {
+  body: OfficerInterface[];
   error: string | undefined;
 }
 
@@ -44,6 +56,7 @@ export interface CrmGatewayInterface {
     familyName: string
   ): any;
   getPatchByOfficerId(emailAddress: string): any;
+  getOfficersByAreaId(areaId: number): any;
 }
 
 interface GetTasksResponse {
@@ -252,6 +265,43 @@ class CrmGateway implements CrmGatewayInterface {
 
         return {
           body: patchDetails,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async getOfficersByAreaId(
+    areaId: number
+  ): Promise<GetOfficersByAreaIdResponse> {
+    const crmTokenGateway = new CrmTokenGateway();
+    const crmApiToken = await crmTokenGateway.getCloudToken();
+    const crmQuery = getOfficerByAreaIdQuery(areaId);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
+        const officers: OfficerInterface[] = crmToOfficers(data);
+
+        return {
+          body: officers,
           error: undefined,
         };
       })

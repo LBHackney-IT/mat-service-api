@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import GetUser from '../../usecases/api/getUser';
+import GetUsers from '../../usecases/api/getUsers';
 import CreateUser from '../../usecases/api/createUser';
 
 interface Data {
@@ -11,6 +12,12 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     ? Array.isArray(req.query.emailAddress)
       ? req.query.emailAddress[0]
       : req.query.emailAddress
+    : undefined;
+
+  const areaId = req.query.areaId
+    ? Array.isArray(req.query.areaId)
+      ? req.query.areaId[0]
+      : req.query.areaId
     : undefined;
 
   switch (req.method) {
@@ -26,6 +33,12 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
           res.status(response.error).end();
         }
         break;
+      }
+
+      if (areaId !== undefined) {
+        const allUsers = new GetUsers(areaId);
+
+        const response = await allUsers.execute();
       }
       res.status(400).end();
       break;

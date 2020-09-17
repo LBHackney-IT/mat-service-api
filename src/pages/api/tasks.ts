@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Task } from '../../interfaces/task';
 import GetTasksForAPatch from '../../usecases/api/getTasksForAPatch';
+import GetTasksForTagRef from '../../usecases/api/GetTasksForTagRef';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
@@ -52,55 +53,74 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     console.log(setupUserResult.error);
     return res.status(400).end();
   }
-
-  const emailAddress = req.query.emailAddress
-    ? Array.isArray(req.query.emailAddress)
-      ? req.query.emailAddress[0]
-      : req.query.emailAddress
-    : undefined;
-
-  let officerPatch;
   const crmGateway = new CrmGateway();
-  const matPostgresGateway = new MatPostgresGateway();
+  const tag_ref = Array.isArray(req.query.tag_ref)
+    ? req.query.tag_ref[0]
+    : req.query.tag_ref;
 
-  if (emailAddress !== undefined) {
-    const getOfficerPatch = new GetOfficerPatch({
-      emailAddress,
-      crmGateway,
-      matPostgresGateway,
-    });
-    officerPatch = await getOfficerPatch.execute();
-  }
-  if (officerPatch !== undefined && officerPatch.body !== undefined) {
-    const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
-    let patchId = officerPatchDetails.patchId;
-    const officerId = officerPatchDetails.officerId;
-    const isManager = officerPatchDetails.isManager;
-    const areaManagerId =
-      officerPatchDetails.areaManagerId !== undefined
-        ? officerPatchDetails.areaManagerId
-        : ''; //crm query will handle officer/manager queries
-    let getTasks;
-    let response;
-
-    getTasks = new GetTasksForAPatch({
-      patchId,
-      officerId,
-      isManager,
-      areaManagerId,
+  if (req.query.tag_ref) {
+    console.log('Searching for tasks with tag_ref: ' + tag_ref);
+    const getTasks = new GetTasksForTagRef({
+      tag_ref,
       crmGateway,
     });
 
-    response = await getTasks.execute();
-
+    const response = await getTasks.execute();
+    console.log(response);
     if (response && response.error === undefined) {
       res.status(200).json(response.body);
     } else if (response && response.error) {
       res.status(response.error).end();
     }
   } else {
-    console.log(officerPatch);
-    res.status(400).json({ error: 'No user patch found' });
+    const emailAddress = req.query.emailAddress
+      ? Array.isArray(req.query.emailAddress)
+        ? req.query.emailAddress[0]
+        : req.query.emailAddress
+      : undefined;
+
+    let officerPatch;
+    const matPostgresGateway = new MatPostgresGateway();
+
+    if (emailAddress !== undefined) {
+      const getOfficerPatch = new GetOfficerPatch({
+        emailAddress,
+        crmGateway,
+        matPostgresGateway,
+      });
+      officerPatch = await getOfficerPatch.execute();
+    }
+    if (officerPatch !== undefined && officerPatch.body !== undefined) {
+      const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
+      let patchId = officerPatchDetails.patchId;
+      const officerId = officerPatchDetails.officerId;
+      const isManager = officerPatchDetails.isManager;
+      const areaManagerId =
+        officerPatchDetails.areaManagerId !== undefined
+          ? officerPatchDetails.areaManagerId
+          : ''; //crm query will handle officer/manager queries
+      let getTasks;
+      let response;
+
+      getTasks = new GetTasksForAPatch({
+        patchId,
+        officerId,
+        isManager,
+        areaManagerId,
+        crmGateway,
+      });
+
+      response = await getTasks.execute();
+
+      if (response && response.error === undefined) {
+        res.status(200).json(response.body);
+      } else if (response && response.error) {
+        res.status(response.error).end();
+      }
+    } else {
+      console.log(officerPatch);
+      res.status(400).json({ error: 'No user patch found' });
+    }
   }
 };
 

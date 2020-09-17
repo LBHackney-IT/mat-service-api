@@ -33,7 +33,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     case 'POST':
       const userMapping = {
-        name: req.body.name,
+        username: req.body.username,
         emailAddress: req.body.emailAddress,
         usercrmid: req.body.usercrmid,
         googleId: req.body.googleId,

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, SetStateAction } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layout';
-import { GetServerSideProps } from 'next';
 import {
   Heading,
   HeadingLevels,
@@ -12,18 +11,9 @@ import {
   ErrorMessage,
 } from 'lbh-frontend-react';
 import { Task, TenancyType, Resident } from '../../interfaces/task';
-import ErrorPage from 'next/error';
-import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
-import getAuthToken from '../../usecases/api/getAuthToken';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
-
-interface TaskProps {
-  task: Task;
-}
-
-const mockTask: Task = HardcodedTask();
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -45,29 +35,31 @@ const mapResidents = (residents: Resident[]) => {
   });
 };
 
-export default function TaskPage(props: TaskProps) {
-  const [error, setError] = useState('none');
-  const [task, setTask] = useState(undefined);
+export default function TaskPage() {
+  const [error, setError] = useState<string>('none');
+  const [task, setTask] = useState<Task | null>(null);
 
   const router = useRouter();
   useEffect(() => {
-    console.log(process);
     if (!task) {
       getTaskById(`${router.query.id}`)
         .then((task) => {
-          setTask(task);
+          if (task) setTask(task);
         })
         .catch((e) => {});
     }
   });
 
   const sendToManager = () => {
-    sendTaskToManager(task.id)
-      .then(() => {})
-      .catch(() => {
-        setError('sendToManagerError');
-      });
+    if (task) {
+      sendTaskToManager(task.id)
+        .then(() => {})
+        .catch(() => {
+          setError('sendToManagerError');
+        });
+    }
   };
+
   if (task) {
     return (
       <Layout>

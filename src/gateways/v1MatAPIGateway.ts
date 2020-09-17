@@ -9,7 +9,9 @@ export interface v1MatAPIGatewayInterface {
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
   getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
-  transferCall(tmi: TenancyManagementInteraction);
+  transferCall(
+    tmi: TenancyManagementInteraction
+  ): Promise<TransferCallResponse>;
 }
 
 export interface GetNewTenanciesResponse {

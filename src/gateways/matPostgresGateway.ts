@@ -17,7 +17,7 @@ export interface CreateUserMappingResponse {
 }
 
 interface UserMappingTable {
-  name: string;
+  username: string;
   emailAddress: string;
   usercrmid: string;
   googleId: string;

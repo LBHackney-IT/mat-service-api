@@ -9,6 +9,7 @@ export interface v1MatAPIGatewayInterface {
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
   getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
+  transferCall(tmi: TenancyManagementInteraction);
 }
 
 export interface GetNewTenanciesResponse {
@@ -32,6 +33,11 @@ interface GetContactsByUprnAPIResponse {
 
 export interface GetContactsByUprnResponse {
   body?: V1ApiContact[];
+  error?: string;
+}
+
+export interface TransferCallResponse {
+  body?: boolean;
   error?: string;
 }
 
@@ -109,6 +115,33 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
+        return {
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+  public async transferCall(
+    tmi: TenancyManagementInteraction
+  ): Promise<TransferCallResponse> {
+    const response = await axios
+      .put(
+        `${this.v1MatApiUrl}/v1/TenancyManagementInteractions/TransferCall`,
+        tmi,
+        {
+          headers: {
+            Authorization: `Bearer ${this.v1MatApiToken}`,
+          },
+        }
+      )
+      .then(() => {
+        return {
+          body: true,
+        };
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
         return {
           error: error.message,
         };

@@ -1,32 +1,24 @@
-import { Paragraph } from 'lbh-frontend-react';
+import { Paragraph, Label } from 'lbh-frontend-react';
 import React, { useState, useEffect } from 'react';
 
 interface DropdownProps {
   /**
-   * An object with props of an array of Housing Officers, a selected value to indicate which option is selected and a callback function passed into the Dropdown component
+   * An object with props of consisting of a two dimensional array, an array of two item arrays, each representing the value and the display text, a selected value to indicate which option is currently selected and a callback function passed into the Dropdown component
    */
-  options: string[];
+  options: any[];
   selected: string;
-  onSelectedChange: (housingOfficer: string) => void;
+  onChange: (option: string) => void;
 }
 
-const Dropdown = ({ options, selected, onSelectedChange }: DropdownProps) => {
-  const [open, setOpen] = useState(false);
+const Dropdown = ({ options, selected, onChange }: DropdownProps) => {
   const [currentlySelected, setCurrentlySelected] = useState(selected);
 
-  useEffect(() => {
-    document.body.addEventListener('click', (event) => {
-      setOpen(false);
-    });
-  }, []);
-
-  const updateSelectedHousingOfficer = (housingOfficer: string) => {
-    setCurrentlySelected(housingOfficer);
-    onSelectedChange(housingOfficer);
+  const updateWithNewSelection = (selectedValue: string) => {
+    setCurrentlySelected(selectedValue);
+    onChange(selectedValue);
   };
 
-  const style = {
-    background: 'white',
+  const styleSelect = {
     fontSize: '19px',
     fontFamily: 'Open Sans',
     height: '50px',
@@ -40,18 +32,17 @@ const Dropdown = ({ options, selected, onSelectedChange }: DropdownProps) => {
     <div className="govuk-select lbh-select test">
       <select
         defaultValue={currentlySelected}
-        onChange={(e) => updateSelectedHousingOfficer(e.target.value)}
-        id="housingOfficerDropdown"
-        name="housingOfficerDropdown"
-        style={style}
+        onChange={(e) => updateWithNewSelection(e.target.value)}
+        id="selectOption"
+        name="selectOption"
+        style={styleSelect}
         className="dropdown"
       >
-        {options.map((housingOfficer) => {
-          return (
-            <option value={housingOfficer} key={housingOfficer}>
-              {housingOfficer}
-            </option>
-          );
+        {options.map((option) => {
+          console.log('OPTION', option);
+          const [key, value] = Object.entries(option)[1];
+          console.log('LOOK HERE', key, value);
+          return <option value={option}>{option}</option>;
         })}
       </select>
     </div>
@@ -59,10 +50,10 @@ const Dropdown = ({ options, selected, onSelectedChange }: DropdownProps) => {
 
   return (
     <div className="govuk-form-group lbh-form-group">
-      <div className="label">
-        <Paragraph>Select</Paragraph>
-      </div>
-      <div onClick={() => setOpen(!open)}>{renderedOfficers}</div>
+      <Label id="selectLabel " for="selectOption">
+        Select
+      </Label>
+      <div>{renderedOfficers}</div>
     </div>
   );
 };

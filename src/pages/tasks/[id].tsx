@@ -48,10 +48,19 @@ const mapResidents = (residents: Resident[]) => {
   return tileArray;
 };
 
-const housingOfficers = ['Joe Bloggs', 'Mary Berry', 'Santa Claus'];
+const housingOfficers = [
+  ['1', 'Joe Bloggs'],
+  ['2', 'Mary Berry'],
+  ['3', 'Santa Claus'],
+];
+
+console.table('DIMENSIONAL', housingOfficers);
+console.log('SPECIFIC', housingOfficers[1][1]);
+// Should return 'Mary Berry'
+let defaultSelection = housingOfficers[1][1];
 
 export default function TaskPage(props: TaskProps) {
-  const [currentlySelected, setCurrentlySelected] = useState('Mary Berry');
+  const [currentlySelected, setCurrentlySelected] = useState(defaultSelection);
 
   const updateCurrentlySelectedOfficer = (housingOfficer: string) => {
     setCurrentlySelected(housingOfficer);
@@ -59,8 +68,7 @@ export default function TaskPage(props: TaskProps) {
 
   const officerDetails: updateHousingOfficer = {
     taskId: props.task.id,
-
-    housingOfficer: currentlySelected,
+    housingOfficerName: currentlySelected,
   };
 
   const updateOfficer = () => {
@@ -104,7 +112,7 @@ export default function TaskPage(props: TaskProps) {
         <Dropdown
           options={housingOfficers}
           selected={currentlySelected}
-          onSelectedChange={updateCurrentlySelectedOfficer}
+          onChange={updateCurrentlySelectedOfficer}
         />
         <span className="divider"></span>
         <Button
@@ -125,7 +133,6 @@ export default function TaskPage(props: TaskProps) {
           width: 15%;
         }
         .submit {
-          margin-top: 75px;
           font-size: 19px;
           width: 30%;
         }

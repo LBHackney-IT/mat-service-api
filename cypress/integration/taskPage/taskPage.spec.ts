@@ -25,10 +25,10 @@ describe('Task Page Elements', () => {
   });
 
   it('Displays clickable elements', () => {
-    cy.get('#housingOfficerDropdown').should('have.value', 'Mary Berry');
+    cy.get('#selectOption').should('have.value', 'Mary Berry');
 
-    cy.get('#housingOfficerDropdown').select('Joe Bloggs');
-    cy.get('#housingOfficerDropdown').should('have.value', 'Joe Bloggs');
+    cy.get('#selectOption').select('Joe Bloggs');
+    cy.get('#selectOption').should('have.value', 'Joe Bloggs');
 
     cy.get('.submit').contains('Send action to officer');
   });

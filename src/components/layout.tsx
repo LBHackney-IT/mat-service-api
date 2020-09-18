@@ -13,7 +13,7 @@ const pageRedirect = [
   },
   {
     name: 'Residents',
-    url: process.env.NEXT_PUBLIC_SINGLEVIEW_URL,
+    url: `${process.env.NEXT_PUBLIC_SINGLEVIEW_URL}`,
   },
 ];
 

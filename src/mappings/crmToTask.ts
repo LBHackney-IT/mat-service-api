@@ -57,6 +57,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     children: [],
     parent: crmTask['parent@OData.Community.Display.V1.FormattedValue'],
     referenceNumber: crmTask['hackney_name'],
+    incidentId: crmTask['_hackney_incidentid_value'],
     tenancy: {
       type: TenancyType.Secure,
       startDate: new Date(crmTask['tenancyStartDate']),
@@ -110,6 +111,7 @@ interface CrmTaskValue {
   hackney_process_stage: number;
   hackney_name: string;
   name: string;
+  _hackney_incidentid_value: string;
 }
 
 export interface CrmTasks {

@@ -3,7 +3,7 @@ import { Task } from '../../interfaces/task';
 
 const getTaskById = async (
   taskId: string,
-  token: string
+  token?: string
 ): Promise<Task | undefined> => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) {
     return undefined;

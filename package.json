@@ -20,7 +20,7 @@
     "db:migrate:up": "db-migrate --migrations-dir 'db/migrations/' up",
     "db:migrate:test": "db-migrate --migrations-dir 'db/migrations/' -e test",
     "db:migrate:dry-run": "db-migrate --dry-run --migrations-dir 'db/migrations/'",
-    "db:seed": "cat db/migrations/sqls/seeds.sql | docker-compose exec -T db psql -U mat_user mat_service",
+    "db:seed": "cat db/migrations/sqls/seeds.sql | docker-compose exec -T db psql -U MatServiceDbAdmin matServiceDb",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "cypress:open:dev": "cypress open --env JWT_SECRET=secret",

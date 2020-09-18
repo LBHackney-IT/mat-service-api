@@ -35,6 +35,11 @@ export interface GetContactsByUprnResponse {
   error?: string;
 }
 
+export interface GetAreaPatchResponse {
+  body?: any;
+  error?: string;
+}
+
 export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
   v1MatApiUrl: string;
   v1MatApiToken: string;
@@ -105,6 +110,35 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         const data = response.data as GetContactsByUprnAPIResponse;
         return {
           body: data.results,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async getAreaPatch(
+    uprn: string,
+    postcode: string
+  ): Promise<GetAreaPatchResponse> {
+    const response = await axios
+      .get(
+        `${this.v1MatApiUrl}/v1/AreaPatch/GetAreaPatch?postcode=${postcode}&uprn=${uprn}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.v1MatApiToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
+        return {
+          body: data.result,
           error: undefined,
         };
       })

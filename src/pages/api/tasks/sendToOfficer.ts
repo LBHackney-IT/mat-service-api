@@ -35,6 +35,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
     matPostgresGateway,
   });
   const response = await sendTaskToOfficer.execute(id, loggedInUser.email);
+  console.log('HARDCODED-DATA!!!!!', response);
 
   if (response.body) {
     res.status(204).end();

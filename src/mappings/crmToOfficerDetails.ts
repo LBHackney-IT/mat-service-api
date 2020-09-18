@@ -8,18 +8,20 @@ import { OfficerInterface, CrmResponse } from '../gateways/crmGateway';
 //   }[];
 // }
 
-export const crmResponseToTasks = (data: CrmResponse): OfficerInterface[] => {
-  const crmOfficers = data.value; // as CrmTasks
+// const crmToOfficerDetails = (data: CrmResponse): OfficerInterface[] => {
+//   const crmOfficers = data.value; // as CrmTasks
 
-  const officerArray: any = [];
-  crmOfficers.forEach((element: any) => {
-    const officer = {
-      name: element.hackney_estateofficerpropertypatchid.hackney_patchid,
-      patchid:
-        hackney_estateofficerpropertypatchid.hackney_estateofficerpatchid,
-    };
-    officerArray.push(officer);
-  });
+//   const officerArray: any = [];
+//   crmOfficers.forEach((element: any) => {
+//     const officer = {
+//       name: element.hackney_estateofficerpropertypatchid.hackney_patchid,
+//       patchid:
+//         hackney_estateofficerpropertypatchid.hackney_estateofficerpatchid,
+//     };
+//     officerArray.push(officer);
+//   });
 
-  return officerArray;
-};
+//   return officerArray;
+// };
+
+// export default crmToOfficerDetails;

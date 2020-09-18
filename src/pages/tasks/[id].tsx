@@ -15,9 +15,7 @@ import { Task, TenancyType, Resident } from '../../interfaces/task';
 import getTaskById from '../../usecases/ui/getTaskById';
 import Dropdown from '../../components/dropdown';
 import getAuthToken from '../../usecases/api/getAuthToken';
-import sendTaskToHousingOfficer, {
-  SendTaskToHousingOfficerInterface,
-} from '../../usecases/ui/sendToOfficer';
+import sendTaskToOfficer from '../../usecases/ui/sendToOfficer';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
 
@@ -58,7 +56,7 @@ export default function TaskPage() {
 
   const updateOfficer = () => {
     if (task) {
-      sendTaskToHousingOfficer({
+      sendTaskToOfficer({
         taskId: task.id,
         housingOfficerId: currentlySelected,
       });

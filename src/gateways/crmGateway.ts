@@ -1,7 +1,11 @@
 import axios, { AxiosError } from 'axios';
 import CrmTokenGateway, { CrmTokenGatewayInterface } from './crmTokenGateway';
 import { Task } from '../interfaces/task';
-import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
+import {
+  crmResponseToTask,
+  crmResponseToTasks,
+  // crmToOfficerDetails,
+} from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
 import getUserByEmail from './xmlQueryStrings/getUserByEmail';
 import getOfficerByAreaIdQuery from './xmlQueryStrings/getOfficerByAreaId';
@@ -278,9 +282,8 @@ class CrmGateway implements CrmGatewayInterface {
     return response;
   }
 
-  public async getOfficersByAreaId(
-    areaId: number
-  ): Promise<GetOfficersByAreaIdResponse> {
+  public async getOfficersByAreaId(areaId: number): Promise<any> {
+    //Promise<GetOfficersByAreaIdResponse>
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
     const crmQuery = getOfficerByAreaIdQuery(areaId);
@@ -298,7 +301,7 @@ class CrmGateway implements CrmGatewayInterface {
       )
       .then((response) => {
         const data = response.data;
-        const officers: OfficerInterface[] = crmToOfficers(data);
+        const officers: OfficerInterface[] = data; //crmToOfficerDetails(data)
 
         return {
           body: officers,

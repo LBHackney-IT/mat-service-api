@@ -52,6 +52,13 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
     );
     if (!patch || !patch.body) return { error: 'Error fetching patch' };
 
+    // fetch officer data from crm
+    const allOfficersInGivenArea = await this.crmGateway.getOfficersByAreaId(
+      patch.body.areaId
+    );
+    if (!allOfficersInGivenArea || !allOfficersInGivenArea.body)
+      return { error: 'Error fetching areaId' };
+
     const updateObject: TenancyManagementInteraction = {
       estateOfficerId: officer.body.usercrmid,
       officerPatchId: officer.body.usercrmid,
@@ -67,7 +74,16 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       },
     };
 
-    const result = await this.v1ApiGateway.transferCall(updateObject);
+    // const result = await this.v1ApiGateway.transferCall(updateObject);
+
+    const result = {
+      body: [
+        ['101', 'Officer Mike'],
+        ['202', 'Officer Mary'],
+        ['303', 'Officer Mark'],
+      ],
+      error: undefined,
+    };
 
     if (result.body) {
       return {

@@ -1,5 +1,6 @@
 import GetUser from './getUser';
-import CreateUserMapping, { UserMapping } from './createUserMapping';
+import CreateUserMapping from './createUserMapping';
+import UserMapping from '../../interfaces/userMapping';
 import CheckUserMappingExists from './checkUserMappingExists';
 import CreateUser from './createUser';
 import jwt from 'jsonwebtoken';
@@ -57,7 +58,7 @@ export default async (
 
       // Create the mapping in postgres
       const userMapping: UserMapping = {
-        name: hackneyToken.name,
+        username: hackneyToken.name,
         emailAddress: hackneyToken.email,
         googleId: hackneyToken.sub.toString(),
         usercrmid: crmUserGuid,

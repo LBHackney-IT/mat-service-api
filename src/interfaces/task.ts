@@ -19,6 +19,7 @@ export interface Task {
     type: TenancyType;
     startDate: Date;
     residents: Resident[];
+    tagRef?: string;
   };
 }
 

@@ -74,6 +74,15 @@ export default function TaskPage() {
           {task.tenancy.startDate
             ? moment(task.tenancy.startDate).format('DD/MM/YYYY')
             : 'n/a'}
+          <Label>Tenancy Reference (Tag Ref):</Label>
+          <a
+            className="tenancy"
+            href={`${
+              process.env.NEXT_PUBLIC_SINGLEVIEW_URL
+            }/tenancies/${task.tenancy.tagRef?.replace('/', '-')}`}
+          >
+            {task.tenancy.tagRef}
+          </a>
         </Paragraph>
         <Heading level={HeadingLevels.H3}>Residents</Heading>
         <div className="tile-container">

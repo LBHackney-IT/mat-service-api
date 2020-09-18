@@ -62,6 +62,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
       type: TenancyType.Secure,
       startDate: new Date(crmTask['tenancyStartDate']),
       residents: [tenant],
+      tagRef: crmTask['hackney_household3_x002e_hackney_tag_ref'],
     },
   };
 
@@ -112,6 +113,7 @@ interface CrmTaskValue {
   hackney_name: string;
   name: string;
   _hackney_incidentid_value: string;
+  hackney_household3_x002e_hackney_tag_ref: string;
 }
 
 export interface CrmTasks {

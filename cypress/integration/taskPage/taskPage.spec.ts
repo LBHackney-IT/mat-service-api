@@ -42,6 +42,14 @@ describe('Task Page', () => {
       cy.contains('james.cagney@yahoo.co.uk');
       cy.contains('CAS-00000-V2L7P6');
     });
+    it('should link to the tenancy page on single view', () => {
+      cy.get('a.tenancy')
+        .contains('0123456/01')
+        .should('have.attr', 'href')
+        .then((href) => {
+          expect(href.endsWith('/tenancies/0123456-01')).to.equal(true);
+        });
+    });
   });
 
   describe('Send task to manager', () => {

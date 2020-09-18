@@ -21,6 +21,7 @@
   "tenancy": {
     "type": 1,
     "startDate": "2013-08-26T00:00:00.000Z",
+    "tagRef": "0123456/01",
     "residents": [
       {
         "presentationName": "James Cagney",

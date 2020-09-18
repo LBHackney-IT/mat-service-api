@@ -13,7 +13,7 @@ const pageRedirect = [
   },
   {
     name: 'Residents',
-    url: 'https://beta.singleview.hackney.gov.uk',
+    url: process.env.NEXT_PUBLIC_SINGLEVIEW_URL,
   },
 ];
 

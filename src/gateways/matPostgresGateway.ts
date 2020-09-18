@@ -17,7 +17,7 @@ export interface CreateUserMappingResponse {
 }
 
 interface UserMappingTable {
-  name: string;
+  username: string;
   emailAddress: string;
   usercrmid: string;
   googleId: string;
@@ -135,7 +135,7 @@ class MatPostgresGateway {
 
     try {
       const results = await this.instance.none(
-        'INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${name})',
+        'INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${username})',
         userMapping
       );
 

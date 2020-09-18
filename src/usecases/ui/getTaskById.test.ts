@@ -9,10 +9,11 @@ describe('getTaskById', () => {
     axios.mockClear();
   });
 
-  it('returns an undefined when no env var is set', async () => {
-    const response = await getTaskById(faker.lorem.word());
-
-    expect(response).toEqual(undefined);
+  it('throws an error when no env var is set', async () => {
+    const response = await getTaskById(faker.lorem.word()).catch((e) => {
+      expect(e.message).toEqual('Api path config not set');
+    });
+    expect.assertions(1);
   });
 
   it('can successfully fetch data from an API', async () => {

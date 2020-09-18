@@ -21,6 +21,10 @@ plugins:
   - serverless-offline
   - serverless-offline-scheduler
 
+package:
+  exclude:
+    - ./project
+
 functions:
   web:
     name: ${self:service}-web-${self:custom.stage}

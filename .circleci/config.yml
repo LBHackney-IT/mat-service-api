@@ -8,6 +8,15 @@ executors:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
+  cypress-staging:
+    docker:
+      - image: cypress/base:10
+    environment:
+      CYPRESS_BASE_URL: http://localhost:3100
+      CYPRESS_JWT_SECRET: secret
+      JWT_SECRET: secret
+      ALLOWED_GROUPS: housing-officer-dev
+      NEXT_PUBLIC_API_PATH: /api
 
 jobs:
   test:
@@ -80,8 +89,21 @@ jobs:
     executor: my-executor
 
     steps:
-      - attach_workspace:
-          at: ~/repo
+      - checkout
+
+      - run:
+          name: Concatenate all package-lock.json files into single file for checksum
+          command: cat package-lock.json > combined-package-lock.txt
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "combined-package-lock.txt" }}
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo CYPRESS_CACHE_FOLDER=~/repo npm i --no-cache git
+            sudo CYPRESS_CACHE_FOLDER=~/repo npm i
 
       - run:
           name: Set AWS credentials
@@ -111,7 +133,8 @@ workflows:
                 - master
       - cypress/run:
           name: cypress-branch
-          store_artifacts: false
+          executor: cypress-staging
+          store_artifacts: true
           start: npm run dev
           requires:
             - test

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, SetStateAction } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layout';
+import LoadingPage from '../../components/loadingPage';
 import {
   Heading,
   HeadingLevels,
@@ -46,7 +47,10 @@ export default function TaskPage() {
         .then((task) => {
           if (task) setTask(task);
         })
-        .catch((e) => {});
+        .catch((e) => {
+          console.log(e.message);
+          setError('loadingError');
+        });
     }
   });
 
@@ -122,7 +126,6 @@ export default function TaskPage() {
       </Layout>
     );
   } else {
-    // We should be returning a loading page
-    return null;
+    return <LoadingPage error={error === 'loadingError'} />;
   }
 }

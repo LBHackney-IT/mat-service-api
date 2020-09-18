@@ -1,31 +1,25 @@
 import axios from 'axios';
 import { Task } from '../../interfaces/task';
 
-const getTaskById = async (
+const getTaskById = (
   taskId: string,
-  token: string
+  token?: string
 ): Promise<Task | undefined> => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) {
-    return undefined;
+    return new Promise(() => {
+      throw new Error('Api path config not set');
+    });
   }
 
   const headers = token ? { Cookie: `hackneyToken=${token};` } : undefined;
 
-  const response = await axios
+  return axios
     .get(`${process.env.NEXT_PUBLIC_API_PATH}/tasks/${taskId}`, {
       headers,
     })
     .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return undefined;
+      return response.data;
     });
-
-  if (response !== undefined) {
-    return response.data as Task;
-  }
-  return response;
 };
 
 export default getTaskById;

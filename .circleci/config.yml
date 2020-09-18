@@ -8,6 +8,15 @@ executors:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
+  cypress-staging:
+    docker:
+      - image: cypress/base:10
+    environment:
+      CYPRESS_BASE_URL: http://localhost:3100
+      CYPRESS_JWT_SECRET: secret
+      JWT_SECRET: secret
+      ALLOWED_GROUPS: housing-officer-dev
+      NEXT_PUBLIC_API_PATH: /api
 
 jobs:
   test:
@@ -124,7 +133,8 @@ workflows:
                 - master
       - cypress/run:
           name: cypress-branch
-          store_artifacts: false
+          executor: cypress-staging
+          store_artifacts: true
           start: npm run dev
           requires:
             - test

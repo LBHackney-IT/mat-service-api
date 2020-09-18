@@ -48,6 +48,9 @@ const getTaskById = (taskId: string) => {
                <attribute name="housing_cot" alias="tenancyStartDate"/>
             </link-entity>
         </link-entity>
+        <link-entity name="hackney_household" from="hackney_householdid" to="hackney_household_interactionid" link-type="outer">
+            <attribute name="hackney_tag_ref" />
+        </link-entity>
     </entity>
     </fetch>
     `;

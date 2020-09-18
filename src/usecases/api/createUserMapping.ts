@@ -1,14 +1,8 @@
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import UserMapping from '../../interfaces/userMapping';
 
 interface CreateUserMappingResponse {
   error: number | undefined;
-}
-
-export interface UserMapping {
-  name: string;
-  emailAddress: string;
-  usercrmid: string;
-  googleId: string;
 }
 
 interface CreateUserMappingInterface {

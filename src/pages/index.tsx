@@ -3,13 +3,16 @@ import Head from 'next/head';
 import Worktray, { sampleWorkTrayColumns, Row } from '../components/worktray';
 import { ErrorMessage } from 'lbh-frontend-react';
 import Layout from '../components/layout';
+import LoadingPage from '../components/loadingPage';
 import getTasksByOfficerEmail from '../usecases/ui/getTasksByOfficerEmail';
 
 type FetchState = 'fetching' | 'error' | 'done';
 
 export default function Home() {
   const [tasks, setTasks] = useState<Row[]>([]);
-  const [fetchState, setFetchState]: [FetchState, any] = useState('fetching');
+  const [fetchState, setFetchState]: [FetchState, any] = useState<FetchState>(
+    'fetching'
+  );
 
   useEffect(() => {
     getTasksByOfficerEmail()
@@ -22,34 +25,30 @@ export default function Home() {
       });
   }, []);
 
-  return (
-    <Layout>
-      <div>
-        <div className="container">
-          <Head>
-            <title>Manage A Tenancy</title>
-            <link rel="icon" href="/favicon.ico" />
-          </Head>
-          <main>
-            {
-              {
-                fetching: <p className="message">Fetching worktray items</p>,
-                error: (
-                  <ErrorMessage>Error fetching worktray items</ErrorMessage>
-                ),
-                done: <Worktray columns={sampleWorkTrayColumns} rows={tasks} />,
-              }[fetchState]
-            }
-          </main>
+  if (fetchState === 'done') {
+    return (
+      <Layout>
+        <div>
+          <div className="container">
+            <Head>
+              <title>Manage A Tenancy</title>
+              <link rel="icon" href="/favicon.ico" />
+            </Head>
+            <main>
+              <Worktray columns={sampleWorkTrayColumns} rows={tasks} />
+            </main>
+          </div>
         </div>
-      </div>
 
-      <style jsx>{`
-        .message {
-          font-weight: 700;
-          font-size: 1.1875rem;
-        }
-      `}</style>
-    </Layout>
-  );
+        <style jsx>{`
+          .message {
+            font-weight: 700;
+            font-size: 1.1875rem;
+          }
+        `}</style>
+      </Layout>
+    );
+  } else {
+    return <LoadingPage error={fetchState === 'error'} />;
+  }
 }

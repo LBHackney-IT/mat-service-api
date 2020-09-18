@@ -29,6 +29,7 @@ const MockTask = (): Task => {
       startDate: faker.date.past(),
       residents: [],
     },
+    incidentId: faker.lorem.word(),
   };
 };
 

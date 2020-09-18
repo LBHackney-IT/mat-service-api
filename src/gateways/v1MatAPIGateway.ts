@@ -20,7 +20,8 @@ export interface GetNewTenanciesResponse {
 }
 
 export interface createTenancyManagementInteractionResponse {
-  error: string | undefined;
+  body?: TenancyManagementInteraction;
+  error?: string;
 }
 
 export interface v1MatAPIGatewayOptions {
@@ -90,14 +91,14 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
           },
         }
       )
-      .then((_) => {
+      .then((response) => {
         return {
-          error: undefined,
+          body: response.data as TenancyManagementInteraction,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          error: error.message,
+          error: `V1 API: ${error.message}`,
         };
       });
 

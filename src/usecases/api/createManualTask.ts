@@ -30,8 +30,8 @@ const tmiLookup: { [key: string]: TmiData } = {
 };
 
 interface CreateManualTaskResponse {
-  body: any | undefined;
-  error: number | undefined;
+  body?: TenancyManagementInteraction;
+  error?: string;
 }
 
 interface CreateManualTaskOptions {
@@ -118,12 +118,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       };
     }
     // Send to the api endpoint to create a tmi
-    await this.v1MatAPIGateway.createTenancyManagementInteraction(tmi);
-
-    return {
-      body: true,
-      error: undefined,
-    };
+    return await this.v1MatAPIGateway.createTenancyManagementInteraction(tmi);
   }
 }
 

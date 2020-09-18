@@ -15,9 +15,9 @@ import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
 import Dropdown from '../../components/dropdown';
 import getAuthToken from '../../usecases/api/getAuthToken';
-import updateOfficerForTask, {
-  updateTaskWithHousingOfficer,
-} from '../../usecases/ui/updateHousingOfficerForTask';
+import sendTaskToHousingOfficer, {
+  SendTaskToHousingOfficerInterface,
+} from '../../usecases/ui/sendToOfficer';
 import moment from 'moment';
 
 interface TaskProps {
@@ -61,13 +61,13 @@ export default function TaskPage(props: TaskProps) {
     defaultSelection[0]
   );
 
-  const officerAndTaskDetails: updateTaskWithHousingOfficer = {
+  const officerAndTaskDetails: SendTaskToHousingOfficerInterface = {
     taskId: props.task.id,
     housingOfficerId: currentlySelected,
   };
 
   const updateOfficer = () => {
-    updateOfficerForTask(officerAndTaskDetails);
+    sendTaskToHousingOfficer(officerAndTaskDetails);
   };
 
   const updateCurrentlySelectedOfficer = (housingOfficer: string) => {

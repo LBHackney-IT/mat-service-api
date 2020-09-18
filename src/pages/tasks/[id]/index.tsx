@@ -1,7 +1,7 @@
 import React, { useState, useEffect, SetStateAction } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '../../components/layout';
-import LoadingPage from '../../components/loadingPage';
+import Layout from '../../../components/layout';
+import LoadingPage from '../../../components/loadingPage';
 import {
   Heading,
   HeadingLevels,
@@ -11,9 +11,9 @@ import {
   Button,
   ErrorMessage,
 } from 'lbh-frontend-react';
-import { Task, TenancyType, Resident } from '../../interfaces/task';
-import getTaskById from '../../usecases/ui/getTaskById';
-import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
+import { Task, TenancyType, Resident } from '../../../interfaces/task';
+import getTaskById from '../../../usecases/ui/getTaskById';
+import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
 
 const mapResidents = (residents: Resident[]) => {
@@ -113,6 +113,13 @@ export default function TaskPage() {
               Error sending action to manager
             </ErrorMessage>
           )}
+        </div>
+        <div>
+          <form method="get" action={`/tasks/${router.query.id}/launch`}>
+            <Button className="govuk-button--secondary lbh-button--secondary launchProcess">
+              Launch process
+            </Button>
+          </form>
         </div>
         <style jsx>{`
           .tile-container {

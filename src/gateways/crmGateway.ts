@@ -46,14 +46,16 @@ export interface CrmGatewayInterface {
     patchId?: string
   ): Promise<GetTasksResponse>;
   getTask(taskId: string): Promise<GetTaskResponse>;
-  getUser(emailAddress: string): any;
+  getUser(emailAddress: string): Promise<CrmGatewayGetUserResponse>;
   createUser(
     emailAddress: string,
     fullName: string,
     firstName: string,
     familyName: string
   ): any;
-  getPatchByOfficerId(emailAddress: string): any;
+  getPatchByOfficerId(
+    emailAddress: string
+  ): Promise<GetPatchByOfficerIdResponse>;
 }
 
 interface GetTasksResponse {

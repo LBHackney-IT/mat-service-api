@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import GetTask from '../../../usecases/api/getTask';
-import { Task } from '../../../interfaces/task';
+import GetTask from '../../../../usecases/api/getTask';
+import { Task } from '../../../../interfaces/task';
 
 interface Error {
   error: string;

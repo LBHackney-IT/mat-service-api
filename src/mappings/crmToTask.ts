@@ -38,6 +38,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     homePhoneNumber: crmTask['contact1_x002e_telephone2'],
     workPhoneNumber: crmTask['contact1_x002e_telephone1'],
     email: crmTask['contact1_x002e_emailaddress1'],
+    contactCrmId: crmTask['_hackney_contactid_value'],
   };
 
   const task: Task = {
@@ -45,6 +46,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     createdTime: new Date(crmTask.createdon),
     category:
       crmTask['hackney_processtype@OData.Community.Display.V1.FormattedValue'],
+    categoryId: crmTask['hackney_processtype'],
     type: 'Unknown',
     resident: tenant,
     address: {
@@ -58,11 +60,13 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     parent: crmTask['parent@OData.Community.Display.V1.FormattedValue'],
     referenceNumber: crmTask['hackney_name'],
     incidentId: crmTask['_hackney_incidentid_value'],
+    householdId: crmTask['_hackney_household_interactionid_value'],
     tenancy: {
       type: TenancyType.Secure,
       startDate: new Date(crmTask['tenancyStartDate']),
       residents: [tenant],
       tagRef: crmTask['hackney_household3_x002e_hackney_tag_ref'],
+      uprn: crmTask['contact1_x002e_hackney_uprn'],
     },
   };
 
@@ -114,6 +118,9 @@ interface CrmTaskValue {
   name: string;
   _hackney_incidentid_value: string;
   hackney_household3_x002e_hackney_tag_ref: string;
+  _hackney_household_interactionid_value: string;
+  contact1_x002e_hackney_uprn: string;
+  _hackney_contactid_value: string;
 }
 
 export interface CrmTasks {

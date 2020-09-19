@@ -1,7 +1,7 @@
 import { encrypt, decrypt } from './encryption';
-const key = 'mysupersecretkey';
+const key = 'q2zacxLVm4wnpe0YcLwmQA==';
 const decrypted = 'hello world';
-const encrypted = 'q2zacxLVm4wnpe0YcLwmQA==';
+const encrypted = 'pLh1afo1Od+dOBEe6s5uzA==';
 
 describe('encryption', () => {
   it('should encrypt and base 64 encode data', () => {

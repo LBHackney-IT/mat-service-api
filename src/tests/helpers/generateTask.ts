@@ -6,6 +6,7 @@ const MockTask = (): Task => {
     id: faker.lorem.word(),
     createdTime: faker.date.recent(),
     category: faker.lorem.word(),
+    categoryId: 1,
     type: faker.lorem.word(),
     resident: {
       presentationName: faker.name.findName(),
@@ -15,6 +16,7 @@ const MockTask = (): Task => {
       homePhoneNumber: faker.phone.phoneNumber(),
       workPhoneNumber: faker.phone.phoneNumber(),
       email: faker.internet.email(),
+      contactCrmId: faker.lorem.word(),
     },
     address: {
       presentationShort: faker.address.streetAddress(),
@@ -24,10 +26,13 @@ const MockTask = (): Task => {
     dueState: DueState.imminent,
     completedTime: faker.date.recent(),
     referenceNumber: faker.random.alphaNumeric(),
+    householdId: faker.lorem.word(),
     tenancy: {
       type: TenancyType.Secure,
       startDate: faker.date.past(),
       residents: [],
+      tagRef: faker.lorem.word(),
+      uprn: faker.lorem.word(),
     },
     incidentId: faker.lorem.word(),
   };

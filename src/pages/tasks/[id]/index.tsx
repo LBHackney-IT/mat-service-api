@@ -67,6 +67,11 @@ export default function TaskPage() {
   if (task) {
     return (
       <Layout>
+        <form method="get" action={`/api/tasks/${router.query.id}/launch`}>
+          <Button className="govuk-button lbh-button launchProcess">
+            Launch process
+          </Button>
+        </form>
         <Heading level={HeadingLevels.H2}>{task.type}</Heading>
         <Heading level={HeadingLevels.H3}>Tenancy</Heading>
         <Paragraph>
@@ -114,13 +119,6 @@ export default function TaskPage() {
             </ErrorMessage>
           )}
         </div>
-        <div>
-          <form method="get" action={`/tasks/${router.query.id}/launch`}>
-            <Button className="govuk-button--secondary lbh-button--secondary launchProcess">
-              Launch process
-            </Button>
-          </form>
-        </div>
         <style jsx>{`
           .tile-container {
             display: flex;
@@ -128,6 +126,9 @@ export default function TaskPage() {
           .sendToManager,
           sendToManagerError {
             display: inline;
+          }
+          .launchProcess {
+            float: right;
           }
         `}</style>
       </Layout>

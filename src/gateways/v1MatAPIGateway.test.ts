@@ -77,15 +77,15 @@ describe('v1MatAPIGateway', () => {
       );
     });
 
-    it('returns no errors after a successful request', async () => {
+    it('returns the result after a successful request', async () => {
       const dummyPayload = MockTMI();
 
-      axios.post.mockReturnValue(Promise.resolve());
+      axios.post.mockResolvedValue({ data: { interactionId: 'dummy' } });
       const response = await gateway.createTenancyManagementInteraction(
         dummyPayload
       );
 
-      expect(response).toEqual({ error: undefined });
+      expect(response).toEqual({ body: { interactionId: 'dummy' } });
     });
 
     it('returns an human readable error when unsuccessful', async () => {

@@ -57,7 +57,7 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       patch.body.areaId
     );
     if (!allOfficersInGivenArea || !allOfficersInGivenArea.body)
-      return { error: 'Error fetching areaId' };
+      return { error: 'Error fetching officers by areaId' };
 
     const updateObject: TenancyManagementInteraction = {
       estateOfficerId: officer.body.usercrmid,
@@ -78,16 +78,17 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
 
     const result = {
       body: [
-        ['101', 'Officer Mike'],
-        ['202', 'Officer Mary'],
-        ['303', 'Officer Mark'],
+        ['101', 'Mike'],
+        ['202', 'Mary'],
+        ['303', 'Mark'],
       ],
       error: undefined,
     };
+    console.log('CLG!!!!', result.body);
 
     if (result.body) {
       return {
-        body: true,
+        body: result.body,
       };
     } else {
       return {

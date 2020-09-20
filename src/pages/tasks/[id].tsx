@@ -15,7 +15,7 @@ import { Task, TenancyType, Resident } from '../../interfaces/task';
 import getTaskById from '../../usecases/ui/getTaskById';
 import Dropdown from '../../components/dropdown';
 import getAuthToken from '../../usecases/api/getAuthToken';
-import sendTaskToOfficer from '../../usecases/ui/sendToOfficer';
+import sendTaskToOfficer from '../../usecases/ui/sendTaskToOfficer';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
 

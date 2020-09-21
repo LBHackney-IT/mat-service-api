@@ -65,6 +65,22 @@ export default function TaskPage() {
   };
 
   if (task) {
+    const renderTagRef = () => {
+      if (task.tenancy.tagRef) {
+        return (
+          <a
+            className="tenancy"
+            href={`${
+              process.env.NEXT_PUBLIC_SINGLEVIEW_URL
+            }/tenancies/${task.tenancy.tagRef.replace('/', '-')}`}
+          >
+            {task.tenancy.tagRef}
+          </a>
+        );
+      }
+      return null;
+    };
+
     return (
       <Layout>
         <Heading level={HeadingLevels.H2}>{task.type}</Heading>
@@ -79,14 +95,7 @@ export default function TaskPage() {
             ? moment(task.tenancy.startDate).format('DD/MM/YYYY')
             : 'n/a'}
           <Label>Tenancy Reference (Tag Ref):</Label>
-          <a
-            className="tenancy"
-            href={`${
-              process.env.NEXT_PUBLIC_SINGLEVIEW_URL
-            }/tenancies/${task.tenancy.tagRef.replace('/', '-')}`}
-          >
-            {task.tenancy.tagRef}
-          </a>
+          {renderTagRef()}
         </Paragraph>
         <Heading level={HeadingLevels.H3}>Residents</Heading>
         <div className="tile-container">

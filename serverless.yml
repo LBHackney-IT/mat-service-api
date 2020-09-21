@@ -12,7 +12,10 @@ provider:
     DB_HOST: ${ssm:/${self:custom.stage}-mat-service-db-DB_HOST, env:DB_HOST}
     DB_PASSWORD: ${ssm:/${self:custom.stage}-mat-service-db-DB_PASSWORD~true, env:DB_PASSWORD}
     UI_PATH: ${ssm:/${self:custom.stage}-mat-service-ui-path, env:UI_PATH}
-    ALLOWED_GROUPS: ${ssm:/${self:custom.stage}-${self:service}-allowed-groups, env:ALLOWED_GROUPS}
+    ALLOWED_GROUPS:
+      'Fn::Join':
+        - ','
+        - ${self:custom.allowedGroups.${self:provider.stage}}
     NEXT_PUBLIC_API_PATH: https://${self:custom.aliases.${self:custom.stage}}/api
 
 plugins:
@@ -156,3 +159,12 @@ custom:
   certificate-arn:
     staging: arn:aws:acm:us-east-1:492942404536:certificate/bcfcfca4-138d-4995-8a67-1aec6011bde4
     production: arn:aws:acm:us-east-1:492942404536:certificate/bcfcfca4-138d-4995-8a67-1aec6011bde4
+  allowedGroups:
+    staging:
+      - housing-officer-staging
+      - area-housing-manager-staging
+      - development-team-staging
+    production:
+      - housing-officer-production
+      - area-housing-manager-production
+      - development-team-production

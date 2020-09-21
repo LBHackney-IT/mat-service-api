@@ -1,5 +1,22 @@
-import { Task, Stage, DueState, TenancyType } from '../interfaces/task';
+import {
+  Task,
+  Stage,
+  DueState,
+  TenancyType,
+  ProcessType,
+} from '../interfaces/task';
 import { CrmResponse } from '../gateways/crmGateway';
+
+const processIds: { [key: number]: ProcessType } = {
+  100000052: ProcessType.homecheck,
+  100000060: ProcessType.itv,
+  100000156: ProcessType.thc,
+  100000219: ProcessType.etra,
+};
+
+const processTypeLookup = (code: number): ProcessType | null => {
+  return processIds[code] || null;
+};
 
 export const crmResponseToTask = (data: CrmResponse): Task => {
   const residents = crmResponseToTasks(data);
@@ -61,6 +78,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     referenceNumber: crmTask['hackney_name'],
     incidentId: crmTask['_hackney_incidentid_value'],
     householdId: crmTask['_hackney_household_interactionid_value'],
+    processType: processTypeLookup(crmTask.hackney_enquirysubject),
     tenancy: {
       type: TenancyType.Secure,
       startDate: new Date(crmTask['tenancyStartDate']),
@@ -121,6 +139,7 @@ interface CrmTaskValue {
   _hackney_household_interactionid_value: string;
   contact1_x002e_hackney_uprn: string;
   _hackney_contactid_value: string;
+  hackney_enquirysubject: number;
 }
 
 export interface CrmTasks {

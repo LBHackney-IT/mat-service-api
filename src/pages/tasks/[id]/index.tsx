@@ -67,11 +67,13 @@ export default function TaskPage() {
   if (task) {
     return (
       <Layout>
-        <form method="get" action={`/api/tasks/${router.query.id}/launch`}>
-          <Button className="govuk-button lbh-button launchProcess">
-            Launch process
-          </Button>
-        </form>
+        {task.processType ? (
+          <form method="get" action={`/api/tasks/${router.query.id}/launch`}>
+            <Button className="govuk-button lbh-button launchProcess">
+              Launch process
+            </Button>
+          </form>
+        ) : null}
         <Heading level={HeadingLevels.H2}>{task.type}</Heading>
         <Heading level={HeadingLevels.H3}>Tenancy</Heading>
         <Paragraph>

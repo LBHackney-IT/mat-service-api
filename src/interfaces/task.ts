@@ -17,6 +17,7 @@ export interface Task {
   referenceNumber: string;
   incidentId: string;
   householdId: string;
+  processType: ProcessType | null;
   tenancy: {
     type: TenancyType;
     startDate: Date;
@@ -24,6 +25,13 @@ export interface Task {
     tagRef: string;
     uprn: string;
   };
+}
+
+export enum ProcessType {
+  thc = 'thc',
+  itv = 'itv',
+  homecheck = 'homecheck',
+  etra = 'etra',
 }
 
 export interface Resident {

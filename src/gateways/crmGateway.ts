@@ -15,6 +15,14 @@ import crmToPatchDetails, {
   PatchDetailsInterface,
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
+import getOfficersByAreaId from './xmlQueryStrings/getOfficersByAreaId';
+import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
+import { Officer } from '../mappings/crmToOfficersDetails';
+import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
+import crmToPropertyPatch, {
+  PropertyPatchDetailsInterface,
+} from '../mappings/crmToPropertyPatch';
+import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -26,13 +34,8 @@ interface GetPatchByOfficerIdResponse {
   error: string | undefined;
 }
 
-export interface OfficerInterface {
-  name: string;
-  patchId: string;
-}
-
-export interface GetOfficersByAreaIdResponse {
-  body: OfficerInterface[];
+export interface GetPropertyPatchResponse {
+  body: PropertyPatchDetailsInterface | undefined;
   error: string | undefined;
 }
 
@@ -71,6 +74,11 @@ interface GetTasksResponse {
 interface GetTaskResponse {
   body: Task | undefined;
   error: string | undefined;
+}
+
+interface GetOfficersByAreaIdResponse {
+  body?: Officer[];
+  error?: string;
 }
 
 class CrmGateway implements CrmGatewayInterface {
@@ -282,11 +290,51 @@ class CrmGateway implements CrmGatewayInterface {
     return response;
   }
 
-  public async getOfficersByAreaId(areaId: number): Promise<any> {
-    //Promise<GetOfficersByAreaIdResponse>
+  public async getPropertyPatch(
+    uprn: string
+  ): Promise<GetPropertyPatchResponse> {
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const crmQuery = getPropertyPatchByUprn(uprn);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data as CrmResponseInterface;
+        const patchData: PropertyPatchDetailsInterface = crmToPropertyPatch(
+          data
+        );
+        return {
+          body: patchData,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+    return response;
+  }
+
+  public async getOfficersByAreaId(
+    areaId: number
+  ): Promise<GetOfficersByAreaIdResponse> {
     const crmTokenGateway = new CrmTokenGateway();
     const crmApiToken = await crmTokenGateway.getCloudToken();
-    const crmQuery = getOfficerByAreaIdQuery(areaId);
+    const crmQuery = getOfficersByAreaId(areaId);
 
     const response = await axios
       .get(
@@ -301,7 +349,7 @@ class CrmGateway implements CrmGatewayInterface {
       )
       .then((response) => {
         const data = response.data;
-        const officers: OfficerInterface[] = data; //crmToOfficerDetails(data)
+        const officers: Officer[] = crmToOfficersDetails(data);
 
         return {
           body: officers,

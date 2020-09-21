@@ -28,21 +28,20 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   const userToken = getTokenPayload(req);
 
-  createTask
-    .execute({
-      process: req.body.process,
-      subProcess: <number>req.body.subProcess,
-      tagRef: req.body.tag_ref,
-      uprn: req.body.uprn,
-      officerEmail: userToken.email,
-      officerName: userToken.name,
-    })
-    .then(() => {
-      res.status(204).end();
-    })
-    .catch(() => {
-      res.status(500).end();
-    });
+  const result = await createTask.execute({
+    process: req.body.process,
+    subProcess: <number>req.body.subProcess,
+    tagRef: req.body.tag_ref,
+    uprn: req.body.uprn,
+    officerEmail: userToken.email,
+    officerName: userToken.name,
+  });
+
+  if (result.body) {
+    res.status(204).end();
+  } else {
+    res.status(500).json(<Data>result);
+  }
 };
 
 const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {

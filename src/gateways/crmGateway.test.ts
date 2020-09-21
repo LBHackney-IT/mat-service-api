@@ -6,6 +6,11 @@ import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
 import MockCrmOfficersResponse from '../tests/helpers/generateCrmOfficersResponse';
 
 import { crmResponseToTasks } from '../mappings/crmToTask';
+
+import MockCrmPropertyPatchResponse from '../tests/helpers/generatePropertyPatchResponse';
+
+import MockCrmOfficersPerAreaIdResponse from '../tests/helpers/generateMockCrmOfficersPerAreaIdResponse';
+import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
 jest.mock('axios');
 
 describe('CrmGateway', () => {
@@ -70,21 +75,63 @@ describe('CrmGateway', () => {
     });
   });
 
-  describe('Get Officers by area ID', () => {
+  describe('Get Property patch by uprn', () => {
+    it('sucessfully fetches data from the API', async () => {
+      const data = MockCrmPropertyPatchResponse();
+      const expectedData = {
+        areaName:
+          data.value[0][
+            'hackney_areaname@OData.Community.Display.V1.FormattedValue'
+          ],
+        officerFullName: data.value[0].OfficerFullName,
+        patchCode:
+          data.value[0][
+            '_hackney_estateofficerpropertypatchid_value@OData.Community.Display.V1.FormattedValue'
+          ],
+        ward:
+          data.value[0][
+            'hackney_ward@OData.Community.Display.V1.FormattedValue'
+          ],
+        original: data,
+      };
+      const uprn = '100023006827';
+
+      axios.get.mockResolvedValue({ data: data });
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getPropertyPatch(uprn);
+      expect(response).toEqual({ body: expectedData, error: undefined });
+    });
+
+    it('returns an error from the API', async () => {
+      const uprn = '100023006827';
+      const error = faker.lorem.words();
+      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getPropertyPatch(uprn);
+
+      expect(response).toEqual({ body: undefined, error: error });
+    });
+  });
+
+  describe('Get Officers by area id', () => {
     it('successfully fetches data from the API', async () => {
-      const data = MockCrmOfficersResponse();
-      const areaId = faker.random.number();
+      const data = MockCrmOfficersPerAreaIdResponse();
+      const areaId = 5;
 
       axios.get.mockResolvedValue({ data: data });
 
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getOfficersByAreaId(areaId);
 
-      expect(response).toEqual({ body: data, error: undefined });
+      expect(response).toEqual({
+        body: crmToOfficersDetails(data),
+        error: undefined,
+      });
     });
 
     it('returns an error from the API', async () => {
-      const areaId = faker.random.number();
+      const areaId = 1;
       const error = faker.lorem.words();
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 

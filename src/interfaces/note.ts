@@ -22,3 +22,15 @@ export interface CrmNote {
   incident1_x002e_incidentid: string;
   annotation2_x002e_annotationid: string;
 }
+
+export interface CreateNote {
+  interactionId: string; //TMI ID
+  estateOfficerName: string; //officer's full name
+  ServiceRequest: {
+    description: string; //note
+    requestCallback: false; //leave as false for now, call backs need to be supported later/separately
+    Id: string; //CRM incident/case Id
+  };
+  status: 1; //this will update the ticket, important to leave as 1
+  estateOfficerId: string; //officer's CRM id
+}

@@ -10,6 +10,7 @@ import crmToPatchDetails, {
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
 import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
+import { crmToNotes } from '../mappings/crmToNotes';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -45,6 +46,7 @@ export interface CrmGatewayInterface {
     familyName: string
   ): any;
   getPatchByOfficerId(emailAddress: string): any;
+  getNotesForTask(taskId: string): Promise<GetNotesForTaskResponse>;
 }
 
 interface GetTasksResponse {
@@ -175,9 +177,11 @@ class CrmGateway implements CrmGatewayInterface {
         }
       )
       .then((response) => {
-        console.log(response.data);
+        const data = response.data as CrmResponse;
+        const notes = crmToNotes(data);
+
         return {
-          body: response.data,
+          body: notes,
           error: undefined,
         };
       })
@@ -187,6 +191,8 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
+
+    return response;
   }
 
   public async getUser(

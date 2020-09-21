@@ -1,11 +1,13 @@
 import CreateManualTaskUseCase from './createManualTask';
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import GetOfficerPatch from './getOfficerPatch';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 jest.mock('./getOfficerPatch');
 
 describe('createManualTasks', () => {
   let usecase: CreateManualTaskUseCase;
-  let dummyGateway: v1MatAPIGatewayInterface;
+  let v1MatAPIGateway: V1MatAPIGatewayInterface;
+  let crmGateway: CrmGatewayInterface;
   let dummyGetOfficerPatch = { execute: jest.fn() };
   let dummyCallData: any;
   let dummyOfficerId = 'dummyOfficerId';
@@ -25,26 +27,35 @@ describe('createManualTasks', () => {
       areaId: 5,
     };
     GetOfficerPatch.mockImplementationOnce(() => dummyGetOfficerPatch);
-    dummyGateway = {
+    v1MatAPIGateway = {
       getNewTenancies: jest.fn(),
       getContactsByUprn: jest.fn(),
       createTenancyManagementInteraction: jest.fn(),
       transferCall: jest.fn(),
     };
-    usecase = new CreateManualTaskUseCase({ gateway: dummyGateway });
+    crmGateway = {
+      getTasksForAPatch: jest.fn(),
+      getTask: jest.fn(),
+      getUser: jest.fn(),
+      createUser: jest.fn(),
+      getPatchByOfficerId: jest.fn(),
+      getNotesForTask: jest.fn(),
+      getContactsByUprn: jest.fn(),
+    };
+    usecase = new CreateManualTaskUseCase({ v1MatAPIGateway, crmGateway });
   });
 
   it('should use the correct data for the TMI', async () => {
-    dummyGateway.createTenancyManagementInteraction.mockResolvedValue(
+    v1MatAPIGateway.createTenancyManagementInteraction.mockResolvedValue(
       Promise.resolve({
         interactionId: 'dummy',
       })
     );
-    dummyGateway.getContactsByUprn.mockResolvedValue({
+    crmGateway.getContactsByUprn.mockResolvedValue({
       body: [
         {
-          contactId: 'dummyContactId',
-          houseRef: 'dummyHouseRef',
+          crmContactId: 'dummyContactId',
+          crmHouseholdId: 'dummyHouseRef',
         },
       ],
     });
@@ -52,12 +63,12 @@ describe('createManualTasks', () => {
       body: dummyOfficerPatchData,
     });
     const result = await usecase.execute(dummyCallData);
-    expect(dummyGateway.getContactsByUprn).toHaveBeenCalledWith(
+    expect(crmGateway.getContactsByUprn).toHaveBeenCalledWith(
       dummyCallData.uprn
     );
 
     expect(
-      dummyGateway.createTenancyManagementInteraction
+      v1MatAPIGateway.createTenancyManagementInteraction
     ).toHaveBeenCalledWith({
       areaName: 5,
       contactId: 'dummyContactId',
@@ -87,7 +98,7 @@ describe('createManualTasks', () => {
   });
 
   it('should return an error if there is a problem fetching the contacts', async () => {
-    dummyGateway.getContactsByUprn.mockResolvedValue({
+    crmGateway.getContactsByUprn.mockResolvedValue({
       error: 500,
     });
     const result = await usecase.execute(dummyCallData);
@@ -95,7 +106,7 @@ describe('createManualTasks', () => {
   });
 
   it('should return an error if there are no contacts found', async () => {
-    dummyGateway.getContactsByUprn.mockResolvedValue({
+    crmGateway.getContactsByUprn.mockResolvedValue({
       contacts: [],
     });
     const result = await usecase.execute(dummyCallData);
@@ -103,7 +114,7 @@ describe('createManualTasks', () => {
   });
 
   it('should create the correct TMI for homechecks', async () => {
-    dummyGateway.getContactsByUprn.mockResolvedValue({
+    crmGateway.getContactsByUprn.mockResolvedValue({
       body: [
         {
           contactId: 'dummyContactId',
@@ -113,7 +124,7 @@ describe('createManualTasks', () => {
     });
     await usecase.execute(dummyCallData);
     const gwCall =
-      dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];
+      v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0];
     expect(gwCall.enquirySubject).toEqual('100000052');
     expect(gwCall.serviceRequest.description).toEqual('Starting a home check');
     expect(gwCall.serviceRequest.title).toEqual('Home Check');
@@ -121,7 +132,7 @@ describe('createManualTasks', () => {
 
   it('should create the correct TMI for itvs', async () => {
     dummyCallData.process = 'itv';
-    dummyGateway.getContactsByUprn.mockResolvedValue({
+    crmGateway.getContactsByUprn.mockResolvedValue({
       body: [
         {
           contactId: 'dummyContactId',
@@ -131,7 +142,7 @@ describe('createManualTasks', () => {
     });
     await usecase.execute(dummyCallData);
     const gwCall =
-      dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];
+      v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0];
     expect(gwCall.enquirySubject).toEqual('100000060');
     expect(gwCall.serviceRequest.description).toEqual(
       'Starting an introductory tenancy visit'
@@ -142,7 +153,7 @@ describe('createManualTasks', () => {
   it('should create the correct TMI for thcs', async () => {
     dummyCallData.process = 'thc';
     dummyCallData.subProcess = '6';
-    dummyGateway.getContactsByUprn.mockResolvedValue({
+    crmGateway.getContactsByUprn.mockResolvedValue({
       body: [
         {
           contactId: 'dummyContactId',
@@ -152,7 +163,7 @@ describe('createManualTasks', () => {
     });
     await usecase.execute(dummyCallData);
     const gwCall =
-      dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];
+      v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0];
     expect(gwCall.enquirySubject).toEqual('100000156');
     expect(gwCall.serviceRequest.description).toEqual(
       'Starting a tenancy & household check'

@@ -3,11 +3,11 @@ import { Tenancy } from '../interfaces/tenancy';
 import V1ApiContact from '../interfaces/v1ApiContact';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
 
-export interface v1MatAPIGatewayInterface {
+export interface V1MatAPIGatewayInterface {
   getNewTenancies(): Promise<GetNewTenanciesResponse>;
   createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
-  ): Promise<createTenancyManagementInteractionResponse>;
+  ): Promise<CreateTenancyManagementInteractionResponse>;
   getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
   transferCall(
     tmi: TenancyManagementInteraction
@@ -19,12 +19,12 @@ export interface GetNewTenanciesResponse {
   error: string | undefined;
 }
 
-export interface createTenancyManagementInteractionResponse {
+export interface CreateTenancyManagementInteractionResponse {
   body?: TenancyManagementInteraction;
   error?: string;
 }
 
-export interface v1MatAPIGatewayOptions {
+export interface V1MatAPIGatewayOptions {
   v1MatApiUrl: string;
   v1MatApiToken: string;
 }
@@ -49,11 +49,11 @@ export interface TransferCallResponse {
   error?: string;
 }
 
-export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
+export default class V1MatAPIGateway implements V1MatAPIGatewayInterface {
   v1MatApiUrl: string;
   v1MatApiToken: string;
 
-  constructor(options: v1MatAPIGatewayOptions) {
+  constructor(options: V1MatAPIGatewayOptions) {
     this.v1MatApiUrl = options.v1MatApiUrl;
     this.v1MatApiToken = options.v1MatApiToken;
   }
@@ -80,7 +80,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
 
   public async createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
-  ): Promise<createTenancyManagementInteractionResponse> {
+  ): Promise<CreateTenancyManagementInteractionResponse> {
     const response = await axios
       .post(
         `${this.v1MatApiUrl}/v1/TenancyManagementInteractions/CreateTenancyManagementInteraction`,

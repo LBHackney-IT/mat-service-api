@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import SendTaskToManager from '../../../../usecases/api/sendTaskToManager';
-import v1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';
+import V1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';
 import CrmGateway from '../../../../gateways/crmGateway';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
@@ -21,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
     return res.status(500).end();
   }
 
-  const v1ApiGateway: v1MatAPIGateway = new v1MatAPIGateway({
+  const v1ApiGateway: V1MatAPIGateway = new V1MatAPIGateway({
     v1MatApiUrl: process.env.V1_MAT_API_URL,
     v1MatApiToken: process.env.V1_MAT_API_TOKEN,
   });

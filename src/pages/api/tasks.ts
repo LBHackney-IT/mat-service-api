@@ -5,7 +5,7 @@ import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
 import setupUser from '../../usecases/api/setupUser';
-import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
+import V1MatAPIGateway from '../../gateways/v1MatAPIGateway';
 import CreateManualTaskUseCase from '../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
 const { getTokenPayload } = require('node-lambda-authorizer')({
@@ -19,12 +19,16 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     return res.status(500).end();
   }
 
-  const gateway: v1MatAPIGateway = new v1MatAPIGateway({
+  const v1MatAPIGateway = new V1MatAPIGateway({
     v1MatApiUrl: process.env.V1_MAT_API_URL,
     v1MatApiToken: process.env.V1_MAT_API_TOKEN,
   });
+  const crmGateway = new CrmGateway();
 
-  const createTask = new CreateManualTaskUseCase({ gateway });
+  const createTask = new CreateManualTaskUseCase({
+    v1MatAPIGateway,
+    crmGateway,
+  });
 
   const userToken = getTokenPayload(req);
 

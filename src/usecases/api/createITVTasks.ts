@@ -1,4 +1,4 @@
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
 
@@ -8,7 +8,7 @@ interface CreateITVTasksResponse {
 }
 
 interface CreateITVTasksOptions {
-  gateway: v1MatAPIGatewayInterface;
+  gateway: V1MatAPIGatewayInterface;
 }
 
 interface CreateITVTasksInterface {
@@ -16,7 +16,7 @@ interface CreateITVTasksInterface {
 }
 
 class CreateITVTasksUseCase implements CreateITVTasksInterface {
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
 
   constructor(options: CreateITVTasksOptions) {
     this.v1MatAPIGateway = options.gateway;

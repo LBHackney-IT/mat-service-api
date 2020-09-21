@@ -1,4 +1,4 @@
-import v1MatAPIGateway from './v1MatAPIGateway';
+import V1MatAPIGateway from './v1MatAPIGateway';
 import axios from 'axios';
 import faker from 'faker';
 import MockTMI from '../tests/helpers/generateTMI';
@@ -6,12 +6,12 @@ jest.mock('axios');
 const dummyToken = 'abc123';
 
 describe('v1MatAPIGateway', () => {
-  let gateway: v1MatAPIGateway;
+  let gateway: V1MatAPIGateway;
 
   beforeEach(() => {
     axios.mockClear();
 
-    gateway = new v1MatAPIGateway({
+    gateway = new V1MatAPIGateway({
       v1MatApiUrl: 'http://dummy-api.com',
       v1MatApiToken: dummyToken,
     });

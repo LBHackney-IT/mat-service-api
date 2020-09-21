@@ -1,4 +1,4 @@
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
@@ -10,7 +10,7 @@ interface SendTaskToManagerResponse {
 
 interface SendTaskToManagerOptions {
   crmGateway: CrmGatewayInterface;
-  v1ApiGateway: v1MatAPIGatewayInterface;
+  v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 }
 
@@ -23,7 +23,7 @@ interface SendTaskToManagerInterface {
 
 class SendTaskToManagerUseCase implements SendTaskToManagerInterface {
   crmGateway: CrmGatewayInterface;
-  v1ApiGateway: v1MatAPIGatewayInterface;
+  v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
   constructor(options: SendTaskToManagerOptions) {

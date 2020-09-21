@@ -1,9 +1,9 @@
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import GetUser from './getUser';
 import GetOfficerPatch from './getOfficerPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import CrmGateway from '../../gateways/crmGateway';
+import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
 
 interface TmiData {
   title: string;
@@ -35,7 +35,8 @@ interface CreateManualTaskResponse {
 }
 
 interface CreateManualTaskOptions {
-  gateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
+  crmGateway: CrmGatewayInterface;
 }
 
 interface CreateManualTaskInterface {
@@ -52,18 +53,18 @@ interface CreateManualTaskData {
 }
 
 class CreateManualTaskUseCase implements CreateManualTaskInterface {
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
+  crmGateway: CrmGatewayInterface;
 
   constructor(options: CreateManualTaskOptions) {
-    this.v1MatAPIGateway = options.gateway;
+    this.v1MatAPIGateway = options.v1MatAPIGateway;
+    this.crmGateway = options.crmGateway;
   }
 
   public async execute(
     processData: CreateManualTaskData
   ): Promise<CreateManualTaskResponse> {
-    const crmGateway = new CrmGateway();
-
-    const contacts = await crmGateway.getContactsByUprn(processData.uprn);
+    const contacts = await this.crmGateway.getContactsByUprn(processData.uprn);
     if (
       contacts.error ||
       (contacts && contacts.body && contacts.body.length === 0) ||
@@ -77,7 +78,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     const matPostgresGateway = new MatPostgresGateway();
     const getOfficerPatchId = new GetOfficerPatch({
       emailAddress: processData.officerEmail,
-      crmGateway,
+      crmGateway: this.crmGateway,
       matPostgresGateway,
     });
 

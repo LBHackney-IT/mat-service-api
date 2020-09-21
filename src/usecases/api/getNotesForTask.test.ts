@@ -2,7 +2,7 @@ import CrmGateway from '../../gateways/crmGateway';
 import { crmToNotes } from '../../mappings/crmToNotes';
 import MockCrmNoteResponse from '../../tests/helpers/generateCrmNoteResponse';
 import faker from 'faker';
-import GetNotesForTask from './getNotesForTask';
+import getNotesForTask from './getNotesForTask';
 jest.mock('../../gateways/crmGateway');
 
 describe('GetNotesForTask', () => {
@@ -23,8 +23,7 @@ describe('GetNotesForTask', () => {
     });
 
     const taskId = faker.lorem.word();
-    const getNotesForTask = new GetNotesForTask(taskId);
-    const response = await getNotesForTask.execute();
+    const response = await getNotesForTask(taskId);
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: mockResponse, error: undefined });
@@ -42,8 +41,7 @@ describe('GetNotesForTask', () => {
 
     const taskId = faker.lorem.word();
 
-    const getNotesForTask = new GetNotesForTask(taskId);
-    const response = await getNotesForTask.execute();
+    const response = await getNotesForTask(taskId);
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 500 });
@@ -61,8 +59,7 @@ describe('GetNotesForTask', () => {
 
     const taskId = faker.lorem.word();
 
-    const getNotesForTask = new GetNotesForTask(taskId);
-    const response = await getNotesForTask.execute();
+    const response = await getNotesForTask(taskId);
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 401 });

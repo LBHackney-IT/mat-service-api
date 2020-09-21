@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Note } from '../../../interfaces/note';
-import GetNotesForTask from '../../../usecases/api/getNotesForTask';
+import getNotesForTask from '../../../usecases/api/getNotesForTask';
 
 interface Error {
   error: string;
@@ -16,8 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     : undefined;
 
   if (id !== undefined) {
-    const getNotesForTask = new GetNotesForTask(id);
-    const response = await getNotesForTask.execute();
+    const response = await getNotesForTask(id);
 
     if (response.body) {
       res.status(200).json(response.body);

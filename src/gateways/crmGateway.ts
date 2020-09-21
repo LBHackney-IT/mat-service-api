@@ -9,6 +9,7 @@ import crmToPatchDetails, {
   PatchDetailsInterface,
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
+import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -53,6 +54,11 @@ interface GetTasksResponse {
 
 interface GetTaskResponse {
   body: Task | undefined;
+  error: string | undefined;
+}
+
+interface GetNotesForTaskResponse {
+  body: any | undefined;
   error: string | undefined;
 }
 
@@ -146,6 +152,41 @@ class CrmGateway implements CrmGatewayInterface {
       });
 
     return response;
+  }
+
+  public async getNotesForTask(
+    taskId: string
+  ): Promise<GetNotesForTaskResponse> {
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const crmQuery = getNotesForTaskById(taskId);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        return {
+          body: response.data,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
   }
 
   public async getUser(

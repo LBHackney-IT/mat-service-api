@@ -164,8 +164,8 @@ custom:
       - housing-officer-staging
       - area-housing-manager-staging
       - development-team-staging
+      - housing-officer-dev
       - area-housing-manager-dev
-      - development-team-dev
     production:
       - housing-officer-production
       - area-housing-manager-production

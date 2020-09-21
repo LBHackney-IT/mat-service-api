@@ -98,6 +98,22 @@ export default function TaskPage() {
     );
   };
 
+  const renderTagRef = () => {
+    if (task.tenancy.tagRef) {
+      return (
+        <a
+          className="tenancy"
+          href={`${
+            process.env.NEXT_PUBLIC_SINGLEVIEW_URL
+          }/tenancies/${task.tenancy.tagRef.replace('/', '-')}`}
+        >
+          {task.tenancy.tagRef}
+        </a>
+      );
+    }
+    return null;
+  };
+
   const renderTenancyInfo = () => {
     return (
       <div>
@@ -112,14 +128,7 @@ export default function TaskPage() {
             ? moment(task.tenancy.startDate).format('DD/MM/YYYY')
             : 'n/a'}
           <Label>Tenancy Reference (Tag Ref):</Label>
-          <a
-            className="tenancy"
-            href={`${
-              process.env.NEXT_PUBLIC_SINGLEVIEW_URL
-            }/tenancies/${task.tenancy.tagRef.replace('/', '-')}`}
-          >
-            {task.tenancy.tagRef}
-          </a>
+          {renderTagRef()}
         </Paragraph>
       </div>
     );

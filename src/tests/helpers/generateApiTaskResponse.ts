@@ -40,6 +40,7 @@ const mockApiTaskResponse = (): ApiTaskResponse => {
           startDate: faker.date.past(),
           residents: [],
         },
+        incidentId: faker.lorem.word(),
       },
     ],
     status: 200,

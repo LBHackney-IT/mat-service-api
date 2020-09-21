@@ -1,31 +1,27 @@
-import * as React from 'react';
+import React, { useState, useEffect, SetStateAction } from 'react';
+import { useRouter } from 'next/router';
 import Layout from '../../components/layout';
-import { GetServerSideProps } from 'next';
+import LoadingPage from '../../components/loadingPage';
 import {
   Heading,
   HeadingLevels,
   Paragraph,
   Label,
   Tile,
+  Button,
+  ErrorMessage,
 } from 'lbh-frontend-react';
 import { Task, TenancyType, Resident } from '../../interfaces/task';
-import ErrorPage from 'next/error';
-import HardcodedTask from '../../tests/helpers/hardcodedTask';
 import getTaskById from '../../usecases/ui/getTaskById';
-import getAuthToken from '../../usecases/api/getAuthToken';
+import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
-
-interface TaskProps {
-  task: Task;
-}
-
-const mockTask: Task = HardcodedTask();
+import { Note } from '../../interfaces/note';
+import getNotesById from '../../usecases/ui/getNotes';
 
 const mapResidents = (residents: Resident[]) => {
-  const tileArray: any[] = [];
-  residents.forEach((resident) => {
-    tileArray.push(
-      <Tile link={resident.email} title={resident.presentationName}>
+  return residents.map((resident) => {
+    return (
+      <Tile link={`mailto:${resident.email}`} title={resident.presentationName}>
         <Paragraph>{resident.role}</Paragraph>
         <Label>Date of birth:</Label>
         {moment(resident.dateOfBirth).format('DD/MM/YYYY')}
@@ -40,60 +36,161 @@ const mapResidents = (residents: Resident[]) => {
       </Tile>
     );
   });
-  return tileArray;
 };
 
-export default function TaskPage(props: TaskProps) {
-  if (props.task === undefined) {
-    return <ErrorPage statusCode={404} />;
+export default function TaskPage() {
+  const [error, setError] = useState<string>('none');
+  const [task, setTask] = useState<Task | null>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
+
+  const router = useRouter();
+  useEffect(() => {
+    getTaskById(`${router.query.id}`)
+      .then((task) => {
+        if (task) setTask(task);
+      })
+      .catch((e) => {
+        setError('loadingError');
+      });
+
+    getNotesById(`${router.query.id}`)
+      .then((notes) => {
+        if (notes) setNotes(notes);
+      })
+      .catch((e) => {
+        setError('notesError');
+      });
+  }, []);
+
+  if (!task) {
+    return <LoadingPage error={error === 'loadingError'} />;
   }
+
+  const sendToManager = () => {
+    sendTaskToManager(task.id)
+      .then(() => {})
+      .catch(() => {
+        setError('sendToManagerError');
+      });
+  };
+
+  const renderNotes = () => {
+    const notesJsx: JSX.Element[] = [];
+    notes.map((note) => {
+      notesJsx.push(
+        <Paragraph>
+          <span className="strong">
+            {moment(note.createdOn).format('DD/MM/YYYY')}
+          </span>{' '}
+          Created by {note.createdBy}
+          <br />
+          {note.text}
+        </Paragraph>
+      );
+    });
+    return notesJsx;
+  };
+
+  const renderNotesUpdate = () => {
+    return (
+      <div>
+        <Heading level={HeadingLevels.H4}>Update Notes</Heading>
+        <textarea className={'govuk-input lbh-input text-area'} />
+        <Button>Save Update</Button>
+      </div>
+    );
+  };
+
+  const renderTagRef = () => {
+    if (task.tenancy.tagRef) {
+      return (
+        <a
+          className="tenancy"
+          href={`${
+            process.env.NEXT_PUBLIC_SINGLEVIEW_URL
+          }/tenancies/${task.tenancy.tagRef.replace('/', '-')}`}
+        >
+          {task.tenancy.tagRef}
+        </a>
+      );
+    }
+    return null;
+  };
+
+  const renderTenancyInfo = () => {
+    return (
+      <div>
+        <Heading level={HeadingLevels.H3}>Tenancy</Heading>
+        <Paragraph>
+          <Label>Address:</Label>
+          {task.address.presentationShort}
+          <Label>Tenancy type:</Label>
+          {TenancyType[task.tenancy.type ? task.tenancy.type : 0]}
+          <Label>Tenancy start date:</Label>
+          {task.tenancy.startDate
+            ? moment(task.tenancy.startDate).format('DD/MM/YYYY')
+            : 'n/a'}
+          <Label>Tenancy Reference (Tag Ref):</Label>
+          {renderTagRef()}
+        </Paragraph>
+      </div>
+    );
+  };
+
+  const renderSendToManager = () => {
+    return (
+      <div>
+        <Button
+          onClick={sendToManager}
+          className="govuk-button--secondary lbh-button--secondary sendToManager"
+        >
+          Send action to manager (optional)
+        </Button>
+        {error === 'sendToManagerError' && (
+          <ErrorMessage className="sendToManagerError">
+            Error sending action to manager
+          </ErrorMessage>
+        )}
+      </div>
+    );
+  };
 
   return (
     <Layout>
-      <Heading level={HeadingLevels.H2}>{props.task.type}</Heading>
-      <Heading level={HeadingLevels.H3}>Tenancy</Heading>
-      <Paragraph>
-        <Label>Address:</Label>
-        {props.task.address.presentationShort}
-        <Label>Tenancy type:</Label>
-        {TenancyType[props.task.tenancy.type ? props.task.tenancy.type : 0]}
-        <Label>Tenancy start date:</Label>
-        {props.task.tenancy.startDate
-          ? moment(props.task.tenancy.startDate).format('DD/MM/YYYY')
-          : 'n/a'}
-      </Paragraph>
+      <Heading level={HeadingLevels.H2}>{task.type}</Heading>
+      {renderTenancyInfo()}
       <Heading level={HeadingLevels.H3}>Residents</Heading>
       <div className="tile-container">
-        {mapResidents(props.task.tenancy.residents)}
+        {mapResidents(task.tenancy.residents)}
       </div>
       <Heading level={HeadingLevels.H3}>Action</Heading>
       <Paragraph>
         <Label>Due:</Label>
-        {props.task.dueTime ? props.task.dueTime : 'n/a'}
+        {task.dueTime ? task.dueTime : 'n/a'}
         <Label>Reference number:</Label>
-        {props.task.referenceNumber ? props.task.referenceNumber : 'n/a'}
+        {task.referenceNumber ? task.referenceNumber : 'n/a'}
         <Label>Related item:</Label>
-        {props.task.parent ? props.task.parent : 'n/a'}
+        {task.parent ? task.parent : 'n/a'}
       </Paragraph>
+      <Heading level={HeadingLevels.H4}>Notes</Heading>
+      {renderNotes()}
+      {renderNotesUpdate()}
+      {renderSendToManager()}
       <style jsx>{`
         .tile-container {
           display: flex;
+        }
+        .sendToManager,
+        sendToManagerError {
+          display: inline;
+        }
+        .text-area {
+          height: 5em;
+        }
+        .strong {
+          font-weight: 600;
         }
       `}</style>
     </Layout>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const taskId = context.query ? context.query.id : undefined;
-  const token = getAuthToken(context.req.headers);
-
-  if (taskId && token) {
-    const response = await getTaskById(`${taskId}`, token);
-    if (response !== undefined) {
-      return { props: { task: response as Task } };
-    }
-  }
-
-  return { props: {} };
-};

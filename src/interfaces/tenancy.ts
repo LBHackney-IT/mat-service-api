@@ -1,4 +1,4 @@
-export interface Contact {
+export interface TenancyContact {
   contactId: string;
   responsible: true;
   title: string;
@@ -24,5 +24,5 @@ export interface Tenancy {
   addressLine3: string;
   postCode: string;
   fullAddress: string;
-  contacts: Contact[];
+  contacts: TenancyContact[];
 }

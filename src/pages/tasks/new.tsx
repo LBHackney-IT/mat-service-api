@@ -29,8 +29,10 @@ class NewProcessPage extends React.Component<Props, State> {
       process: this.state.process,
       subProcess: this.state.subProcess,
     })
-      .then((_) => {
-        window.location.href = `${process.env.NEXT_PUBLIC_SINGLEVIEW_URL}/tenancies/${tagRef}`;
+      .then((response) => {
+        if (response && response.data && response.data.id) {
+          window.location.href = `/tasks/${response.data.id}`;
+        }
       })
       .catch((error) => {
         console.log(error);

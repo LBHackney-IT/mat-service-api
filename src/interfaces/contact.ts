@@ -1,5 +1,6 @@
 export interface Contact {
   crmContactId: string;
+  crmHouseholdId?: string;
   emailAddress: string | null;
   addressLine1: string;
   addressLine2: string;

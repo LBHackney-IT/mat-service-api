@@ -37,8 +37,10 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     officerName: userToken.name,
   });
 
-  if (result.body) {
-    res.status(204).end();
+  if (result.body && result.body.interactionId) {
+    res
+      .writeHead(303, { Location: `/api/tasks/${result.body.interactionId}` })
+      .end();
   } else {
     res.status(500).json(<Data>result);
   }

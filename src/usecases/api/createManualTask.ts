@@ -61,9 +61,9 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
   public async execute(
     processData: CreateManualTaskData
   ): Promise<CreateManualTaskResponse> {
-    const contacts = await this.v1MatAPIGateway.getContactsByUprn(
-      processData.uprn
-    );
+    const crmGateway = new CrmGateway();
+
+    const contacts = await crmGateway.getContactsByUprn(processData.uprn);
     if (
       contacts.error ||
       (contacts && contacts.body && contacts.body.length === 0) ||
@@ -72,10 +72,8 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     ) {
       return { error: 'Error fetching contacts', body: undefined };
     }
-
     const contact = contacts.body[0];
 
-    const crmGateway = new CrmGateway();
     const matPostgresGateway = new MatPostgresGateway();
     const getOfficerPatchId = new GetOfficerPatch({
       emailAddress: processData.officerEmail,
@@ -101,17 +99,17 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
       natureofEnquiry: '15',
       source: '1',
-      contactId: contact.contactId,
+      contactId: contact.crmContactId,
       estateOfficerId: officerDetails.body.officerId,
       estateOfficerName: processData.officerName,
       officerPatchId: officerDetails.body.patchId,
       areaName: officerDetails.body.areaId,
-      householdId: contact.houseRef,
+      householdId: contact.crmHouseholdId,
       processType: 1,
       serviceRequest: {
         title: tmiLookup[processData.process].title,
         description: tmiLookup[processData.process].description,
-        contactId: contact.contactId,
+        contactId: contact.crmContactId,
         subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
         createdBy: officerDetails.body.officerId,
         childRequests: [],

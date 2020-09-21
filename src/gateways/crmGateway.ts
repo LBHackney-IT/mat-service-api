@@ -12,11 +12,16 @@ import getTaskById from './xmlQueryStrings/getTaskById';
 import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
 import { crmToNotes } from '../mappings/crmToNotes';
 import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
+import getContactsByUprn from './xmlQueryStrings/getContactsByUprn';
 import crmToPropertyPatch, {
   PropertyPatchDetailsInterface,
 } from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
+import crmToContact, {
+  CrmContactsResponseInterface,
+} from '../mappings/crmToContact';
 import { Note, CrmNote } from '../interfaces/note';
+import { Contact } from '../interfaces/contact';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -58,6 +63,7 @@ export interface CrmGatewayInterface {
   ): any;
   getPatchByOfficerId(emailAddress: string): any;
   getNotesForTask(taskId: string): Promise<GetNotesForTaskResponse>;
+  getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
 }
 
 interface GetTasksResponse {
@@ -72,6 +78,11 @@ interface GetTaskResponse {
 
 interface GetNotesForTaskResponse {
   body?: Note[];
+  error?: string;
+}
+
+export interface GetContactsByUprnResponse {
+  body?: Contact[];
   error?: string;
 }
 
@@ -354,6 +365,44 @@ class CrmGateway implements CrmGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+    return response;
+  }
+
+  public async getContactsByUprn(
+    uprn: string
+  ): Promise<GetContactsByUprnResponse> {
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const crmQuery = getContactsByUprn(uprn);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data as CrmContactsResponseInterface;
+        const contactsData: Contact[] = data.value.map(crmToContact);
+        return {
+          body: contactsData,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        console.log(error.message);
         return {
           body: undefined,
           error: error.message,

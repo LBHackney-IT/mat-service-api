@@ -1,8 +1,9 @@
 import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { Note } from '../../interfaces/note';
 
 interface GetNotesForTaskResponse {
-  body: any | undefined;
-  error: number | undefined;
+  body?: Note[];
+  error?: number;
 }
 
 interface GetNotesForTaskInterface {

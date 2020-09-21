@@ -118,10 +118,6 @@ class CrmGateway implements CrmGatewayInterface {
     }
 
     const crmQuery = getTasksByTagRef(tag_ref);
-    console.log(
-      `url:  ${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`
-    );
-    console.log(`auth:  Bearer ${this.crmApiToken.token}`);
 
     const response = await axios
       .get(
@@ -135,8 +131,6 @@ class CrmGateway implements CrmGatewayInterface {
         }
       )
       .then((response) => {
-        console.log('response: ' + response);
-
         const data = response.data as CrmResponse;
         return {
           body: crmResponseToTasks(data),

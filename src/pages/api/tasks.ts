@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Task } from '../../interfaces/task';
 import GetTasksForAPatch from '../../usecases/api/getTasksForAPatch';
-import GetTasksForTagRef from '../../usecases/api/GetTasksForTagRef';
+import GetTasksForTagRef from '../../usecases/api/getTasksForTagRef';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
@@ -59,7 +59,6 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     });
 
     const response = await getTasks.execute(tag_ref.replace('-', '/'));
-    console.log(response);
     if (response && response.error === undefined) {
       res.status(200).json(response.body);
     } else if (response && response.error) {
@@ -68,7 +67,6 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   } else {
     // Ensure the user is correctly set up
     const setupUserResult = await setupUser(<string>req.cookies.hackneyToken);
-    console.log('TOKEN', <string>req.cookies.hackneyToken);
     if (setupUserResult.error) {
       console.log(setupUserResult.error);
       return res.status(400).end();

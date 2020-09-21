@@ -29,11 +29,17 @@ describe('createManualTasks', () => {
       getNewTenancies: jest.fn(),
       getContactsByUprn: jest.fn(),
       createTenancyManagementInteraction: jest.fn(),
+      transferCall: jest.fn(),
     };
     usecase = new CreateManualTaskUseCase({ gateway: dummyGateway });
   });
 
   it('should use the correct data for the TMI', async () => {
+    dummyGateway.createTenancyManagementInteraction.mockResolvedValue(
+      Promise.resolve({
+        interactionId: 'dummy',
+      })
+    );
     dummyGateway.getContactsByUprn.mockResolvedValue({
       body: [
         {
@@ -74,8 +80,9 @@ describe('createManualTasks', () => {
       source: '1',
       subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
     });
-
-    expect(result.body).toBeTruthy();
+    expect(result).toEqual({
+      interactionId: 'dummy',
+    });
     expect(result.error).toBeFalsy();
   });
 
@@ -84,7 +91,7 @@ describe('createManualTasks', () => {
       error: 500,
     });
     const result = await usecase.execute(dummyCallData);
-    expect(result.error).toEqual(500);
+    expect(result.error).toEqual('Error fetching contacts');
   });
 
   it('should return an error if there are no contacts found', async () => {
@@ -92,7 +99,7 @@ describe('createManualTasks', () => {
       contacts: [],
     });
     const result = await usecase.execute(dummyCallData);
-    expect(result.error).toEqual(404);
+    expect(result.error).toEqual('Error fetching contacts');
   });
 
   it('should create the correct TMI for homechecks', async () => {

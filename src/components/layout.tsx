@@ -13,15 +13,7 @@ const pageRedirect = [
   },
   {
     name: 'Residents',
-    url: '/residents',
-  },
-  {
-    name: 'Tenant and Resident Associations',
-    url: '/TRA',
-  },
-  {
-    name: 'Administration',
-    url: '/Administration',
+    url: `${process.env.NEXT_PUBLIC_SINGLEVIEW_URL}`,
   },
 ];
 

@@ -9,9 +9,17 @@ import crmToPatchDetails, {
   PatchDetailsInterface,
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
+<<<<<<< HEAD
 import getOfficersByAreaId from './xmlQueryStrings/getOfficersByAreaId';
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
 import { Officer } from '../mappings/crmToOfficersDetails';
+=======
+import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
+import crmToPropertyPatch, {
+  PropertyPatchDetailsInterface,
+} from '../mappings/crmToPropertyPatch';
+import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
+>>>>>>> master
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -20,6 +28,11 @@ export interface CrmResponse {
 
 interface GetPatchByOfficerIdResponse {
   body: PatchDetailsInterface | undefined;
+  error: string | undefined;
+}
+
+export interface GetPropertyPatchResponse {
+  body: PropertyPatchDetailsInterface | undefined;
   error: string | undefined;
 }
 
@@ -271,6 +284,45 @@ class CrmGateway implements CrmGatewayInterface {
         };
       });
 
+    return response;
+  }
+
+  public async getPropertyPatch(
+    uprn: string
+  ): Promise<GetPropertyPatchResponse> {
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const crmQuery = getPropertyPatchByUprn(uprn);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data as CrmResponseInterface;
+        const patchData: PropertyPatchDetailsInterface = crmToPropertyPatch(
+          data
+        );
+        return {
+          body: patchData,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
     return response;
   }
 }

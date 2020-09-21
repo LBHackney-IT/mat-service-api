@@ -11,7 +11,7 @@ describe('The Tras page', () => {
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',
-      [],
+      ['housing-officer-dev'],
       jwtSecret
     );
 

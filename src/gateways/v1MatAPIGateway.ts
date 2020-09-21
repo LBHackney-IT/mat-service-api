@@ -9,6 +9,9 @@ export interface v1MatAPIGatewayInterface {
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
   getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
+  transferCall(
+    tmi: TenancyManagementInteraction
+  ): Promise<TransferCallResponse>;
 }
 
 export interface GetNewTenanciesResponse {
@@ -17,7 +20,8 @@ export interface GetNewTenanciesResponse {
 }
 
 export interface createTenancyManagementInteractionResponse {
-  error: string | undefined;
+  body?: TenancyManagementInteraction;
+  error?: string;
 }
 
 export interface v1MatAPIGatewayOptions {
@@ -32,6 +36,16 @@ interface GetContactsByUprnAPIResponse {
 
 export interface GetContactsByUprnResponse {
   body?: V1ApiContact[];
+  error?: string;
+}
+
+export interface GetAreaPatchResponse {
+  body?: any;
+  error?: string;
+}
+
+export interface TransferCallResponse {
+  body?: boolean;
   error?: string;
 }
 
@@ -77,14 +91,14 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
           },
         }
       )
-      .then((_) => {
+      .then((response) => {
         return {
-          error: undefined,
+          body: response.data as TenancyManagementInteraction,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          error: error.message,
+          error: `V1 API: ${error.message}`,
         };
       });
 
@@ -106,6 +120,61 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         return {
           body: data.results,
           error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async getAreaPatch(
+    uprn: string,
+    postcode: string
+  ): Promise<GetAreaPatchResponse> {
+    const response = await axios
+      .get(
+        `${this.v1MatApiUrl}/v1/AreaPatch/GetAreaPatch?postcode=${postcode}&uprn=${uprn}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.v1MatApiToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
+        return {
+          body: data.result,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+  public async transferCall(
+    tmi: TenancyManagementInteraction
+  ): Promise<TransferCallResponse> {
+    const response = await axios
+      .put(
+        `${this.v1MatApiUrl}/v1/TenancyManagementInteractions/TransferCall`,
+        tmi,
+        {
+          headers: {
+            Authorization: `Bearer ${this.v1MatApiToken}`,
+          },
+        }
+      )
+      .then(() => {
+        return {
+          body: true,
         };
       })
       .catch((error: AxiosError) => {

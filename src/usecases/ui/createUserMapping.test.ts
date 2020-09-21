@@ -9,7 +9,7 @@ describe('createUserMapping', () => {
   });
 
   const userMapping = {
-    name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+    username: `${faker.name.firstName()} ${faker.name.lastName()}`,
     emailAddress: faker.internet.email(),
     usercrmid: faker.lorem.word(),
     googleId: faker.lorem.word(),

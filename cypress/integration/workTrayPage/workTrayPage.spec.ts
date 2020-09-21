@@ -7,6 +7,13 @@ const jwtSecret = Cypress.env('JWT_SECRET');
 
 describe('Work Tray Page Elements', () => {
   it('', () => {
+    cy.server();
+    cy.fixture('tasks').then((tasks) => {
+      cy.route('/api/tasks?emailAddress=test.user@hackney.gov.uk', tasks).as(
+        'getTasks'
+      );
+    });
+
     let token = generateToken(
       '108854273331484808552',
       'Test User',
@@ -17,6 +24,7 @@ describe('Work Tray Page Elements', () => {
 
     cy.setCookie('hackneyToken', token);
     cy.visit('/');
+    cy.wait('@getTasks');
 
     cy.contains('In Progress');
     cy.contains('Completed');

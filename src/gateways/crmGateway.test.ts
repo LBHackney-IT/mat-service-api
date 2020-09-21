@@ -6,6 +6,7 @@ import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
 import { crmResponseToTasks } from '../mappings/crmToTask';
 import MockCrmNoteResponse from '../tests/helpers/generateCrmNoteResponse';
 import { crmToNotes } from '../mappings/crmToNotes';
+import MockCrmPropertyPatchResponse from '../tests/helpers/generatePropertyPatchResponse';
 jest.mock('axios');
 
 describe('CrmGateway', () => {
@@ -101,6 +102,45 @@ describe('CrmGateway', () => {
       const response = await crmGateway.getNotesForTask(id);
 
       expect(response).toStrictEqual({ body: undefined, error: error });
+    });
+  });
+
+  describe('Get Property patch by uprn', () => {
+    it('sucessfully fetches data from the API', async () => {
+      const data = MockCrmPropertyPatchResponse();
+      const expectedData = {
+        areaName:
+          data.value[0][
+            'hackney_areaname@OData.Community.Display.V1.FormattedValue'
+          ],
+        officerFullName: data.value[0].OfficerFullName,
+        patchCode:
+          data.value[0][
+            '_hackney_estateofficerpropertypatchid_value@OData.Community.Display.V1.FormattedValue'
+          ],
+        ward:
+          data.value[0][
+            'hackney_ward@OData.Community.Display.V1.FormattedValue'
+          ],
+        original: data,
+      };
+      const uprn = '100023006827';
+
+      axios.get.mockResolvedValue({ data: data });
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getPropertyPatch(uprn);
+      expect(response).toEqual({ body: expectedData, error: undefined });
+    });
+
+    it('returns an error from the API', async () => {
+      const uprn = '100023006827';
+      const error = faker.lorem.words();
+      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getPropertyPatch(uprn);
+
+      expect(response).toEqual({ body: undefined, error: error });
     });
   });
 });

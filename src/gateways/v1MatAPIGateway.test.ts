@@ -77,15 +77,15 @@ describe('v1MatAPIGateway', () => {
       );
     });
 
-    it('returns no errors after a successful request', async () => {
+    it('returns the result after a successful request', async () => {
       const dummyPayload = MockTMI();
 
-      axios.post.mockReturnValue(Promise.resolve());
+      axios.post.mockResolvedValue({ data: { interactionId: 'dummy' } });
       const response = await gateway.createTenancyManagementInteraction(
         dummyPayload
       );
 
-      expect(response).toEqual({ error: undefined });
+      expect(response).toEqual({ body: { interactionId: 'dummy' } });
     });
 
     it('returns an human readable error when unsuccessful', async () => {
@@ -139,6 +139,38 @@ describe('v1MatAPIGateway', () => {
 
       const response = await gateway.getContactsByUprn('12345678901');
 
+      expect(response).toEqual(errorResponse);
+    });
+  });
+
+  describe('transferCall', () => {
+    const dummyTmi = { interactionId: 'foo' };
+    it('makes the request to the correct URL with the correct token', () => {
+      axios.put.mockResolvedValue(Promise.resolve());
+      gateway.transferCall(dummyTmi);
+      expect(axios.put).toHaveBeenCalledWith(
+        'http://dummy-api.com/v1/TenancyManagementInteractions/TransferCall',
+        dummyTmi,
+        {
+          headers: {
+            Authorization: `Bearer ${dummyToken}`,
+          },
+        }
+      );
+    });
+
+    it('successfully returns data from an API', async () => {
+      axios.put.mockResolvedValue(true);
+      const response = await gateway.transferCall(dummyTmi);
+      expect(response.body).toEqual(true);
+    });
+
+    it('returns an human readable error when unsuccessful', async () => {
+      const error = 'Network Error';
+      const errorResponse = { error };
+
+      axios.put.mockReturnValue(Promise.reject(new Error(error)));
+      const response = await gateway.transferCall(dummyTmi);
       expect(response).toEqual(errorResponse);
     });
   });

@@ -4,6 +4,7 @@ import GetTasksForAPatch from '../../usecases/api/getTasksForAPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
+import setupUser from '../../usecases/api/setupUser';
 import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
 import CreateManualTaskUseCase from '../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
@@ -27,24 +28,30 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
   const userToken = getTokenPayload(req);
 
-  createTask
-    .execute({
-      process: req.body.process,
-      subProcess: <number>req.body.subProcess,
-      tagRef: req.body.tag_ref,
-      uprn: req.body.uprn,
-      officerEmail: userToken.email,
-      officerName: userToken.name,
-    })
-    .then(() => {
-      res.status(204).end();
-    })
-    .catch(() => {
-      res.status(500).end();
-    });
+  const result = await createTask.execute({
+    process: req.body.process,
+    subProcess: <number>req.body.subProcess,
+    tagRef: req.body.tag_ref,
+    uprn: req.body.uprn,
+    officerEmail: userToken.email,
+    officerName: userToken.name,
+  });
+
+  if (result.body) {
+    res.status(204).end();
+  } else {
+    res.status(500).json(<Data>result);
+  }
 };
 
 const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  // Ensure the user is correctly set up
+  const setupUserResult = await setupUser(<string>req.cookies.hackneyToken);
+  if (setupUserResult.error) {
+    console.log(setupUserResult.error);
+    return res.status(400).end();
+  }
+
   const emailAddress = req.query.emailAddress
     ? Array.isArray(req.query.emailAddress)
       ? req.query.emailAddress[0]

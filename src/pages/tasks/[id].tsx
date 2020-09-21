@@ -17,6 +17,7 @@ import Dropdown from '../../components/dropdown';
 import getAuthToken from '../../usecases/api/getAuthToken';
 import sendTaskToOfficer from '../../usecases/ui/sendTaskToOfficer';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
+import getOfficersByArea from '../../usecases/ui/getOfficersByArea';
 import moment from 'moment';
 
 const mapResidents = (residents: Resident[]) => {
@@ -39,13 +40,14 @@ const mapResidents = (residents: Resident[]) => {
   });
 };
 
-const housingOfficers = [
+const hardcodedHousingOfficers = [
   ['1', 'Joe Bloggs'],
   ['2', 'Mary Berry'],
   ['3', 'Santa Claus'],
 ];
 // Should return '2, Mary Berry'
-const defaultSelection = housingOfficers[1];
+const defaultSelection = hardcodedHousingOfficers[1];
+let defaultOfficerDisplayed: any;
 
 export default function TaskPage() {
   const [error, setError] = useState<string>('none');
@@ -53,6 +55,7 @@ export default function TaskPage() {
   const [currentlySelected, setCurrentlySelected] = useState(
     defaultSelection[0]
   );
+  //  const [currentlySelected, setCurrentlySelected] = useState('');
 
   const updateOfficer = () => {
     if (task) {
@@ -67,7 +70,9 @@ export default function TaskPage() {
     setCurrentlySelected(housingOfficer);
     updateOfficer();
   };
+
   const router = useRouter();
+
   useEffect(() => {
     if (!task) {
       getTaskById(`${router.query.id}`)
@@ -80,6 +85,24 @@ export default function TaskPage() {
         });
     }
   });
+
+  useEffect(() => {
+    if (!currentlySelected) {
+      getOfficersByArea(`${router.query.areaId}`)
+        .then((housingOfficers) => {
+          if (housingOfficers) {
+            setCurrentlySelected(housingOfficers);
+            defaultOfficerDisplayed = housingOfficers[0];
+          }
+        })
+        .catch((e) => {
+          console.log(e.message);
+          setError('loadingError');
+        });
+    }
+  });
+
+  console.log('HousingOfficerResponse:', defaultOfficerDisplayed);
 
   const sendToManager = () => {
     if (task) {
@@ -130,7 +153,7 @@ export default function TaskPage() {
         </Paragraph>
         <div className="clickablesContainer">
           <Dropdown
-            options={housingOfficers}
+            options={hardcodedHousingOfficers}
             selected={currentlySelected}
             onChange={updateCurrentlySelectedOfficer}
           />

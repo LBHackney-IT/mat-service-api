@@ -36,10 +36,19 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       }
 
       if (areaId !== undefined) {
-        const allUsers = new GetUsers(areaId);
+        const areaIdInt = parseInt(areaId);
+        const allUsers = new GetUsers(areaIdInt);
 
         const response = await allUsers.execute();
+
+        if (response.error === undefined) {
+          res.status(200).json({ data: response.body });
+        } else {
+          res.status(response.error).end();
+        }
+        break;
       }
+
       res.status(400).end();
       break;
     case 'POST':

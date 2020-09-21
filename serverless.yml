@@ -15,7 +15,7 @@ provider:
     ALLOWED_GROUPS:
       'Fn::Join':
         - ','
-        - ${self:custom.allowedGroups.${self:provider.stage}}
+        - ${self:custom.allowedGroups.${self:custom.stage}}
     NEXT_PUBLIC_API_PATH: https://${self:custom.aliases.${self:custom.stage}}/api
 
 plugins:

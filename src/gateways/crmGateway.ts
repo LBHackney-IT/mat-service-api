@@ -273,43 +273,6 @@ class CrmGateway implements CrmGatewayInterface {
 
     return response;
   }
-
-  public async getOfficersByAreaId(
-    areaId: number
-  ): Promise<GetOfficersByAreaIdResponse> {
-    const crmTokenGateway = new CrmTokenGateway();
-    const crmApiToken = await crmTokenGateway.getCloudToken();
-    const crmQuery = getOfficersByAreaId(areaId);
-
-    const response = await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${crmApiToken.token}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
-      )
-      .then((response) => {
-        const data = response.data;
-        const officers: Officer[] = crmToOfficersDetails(data);
-
-        return {
-          body: officers,
-          error: undefined,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          body: undefined,
-          error: error.message,
-        };
-      });
-
-    return response;
-  }
 }
 
 export default CrmGateway;

@@ -54,14 +54,16 @@ export default function TaskPage() {
     }
   });
 
+  if (!task) {
+    return <LoadingPage error={error === 'loadingError'} />;
+  }
+
   const sendToManager = () => {
-    if (task) {
-      sendTaskToManager(task.id)
-        .then(() => {})
-        .catch(() => {
-          setError('sendToManagerError');
-        });
-    }
+    sendTaskToManager(task.id)
+      .then(() => {})
+      .catch(() => {
+        setError('sendToManagerError');
+      });
   };
 
   const renderNotes = () => {
@@ -96,10 +98,9 @@ export default function TaskPage() {
     );
   };
 
-  if (task) {
+  const renderTenancyInfo = () => {
     return (
-      <Layout>
-        <Heading level={HeadingLevels.H2}>{task.type}</Heading>
+      <div>
         <Heading level={HeadingLevels.H3}>Tenancy</Heading>
         <Paragraph>
           <Label>Address:</Label>
@@ -120,49 +121,60 @@ export default function TaskPage() {
             {task.tenancy.tagRef}
           </a>
         </Paragraph>
-        <Heading level={HeadingLevels.H3}>Residents</Heading>
-        <div className="tile-container">
-          {mapResidents(task.tenancy.residents)}
-        </div>
-        <Heading level={HeadingLevels.H3}>Action</Heading>
-        <Paragraph>
-          <Label>Due:</Label>
-          {task.dueTime ? task.dueTime : 'n/a'}
-          <Label>Reference number:</Label>
-          {task.referenceNumber ? task.referenceNumber : 'n/a'}
-          <Label>Related item:</Label>
-          {task.parent ? task.parent : 'n/a'}
-        </Paragraph>
-        {renderNotes()}
-        {renderNotesUpdate()}
-        <div>
-          <Button
-            onClick={sendToManager}
-            className="govuk-button--secondary lbh-button--secondary sendToManager"
-          >
-            Send action to manager (optional)
-          </Button>
-          {error === 'sendToManagerError' && (
-            <ErrorMessage className="sendToManagerError">
-              Error sending action to manager
-            </ErrorMessage>
-          )}
-        </div>
-        <style jsx>{`
-          .tile-container {
-            display: flex;
-          }
-          .sendToManager,
-          sendToManagerError {
-            display: inline;
-          }
-          .text-area {
-            height: 5em;
-          }
-        `}</style>
-      </Layout>
+      </div>
     );
-  } else {
-    return <LoadingPage error={error === 'loadingError'} />;
-  }
+  };
+
+  const renderSendToManager = () => {
+    return (
+      <div>
+        <Button
+          onClick={sendToManager}
+          className="govuk-button--secondary lbh-button--secondary sendToManager"
+        >
+          Send action to manager (optional)
+        </Button>
+        {error === 'sendToManagerError' && (
+          <ErrorMessage className="sendToManagerError">
+            Error sending action to manager
+          </ErrorMessage>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <Layout>
+      <Heading level={HeadingLevels.H2}>{task.type}</Heading>
+      {renderTenancyInfo()}
+      <Heading level={HeadingLevels.H3}>Residents</Heading>
+      <div className="tile-container">
+        {mapResidents(task.tenancy.residents)}
+      </div>
+      <Heading level={HeadingLevels.H3}>Action</Heading>
+      <Paragraph>
+        <Label>Due:</Label>
+        {task.dueTime ? task.dueTime : 'n/a'}
+        <Label>Reference number:</Label>
+        {task.referenceNumber ? task.referenceNumber : 'n/a'}
+        <Label>Related item:</Label>
+        {task.parent ? task.parent : 'n/a'}
+      </Paragraph>
+      {renderNotes()}
+      {renderNotesUpdate()}
+      {renderSendToManager()}
+      <style jsx>{`
+        .tile-container {
+          display: flex;
+        }
+        .sendToManager,
+        sendToManagerError {
+          display: inline;
+        }
+        .text-area {
+          height: 5em;
+        }
+      `}</style>
+    </Layout>
+  );
 }

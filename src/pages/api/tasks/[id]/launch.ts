@@ -1,4 +1,4 @@
-import GetTaskProcessUrlUseCase from '../../../../usecases/api/getTaskProcessUrl';
+import GetTaskProcessUrlUseCase from '../../../../usecases/api/getExternalAngularProcessUrl';
 import CrmGateway from '../../../../gateways/crmGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import HackneyToken from '../../../../interfaces/hackneyToken';

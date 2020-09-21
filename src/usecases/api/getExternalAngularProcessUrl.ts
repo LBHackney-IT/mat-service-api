@@ -3,7 +3,7 @@ import AngularProcessToken from '../../interfaces/angularProcessToken';
 import { encrypt } from '../../lib/encryption';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import UserMapping from '../../interfaces/userMapping';
-import { Task } from '../../interfaces/task';
+import { Task, ProcessType } from '../../interfaces/task';
 import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
 import moment from 'moment';
 
@@ -13,30 +13,44 @@ const urls = {
   homecheck: 'https://thc.manageatenancy.gov.uk/',
 };
 
-interface GetTaskProcessUrlResponse {
+const processIds: { [key: string]: number } = {
+  [ProcessType.thc]: 1,
+  [ProcessType.homecheck]: 2,
+  [ProcessType.itv]: 3,
+};
+
+const processTypeIdLookup = (
+  processType: ProcessType | null
+): number | null => {
+  if (!processType) return null;
+  return processIds[processType] || null;
+};
+
+interface GetExternalAngularProcessUrlResponse {
   body?: string;
   error?: string;
 }
 
-interface GetTaskProcessUrlOptions {
+interface GetExternalAngularProcessUrlOptions {
   encryptionKey: string;
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGateway;
 }
 
-interface GetTaskProcessUrlInterface {
+interface GetExternalAngularProcessUrlInterface {
   execute(
     taskId: string,
     officerEmail: string
-  ): Promise<GetTaskProcessUrlResponse>;
+  ): Promise<GetExternalAngularProcessUrlResponse>;
 }
 
-class GetTaskProcessUrlUseCase implements GetTaskProcessUrlInterface {
+class GetExternalAngularProcessUrlUseCase
+  implements GetExternalAngularProcessUrlInterface {
   encryptionKey: string;
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGateway;
 
-  constructor(options: GetTaskProcessUrlOptions) {
+  constructor(options: GetExternalAngularProcessUrlOptions) {
     this.encryptionKey = options.encryptionKey;
     this.crmGateway = options.crmGateway;
     this.matPostgresGateway = options.matPostgresGateway;
@@ -45,7 +59,7 @@ class GetTaskProcessUrlUseCase implements GetTaskProcessUrlInterface {
   public async execute(
     taskId: string,
     officerEmail: string
-  ): Promise<GetTaskProcessUrlResponse> {
+  ): Promise<GetExternalAngularProcessUrlResponse> {
     const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
     if (!task) return { error: 'Could not load task from crm' };
 
@@ -72,7 +86,7 @@ class GetTaskProcessUrlUseCase implements GetTaskProcessUrlInterface {
       patchId: patchData.patchId || '',
       subjectId: 'c1f72d01-28dc-e711-8115-70106faa6a11',
       areaId: `${patchData.areaId}`,
-      processId: `${task.categoryId}`,
+      processId: `${processTypeIdLookup(task.processType)}`,
       IsStarting: false,
       HouseholdID: task.householdId,
       ManagerId: patchData.areaManagerId || '',
@@ -82,10 +96,10 @@ class GetTaskProcessUrlUseCase implements GetTaskProcessUrlInterface {
       IsManager: patchData.isManager,
       ProcessCRMReference: task.referenceNumber,
     };
-
+    console.log(tokenData);
     const token = encrypt(JSON.stringify(tokenData), this.encryptionKey);
     return { body: `${urls.itv}?data=${token}` };
   }
 }
 
-export default GetTaskProcessUrlUseCase;
+export default GetExternalAngularProcessUrlUseCase;

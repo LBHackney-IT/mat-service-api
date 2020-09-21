@@ -5,6 +5,7 @@ import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import UserMapping from '../../interfaces/userMapping';
 import { Task } from '../../interfaces/task';
 import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
+import moment from 'moment';
 
 const urls = {
   thc: 'https://thc.manageatenancy.gov.uk/',
@@ -65,7 +66,7 @@ class GetTaskProcessUrlUseCase implements GetTaskProcessUrlInterface {
       contactFullName: task.resident.presentationName,
       contactAddress: task.address.presentationShort,
       officerUsername: 'TBC',
-      contactDOB: task.resident.dateOfBirth.toISOString().substring(0, 10),
+      contactDOB: moment(task.resident.dateOfBirth).format('DD/MM/YYYY'),
       contactMobile: task.resident.mobileNumber || '',
       uprn: task.tenancy.uprn,
       patchId: patchData.patchId || '',

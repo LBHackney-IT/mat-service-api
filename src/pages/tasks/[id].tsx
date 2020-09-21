@@ -83,7 +83,7 @@ export default function TaskPage() {
             className="tenancy"
             href={`${
               process.env.NEXT_PUBLIC_SINGLEVIEW_URL
-            }/tenancies/${task.tenancy.tagRef?.replace('/', '-')}`}
+            }/tenancies/${task.tenancy.tagRef.replace('/', '-')}`}
           >
             {task.tenancy.tagRef}
           </a>

@@ -1,5 +1,4 @@
 const getTaskById = (taskId: string) => {
-  const fixedKey = '14ca9154-6fd1-ea11-a813-000d3a0ba110';
   return `
     <fetch>
     <entity name="hackney_tenancymanagementinteractions">

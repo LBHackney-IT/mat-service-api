@@ -21,7 +21,7 @@ describe('getNotesById', () => {
 
     const data = crmToNotes(MockCrmNoteResponse());
 
-    axios.get.mockResolvedValue(data);
+    axios.get.mockResolvedValue({ data: data });
 
     const response = await getNotesById(faker.lorem.word());
 

@@ -9,7 +9,7 @@ const getNotesById = async (taskId: string): Promise<ApiNote[]> => {
   const response = await axios
     .get(`${process.env.NEXT_PUBLIC_API_PATH}/notes/${taskId}`)
     .then((response) => {
-      return response;
+      return response.data;
     })
     .catch((error) => {
       return [];

@@ -15,6 +15,8 @@ import { Task, TenancyType, Resident } from '../../interfaces/task';
 import getTaskById from '../../usecases/ui/getTaskById';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
+import { ApiNote } from '../../interfaces/note';
+import getNotesById from '../../usecases/ui/getNotes';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -39,20 +41,26 @@ const mapResidents = (residents: Resident[]) => {
 export default function TaskPage() {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
+  const [notes, setNotes] = useState<ApiNote[]>([]);
 
   const router = useRouter();
   useEffect(() => {
-    if (!task) {
-      getTaskById(`${router.query.id}`)
-        .then((task) => {
-          if (task) setTask(task);
-        })
-        .catch((e) => {
-          console.log(e.message);
-          setError('loadingError');
-        });
-    }
-  });
+    getTaskById(`${router.query.id}`)
+      .then((task) => {
+        if (task) setTask(task);
+      })
+      .catch((e) => {
+        setError('loadingError');
+      });
+
+    getNotesById(`${router.query.id}`)
+      .then((notes) => {
+        if (notes) setNotes(notes);
+      })
+      .catch((e) => {
+        setError('notesError');
+      });
+  }, []);
 
   if (!task) {
     return <LoadingPage error={error === 'loadingError'} />;
@@ -67,25 +75,20 @@ export default function TaskPage() {
   };
 
   const renderNotes = () => {
-    return (
-      <div>
-        <Heading level={HeadingLevels.H4}>Notes</Heading>
+    const notesJsx: JSX.Element[] = [];
+    notes.map((note) => {
+      notesJsx.push(
         <Paragraph>
-          <span className="strong">14/09/2029:</span> Created by [Housing
-          Officer's Name]
+          <span className="strong">
+            {moment(note.createdOn).format('DD/MM/YYYY')}
+          </span>{' '}
+          Created by {note.createdBy}
           <br />
-          Notes about the action. Written when the related process was being
-          carried out.
+          {note.text}
         </Paragraph>
-        <Paragraph>
-          <span className="strong">15/09/2029:</span> Created by [Housing
-          Officer's Name]
-          <br />
-          Additional notes about the action. Written when the related process
-          was being carried out.
-        </Paragraph>
-      </div>
-    );
+      );
+    });
+    return notesJsx;
   };
 
   const renderNotesUpdate = () => {
@@ -169,6 +172,7 @@ export default function TaskPage() {
         <Label>Related item:</Label>
         {task.parent ? task.parent : 'n/a'}
       </Paragraph>
+      <Heading level={HeadingLevels.H4}>Notes</Heading>
       {renderNotes()}
       {renderNotesUpdate()}
       {renderSendToManager()}
@@ -182,6 +186,9 @@ export default function TaskPage() {
         }
         .text-area {
           height: 5em;
+        }
+        .strong {
+          font-weight: 600;
         }
       `}</style>
     </Layout>

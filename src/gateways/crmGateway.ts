@@ -1,11 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import CrmTokenGateway, { CrmTokenGatewayInterface } from './crmTokenGateway';
 import { Task } from '../interfaces/task';
-import {
-  crmResponseToTask,
-  crmResponseToTasks,
-  // crmToOfficerDetails,
-} from '../mappings/crmToTask';
+import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
 import getUserByEmail from './xmlQueryStrings/getUserByEmail';
 import getOfficerByAreaIdQuery from './xmlQueryStrings/getOfficerByAreaId';

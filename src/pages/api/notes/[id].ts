@@ -1,12 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiNote } from '../../../interfaces/note';
+import { Note } from '../../../interfaces/note';
 import GetNotesForTask from '../../../usecases/api/getNotesForTask';
 
 interface Error {
   error: string;
 }
 
-type Data = ApiNote[] | Error;
+type Data = Note[] | Error;
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const id = req.query.id

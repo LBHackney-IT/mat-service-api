@@ -1,4 +1,4 @@
-export interface ApiNote {
+export interface Note {
   text: string;
   createdBy: string;
   createdOn: string;

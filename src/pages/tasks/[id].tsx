@@ -15,7 +15,7 @@ import { Task, TenancyType, Resident } from '../../interfaces/task';
 import getTaskById from '../../usecases/ui/getTaskById';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
-import { ApiNote } from '../../interfaces/note';
+import { Note } from '../../interfaces/note';
 import getNotesById from '../../usecases/ui/getNotes';
 
 const mapResidents = (residents: Resident[]) => {
@@ -41,7 +41,7 @@ const mapResidents = (residents: Resident[]) => {
 export default function TaskPage() {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
-  const [notes, setNotes] = useState<ApiNote[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const router = useRouter();
   useEffect(() => {

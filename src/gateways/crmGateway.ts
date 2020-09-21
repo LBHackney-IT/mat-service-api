@@ -16,6 +16,7 @@ import crmToPropertyPatch, {
   PropertyPatchDetailsInterface,
 } from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
+import { Note, CrmNote } from '../interfaces/note';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -23,13 +24,13 @@ export interface CrmResponse {
 }
 
 interface GetPatchByOfficerIdResponse {
-  body: PatchDetailsInterface | undefined;
-  error: string | undefined;
+  body?: PatchDetailsInterface;
+  error?: string;
 }
 
 export interface GetPropertyPatchResponse {
-  body: PropertyPatchDetailsInterface | undefined;
-  error: string | undefined;
+  body?: PropertyPatchDetailsInterface;
+  error?: string;
 }
 
 export interface CrmGatewayGetUserResponse {
@@ -60,18 +61,18 @@ export interface CrmGatewayInterface {
 }
 
 interface GetTasksResponse {
-  body: Task[] | undefined;
-  error: string | undefined;
+  body?: Task[];
+  error?: string;
 }
 
 interface GetTaskResponse {
-  body: Task | undefined;
-  error: string | undefined;
+  body?: Task;
+  error?: string;
 }
 
 interface GetNotesForTaskResponse {
-  body: any | undefined;
-  error: string | undefined;
+  body?: Note[];
+  error?: string;
 }
 
 class CrmGateway implements CrmGatewayInterface {

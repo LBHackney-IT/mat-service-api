@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { ApiNote } from '../../interfaces/note';
+import { Note } from '../../interfaces/note';
 
-const getNotesById = async (taskId: string): Promise<ApiNote[]> => {
+const getNotesById = async (taskId: string): Promise<Note[]> => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) {
     return [];
   }
@@ -16,7 +16,7 @@ const getNotesById = async (taskId: string): Promise<ApiNote[]> => {
     });
 
   if (response !== undefined) {
-    return response as ApiNote[];
+    return response as Note[];
   }
   return response;
 };

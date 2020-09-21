@@ -1,8 +1,8 @@
 import { CrmResponse } from '../gateways/crmGateway';
-import { ApiNote, CrmNote } from '../interfaces/note';
+import { Note, CrmNote } from '../interfaces/note';
 
 export const crmToNotes = (data: CrmResponse) => {
-  const notes: ApiNote[] = [];
+  const notes: Note[] = [];
   if (Array.isArray(data.value)) {
     data.value.forEach((note) => {
       const crmNote = note as CrmNote;
@@ -13,7 +13,7 @@ export const crmToNotes = (data: CrmResponse) => {
   return notes;
 };
 
-const crmToNote = (note: CrmNote): ApiNote => {
+const crmToNote = (note: CrmNote): Note => {
   return {
     text: note['annotation2_x002e_notetext'],
     createdOn: note['annotation2_x002e_createdon'],

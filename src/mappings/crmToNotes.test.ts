@@ -1,4 +1,4 @@
-import { ApiNote, CrmNote } from '../interfaces/note';
+import { Note, CrmNote } from '../interfaces/note';
 import MockCrmNoteResponse from '../tests/helpers/generateCrmNoteResponse';
 import { crmToNotes } from './crmToNotes';
 import faker from 'faker';
@@ -7,7 +7,7 @@ describe('crmToNotes', () => {
   it('returns valid notes when given a crmResponse', () => {
     const crmResponse = MockCrmNoteResponse();
 
-    const convertedNotes: ApiNote[] = crmToNotes(crmResponse);
+    const convertedNotes: Note[] = crmToNotes(crmResponse);
 
     let index = 0;
     convertedNotes.forEach((note) => {
@@ -31,7 +31,7 @@ describe('crmToNotes', () => {
       value: [],
     };
 
-    const convertedNotes: ApiNote[] = crmToNotes(crmResponse);
+    const convertedNotes: Note[] = crmToNotes(crmResponse);
 
     expect(convertedNotes.length).toEqual(0);
   });

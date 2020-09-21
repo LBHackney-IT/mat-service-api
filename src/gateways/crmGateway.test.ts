@@ -4,11 +4,8 @@ import faker from 'faker';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
 import { crmResponseToTasks } from '../mappings/crmToTask';
-<<<<<<< HEAD
 
-=======
 import MockCrmPropertyPatchResponse from '../tests/helpers/generatePropertyPatchResponse';
->>>>>>> master
 jest.mock('axios');
 
 describe('CrmGateway', () => {

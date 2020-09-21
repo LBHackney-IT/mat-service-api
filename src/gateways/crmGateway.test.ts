@@ -4,8 +4,6 @@ import faker from 'faker';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
 import { crmResponseToTasks } from '../mappings/crmToTask';
-import MockCrmOfficersPerAreaIdResponse from '../tests/helpers/generateMockCrmOfficersPerAreaIdResponse';
-import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
 
 jest.mock('axios');
 
@@ -66,34 +64,6 @@ describe('CrmGateway', () => {
 
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getUser(emailAddress);
-
-      expect(response).toEqual({ body: undefined, error: error });
-    });
-  });
-
-  describe('Get Officers by area id', () => {
-    it('successfully fetches data from the API', async () => {
-      const data = MockCrmOfficersPerAreaIdResponse();
-      const areaId = 5;
-
-      axios.get.mockResolvedValue({ data: data });
-
-      const crmGateway = new CrmGateway();
-      const response = await crmGateway.getOfficersByAreaId(areaId);
-
-      expect(response).toEqual({
-        body: crmToOfficersDetails(data),
-        error: undefined,
-      });
-    });
-
-    it('returns an error from the API', async () => {
-      const areaId = 1;
-      const error = faker.lorem.words();
-      axios.get.mockReturnValue(Promise.reject(new Error(error)));
-
-      const crmGateway = new CrmGateway();
-      const response = await crmGateway.getOfficersByAreaId(areaId);
 
       expect(response).toEqual({ body: undefined, error: error });
     });

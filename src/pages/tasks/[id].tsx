@@ -15,6 +15,8 @@ import { Task, TenancyType, Resident } from '../../interfaces/task';
 import getTaskById from '../../usecases/ui/getTaskById';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
+import { Note } from '../../interfaces/note';
+import getNotesById from '../../usecases/ui/getNotes';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -39,51 +41,85 @@ const mapResidents = (residents: Resident[]) => {
 export default function TaskPage() {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const router = useRouter();
   useEffect(() => {
-    if (!task) {
-      getTaskById(`${router.query.id}`)
-        .then((task) => {
-          if (task) setTask(task);
-        })
-        .catch((e) => {
-          console.log(e.message);
-          setError('loadingError');
-        });
-    }
-  });
+    getTaskById(`${router.query.id}`)
+      .then((task) => {
+        if (task) setTask(task);
+      })
+      .catch((e) => {
+        setError('loadingError');
+      });
+
+    getNotesById(`${router.query.id}`)
+      .then((notes) => {
+        if (notes) setNotes(notes);
+      })
+      .catch((e) => {
+        setError('notesError');
+      });
+  }, []);
+
+  if (!task) {
+    return <LoadingPage error={error === 'loadingError'} />;
+  }
 
   const sendToManager = () => {
-    if (task) {
-      sendTaskToManager(task.id)
-        .then(() => {})
-        .catch(() => {
-          setError('sendToManagerError');
-        });
-    }
+    sendTaskToManager(task.id)
+      .then(() => {})
+      .catch(() => {
+        setError('sendToManagerError');
+      });
   };
 
-  if (task) {
-    const renderTagRef = () => {
-      if (task.tenancy.tagRef) {
-        return (
-          <a
-            className="tenancy"
-            href={`${
-              process.env.NEXT_PUBLIC_SINGLEVIEW_URL
-            }/tenancies/${task.tenancy.tagRef.replace('/', '-')}`}
-          >
-            {task.tenancy.tagRef}
-          </a>
-        );
-      }
-      return null;
-    };
+  const renderNotes = () => {
+    const notesJsx: JSX.Element[] = [];
+    notes.map((note) => {
+      notesJsx.push(
+        <Paragraph>
+          <span className="strong">
+            {moment(note.createdOn).format('DD/MM/YYYY')}
+          </span>{' '}
+          Created by {note.createdBy}
+          <br />
+          {note.text}
+        </Paragraph>
+      );
+    });
+    return notesJsx;
+  };
 
+  const renderNotesUpdate = () => {
     return (
-      <Layout>
-        <Heading level={HeadingLevels.H2}>{task.type}</Heading>
+      <div>
+        <Heading level={HeadingLevels.H4}>Update Notes</Heading>
+        <textarea className={'govuk-input lbh-input text-area'} />
+        <Button>Save Update</Button>
+      </div>
+    );
+  };
+
+  const renderTagRef = () => {
+    if (task.tenancy.tagRef) {
+      return (
+        <a
+          className="tenancy"
+          href={`${
+            process.env.NEXT_PUBLIC_SINGLEVIEW_URL
+          }/tenancies/${task.tenancy.tagRef.replace('/', '-')}`}
+        >
+          {task.tenancy.tagRef}
+        </a>
+      );
+    }
+    return null;
+  };
+
+  const renderTenancyInfo = () => {
+    return (
+      <div>
         <Heading level={HeadingLevels.H3}>Tenancy</Heading>
         <Paragraph>
           <Label>Address:</Label>
@@ -97,44 +133,64 @@ export default function TaskPage() {
           <Label>Tenancy Reference (Tag Ref):</Label>
           {renderTagRef()}
         </Paragraph>
-        <Heading level={HeadingLevels.H3}>Residents</Heading>
-        <div className="tile-container">
-          {mapResidents(task.tenancy.residents)}
-        </div>
-        <Heading level={HeadingLevels.H3}>Action</Heading>
-        <Paragraph>
-          <Label>Due:</Label>
-          {task.dueTime ? task.dueTime : 'n/a'}
-          <Label>Reference number:</Label>
-          {task.referenceNumber ? task.referenceNumber : 'n/a'}
-          <Label>Related item:</Label>
-          {task.parent ? task.parent : 'n/a'}
-        </Paragraph>
-        <div>
-          <Button
-            onClick={sendToManager}
-            className="govuk-button--secondary lbh-button--secondary sendToManager"
-          >
-            Send action to manager (optional)
-          </Button>
-          {error === 'sendToManagerError' && (
-            <ErrorMessage className="sendToManagerError">
-              Error sending action to manager
-            </ErrorMessage>
-          )}
-        </div>
-        <style jsx>{`
-          .tile-container {
-            display: flex;
-          }
-          .sendToManager,
-          sendToManagerError {
-            display: inline;
-          }
-        `}</style>
-      </Layout>
+      </div>
     );
-  } else {
-    return <LoadingPage error={error === 'loadingError'} />;
-  }
+  };
+
+  const renderSendToManager = () => {
+    return (
+      <div>
+        <Button
+          onClick={sendToManager}
+          className="govuk-button--secondary lbh-button--secondary sendToManager"
+        >
+          Send action to manager (optional)
+        </Button>
+        {error === 'sendToManagerError' && (
+          <ErrorMessage className="sendToManagerError">
+            Error sending action to manager
+          </ErrorMessage>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <Layout>
+      <Heading level={HeadingLevels.H2}>{task.type}</Heading>
+      {renderTenancyInfo()}
+      <Heading level={HeadingLevels.H3}>Residents</Heading>
+      <div className="tile-container">
+        {mapResidents(task.tenancy.residents)}
+      </div>
+      <Heading level={HeadingLevels.H3}>Action</Heading>
+      <Paragraph>
+        <Label>Due:</Label>
+        {task.dueTime ? task.dueTime : 'n/a'}
+        <Label>Reference number:</Label>
+        {task.referenceNumber ? task.referenceNumber : 'n/a'}
+        <Label>Related item:</Label>
+        {task.parent ? task.parent : 'n/a'}
+      </Paragraph>
+      <Heading level={HeadingLevels.H4}>Notes</Heading>
+      {renderNotes()}
+      {renderNotesUpdate()}
+      {renderSendToManager()}
+      <style jsx>{`
+        .tile-container {
+          display: flex;
+        }
+        .sendToManager,
+        sendToManagerError {
+          display: inline;
+        }
+        .text-area {
+          height: 5em;
+        }
+        .strong {
+          font-weight: 600;
+        }
+      `}</style>
+    </Layout>
+  );
 }

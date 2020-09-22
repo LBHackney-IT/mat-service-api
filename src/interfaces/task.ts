@@ -2,6 +2,7 @@ export interface Task {
   id: string;
   createdTime: Date;
   category: string;
+  categoryId: number;
   type: string;
   resident: Resident;
   address: {
@@ -15,12 +16,22 @@ export interface Task {
   parent?: string;
   referenceNumber: string;
   incidentId: string;
+  householdId: string;
+  processType: ProcessType | null;
   tenancy: {
     type: TenancyType;
     startDate: Date;
     residents: Resident[];
-    tagRef?: string;
+    tagRef: string;
+    uprn: string;
   };
+}
+
+export enum ProcessType {
+  thc = 'thc',
+  itv = 'itv',
+  homecheck = 'homecheck',
+  etra = 'etra',
 }
 
 export interface Resident {
@@ -31,6 +42,7 @@ export interface Resident {
   homePhoneNumber?: string;
   workPhoneNumber?: string;
   email?: string;
+  contactCrmId: string;
 }
 
 export enum TenancyType {

@@ -42,7 +42,7 @@ interface PostgresOptions {
   database: string;
 }
 
-class MatPostgresGateway {
+class MatPostgresGateway implements MatPostgresGatewayInterface {
   instance: any;
   constructor() {
     this.instance;

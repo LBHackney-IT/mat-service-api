@@ -105,6 +105,20 @@ export default function TaskPage() {
     }
   };
 
+  const renderSendToOfficer = () => {
+    if (task && !task.assignedToManager) return null;
+    return (
+      <div>
+        <Button
+          onClick={updateOfficer}
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary submit"
+        >
+          Send action to officer
+        </Button>
+      </div>
+    );
+  };
+
   if (task) {
     const renderTagRef = () => {
       if (task.tenancy.tagRef) {
@@ -158,12 +172,13 @@ export default function TaskPage() {
             onChange={updateSelectedOfficerId}
           />
           <span className="divider"></span>
-          <Button
+          {renderSendToOfficer}
+          {/* <Button
             onClick={updateOfficer}
             className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary submit"
           >
             Send action to officer
-          </Button>
+          </Button> */}
         </div>
         <div>
           <Button

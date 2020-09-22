@@ -9,6 +9,9 @@ import crmToPatchDetails, {
   PatchDetailsInterface,
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
+import getOfficersByAreaId from './xmlQueryStrings/getOfficersByAreaId';
+import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
+import { Officer } from '../mappings/crmToOfficersDetails';
 import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
 import { crmToNotes } from '../mappings/crmToNotes';
 import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
@@ -57,6 +60,7 @@ export interface CrmGatewayInterface {
     familyName: string
   ): any;
   getPatchByOfficerId(emailAddress: string): any;
+  getOfficersByAreaId(areaId: number): any;
   getNotesForTask(taskId: string): Promise<GetNotesForTaskResponse>;
 }
 
@@ -72,6 +76,11 @@ interface GetTaskResponse {
 
 interface GetNotesForTaskResponse {
   body?: Note[];
+  error?: string;
+}
+
+interface GetOfficersByAreaIdResponse {
+  body?: Officer[];
   error?: string;
 }
 
@@ -359,6 +368,43 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
+    return response;
+  }
+
+  public async getOfficersByAreaId(
+    areaId: number
+  ): Promise<GetOfficersByAreaIdResponse> {
+    const crmTokenGateway = new CrmTokenGateway();
+    const crmApiToken = await crmTokenGateway.getCloudToken();
+    const crmQuery = getOfficersByAreaId(areaId);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
+        const officers: Officer[] = crmToOfficersDetails(data);
+
+        return {
+          body: officers,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+
     return response;
   }
 }

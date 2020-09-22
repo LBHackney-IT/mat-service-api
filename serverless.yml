@@ -7,6 +7,7 @@ provider:
   api-name: hn-mat-service-api
   stage: dev
   environment:
+    NODE_ENV: ${self:custom.stage}
     DB_NAME: matServiceDb
     DB_USER: MatServiceDbAdmin
     DB_HOST: ${ssm:/${self:custom.stage}-mat-service-db-DB_HOST, env:DB_HOST}
@@ -17,6 +18,8 @@ provider:
         - ','
         - ${self:custom.allowedGroups.${self:custom.stage}}
     NEXT_PUBLIC_API_PATH: https://${self:custom.aliases.${self:custom.stage}}/api
+    V1_MAT_API_URL: ${ssm:/${self:custom.stage}-mat-service-V1_MAT_API_URL, env:V1_MAT_API_URL}
+    V1_MAT_API_TOKEN: ${ssm:/${self:custom.stage}-mat-service-V1_MAT_API_TOKEN~true, env:V1_MAT_API_TOKEN}
 
 plugins:
   - serverless-dotenv-plugin

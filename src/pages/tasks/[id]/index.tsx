@@ -1,7 +1,7 @@
 import React, { useState, useEffect, SetStateAction } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '../../components/layout';
-import LoadingPage from '../../components/loadingPage';
+import Layout from '../../../components/layout';
+import LoadingPage from '../../../components/loadingPage';
 import {
   Heading,
   HeadingLevels,
@@ -11,12 +11,12 @@ import {
   Button,
   ErrorMessage,
 } from 'lbh-frontend-react';
-import { Task, TenancyType, Resident } from '../../interfaces/task';
-import getTaskById from '../../usecases/ui/getTaskById';
-import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
+import { Task, TenancyType, Resident } from '../../../interfaces/task';
+import getTaskById from '../../../usecases/ui/getTaskById';
+import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
-import { Note } from '../../interfaces/note';
-import getNotesById from '../../usecases/ui/getNotes';
+import { Note } from '../../../interfaces/note';
+import getNotesById from '../../../usecases/ui/getNotes';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -117,6 +117,19 @@ export default function TaskPage() {
     return null;
   };
 
+  const renderLaunchProcess = () => {
+    if (task.processType) {
+      return (
+        <form method="get" action={`/api/tasks/${router.query.id}/launch`}>
+          <Button className="govuk-button lbh-button launchProcess">
+            Launch process
+          </Button>
+        </form>
+      );
+    }
+    return null;
+  };
+
   const renderTenancyInfo = () => {
     return (
       <div>
@@ -157,6 +170,7 @@ export default function TaskPage() {
 
   return (
     <Layout>
+      {renderLaunchProcess()}
       <Heading level={HeadingLevels.H2}>{task.type}</Heading>
       {renderTenancyInfo()}
       <Heading level={HeadingLevels.H3}>Residents</Heading>
@@ -189,6 +203,9 @@ export default function TaskPage() {
         }
         .strong {
           font-weight: 600;
+        }
+        .launchProcess {
+          float: right;
         }
       `}</style>
     </Layout>

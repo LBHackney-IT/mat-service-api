@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import Worktray, { sampleWorkTrayColumns, Row } from '../components/worktray';
+import Worktray, { workTrayColumns, Row } from '../components/worktray';
 import { ErrorMessage } from 'lbh-frontend-react';
 import Layout from '../components/layout';
 import LoadingPage from '../components/loadingPage';
@@ -35,7 +35,7 @@ export default function Home() {
               <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-              <Worktray columns={sampleWorkTrayColumns} rows={tasks} />
+              <Worktray columns={workTrayColumns} rows={tasks} />
             </main>
           </div>
         </div>

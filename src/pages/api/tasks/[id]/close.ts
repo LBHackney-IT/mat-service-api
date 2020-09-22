@@ -38,8 +38,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   if (response.body) {
     res.status(204).end();
   } else {
-    console.log(response.error);
-
     res.status(500).json({ error: 'Could not close task' });
   }
 };

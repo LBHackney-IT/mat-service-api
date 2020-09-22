@@ -3,8 +3,6 @@ import { Stage, Task } from '../interfaces/task';
 import { Status } from 'lbh-frontend-react';
 
 const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {
-  console.log(apiTasks);
-
   const mappedTasks: Row[] = [];
 
   apiTasks.map((element: Task) => {

@@ -35,6 +35,7 @@ const MockTask = (): Task => {
       uprn: faker.lorem.word(),
     },
     incidentId: faker.lorem.word(),
+    processType: 'itv',
   };
 };
 

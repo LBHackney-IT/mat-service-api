@@ -1,7 +1,7 @@
 import { encrypt, decrypt } from './encryption';
 const key = 'q2zacxLVm4wnpe0YcLwmQA==';
 const decrypted = 'hello world';
-const encrypted = 'pLh1afo1Od+dOBEe6s5uzA==';
+const encrypted = 'qQe0ma3zYlNPdTUHOv3QvA==';
 
 describe('encryption', () => {
   it('should encrypt and base 64 encode data', () => {

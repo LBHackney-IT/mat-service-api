@@ -1,17 +1,17 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import AngularProcessToken from '../../interfaces/angularProcessToken';
 import { encrypt } from '../../lib/encryption';
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import UserMapping from '../../interfaces/userMapping';
 import { Task, ProcessType } from '../../interfaces/task';
 import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
 import moment from 'moment';
-
-const urls = {
-  thc: 'https://thc.manageatenancy.gov.uk/',
-  itv: 'https://thc.manageatenancy.gov.uk/',
-  homecheck: 'https://thc.manageatenancy.gov.uk/',
-};
+import {
+  GetExternalProcessUrlInterface,
+  GetExternalProcessUrlOptions,
+  GetExternalProcessUrlResponse,
+} from './getExternalProcessUrl';
+import externalProcessUrls from './externalProcessUrls.json';
 
 const processIds: { [key: string]: number } = {
   [ProcessType.thc]: 1,
@@ -26,31 +26,13 @@ const processTypeIdLookup = (
   return processIds[processType] || null;
 };
 
-interface GetExternalAngularProcessUrlResponse {
-  body?: string;
-  error?: string;
-}
-
-interface GetExternalAngularProcessUrlOptions {
+export default class GetExternalAngularProcessUrl
+  implements GetExternalProcessUrlInterface {
   encryptionKey: string;
   crmGateway: CrmGatewayInterface;
-  matPostgresGateway: MatPostgresGateway;
-}
+  matPostgresGateway: MatPostgresGatewayInterface;
 
-interface GetExternalAngularProcessUrlInterface {
-  execute(
-    taskId: string,
-    officerEmail: string
-  ): Promise<GetExternalAngularProcessUrlResponse>;
-}
-
-class GetExternalAngularProcessUrlUseCase
-  implements GetExternalAngularProcessUrlInterface {
-  encryptionKey: string;
-  crmGateway: CrmGatewayInterface;
-  matPostgresGateway: MatPostgresGateway;
-
-  constructor(options: GetExternalAngularProcessUrlOptions) {
+  constructor(options: GetExternalProcessUrlOptions) {
     this.encryptionKey = options.encryptionKey;
     this.crmGateway = options.crmGateway;
     this.matPostgresGateway = options.matPostgresGateway;
@@ -59,9 +41,12 @@ class GetExternalAngularProcessUrlUseCase
   public async execute(
     taskId: string,
     officerEmail: string
-  ): Promise<GetExternalAngularProcessUrlResponse> {
+  ): Promise<GetExternalProcessUrlResponse> {
     const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
     if (!task) return { error: 'Could not load task from crm' };
+    if (!task.processType) {
+      return { error: 'Task does not have a process type' };
+    }
 
     const userMapping: UserMapping | undefined = (
       await this.matPostgresGateway.getUserMapping(officerEmail)
@@ -96,10 +81,13 @@ class GetExternalAngularProcessUrlUseCase
       IsManager: patchData.isManager,
       ProcessCRMReference: task.referenceNumber,
     };
-    console.log(tokenData);
+
+    const url = (externalProcessUrls as any)[process.env.NODE_ENV][
+      task.processType
+    ];
+    if (!url) return { error: 'Could not load external URL' };
+
     const token = encrypt(JSON.stringify(tokenData), this.encryptionKey);
-    return { body: `${urls.itv}?data=${token}` };
+    return { body: `${url}?data=${token}` };
   }
 }
-
-export default GetExternalAngularProcessUrlUseCase;

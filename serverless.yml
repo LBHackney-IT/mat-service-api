@@ -7,6 +7,7 @@ provider:
   api-name: hn-mat-service-api
   stage: dev
   environment:
+    NODE_ENV: ${self:custom.stage}
     DB_NAME: matServiceDb
     DB_USER: MatServiceDbAdmin
     DB_HOST: ${ssm:/${self:custom.stage}-mat-service-db-DB_HOST, env:DB_HOST}

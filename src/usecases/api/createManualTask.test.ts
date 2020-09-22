@@ -1,6 +1,7 @@
 import CreateManualTaskUseCase from './createManualTask';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import GetOfficerPatch from './getOfficerPatch';
+import { mockV1MatApiGateway } from '../../tests/helpers/mockGateways';
 jest.mock('./getOfficerPatch');
 
 describe('createManualTasks', () => {
@@ -25,12 +26,7 @@ describe('createManualTasks', () => {
       areaId: 5,
     };
     GetOfficerPatch.mockImplementationOnce(() => dummyGetOfficerPatch);
-    dummyGateway = {
-      getNewTenancies: jest.fn(),
-      getContactsByUprn: jest.fn(),
-      createTenancyManagementInteraction: jest.fn(),
-      transferCall: jest.fn(),
-    };
+    dummyGateway = mockV1MatApiGateway();
     usecase = new CreateManualTaskUseCase({ gateway: dummyGateway });
   });
 

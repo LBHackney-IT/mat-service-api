@@ -42,6 +42,7 @@ const MockTask = (): Task => {
     },
     incidentId: faker.lorem.word(),
     processType: ProcessType.itv,
+    assignedToManager: false,
   };
 };
 

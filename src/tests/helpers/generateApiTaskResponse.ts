@@ -53,6 +53,7 @@ const mockApiTaskResponse = (): ApiTaskResponse => {
         },
         incidentId: faker.lorem.word(),
         processType: ProcessType.itv,
+        assignedToManager: false,
       },
     ],
     status: 200,

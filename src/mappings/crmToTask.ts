@@ -79,6 +79,9 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     incidentId: crmTask['_hackney_incidentid_value'],
     householdId: crmTask['_hackney_household_interactionid_value'],
     processType: processTypeLookup(crmTask.hackney_enquirysubject),
+    assignedToManager:
+      !!crmTask._hackney_managerpropertypatchid_value &&
+      !crmTask._hackney_estateofficerpatchid_value,
     tenancy: {
       type: TenancyType.Secure,
       startDate: new Date(crmTask['tenancyStartDate']),
@@ -111,6 +114,8 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
 }
 
 interface CrmTaskValue {
+  _hackney_managerpropertypatchid_value?: string;
+  _hackney_estateofficerpatchid_value?: string;
   hackney_processtype: number;
   createdon: string;
   'hackney_processtype@OData.Community.Display.V1.FormattedValue': string;

@@ -72,7 +72,7 @@ interface GetTaskResponse {
   error: string | undefined;
 }
 
-interface GetOfficersByAreaIdResponse {
+export interface GetOfficersByAreaIdResponse {
   body?: Officer[];
   error?: string;
 }

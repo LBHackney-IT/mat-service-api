@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import GetUser from '../../usecases/api/getUser';
-import GetUsers from '../../usecases/api/getUsers';
+import GetOfficersPerArea from '../../usecases/api/getOfficersPerArea';
 import CreateUser from '../../usecases/api/createUser';
+import CrmGateway from '../../gateways/crmGateway';
 
 interface Data {
-  data: any | undefined;
+  users: any | undefined;
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
@@ -14,10 +15,10 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       : req.query.emailAddress
     : undefined;
 
-  const areaId = req.query.areaId
-    ? Array.isArray(req.query.areaId)
-      ? req.query.areaId[0]
-      : req.query.areaId
+  const managerAreaId = req.query.managerAreaId
+    ? Array.isArray(req.query.managerAreaId)
+      ? req.query.managerAreaId[0]
+      : req.query.managerAreaId
     : undefined;
 
   switch (req.method) {
@@ -28,21 +29,22 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         const response = await getUser.execute();
 
         if (response.error === undefined) {
-          res.status(200).json({ data: response.body });
+          res.status(200).json({ users: response.body });
         } else {
           res.status(response.error).end();
         }
         break;
       }
 
-      if (areaId !== undefined) {
-        const areaIdInt = parseInt(areaId);
-        const allUsers = new GetUsers(areaIdInt);
+      if (managerAreaId !== undefined) {
+        const areaId = parseInt(managerAreaId);
+        const crmGateway = new CrmGateway();
 
-        const response = await allUsers.execute();
+        const allOfficers = new GetOfficersPerArea({ areaId, crmGateway });
+        const response = await allOfficers.execute();
 
         if (response.error === undefined) {
-          res.status(200).json({ data: response.body });
+          res.status(200).json({ users: response.body });
         } else {
           res.status(response.error).end();
         }

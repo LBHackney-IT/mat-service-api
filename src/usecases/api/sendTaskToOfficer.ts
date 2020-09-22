@@ -2,9 +2,10 @@ import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
+import HackneyToken from '../../interfaces/hackneyToken';
 
 interface SendTaskToOfficerResponse {
-  body?: any;
+  body?: true;
   error?: string;
 }
 
@@ -17,7 +18,8 @@ interface SendTaskToOfficerOptions {
 interface SendTaskToOfficerInterface {
   execute(
     taskId: string,
-    userEmail: string
+    userDetails: HackneyToken,
+    newOfficerId: string
   ): Promise<SendTaskToOfficerResponse>;
 }
 
@@ -34,7 +36,8 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
 
   public async execute(
     taskId: string,
-    userEmail: string
+    userDetails: HackneyToken,
+    newOfficerId: string
   ): Promise<SendTaskToOfficerResponse> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
@@ -42,7 +45,9 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       return { error: 'Error fetching task from crm' };
 
     // fetch current user from crm
-    const officer = await this.matPostgresGateway.getUserMapping(userEmail);
+    const officer = await this.matPostgresGateway.getUserMapping(
+      userDetails.email
+    );
     if (!officer || !officer.body)
       return { error: 'Error fetching mapped user' };
 
@@ -60,35 +65,23 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       return { error: 'Error fetching officers by areaId' };
 
     const updateObject: TenancyManagementInteraction = {
-      estateOfficerId: officer.body.usercrmid,
-      officerPatchId: officer.body.usercrmid,
-      managerId: patch.body.areaManagerId,
-      assignedToPatch: true,
-      areaName: patch.body.areaId,
-      estateOfficerName: officer.body.username,
-      interactionId: taskId,
+      interactionId: taskId, //TMI id
+      estateOfficerId: newOfficerId, //officer id
+      officerPatchId: patch.body.patchId, //patch id
+      areaName: patch.body.areaId, //areaId
       serviceRequest: {
-        description: `Transferred from: ${officer.body.username}`,
-        id: existingTask.body.incidentId,
-        requestCallback: false,
+        description: `Transferred from: ${userDetails.name}`, //use the same value as below for estateOfficerName
+        requestCallback: false, //leave as false for now
+        id: existingTask.body.incidentId, //incident ID
       },
+      estateOfficerName: userDetails.name, //officer’s name, in this case it will be the manager's name
     };
 
-    // const result = await this.v1ApiGateway.transferCall(updateObject);
-
-    const result = {
-      body: [
-        ['101', 'Mike'],
-        ['202', 'Mary'],
-        ['303', 'Mark'],
-      ],
-      error: undefined,
-    };
-    console.log('CLG!!!!', result.body);
+    const result = await this.v1ApiGateway.transferCall(updateObject);
 
     if (result.body) {
       return {
-        body: result.body,
+        body: true,
       };
     } else {
       return {

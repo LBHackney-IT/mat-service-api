@@ -18,6 +18,7 @@ import getAuthToken from '../../usecases/api/getAuthToken';
 import sendTaskToOfficer from '../../usecases/ui/sendTaskToOfficer';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
 import getOfficersByArea from '../../usecases/ui/getOfficersByArea';
+import { Officer } from '../../mappings/crmToOfficersDetails';
 import moment from 'moment';
 
 const mapResidents = (residents: Resident[]) => {
@@ -40,35 +41,31 @@ const mapResidents = (residents: Resident[]) => {
   });
 };
 
-const hardcodedHousingOfficers = [
-  ['1', 'Joe Bloggs'],
-  ['2', 'Mary Berry'],
-  ['3', 'Santa Claus'],
-];
-// Should return '2, Mary Berry'
-const defaultSelection = hardcodedHousingOfficers[1];
-let defaultOfficerDisplayed: any;
-
 export default function TaskPage() {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
-  const [currentlySelected, setCurrentlySelected] = useState(
-    defaultSelection[0]
-  );
-  //  const [currentlySelected, setCurrentlySelected] = useState('');
+  const [officers, setOfficers] = useState<string[][]>([]);
+  const [selectedOfficerId, setSelectedOfficerId] = useState<
+    string | undefined
+  >(undefined);
 
   const updateOfficer = () => {
-    if (task) {
+    if (task && selectedOfficerId) {
       sendTaskToOfficer({
         taskId: task.id,
-        housingOfficerId: currentlySelected,
-      });
+        housingOfficerId: selectedOfficerId,
+      })
+        .then(() => {
+          console.log('Success - updating officer');
+        })
+        .catch(() => {
+          console.log('Failure - updating officer');
+        });
     }
   };
 
-  const updateCurrentlySelectedOfficer = (housingOfficer: string) => {
-    setCurrentlySelected(housingOfficer);
-    updateOfficer();
+  const updateSelectedOfficerId = (officerId: string) => {
+    setSelectedOfficerId(officerId);
   };
 
   const router = useRouter();
@@ -87,22 +84,16 @@ export default function TaskPage() {
   });
 
   useEffect(() => {
-    if (!currentlySelected) {
-      getOfficersByArea(`${router.query.areaId}`)
-        .then((housingOfficers) => {
-          if (housingOfficers) {
-            setCurrentlySelected(housingOfficers);
-            defaultOfficerDisplayed = housingOfficers[0];
-          }
-        })
-        .catch((e) => {
-          console.log(e.message);
-          setError('loadingError');
-        });
+    if (officers.length === 0) {
+      getOfficersByArea(5).then((officers: any) => {
+        const officerSelect = officers.users.map((officer: any) => [
+          officer.id,
+          officer.name,
+        ]);
+        setOfficers(officerSelect);
+      });
     }
   });
-
-  console.log('HousingOfficerResponse:', defaultOfficerDisplayed);
 
   const sendToManager = () => {
     if (task) {
@@ -160,11 +151,11 @@ export default function TaskPage() {
           <Label>Related item:</Label>
           {task.parent ? task.parent : 'n/a'}
         </Paragraph>
-        <div className="clickablesContainer">
+        <div className="sendToOfficerContainer">
           <Dropdown
-            options={hardcodedHousingOfficers}
-            selected={currentlySelected}
-            onChange={updateCurrentlySelectedOfficer}
+            options={officers}
+            selected={selectedOfficerId}
+            onChange={updateSelectedOfficerId}
           />
           <span className="divider"></span>
           <Button
@@ -195,7 +186,7 @@ export default function TaskPage() {
           sendToManagerError {
             display: inline;
           }
-          .clickablesContainer {
+          .sendToOfficerContainer {
             display: flex;
           }
           .divider {

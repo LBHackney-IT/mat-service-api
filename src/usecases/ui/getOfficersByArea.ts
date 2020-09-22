@@ -1,18 +1,14 @@
 import axios from 'axios';
 
-const getOfficersByArea = async (areaId: string) => {
+const getOfficersByArea = async (areaId: number) => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) return null;
 
   let output;
 
   return await axios
-    .get(
-      `${process.env.NEXT_PUBLIC_API_PATH}/tasks/[taskId]/users?areaId=${areaId}`
-    )
+    .get(`${process.env.NEXT_PUBLIC_API_PATH}/users?managerAreaId=${areaId}`)
     .then((response) => {
-      output = response;
-      console.log('LOOK', output);
-      return response;
+      return response.data;
     })
     .catch((error) => {
       return error;

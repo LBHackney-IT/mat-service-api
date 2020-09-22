@@ -1,21 +1,21 @@
-import GetTask from './getTask';
 import CrmGateway from '../../gateways/crmGateway';
-import { Task } from '../../interfaces/task';
-import MockTask from '../../tests/helpers/generateTask';
+import { crmToNotes } from '../../mappings/crmToNotes';
+import MockCrmNoteResponse from '../../tests/helpers/generateCrmNoteResponse';
 import faker from 'faker';
+import getNotesForTask from './getNotesForTask';
 jest.mock('../../gateways/crmGateway');
 
-describe('GetTask', () => {
+describe('GetNotesForTask', () => {
   beforeEach(() => {
     CrmGateway.mockClear();
   });
 
   it('Returns a response when no errors are found', async () => {
-    const mockResponse: Task = MockTask();
+    const mockResponse = crmToNotes(MockCrmNoteResponse());
 
     CrmGateway.mockImplementationOnce(() => {
       return {
-        getTask: () => ({
+        getNotesForTask: () => ({
           body: mockResponse,
           error: undefined,
         }),
@@ -23,9 +23,7 @@ describe('GetTask', () => {
     });
 
     const taskId = faker.lorem.word();
-
-    const getTask = new GetTask(taskId);
-    const response = await getTask.execute();
+    const response = await getNotesForTask(taskId);
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: mockResponse, error: undefined });
@@ -34,7 +32,7 @@ describe('GetTask', () => {
   it('Returns a 500 error when errors are found', async () => {
     CrmGateway.mockImplementationOnce(() => {
       return {
-        getTask: () => ({
+        getNotesForTask: () => ({
           body: undefined,
           error: 'Anything',
         }),
@@ -43,8 +41,7 @@ describe('GetTask', () => {
 
     const taskId = faker.lorem.word();
 
-    const getTask = new GetTask(taskId);
-    const response = await getTask.execute();
+    const response = await getNotesForTask(taskId);
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 500 });
@@ -53,7 +50,7 @@ describe('GetTask', () => {
   it('Returns a 401 error when errors is NotAuthorised', async () => {
     CrmGateway.mockImplementationOnce(() => {
       return {
-        getTask: () => ({
+        getNotesForTask: () => ({
           body: undefined,
           error: 'NotAuthorised',
         }),
@@ -62,8 +59,7 @@ describe('GetTask', () => {
 
     const taskId = faker.lorem.word();
 
-    const getTask = new GetTask(taskId);
-    const response = await getTask.execute();
+    const response = await getNotesForTask(taskId);
 
     expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 401 });

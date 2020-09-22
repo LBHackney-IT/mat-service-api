@@ -17,10 +17,14 @@ export default function Home() {
   useEffect(() => {
     getTasksByOfficerEmail()
       .then((tasks) => {
+        console.log(tasks);
+
         setTasks(tasks);
         setFetchState('done');
       })
       .catch((e) => {
+        console.log(e);
+
         setFetchState('error');
       });
   }, []);

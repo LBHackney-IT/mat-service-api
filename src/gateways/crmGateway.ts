@@ -3,6 +3,7 @@ import CrmTokenGateway, { CrmTokenGatewayInterface } from './crmTokenGateway';
 import { Task } from '../interfaces/task';
 import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
+import getTasksByTagRef from './xmlQueryStrings/getTasksByTagRef';
 import getUserByEmail from './xmlQueryStrings/getUserByEmail';
 import getPatchByOfficerId from './xmlQueryStrings/getPatchByOfficerId';
 import crmToPatchDetails, {
@@ -63,6 +64,7 @@ export interface CrmGatewayInterface {
     emailAddress: string
   ): Promise<GetPatchByOfficerIdResponse>;
   getOfficersByAreaId(areaId: number): any;
+  getTasksForTagRef(tag_ref: string): Promise<GetTasksResponse>;
   getNotesForTask(taskId: string): Promise<GetNotesForTaskResponse>;
 }
 
@@ -131,6 +133,43 @@ class CrmGateway implements CrmGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async getTasksForTagRef(tag_ref: string): Promise<GetTasksResponse> {
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const crmQuery = getTasksByTagRef(tag_ref);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data as CrmResponse;
+        return {
+          body: crmResponseToTasks(data),
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        console.log('error: ' + error);
+
         return {
           body: undefined,
           error: error.message,

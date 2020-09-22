@@ -148,6 +148,38 @@ describe('CrmGateway', () => {
     });
   });
 
+  describe('Get Tasks by tag_ref', () => {
+    it('successfully fetches data from an API', async () => {
+      const data = MockCrmTaskResponse();
+      const tagRef = '123456/01';
+
+      axios.get.mockResolvedValue({ data: data });
+
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getTasksForTagRef(tagRef);
+
+      const tasks = crmResponseToTasks(data);
+
+      expect(response).toStrictEqual({ body: tasks, error: undefined });
+    });
+
+    it('returns an human readable error when unsuccessful', async () => {
+      const errorMessage = 'Network Error';
+      const errorResponse = {
+        body: undefined,
+        error: errorMessage,
+      };
+      const tagRef = '123456/01';
+
+      axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
+
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getTasksForTagRef(tagRef);
+
+      expect(response).toEqual(errorResponse);
+    });
+  });
+
   describe('Get Officers by area id', () => {
     it('successfully fetches data from the API', async () => {
       const data = MockCrmOfficersPerAreaIdResponse();

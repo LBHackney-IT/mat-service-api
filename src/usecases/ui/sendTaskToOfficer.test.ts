@@ -3,16 +3,28 @@ import axios from 'axios';
 jest.mock('axios');
 
 describe('sendTaskToOfficer', () => {
-  const fakeInputs = {
+  beforeEach(() => {
+    axios.mockClear();
+  });
+
+  const selectedTaskAndOfficer = {
     taskId: 'dummyId',
     housingOfficerId: '123',
   };
 
   it(`makes a post to the correct endpoint`, async () => {
+    process.env.NEXT_PUBLIC_API_PATH = 'http://localhost:3000/api';
+
     axios.post.mockResolvedValue({});
-    sendTaskToOfficer(fakeInputs);
-    expect(axios.post).toHaveBeenCalledWith(
-      '/api/tasks/dummyId/sendTaskToOfficer'
-    );
+    const response = await sendTaskToOfficer(selectedTaskAndOfficer);
+    expect(response).toEqual(true);
+  });
+
+  it('Returns an error', async () => {
+    process.env.NEXT_PUBLIC_API_PATH = 'http://localhost:3000/api';
+
+    axios.post.mockImplementationOnce(() => Promise.reject(new Error()));
+    const response = await sendTaskToOfficer(selectedTaskAndOfficer);
+    expect(response).toEqual(false);
   });
 });

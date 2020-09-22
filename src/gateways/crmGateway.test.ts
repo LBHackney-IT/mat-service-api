@@ -4,10 +4,13 @@ import faker from 'faker';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
 import MockCrmOfficersResponse from '../tests/helpers/generateCrmOfficersResponse';
+
 import { crmResponseToTasks } from '../mappings/crmToTask';
+
 import MockCrmNoteResponse from '../tests/helpers/generateCrmNoteResponse';
 import { crmToNotes } from '../mappings/crmToNotes';
 import MockCrmPropertyPatchResponse from '../tests/helpers/generatePropertyPatchResponse';
+
 import MockCrmOfficersPerAreaIdResponse from '../tests/helpers/generateMockCrmOfficersPerAreaIdResponse';
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
 jest.mock('axios');

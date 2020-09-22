@@ -7,13 +7,22 @@ export interface SendTaskToOfficerInterface {
 
 const sendTaskToOfficer = async (
   selectedTaskAndOfficer: SendTaskToOfficerInterface
-) => {
-  if (process.env.NEXT_PUBLIC_API_PATH === undefined) return null;
+): Promise<boolean> => {
+  if (process.env.NEXT_PUBLIC_API_PATH === undefined) return false;
 
-  return axios.post(
-    `${process.env.NEXT_PUBLIC_API_PATH}/tasks/[taskId]/sendToOfficer`,
-    selectedTaskAndOfficer
-  );
+  const response = await axios
+    .post(
+      `${process.env.NEXT_PUBLIC_API_PATH}/tasks/[taskId]/sendToOfficer`,
+      selectedTaskAndOfficer
+    )
+    .then((response) => {
+      return true;
+    })
+    .catch((error) => {
+      return false;
+    });
+
+  return response;
 };
 
 export default sendTaskToOfficer;

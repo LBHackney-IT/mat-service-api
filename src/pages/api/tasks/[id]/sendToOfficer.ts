@@ -1,4 +1,3 @@
-import GetUsers from '../../../../usecases/api/getUsers';
 import { NextApiRequest, NextApiResponse } from 'next';
 import SendTaskToOfficerUseCase from '../../../../usecases/api/sendTaskToOfficer';
 import v1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';

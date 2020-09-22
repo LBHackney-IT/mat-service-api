@@ -15,8 +15,8 @@ import { Task, TenancyType, Resident } from '../../../interfaces/task';
 import getTaskById from '../../../usecases/ui/getTaskById';
 import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
-import { Note } from '../../interfaces/note';
-import getNotesById from '../../usecases/ui/getNotes';
+import { Note } from '../../../interfaces/note';
+import getNotesById from '../../../usecases/ui/getNotes';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {

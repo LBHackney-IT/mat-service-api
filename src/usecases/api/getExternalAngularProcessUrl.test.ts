@@ -3,6 +3,10 @@ import MockTask from '../../tests/helpers/generateTask';
 import externalProcessUrls from './externalProcessUrls.json';
 import { decrypt } from '../../lib/encryption';
 import moment from 'moment';
+import {
+  mockCrmGateway,
+  mockMatPostgresGateway,
+} from '../../tests/helpers/mockGateways';
 
 describe('GetExternalAngularProcessUrl', () => {
   let useCase;
@@ -11,18 +15,8 @@ describe('GetExternalAngularProcessUrl', () => {
   const encryptionKey = 'q2zacxLVm4wnpe0YcLwmQA==';
 
   beforeEach(() => {
-    crmGateway = {
-      getTasksForAPatch: jest.fn(() => Promise.resolve({})),
-      getTask: jest.fn(() => Promise.resolve({})),
-      getUser: jest.fn(() => Promise.resolve({})),
-      createUser: jest.fn(() => Promise.resolve({})),
-      getPatchByOfficerId: jest.fn(() => Promise.resolve({})),
-    };
-    matPostgresGateway = {
-      getTrasByPatchId: jest.fn(() => Promise.resolve({})),
-      getUserMapping: jest.fn(() => Promise.resolve({})),
-      createUserMapping: jest.fn(() => Promise.resolve({})),
-    };
+    crmGateway = mockCrmGateway();
+    matPostgresGateway = mockMatPostgresGateway();
     useCase = new GetExternalAngularProcessUrl({
       encryptionKey,
       crmGateway,

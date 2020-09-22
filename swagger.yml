@@ -124,6 +124,28 @@ paths:
       responses:
         '200':
           description: Successful operation
+  '/notes/{id}':
+    parameters:
+      - in: path
+        name: id
+        type: string
+        description: The id of the task whose notes are required
+        required: true
+    get:
+      summary: Retrieve all notes for a task
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/notelist'
+        '401':
+          description: Unauthenticated
+          schema:
+            $ref: '#/definitions/error'
+        '500':
+          description: There was an error processing your request.
+          schema:
+            $ref: '#/definitions/error'
   '/tras':
     get:
       summary: List all TRAs
@@ -333,6 +355,37 @@ definitions:
     items:
       $ref: '#/definitions/task'
     description: 'A collection of tasks'
+
+  note:
+    type: object
+    required:
+      - text
+      - createdBy
+      - createdOn
+      - incidentId
+    properties:
+      text:
+        type: string
+        example: 'Note body text for a task'
+        description: 'The body text of the note'
+      createdBy:
+        type: string
+        example: 'John Smith'
+        description: 'The name of the user that created the note'
+      createdOn:
+        type: string
+        example: '2020-09-21T12:00:00Z'
+        description: 'The date and time that the note was created'
+      incidentId:
+        type: string
+        example: '15ca9154-6fd1-ea21-a813-000d5a0ba110'
+        description: 'The id of the linked incident for the note'
+
+  notelist:
+    type: array
+    items:
+      $ref: '#/definitions/note'
+    description: 'A collection of notes'
 
   person:
     type: object

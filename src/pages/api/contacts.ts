@@ -11,7 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (!uprn) return res.status(400).json({ error: 'UPRN missing' });
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
-    return res.status(500).end();
+    return res.status(500).json({ error: 'Missing v1 api configuration' });
   }
 
   const gateway: v1MatAPIGateway = new v1MatAPIGateway({

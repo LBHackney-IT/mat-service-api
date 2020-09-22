@@ -4,11 +4,10 @@ import faker from 'faker';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
 import MockCrmOfficersResponse from '../tests/helpers/generateCrmOfficersResponse';
-
 import { crmResponseToTasks } from '../mappings/crmToTask';
-
+import MockCrmNoteResponse from '../tests/helpers/generateCrmNoteResponse';
+import { crmToNotes } from '../mappings/crmToNotes';
 import MockCrmPropertyPatchResponse from '../tests/helpers/generatePropertyPatchResponse';
-
 import MockCrmOfficersPerAreaIdResponse from '../tests/helpers/generateMockCrmOfficersPerAreaIdResponse';
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
 jest.mock('axios');
@@ -39,14 +38,22 @@ describe('CrmGateway', () => {
         body: undefined,
         error: errorMessage,
       };
-      const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1';
+      const officerId = faker.lorem.word();
+      const isManager = faker.random.boolean();
+      const areaManagerId = faker.lorem.word();
+      const patchId = faker.lorem.word();
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getTasksForAPatch(patchId);
+      const response = await crmGateway.getTasksForAPatch(
+        officerId,
+        isManager,
+        areaManagerId,
+        patchId
+      );
 
-      expect(response).toEqual(errorResponse);
+      expect(response).toStrictEqual(errorResponse);
     });
   });
 
@@ -60,7 +67,7 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getUser(emailAddress);
 
-      expect(response).toEqual({ body: data.value, error: undefined });
+      expect(response).toStrictEqual({ body: data.value, error: undefined });
     });
 
     it('returns an error from the API', async () => {
@@ -69,9 +76,35 @@ describe('CrmGateway', () => {
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getUser(emailAddress);
+      const response = await crmGateway.getNotesForTask(emailAddress);
 
-      expect(response).toEqual({ body: undefined, error: error });
+      expect(response).toStrictEqual({ body: undefined, error: error });
+    });
+  });
+
+  describe('Get Notes by task id', () => {
+    it('successfully fetches data from the API', async () => {
+      const data = MockCrmNoteResponse();
+      const notes = crmToNotes(data);
+      const id = faker.lorem.word();
+
+      axios.get.mockResolvedValue({ data: data });
+
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getNotesForTask(id);
+
+      expect(response).toStrictEqual({ body: notes, error: undefined });
+    });
+
+    it('returns an error from the API', async () => {
+      const id = faker.lorem.word();
+      const error = faker.lorem.words();
+      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+
+      const crmGateway = new CrmGateway();
+      const response = await crmGateway.getNotesForTask(id);
+
+      expect(response).toStrictEqual({ body: undefined, error: error });
     });
   });
 

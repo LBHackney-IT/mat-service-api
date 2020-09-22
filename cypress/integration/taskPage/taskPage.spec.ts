@@ -32,6 +32,8 @@ describe('Task Page', () => {
       cy.contains('Tenancy');
       cy.contains('Residents');
       cy.contains('Action');
+      cy.contains('Notes');
+      cy.contains('Update Notes');
     });
 
     it('should render the data', () => {
@@ -41,6 +43,7 @@ describe('Task Page', () => {
       cy.contains('James Cagney');
       cy.contains('james.cagney@yahoo.co.uk');
       cy.contains('CAS-00000-V2L7P6');
+      cy.contains('Save Update');
     });
     it('should link to the tenancy page on single view', () => {
       cy.get('a.tenancy')

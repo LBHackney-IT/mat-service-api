@@ -26,6 +26,11 @@ describe('Work Tray Page Elements', () => {
     cy.visit('/');
     cy.wait('@getTasks');
 
+    cy.contains('Created');
+    cy.contains('Process / Action');
+    cy.contains('Name');
+    cy.contains('Address');
+
     cy.contains('In Progress');
     cy.contains('Completed');
     cy.contains('All Items');

@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Task } from '../../interfaces/task';
-import GetTasksForAPatch from '../../usecases/api/getTasksForAPatch';
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import CrmGateway from '../../gateways/crmGateway';
-import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
-import setupUser from '../../usecases/api/setupUser';
-import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
-import CreateManualTaskUseCase from '../../usecases/api/createManualTask';
-import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
+import { Task } from '../../../interfaces/task';
+import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
+import MatPostgresGateway from '../../../gateways/matPostgresGateway';
+import CrmGateway from '../../../gateways/crmGateway';
+import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
+import setupUser from '../../../usecases/api/setupUser';
+import v1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
+import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
+import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 const { getTokenPayload } = require('node-lambda-authorizer')({
   jwtSecret: process.env.JWT_SECRET,
 });

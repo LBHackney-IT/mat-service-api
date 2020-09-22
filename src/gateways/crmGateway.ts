@@ -9,11 +9,17 @@ import crmToPatchDetails, {
   PatchDetailsInterface,
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
+import getOfficersByAreaId from './xmlQueryStrings/getOfficersByAreaId';
+import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
+import { Officer } from '../mappings/crmToOfficersDetails';
+import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
+import { crmToNotes } from '../mappings/crmToNotes';
 import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
 import crmToPropertyPatch, {
   PropertyPatchDetailsInterface,
 } from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
+import { Note, CrmNote } from '../interfaces/note';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -21,13 +27,13 @@ export interface CrmResponse {
 }
 
 interface GetPatchByOfficerIdResponse {
-  body: PatchDetailsInterface | undefined;
-  error: string | undefined;
+  body?: PatchDetailsInterface;
+  error?: string;
 }
 
 export interface GetPropertyPatchResponse {
-  body: PropertyPatchDetailsInterface | undefined;
-  error: string | undefined;
+  body?: PropertyPatchDetailsInterface;
+  error?: string;
 }
 
 export interface CrmGatewayGetUserResponse {
@@ -46,24 +52,38 @@ export interface CrmGatewayInterface {
     patchId?: string
   ): Promise<GetTasksResponse>;
   getTask(taskId: string): Promise<GetTaskResponse>;
-  getUser(emailAddress: string): any;
+  getUser(emailAddress: string): Promise<CrmGatewayGetUserResponse>;
   createUser(
     emailAddress: string,
     fullName: string,
     firstName: string,
     familyName: string
   ): any;
-  getPatchByOfficerId(emailAddress: string): any;
+  getPatchByOfficerId(
+    emailAddress: string
+  ): Promise<GetPatchByOfficerIdResponse>;
+  getOfficersByAreaId(areaId: number): any;
+  getNotesForTask(taskId: string): Promise<GetNotesForTaskResponse>;
 }
 
 interface GetTasksResponse {
-  body: Task[] | undefined;
-  error: string | undefined;
+  body?: Task[];
+  error?: string;
 }
 
 interface GetTaskResponse {
-  body: Task | undefined;
-  error: string | undefined;
+  body?: Task;
+  error?: string;
+}
+
+interface GetNotesForTaskResponse {
+  body?: Note[];
+  error?: string;
+}
+
+interface GetOfficersByAreaIdResponse {
+  body?: Officer[];
+  error?: string;
 }
 
 class CrmGateway implements CrmGatewayInterface {
@@ -145,6 +165,45 @@ class CrmGateway implements CrmGatewayInterface {
 
         return {
           body: task,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async getNotesForTask(
+    taskId: string
+  ): Promise<GetNotesForTaskResponse> {
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+    }
+
+    const crmQuery = getNotesForTaskById(taskId);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data as CrmResponse;
+        const notes = crmToNotes(data);
+
+        return {
+          body: notes,
           error: undefined,
         };
       })
@@ -311,6 +370,43 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
+    return response;
+  }
+
+  public async getOfficersByAreaId(
+    areaId: number
+  ): Promise<GetOfficersByAreaIdResponse> {
+    const crmTokenGateway = new CrmTokenGateway();
+    const crmApiToken = await crmTokenGateway.getCloudToken();
+    const crmQuery = getOfficersByAreaId(areaId);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
+        const officers: Officer[] = crmToOfficersDetails(data);
+
+        return {
+          body: officers,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+
     return response;
   }
 }

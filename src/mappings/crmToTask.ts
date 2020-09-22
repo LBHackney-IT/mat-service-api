@@ -1,5 +1,22 @@
-import { Task, Stage, DueState, TenancyType } from '../interfaces/task';
+import {
+  Task,
+  Stage,
+  DueState,
+  TenancyType,
+  ProcessType,
+} from '../interfaces/task';
 import { CrmResponse } from '../gateways/crmGateway';
+
+const processIds: { [key: number]: ProcessType } = {
+  100000052: ProcessType.homecheck,
+  100000060: ProcessType.itv,
+  100000156: ProcessType.thc,
+  100000219: ProcessType.etra,
+};
+
+const processTypeLookup = (code: number): ProcessType | null => {
+  return processIds[code] || null;
+};
 
 export const crmResponseToTask = (data: CrmResponse): Task => {
   const residents = crmResponseToTasks(data);
@@ -38,6 +55,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     homePhoneNumber: crmTask['contact1_x002e_telephone2'],
     workPhoneNumber: crmTask['contact1_x002e_telephone1'],
     email: crmTask['contact1_x002e_emailaddress1'],
+    contactCrmId: crmTask['_hackney_contactid_value'],
   };
 
   const task: Task = {
@@ -45,6 +63,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     createdTime: new Date(crmTask.createdon),
     category:
       crmTask['hackney_processtype@OData.Community.Display.V1.FormattedValue'],
+    categoryId: crmTask['hackney_processtype'],
     type: 'Unknown',
     resident: tenant,
     address: {
@@ -58,11 +77,17 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     parent: crmTask['parent@OData.Community.Display.V1.FormattedValue'],
     referenceNumber: crmTask['hackney_name'],
     incidentId: crmTask['_hackney_incidentid_value'],
+    householdId: crmTask['_hackney_household_interactionid_value'],
+    processType: processTypeLookup(crmTask.hackney_enquirysubject),
+    assignedToManager:
+      !!crmTask._hackney_managerpropertypatchid_value &&
+      !crmTask._hackney_estateofficerpatchid_value,
     tenancy: {
       type: TenancyType.Secure,
       startDate: new Date(crmTask['tenancyStartDate']),
       residents: [tenant],
       tagRef: crmTask['hackney_household3_x002e_hackney_tag_ref'],
+      uprn: crmTask['contact1_x002e_hackney_uprn'],
     },
   };
 
@@ -89,6 +114,8 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
 }
 
 interface CrmTaskValue {
+  _hackney_managerpropertypatchid_value?: string;
+  _hackney_estateofficerpatchid_value?: string;
   hackney_processtype: number;
   createdon: string;
   'hackney_processtype@OData.Community.Display.V1.FormattedValue': string;
@@ -114,6 +141,10 @@ interface CrmTaskValue {
   name: string;
   _hackney_incidentid_value: string;
   hackney_household3_x002e_hackney_tag_ref: string;
+  _hackney_household_interactionid_value: string;
+  contact1_x002e_hackney_uprn: string;
+  _hackney_contactid_value: string;
+  hackney_enquirysubject: number;
 }
 
 export interface CrmTasks {

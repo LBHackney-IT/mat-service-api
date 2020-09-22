@@ -34,21 +34,15 @@ class GetOfficerPatch implements GetOfficerPatchInterface {
     const userDetails = await this.matPostgresGateway.getUserMapping(
       this.emailAddress
     );
+    if (!userDetails.body || !userDetails.body.usercrmid) return { error: 404 };
 
-    if (userDetails.body && userDetails.body.usercrmid) {
-      officerPatch = await this.crmGateway.getPatchByOfficerId(
-        userDetails.body.usercrmid
-      );
-    } else {
-      return {
-        body: undefined,
-        error: 404,
-      };
-    }
+    officerPatch = await this.crmGateway.getPatchByOfficerId(
+      userDetails.body.usercrmid
+    );
+    if (!officerPatch.body) return { error: 404 };
 
-    const OfficerPatchDetails: PatchDetailsInterface = officerPatch.body;
     return {
-      body: OfficerPatchDetails,
+      body: officerPatch.body,
       error: undefined,
     };
   }

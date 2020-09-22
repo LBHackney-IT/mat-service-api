@@ -1,6 +1,7 @@
 import { crmResponseToTasks, mapResponseToStage } from './crmToTask';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import { Task } from '../interfaces/task';
+import faker from 'faker';
 
 describe('crmResponseToTask', () => {
   it('returns a valid task when given a crmResponse', () => {
@@ -34,7 +35,16 @@ describe('crmResponseToTask', () => {
       expect(task.stage).toEqual(
         mapResponseToStage(crmValue.hackney_process_stage)
       );
+      expect(task.assignedToManager).toBe(false);
       index += 1;
     });
+  });
+
+  it('returns a task assigned to manager', () => {
+    const crmResponse = MockCrmTaskResponse();
+    crmResponse.value[0]._hackney_estateofficerpatchid_value = undefined;
+    crmResponse.value[0]._hackney_managerpropertypatchid_value = faker.random.uuid();
+    const convertedTask: Task[] = crmResponseToTasks(crmResponse);
+    expect(convertedTask[0].assignedToManager).toBe(true);
   });
 });

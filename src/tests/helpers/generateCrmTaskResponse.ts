@@ -26,6 +26,7 @@ const MockCrmTaskResponse = (): CrmResponse => {
         contact1_x002e_mobilephone: faker.phone.phoneNumber(),
         hackney_name: faker.random.alphaNumeric(),
         tenancyStartDate: faker.date.past(),
+        _hackney_estateofficerpatchid_value: faker.random.uuid(),
       },
     ],
   };

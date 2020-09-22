@@ -151,6 +151,7 @@ export default function TaskPage() {
   };
 
   const renderSendToManager = () => {
+    if (task && task.assignedToManager) return null;
     return (
       <div>
         <Button

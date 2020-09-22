@@ -27,16 +27,9 @@ export default class GetExternalReactEtraProcessUrl
   ): Promise<GetExternalProcessUrlResponse> {
     const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
     if (!task) return { error: 'Could not load task from crm' };
-
-    const userMapping: UserMapping | undefined = (
-      await this.matPostgresGateway.getUserMapping(officerEmail)
-    ).body;
-    if (!userMapping) return { error: 'Could not load user mapping' };
-
-    const patchData: PatchDetailsInterface | undefined = (
-      await this.crmGateway.getPatchByOfficerId(userMapping.usercrmid)
-    ).body;
-    if (!patchData) return { error: 'Could not load officer patch data' };
+    if (!task.processType) {
+      return { error: 'Task does not have a process type' };
+    }
 
     return { error: `ETRA not yet supported` };
   }

@@ -18,7 +18,7 @@
   "children": [],
   "referenceNumber": "CAS-00000-V2L7P6",
   "incidentId": "11111111-116f-e811-812b-70106faa6a31",
-  "assignedToManager": false,
+  "assignedToManager": true,
   "tenancy": {
     "type": 1,
     "startDate": "2013-08-26T00:00:00.000Z",

@@ -18,16 +18,22 @@ describe('Task Page', () => {
     cy.server();
     cy.fixture('task').then((tasks) => {
       cy.route('/api/tasks/6790f691-116f-e811-8133-70106faa6a11', tasks).as(
-        'getTasks'
+        'getTask'
+      );
+    });
+
+    cy.fixture('managerTask').then((tasks) => {
+      cy.route('/api/tasks/99999999-116f-e811-8133-70106faa6a11', tasks).as(
+        'getManagerTask'
       );
     });
 
     cy.setCookie('hackneyToken', token);
-    cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
   });
 
   describe('Rendering the page', () => {
     it('should show the main elements', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.contains('Tenancy and household check');
       cy.contains('Tenancy');
       cy.contains('Residents');
@@ -37,6 +43,7 @@ describe('Task Page', () => {
     });
 
     it('should render the data', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.contains('FLAT 33 KNIGHT COURT, GALES TERRACE');
       cy.contains('Secure');
       cy.contains('26/08/2013');
@@ -45,7 +52,9 @@ describe('Task Page', () => {
       cy.contains('CAS-00000-V2L7P6');
       cy.contains('Save Update');
     });
+
     it('should link to the tenancy page on single view', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.get('a.tenancy')
         .contains('0123456/01')
         .should('have.attr', 'href')
@@ -59,6 +68,7 @@ describe('Task Page', () => {
     it('should only display on post visit actions');
 
     it('should make the correct api request when clicked', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.route(
         'POST',
         '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/sendToManager'
@@ -68,6 +78,7 @@ describe('Task Page', () => {
     });
 
     it('should should show an error if necessary', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.route({
         method: 'POST',
         url: '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/sendToManager',
@@ -76,6 +87,11 @@ describe('Task Page', () => {
       cy.get('button.sendToManager').click();
       cy.contains('Error sending action to manager');
       cy.wait('@sendToManager');
+    });
+
+    it('should not be visible on a task assigned to manager already', () => {
+      cy.visit('/tasks/99999999-116f-e811-8133-70106faa6a11');
+      cy.get('button.sendToManager').should('not.exist');
     });
   });
 

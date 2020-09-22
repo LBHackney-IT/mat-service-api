@@ -18,6 +18,7 @@ export interface Task {
   incidentId: string;
   householdId: string;
   processType: ProcessType | null;
+  assignedToManager: boolean;
   tenancy: {
     type: TenancyType;
     startDate: Date;

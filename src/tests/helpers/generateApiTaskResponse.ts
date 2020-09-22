@@ -1,5 +1,11 @@
 import faker from 'faker';
-import { Task, Stage, DueState, TenancyType } from '../../interfaces/task';
+import {
+  Task,
+  Stage,
+  DueState,
+  TenancyType,
+  ProcessType,
+} from '../../interfaces/task';
 
 interface ApiTaskResponse {
   data: Task[];
@@ -46,6 +52,7 @@ const mockApiTaskResponse = (): ApiTaskResponse => {
           uprn: faker.lorem.word(),
         },
         incidentId: faker.lorem.word(),
+        processType: ProcessType.itv,
       },
     ],
     status: 200,

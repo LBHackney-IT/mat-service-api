@@ -1,4 +1,10 @@
-import { Task, Stage, DueState, TenancyType } from '../../interfaces/task';
+import {
+  Task,
+  Stage,
+  DueState,
+  TenancyType,
+  ProcessType,
+} from '../../interfaces/task';
 import faker from 'faker';
 
 const MockTask = (): Task => {
@@ -35,7 +41,7 @@ const MockTask = (): Task => {
       uprn: faker.lorem.word(),
     },
     incidentId: faker.lorem.word(),
-    processType: 'itv',
+    processType: ProcessType.itv,
   };
 };
 

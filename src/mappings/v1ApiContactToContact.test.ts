@@ -13,7 +13,7 @@ describe('tenancyToITVTask', () => {
       addressLine2: 'STREET CLOSE',
       addressLine3: 'HACKNEY',
       crmContactId: 'contactId',
-      dateOfBirth: '1990-01-01',
+      dateOfBirth: new Date(Date.parse('1990-01-01')),
       disabled: false,
       emailAddress: 'me@mail.com',
       extendedrelationship: null,

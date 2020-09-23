@@ -8,6 +8,7 @@ import getUserByEmail from './xmlQueryStrings/getUserByEmail';
 import getOfficerByAreaIdQuery from './xmlQueryStrings/getOfficerByAreaId';
 
 import getPatchByOfficerId from './xmlQueryStrings/getPatchByOfficerId';
+import getContactsByTagRef from './xmlQueryStrings/getContactsByTagRef';
 import crmToPatchDetails, {
   PatchDetailsInterface,
 } from '../mappings/crmToPatchDetails';
@@ -23,6 +24,8 @@ import crmToPropertyPatch, {
 } from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
 import { Note, CrmNote } from '../interfaces/note';
+import Contact from '../interfaces/contact';
+import { crmResponseToContacts } from '../mappings/crmToContact';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -68,6 +71,7 @@ export interface CrmGatewayInterface {
   getOfficersByAreaId(areaId: number): any;
   getTasksForTagRef(tag_ref: string): Promise<GetTasksResponse>;
   getNotesForTask(taskId: string): Promise<GetNotesForTaskResponse>;
+  getContactsByTagRef(tagRef: string): Promise<GetContactsByTagRefResponse>;
 }
 
 interface GetTasksResponse {
@@ -87,6 +91,11 @@ interface GetNotesForTaskResponse {
 
 export interface GetOfficersByAreaIdResponse {
   body?: Officer[];
+  error?: string;
+}
+
+interface GetContactsByTagRefResponse {
+  body?: Contact[];
   error?: string;
 }
 
@@ -201,7 +210,7 @@ class CrmGateway implements CrmGatewayInterface {
       )
       .then((response) => {
         const data = response.data as CrmResponse;
-
+        console.log(data);
         const task = crmResponseToTask(data);
 
         return {
@@ -438,6 +447,43 @@ class CrmGateway implements CrmGatewayInterface {
 
         return {
           body: officers,
+          error: undefined,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          body: undefined,
+          error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async getContactsByTagRef(
+    tagRef: string
+  ): Promise<GetContactsByTagRefResponse> {
+    const crmTokenGateway = new CrmTokenGateway();
+    const crmApiToken = await crmTokenGateway.getCloudToken();
+    const crmQuery = getContactsByTagRef(tagRef);
+
+    const response = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${crmApiToken.token}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
+        const contacts = crmResponseToContacts(data);
+
+        return {
+          body: contacts,
           error: undefined,
         };
       })

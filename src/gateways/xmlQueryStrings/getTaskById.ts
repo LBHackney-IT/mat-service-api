@@ -44,6 +44,8 @@ const getTaskById = (taskId: string) => {
             <attribute name="address1_line2" />
             <attribute name="birthdate" />
             <attribute name="hackney_responsible" alias="primaryTenant"/>
+            <attribute name="statuscode"/>
+            <attribute name="statecode"/>
             <link-entity name="account" from="accountid" to="parentcustomerid" link-type="outer" >
                <attribute name="housing_cot" alias="tenancyStartDate"/>
             </link-entity>

@@ -17,6 +17,8 @@ import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
 import { Note } from '../../../interfaces/note';
 import getNotesById from '../../../usecases/ui/getNotes';
+import closeTask from '../../../usecases/ui/closeTask';
+import { FaExclamation } from 'react-icons/fa';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -71,6 +73,18 @@ export default function TaskPage() {
       .then(() => {})
       .catch(() => {
         setError('sendToManagerError');
+      });
+  };
+
+  const closeTaskHandler = () => {
+    closeTask(task.id)
+      .then((x) => {
+        console.log(x);
+        router.push('/');
+      })
+      .catch((x) => {
+        console.log(x);
+        setError('closeTaskError');
       });
   };
 
@@ -150,6 +164,27 @@ export default function TaskPage() {
     );
   };
 
+  const renderCloseTask = () => {
+    return (
+      <div>
+        <Button
+          onClick={closeTaskHandler}
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary closeTask"
+        >
+          Close action
+        </Button>
+        <Paragraph className="warningText">
+          <FaExclamation />
+          Once an action has been closed it cannot be reopened
+        </Paragraph>
+        {error === 'closeTaskError' && (
+          <ErrorMessage className="closeTaskError">
+            Error closing action
+          </ErrorMessage>
+        )}
+      </div>
+    );
+  };
   const renderSendToManager = () => {
     if (task && task.assignedToManager) return null;
     return (
@@ -191,6 +226,7 @@ export default function TaskPage() {
       {renderNotes()}
       {renderNotesUpdate()}
       {renderSendToManager()}
+      {renderCloseTask()}
       <style jsx>{`
         .tile-container {
           display: flex;

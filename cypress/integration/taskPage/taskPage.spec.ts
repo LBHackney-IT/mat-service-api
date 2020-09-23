@@ -28,6 +28,12 @@ describe('Task Page', () => {
       );
     });
 
+    cy.fixture('tasks').then((tasks) => {
+      cy.route('/api/tasks?emailAddress=test.user@hackney.gov.uk', tasks).as(
+        'getTasks'
+      );
+    });
+
     cy.setCookie('hackneyToken', token);
   });
 
@@ -77,12 +83,13 @@ describe('Task Page', () => {
       cy.wait('@sendToManager');
     });
 
-    it('should should show an error if necessary', () => {
+    it('should show an error if necessary', () => {
       cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.route({
         method: 'POST',
         url: '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/sendToManager',
         status: 500,
+        response: {},
       }).as('sendToManager');
       cy.get('button.sendToManager').click();
       cy.contains('Error sending action to manager');
@@ -92,6 +99,35 @@ describe('Task Page', () => {
     it('should not be visible on a task assigned to manager already', () => {
       cy.visit('/tasks/99999999-116f-e811-8133-70106faa6a11');
       cy.get('button.sendToManager').should('not.exist');
+    });
+  });
+
+  describe('Close task', () => {
+    it('should not display on closed tasks');
+
+    it('should make the correct api request when clicked and redirect to the worktray', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
+      cy.route(
+        'POST',
+        '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/close',
+        ''
+      ).as('closeTask');
+      cy.get('button.closeTask').click();
+      cy.wait('@closeTask');
+      cy.location('pathname').should('eq', '/');
+    });
+
+    it('should show an error if necessary', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
+      cy.route({
+        method: 'POST',
+        url: '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/close',
+        status: 500,
+        response: {},
+      }).as('closeTask');
+      cy.get('button.closeTask').click();
+      cy.contains('Error closing action');
+      cy.wait('@closeTask');
     });
   });
 });

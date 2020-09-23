@@ -17,9 +17,10 @@ import Dropdown from '../../components/dropdown';
 import getAuthToken from '../../usecases/api/getAuthToken';
 import sendTaskToOfficer from '../../usecases/ui/sendTaskToOfficer';
 import sendTaskToManager from '../../usecases/ui/sendTaskToManager';
-import getOfficersByArea from '../../usecases/ui/getOfficersByArea';
+import getOfficersForManager from '../../usecases/ui/getOfficersForManager';
 import { Officer } from '../../mappings/crmToOfficersDetails';
 import moment from 'moment';
+import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -48,6 +49,7 @@ export default function TaskPage() {
   const [selectedOfficerId, setSelectedOfficerId] = useState<
     string | undefined
   >(undefined);
+  console.log('SELECTED OFFICER ID----', selectedOfficerId);
 
   const updateOfficer = () => {
     if (task && selectedOfficerId) {
@@ -74,7 +76,9 @@ export default function TaskPage() {
     if (!task) {
       getTaskById(`${router.query.id}`)
         .then((task) => {
-          if (task) setTask(task);
+          if (task) {
+            setTask(task);
+          }
         })
         .catch((e) => {
           console.log(e.message);
@@ -85,7 +89,7 @@ export default function TaskPage() {
 
   useEffect(() => {
     if (officers.length === 0) {
-      getOfficersByArea(5).then((officers: any) => {
+      getOfficersForManager().then((officers: any) => {
         const officerSelect = officers.users.map((officer: any) => [
           officer.id,
           officer.name,
@@ -105,10 +109,16 @@ export default function TaskPage() {
     }
   };
 
-  const renderSendToOfficer = () => {
-    if (task && !task.assignedToManager) return null;
+  const renderSelectAndSendToOfficer = () => {
+    if (false && task && task.assignedToManager === false) return null;
     return (
-      <div>
+      <div className="selectAndSendToOfficerContainer">
+        <Dropdown
+          options={officers}
+          selected={selectedOfficerId}
+          onChange={updateSelectedOfficerId}
+        />
+        <span className="divider"></span>
         <Button
           onClick={updateOfficer}
           className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary submit"
@@ -165,21 +175,7 @@ export default function TaskPage() {
           <Label>Related item:</Label>
           {task.parent ? task.parent : 'n/a'}
         </Paragraph>
-        <div className="sendToOfficerContainer">
-          <Dropdown
-            options={officers}
-            selected={selectedOfficerId}
-            onChange={updateSelectedOfficerId}
-          />
-          <span className="divider"></span>
-          {renderSendToOfficer}
-          {/* <Button
-            onClick={updateOfficer}
-            className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary submit"
-          >
-            Send action to officer
-          </Button> */}
-        </div>
+        {renderSelectAndSendToOfficer()}
         <div>
           <Button
             onClick={sendToManager}

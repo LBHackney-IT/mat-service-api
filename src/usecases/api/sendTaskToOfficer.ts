@@ -57,13 +57,6 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
     );
     if (!patch || !patch.body) return { error: 'Error fetching patch' };
 
-    // fetch officer data from crm
-    const allOfficersInGivenArea = await this.crmGateway.getOfficersByAreaId(
-      patch.body.areaId
-    );
-    if (!allOfficersInGivenArea || !allOfficersInGivenArea.body)
-      return { error: 'Error fetching officers by areaId' };
-
     const updateObject: TenancyManagementInteraction = {
       interactionId: taskId, //TMI id
       estateOfficerId: newOfficerId, //officer id

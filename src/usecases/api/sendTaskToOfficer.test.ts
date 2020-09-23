@@ -6,6 +6,10 @@ describe('sendTaskToOfficer', () => {
   let v1ApiGateway;
   let useCase;
   let dummyTaskId = 'abc-123-def';
+  let dummyToken = {
+    name: 'Fake User',
+    email: 'fakeuser@hackney.gov.uk',
+  };
 
   const fakeTaskResponse = {
     body: { incidentId: 'fakeIncidentId' },
@@ -21,22 +25,15 @@ describe('sendTaskToOfficer', () => {
     body: {
       areaManagerId: 'fakeAreaManagerId',
       areaId: 5,
+      patchId: 'fakePatchId',
     },
-  };
-  const fakeOfficersByAreaIdResponse = {
-    body: [
-      ['101', 'Officer TestAdam'],
-      ['202', 'Officer TestAnna'],
-      ['303', 'Officer TestAlan'],
-    ],
-    error: undefined,
   };
 
   beforeEach(() => {
     crmGateway = {
       getTask: () => fakeTaskResponse,
       getPatchByOfficerId: () => fakePatchResponse,
-      getOfficersByAreaId: () => fakeOfficersByAreaIdResponse,
+      getOfficersByAreaId: jest.fn(),
     };
     matPostgresGateway = {
       getUserMapping: () => fakeUserMappingResponse,
@@ -51,26 +48,25 @@ describe('sendTaskToOfficer', () => {
     });
   });
 
-  it('Should assemble the correct TMI data to send to the API', async () => {
+  it('Should assemble the correct  data to send to the API', async () => {
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.email
+      dummyToken,
+      'dummyOfficerId'
     );
     expect(result).toEqual({ body: true });
-    // expect(v1ApiGateway.transferCall).toHaveBeenCalledWith({
-    //   areaName: 5,
-    //   assignedToPatch: true,
-    //   estateOfficerId: 'fakeCrmId',
-    //   estateOfficerName: 'Fake User',
-    //   interactionId: 'abc-123-def',
-    //   managerId: 'fakeAreaManagerId',
-    //   officerPatchId: 'fakeCrmId',
-    //   serviceRequest: {
-    //     description: 'Transferred from: Fake User',
-    //     id: 'fakeIncidentId',
-    //     requestCallback: false,
-    //   },
-    // });
+    expect(v1ApiGateway.transferCall).toHaveBeenCalledWith({
+      areaName: 5,
+      estateOfficerId: 'dummyOfficerId',
+      estateOfficerName: 'Fake User',
+      interactionId: 'abc-123-def',
+      officerPatchId: 'fakePatchId',
+      serviceRequest: {
+        description: 'Transferred from: Fake User',
+        id: 'fakeIncidentId',
+        requestCallback: false,
+      },
+    });
   });
 
   it("Should return an error if it can't fetch the task from crm", async () => {
@@ -98,14 +94,5 @@ describe('sendTaskToOfficer', () => {
       fakeUserMappingResponse.body.email
     );
     expect(result).toEqual({ error: 'Error fetching patch' });
-  });
-
-  it("Should return an error if it can't fetch the officers by areaId from crm", async () => {
-    crmGateway.getOfficersByAreaId = jest.fn();
-    const result = await useCase.execute(
-      dummyTaskId,
-      fakeUserMappingResponse.body.email
-    );
-    expect(result).toEqual({ error: 'Error fetching officers by areaId' });
   });
 });

@@ -3,6 +3,8 @@ import GetUser from '../../usecases/api/getUser';
 import GetOfficersPerArea from '../../usecases/api/getOfficersPerArea';
 import CreateUser from '../../usecases/api/createUser';
 import CrmGateway from '../../gateways/crmGateway';
+import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
+import MatPostgresGateway from '../../gateways/matPostgresGateway';
 
 interface Data {
   users: any | undefined;
@@ -15,10 +17,10 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       : req.query.emailAddress
     : undefined;
 
-  const managerAreaId = req.query.managerAreaId
-    ? Array.isArray(req.query.managerAreaId)
-      ? req.query.managerAreaId[0]
-      : req.query.managerAreaId
+  const managerEmail = req.query.managerEmail
+    ? Array.isArray(req.query.managerEmail)
+      ? req.query.managerEmail[0]
+      : req.query.managerEmail
     : undefined;
 
   switch (req.method) {
@@ -36,11 +38,28 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         break;
       }
 
-      if (managerAreaId !== undefined) {
-        const areaId = parseInt(managerAreaId);
+      if (managerEmail !== undefined) {
         const crmGateway = new CrmGateway();
+        const matPostgresGateway = new MatPostgresGateway();
+        const getOfficerPatch = new GetOfficerPatch({
+          emailAddress: managerEmail,
+          crmGateway,
+          matPostgresGateway,
+        });
+        const officerPatch = await getOfficerPatch.execute();
+        if (
+          !officerPatch ||
+          !officerPatch.body ||
+          officerPatch.body.areaId === undefined
+        )
+          return res
+            .status(500)
+            .json({ error: 'Error fetching officer patch id' });
 
-        const allOfficers = new GetOfficersPerArea({ areaId, crmGateway });
+        const allOfficers = new GetOfficersPerArea({
+          areaId: officerPatch.body.areaId,
+          crmGateway,
+        });
         const response = await allOfficers.execute();
 
         if (response.error === undefined) {

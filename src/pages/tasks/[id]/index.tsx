@@ -17,6 +17,10 @@ import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
 import { Note } from '../../../interfaces/note';
 import getNotesById from '../../../usecases/ui/getNotes';
+import Dropdown from '../../../components/dropdown';
+import getEmailAddress from '../../../usecases/ui/getEmailAddress';
+import getOfficersForManager from '../../../usecases/ui/getOfficersForManager';
+import sendTaskToOfficer from '../../../usecases/ui/sendTaskToOfficer';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -42,6 +46,10 @@ export default function TaskPage() {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [officers, setOfficers] = useState<string[][]>([]);
+  const [selectedOfficerId, setSelectedOfficerId] = useState<
+    string | undefined
+  >(undefined);
 
   const router = useRouter();
   useEffect(() => {
@@ -60,11 +68,48 @@ export default function TaskPage() {
       .catch((e) => {
         setError('notesError');
       });
-  }, []);
+
+    if (officers.length === 0) {
+      // extract the officer email from token
+      const managerEmail = getEmailAddress();
+      if (managerEmail) {
+        getOfficersForManager(managerEmail)
+          .then((officers: any) => {
+            const officerSelect = officers.users.map((officer: any) => [
+              officer.id,
+              officer.name,
+            ]);
+            setOfficers(officerSelect);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    }
+  });
 
   if (!task) {
     return <LoadingPage error={error === 'loadingError'} />;
   }
+
+  const updateOfficer = () => {
+    if (task && selectedOfficerId) {
+      sendTaskToOfficer({
+        taskId: task.id,
+        housingOfficerId: selectedOfficerId,
+      })
+        .then(() => {
+          console.log('Success - updating officer');
+        })
+        .catch(() => {
+          console.log('Failure - updating officer');
+        });
+    }
+  };
+
+  const updateSelectedOfficerId = (officerId: string) => {
+    setSelectedOfficerId(officerId);
+  };
 
   const sendToManager = () => {
     sendTaskToManager(task.id)
@@ -151,7 +196,6 @@ export default function TaskPage() {
   };
 
   const renderSendToManager = () => {
-    if (task && task.assignedToManager) return null;
     return (
       <div>
         <Button
@@ -168,6 +212,26 @@ export default function TaskPage() {
       </div>
     );
   };
+
+  const renderSelectAndSendToOfficer = () => {
+    return (
+      <div className="selectAndSendToOfficerContainer">
+        <Dropdown
+          options={officers}
+          selected={selectedOfficerId}
+          onChange={updateSelectedOfficerId}
+        />
+        <span className="divider"></span>
+        <Button
+          onClick={updateOfficer}
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary submit"
+        >
+          Send action to officer
+        </Button>
+      </div>
+    );
+  };
+  //task.assignedToManager = true;
 
   return (
     <Layout>
@@ -190,7 +254,9 @@ export default function TaskPage() {
       <Heading level={HeadingLevels.H4}>Notes</Heading>
       {renderNotes()}
       {renderNotesUpdate()}
-      {renderSendToManager()}
+      {task.assignedToManager
+        ? renderSelectAndSendToOfficer()
+        : renderSendToManager()}
       <style jsx>{`
         .tile-container {
           display: flex;
@@ -198,6 +264,9 @@ export default function TaskPage() {
         .sendToManager,
         sendToManagerError {
           display: inline;
+        }
+        .selectAndSendToOfficerContainer {
+          display: flex;
         }
         .text-area {
           height: 5em;

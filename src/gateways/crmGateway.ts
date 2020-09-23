@@ -5,6 +5,8 @@ import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
 import getTasksByTagRef from './xmlQueryStrings/getTasksByTagRef';
 import getUserByEmail from './xmlQueryStrings/getUserByEmail';
+import getOfficerByAreaIdQuery from './xmlQueryStrings/getOfficerByAreaId';
+
 import getPatchByOfficerId from './xmlQueryStrings/getPatchByOfficerId';
 import getContactsByTagRef from './xmlQueryStrings/getContactsByTagRef';
 import crmToPatchDetails, {
@@ -87,7 +89,7 @@ interface GetNotesForTaskResponse {
   error?: string;
 }
 
-interface GetOfficersByAreaIdResponse {
+export interface GetOfficersByAreaIdResponse {
   body?: Officer[];
   error?: string;
 }

@@ -3,6 +3,8 @@ import axios from 'axios';
 import faker from 'faker';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
+import MockCrmOfficersResponse from '../tests/helpers/generateCrmOfficersResponse';
+
 import { crmResponseToTasks } from '../mappings/crmToTask';
 
 import MockCrmNoteResponse from '../tests/helpers/generateCrmNoteResponse';

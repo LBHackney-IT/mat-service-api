@@ -78,10 +78,12 @@ export default function TaskPage() {
 
   const closeTaskHandler = () => {
     closeTask(task.id)
-      .then(() => {
+      .then((x) => {
+        console.log(x);
         router.push('/');
       })
-      .catch(() => {
+      .catch((x) => {
+        console.log(x);
         setError('closeTaskError');
       });
   };
@@ -164,10 +166,10 @@ export default function TaskPage() {
 
   const renderCloseTask = () => {
     return (
-      <div className="closeTaskButton">
+      <div>
         <Button
           onClick={closeTaskHandler}
-          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary"
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary closeTask"
         >
           Close action
         </Button>
@@ -177,7 +179,7 @@ export default function TaskPage() {
         </Paragraph>
         {error === 'closeTaskError' && (
           <ErrorMessage className="closeTaskError">
-            Error closing task
+            Error closing action
           </ErrorMessage>
         )}
       </div>

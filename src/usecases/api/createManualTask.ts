@@ -1,6 +1,5 @@
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
-import GetUser from './getUser';
 import GetOfficerPatch from './getOfficerPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import CrmGateway from '../../gateways/crmGateway';

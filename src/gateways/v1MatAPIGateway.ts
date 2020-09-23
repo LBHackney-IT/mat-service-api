@@ -13,6 +13,7 @@ export interface v1MatAPIGatewayInterface {
   transferCall(
     tmi: TenancyManagementInteraction
   ): Promise<TransferCallResponse>;
+  createTaskNote(note: NewNote): any;
 }
 
 export interface GetNewTenanciesResponse {

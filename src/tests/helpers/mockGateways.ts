@@ -17,4 +17,5 @@ export const mockV1MatApiGateway = () => ({
   getContactsByUprn: jest.fn(() => Promise.resolve({})),
   createTenancyManagementInteraction: jest.fn(() => Promise.resolve({})),
   transferCall: jest.fn(() => Promise.resolve({})),
+  createTaskNote: jest.fn(() => Promise.resolve({})),
 });

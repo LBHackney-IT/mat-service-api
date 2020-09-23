@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { Tenancy } from '../interfaces/tenancy';
 import V1ApiContact from '../interfaces/v1ApiContact';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
+import { NewNote } from '../interfaces/note';
 
 export interface v1MatAPIGatewayInterface {
   getNewTenancies(): Promise<GetNewTenanciesResponse>;
@@ -72,6 +73,27 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         return {
           error: error.message,
           result: undefined,
+        };
+      });
+
+    return response;
+  }
+
+  public async createTaskNote(note: NewNote) {
+    const response = await axios
+      .post(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, note, {
+        headers: {
+          Authorization: `Bearer ${this.v1MatApiToken}`,
+        },
+      })
+      .then((response) => {
+        return {
+          body: response.data,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          error: `V1 API: ${error.message}`,
         };
       });
 

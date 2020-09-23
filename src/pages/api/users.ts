@@ -7,7 +7,8 @@ import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 
 interface Data {
-  users: any | undefined;
+  users?: any;
+  error?: string;
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
@@ -51,10 +52,11 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
           !officerPatch ||
           !officerPatch.body ||
           officerPatch.body.areaId === undefined
-        )
+        ) {
           return res
             .status(500)
             .json({ error: 'Error fetching officer patch id' });
+        }
 
         const allOfficers = new GetOfficersPerArea({
           areaId: officerPatch.body.areaId,

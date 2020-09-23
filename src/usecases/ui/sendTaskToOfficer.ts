@@ -10,19 +10,10 @@ const sendTaskToOfficer = async (
 ): Promise<boolean> => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) return false;
 
-  const response = await axios
-    .post(
-      `${process.env.NEXT_PUBLIC_API_PATH}/tasks/[taskId]/sendToOfficer`,
-      selectedTaskAndOfficer
-    )
-    .then((response) => {
-      return true;
-    })
-    .catch((error) => {
-      return false;
-    });
-
-  return response;
+  return axios.post(
+    `/api/tasks/${selectedTaskAndOfficer.taskId}/sendToOfficer`,
+    selectedTaskAndOfficer
+  );
 };
 
 export default sendTaskToOfficer;

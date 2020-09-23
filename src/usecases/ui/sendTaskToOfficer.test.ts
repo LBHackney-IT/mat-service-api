@@ -17,14 +17,6 @@ describe('sendTaskToOfficer', () => {
 
     axios.post.mockResolvedValue({});
     const response = await sendTaskToOfficer(selectedTaskAndOfficer);
-    expect(response).toEqual(true);
-  });
-
-  it('Returns an error', async () => {
-    process.env.NEXT_PUBLIC_API_PATH = 'http://localhost:3000/api';
-
-    axios.post.mockImplementationOnce(() => Promise.reject(new Error()));
-    const response = await sendTaskToOfficer(selectedTaskAndOfficer);
-    expect(response).toEqual(false);
+    expect(response).toEqual({});
   });
 });

@@ -47,45 +47,44 @@ const mapResidents = (residents: Resident[]) => {
 export default function TaskPage() {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [officers, setOfficers] = useState<string[][]>([]);
+  const [notes, setNotes] = useState<Note[] | null>(null);
+  const [officers, setOfficers] = useState<string[][] | null>(null);
   const [selectedOfficerId, setSelectedOfficerId] = useState<
     string | undefined
   >(undefined);
 
   const router = useRouter();
   useEffect(() => {
-    getTaskById(`${router.query.id}`)
-      .then((task) => {
-        if (task) setTask(task);
-      })
-      .catch((e) => {
-        setError('loadingError');
-      });
-
-    getNotesById(`${router.query.id}`)
-      .then((notes) => {
-        if (notes) setNotes(notes);
-      })
-      .catch((e) => {
-        setError('notesError');
-      });
-
-    if (officers.length === 0) {
+    if (!task) {
+      getTaskById(`${router.query.id}`)
+        .then((task) => {
+          if (task) setTask(task);
+        })
+        .catch((e) => {
+          setError('loadingError');
+        });
+    }
+    if (!notes) {
+      getNotesById(`${router.query.id}`)
+        .then((notes) => {
+          if (notes) setNotes(notes);
+        })
+        .catch((e) => {
+          setError('notesError');
+        });
+    }
+    if (!officers) {
       // extract the officer email from token
       const managerEmail = getEmailAddress();
       if (managerEmail) {
-        getOfficersForManager(managerEmail)
-          .then((officers: any) => {
-            const officerSelect = officers.users.map((officer: any) => [
-              officer.id,
-              officer.name,
-            ]);
-            setOfficers(officerSelect);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        getOfficersForManager(managerEmail).then((officers: any) => {
+          const officerSelect = officers.users.map((officer: any) => [
+            officer.id,
+            officer.name,
+          ]);
+          setOfficers(officerSelect);
+          setSelectedOfficerId(officerSelect[0][0]);
+        });
       }
     }
   });
@@ -99,13 +98,9 @@ export default function TaskPage() {
       sendTaskToOfficer({
         taskId: task.id,
         housingOfficerId: selectedOfficerId,
-      })
-        .then(() => {
-          console.log('Success - updating officer');
-        })
-        .catch(() => {
-          console.log('Failure - updating officer');
-        });
+      }).catch(() => {
+        setError('sendToOfficerError');
+      });
     }
   };
 
@@ -134,6 +129,7 @@ export default function TaskPage() {
   };
 
   const renderNotes = () => {
+    if (!notes) return null;
     const notesJsx: JSX.Element[] = [];
     notes.map((note) => {
       notesJsx.push(
@@ -240,15 +236,14 @@ export default function TaskPage() {
           Send action to manager (optional)
         </Button>
         {error === 'sendToManagerError' && (
-          <ErrorMessage className="sendToManagerError">
-            Error sending action to manager
-          </ErrorMessage>
+          <ErrorMessage>Error sending action to manager</ErrorMessage>
         )}
       </div>
     );
   };
 
   const renderSelectAndSendToOfficer = () => {
+    if (!officers) return null;
     return (
       <div className="selectAndSendToOfficerContainer">
         <Dropdown
@@ -259,10 +254,13 @@ export default function TaskPage() {
         <span className="divider"></span>
         <Button
           onClick={updateOfficer}
-          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary submit"
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary sendToOfficer"
         >
           Send action to officer
         </Button>
+        {error === 'sendToOfficerError' && (
+          <ErrorMessage>Error sending action to officer</ErrorMessage>
+        )}
       </div>
     );
   };

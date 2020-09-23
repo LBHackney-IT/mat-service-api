@@ -34,6 +34,12 @@ describe('Task Page', () => {
       );
     });
 
+    cy.fixture('officers').then((tasks) => {
+      cy.route('/api/users?managerEmail=test.user@hackney.gov.uk', tasks).as(
+        'getOfficers'
+      );
+    });
+
     cy.setCookie('hackneyToken', token);
   });
 
@@ -99,6 +105,39 @@ describe('Task Page', () => {
     it('should not be visible on a task assigned to manager already', () => {
       cy.visit('/tasks/99999999-116f-e811-8133-70106faa6a11');
       cy.get('button.sendToManager').should('not.exist');
+    });
+  });
+
+  describe('Send task to officer', () => {
+    beforeEach(() => {});
+    it('should only display on post visit actions');
+
+    it('should make the correct api request when clicked', () => {
+      cy.visit('/tasks/99999999-116f-e811-8133-70106faa6a11');
+      cy.route(
+        'POST',
+        '/api/tasks/99999999-116f-e811-8133-70106faa6a11/sendToOfficer'
+      ).as('sendToOfficer');
+      cy.get('button.sendToOfficer').click();
+      cy.wait('@sendToOfficer');
+    });
+
+    it('should show an error if necessary', () => {
+      cy.visit('/tasks/99999999-116f-e811-8133-70106faa6a11');
+      cy.route({
+        method: 'POST',
+        url: '/api/tasks/99999999-116f-e811-8133-70106faa6a11/sendToOfficer',
+        status: 500,
+        response: {},
+      }).as('sendToOfficerFail');
+      cy.get('button.sendToOfficer').click();
+      cy.wait('@sendToOfficerFail');
+      cy.contains('Error sending action to officer');
+    });
+
+    it('should not be visible on a task assigned to an officer', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
+      cy.get('button.sendToOfficer').should('not.exist');
     });
   });
 

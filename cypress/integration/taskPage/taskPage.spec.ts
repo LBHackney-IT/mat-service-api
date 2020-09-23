@@ -109,7 +109,8 @@ describe('Task Page', () => {
       cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.route(
         'POST',
-        '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/close'
+        '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/close',
+        ''
       ).as('closeTask');
       cy.get('button.closeTask').click();
       cy.wait('@closeTask');

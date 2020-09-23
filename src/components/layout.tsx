@@ -18,8 +18,8 @@ const pageRedirect = [
 ];
 
 const Layout: React.FC = (props: any) => {
-  const feedbackLink = process.env.FEEDBACK_LINK
-    ? process.env.FEEDBACK_LINK
+  const feedbackLink = process.env.NEXT_PUBLIC_FEEDBACK_LINK
+    ? process.env.NEXT_PUBLIC_FEEDBACK_LINK
     : '';
 
   return (

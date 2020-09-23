@@ -8,6 +8,9 @@ export interface v1MatAPIGatewayInterface {
   createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
+  patchTenancyManagementInteraction(
+    tmi: TenancyManagementInteraction
+  ): Promise<patchTenancyManagementInteractionResponse>;
   getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
   transferCall(
     tmi: TenancyManagementInteraction
@@ -17,6 +20,11 @@ export interface v1MatAPIGatewayInterface {
 export interface GetNewTenanciesResponse {
   result: Tenancy[] | undefined;
   error: string | undefined;
+}
+
+export interface patchTenancyManagementInteractionResponse {
+  body?: TenancyManagementInteraction;
+  error?: string;
 }
 
 export interface createTenancyManagementInteractionResponse {
@@ -91,6 +99,29 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
           },
         }
       )
+      .then((response) => {
+        return {
+          body: response.data as TenancyManagementInteraction,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          error: `V1 API: ${error.message}`,
+        };
+      });
+
+    return response;
+  }
+
+  public async patchTenancyManagementInteraction(
+    tmi: TenancyManagementInteraction
+  ): Promise<patchTenancyManagementInteractionResponse> {
+    const response = await axios
+      .patch(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, tmi, {
+        headers: {
+          Authorization: `Bearer ${this.v1MatApiToken}`,
+        },
+      })
       .then((response) => {
         return {
           body: response.data as TenancyManagementInteraction,

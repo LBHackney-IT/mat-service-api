@@ -70,7 +70,6 @@ export default async (
       return { error: undefined };
     }
   } catch (e) {
-    console.log(e);
     return { error: e.message };
   }
 };

@@ -21,6 +21,8 @@ import Dropdown from '../../../components/dropdown';
 import getEmailAddress from '../../../usecases/ui/getEmailAddress';
 import getOfficersForManager from '../../../usecases/ui/getOfficersForManager';
 import sendTaskToOfficer from '../../../usecases/ui/sendTaskToOfficer';
+import closeTask from '../../../usecases/ui/closeTask';
+import { FaExclamation } from 'react-icons/fa';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -119,6 +121,18 @@ export default function TaskPage() {
       });
   };
 
+  const closeTaskHandler = () => {
+    closeTask(task.id)
+      .then((x) => {
+        console.log(x);
+        router.push('/');
+      })
+      .catch((x) => {
+        console.log(x);
+        setError('closeTaskError');
+      });
+  };
+
   const renderNotes = () => {
     const notesJsx: JSX.Element[] = [];
     notes.map((note) => {
@@ -195,6 +209,27 @@ export default function TaskPage() {
     );
   };
 
+  const renderCloseTask = () => {
+    return (
+      <div>
+        <Button
+          onClick={closeTaskHandler}
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary closeTask"
+        >
+          Close action
+        </Button>
+        <Paragraph className="warningText">
+          <FaExclamation />
+          Once an action has been closed it cannot be reopened
+        </Paragraph>
+        {error === 'closeTaskError' && (
+          <ErrorMessage className="closeTaskError">
+            Error closing action
+          </ErrorMessage>
+        )}
+      </div>
+    );
+  };
   const renderSendToManager = () => {
     return (
       <div>
@@ -257,6 +292,7 @@ export default function TaskPage() {
       {task.assignedToManager
         ? renderSelectAndSendToOfficer()
         : renderSendToManager()}
+      {renderCloseTask()}
       <style jsx>{`
         .tile-container {
           display: flex;

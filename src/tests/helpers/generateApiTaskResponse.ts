@@ -2,6 +2,7 @@ import faker from 'faker';
 import {
   Task,
   Stage,
+  State,
   DueState,
   TenancyType,
   ProcessType,
@@ -43,6 +44,7 @@ const mockApiTaskResponse = (): ApiTaskResponse => {
           contactCrmId: faker.lorem.word(),
         },
         stage: Stage.started,
+        state: State.active,
         type: faker.lorem.word(),
         tenancy: {
           type: TenancyType.Secure,

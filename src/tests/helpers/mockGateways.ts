@@ -4,6 +4,7 @@ export const mockCrmGateway = () => ({
   getUser: jest.fn(() => Promise.resolve({})),
   createUser: jest.fn(() => Promise.resolve({})),
   getPatchByOfficerId: jest.fn(() => Promise.resolve({})),
+  getContactsByTagRef: jest.fn(() => Promise.resolve({})),
 });
 
 export const mockMatPostgresGateway = () => ({

@@ -105,6 +105,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
+        console.log(error);
         return {
           error: `V1 API: ${error.message}`,
         };
@@ -148,6 +149,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
       })
       .then((response) => {
         const data = response.data as GetContactsByUprnAPIResponse;
+        console.log(data);
         return {
           body: data.results,
           error: undefined,

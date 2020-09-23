@@ -6,12 +6,10 @@ import MatPostgresGateway from '../../../gateways/matPostgresGateway';
 import CrmGateway from '../../../gateways/crmGateway';
 import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
 import setupUser from '../../../usecases/api/setupUser';
-import v1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
+import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
 import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
-const { getTokenPayload } = require('node-lambda-authorizer')({
-  jwtSecret: process.env.JWT_SECRET,
-});
+import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 
 type Data = Task[] | { error: string } | undefined;
 
@@ -20,26 +18,36 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     return res.status(500).end();
   }
 
-  const gateway: v1MatAPIGateway = new v1MatAPIGateway({
+  const v1MatAPIGateway = new V1MatAPIGateway({
     v1MatApiUrl: process.env.V1_MAT_API_URL,
     v1MatApiToken: process.env.V1_MAT_API_TOKEN,
   });
 
-  const createTask = new CreateManualTaskUseCase({ gateway });
+  const crmGateway = new CrmGateway();
 
-  const userToken = getTokenPayload(req);
+  const createTask = new CreateManualTaskUseCase({
+    v1MatAPIGateway,
+    crmGateway,
+  });
+
+  const userToken = getTokenPayloadFromRequest(req);
+  if (!userToken) {
+    return res.status(500).json({ error: 'could not find user token' });
+  }
 
   const result = await createTask.execute({
     process: req.body.process,
     subProcess: <number>req.body.subProcess,
-    tagRef: req.body.tag_ref,
-    uprn: req.body.uprn,
+    tagRef: req.body.tagRef,
     officerEmail: userToken.email,
     officerName: userToken.name,
   });
 
   if (result.body) {
-    res.status(204).end();
+    res
+      .status(303)
+      .setHeader('Location', `/api/tasks/${result.body.interactionId}`);
+    res.end();
   } else {
     res.status(500).json(<Data>result);
   }

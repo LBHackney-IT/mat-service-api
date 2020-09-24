@@ -1,4 +1,4 @@
-# Manage A Tenancy Service
+# Manage a Tenancy Service
 
 ## Introduction
 

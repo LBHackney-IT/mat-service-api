@@ -100,6 +100,45 @@ describe('v1MatAPIGateway', () => {
     });
   });
 
+  describe('patchTenancyManagementInteraction', () => {
+    it('makes the request to the correct URL with the correct token', () => {
+      const dummyPayload = MockTMI();
+      axios.patch.mockResolvedValue(Promise.resolve(dummyPayload));
+      gateway.patchTenancyManagementInteraction(dummyPayload);
+      expect(axios.patch).toHaveBeenCalledWith(
+        'http://dummy-api.com/v1/TenancyManagementInteractions',
+        dummyPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${dummyToken}`,
+          },
+        }
+      );
+    });
+
+    it('returns the result after a successful request', async () => {
+      const dummyPayload = MockTMI();
+
+      axios.patch.mockResolvedValue({ data: dummyPayload });
+      const response = await gateway.patchTenancyManagementInteraction(
+        dummyPayload
+      );
+
+      expect(response).toEqual({ body: dummyPayload });
+    });
+
+    it('returns an human readable error when unsuccessful', async () => {
+      const error = 'Network Error';
+      const errorResponse = { error: `V1 API: ${error}` };
+
+      axios.patch.mockReturnValue(Promise.reject(new Error(error)));
+      const tmi = MockTMI();
+      const response = await gateway.patchTenancyManagementInteraction(tmi);
+
+      expect(response).toEqual(errorResponse);
+    });
+  });
+
   describe('getContactsByUprn', () => {
     it('makes the request to the correct URL with the correct token', () => {
       axios.get.mockResolvedValue(Promise.resolve({ results: [] }));

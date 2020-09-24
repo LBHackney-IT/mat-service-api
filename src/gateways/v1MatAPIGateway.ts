@@ -2,21 +2,31 @@ import axios, { AxiosError } from 'axios';
 import { Tenancy } from '../interfaces/tenancy';
 import V1ApiContact from '../interfaces/v1ApiContact';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
+import { CheckResult } from '../pages/api/healthcheck';
 
 export interface v1MatAPIGatewayInterface {
   getNewTenancies(): Promise<GetNewTenanciesResponse>;
   createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
+  patchTenancyManagementInteraction(
+    tmi: TenancyManagementInteraction
+  ): Promise<patchTenancyManagementInteractionResponse>;
   getContactsByUprn(uprn: string): Promise<GetContactsByUprnResponse>;
   transferCall(
     tmi: TenancyManagementInteraction
   ): Promise<TransferCallResponse>;
+  healthCheck(): Promise<CheckResult>;
 }
 
 export interface GetNewTenanciesResponse {
   result: Tenancy[] | undefined;
   error: string | undefined;
+}
+
+export interface patchTenancyManagementInteractionResponse {
+  body?: TenancyManagementInteraction;
+  error?: string;
 }
 
 export interface createTenancyManagementInteractionResponse {
@@ -97,6 +107,30 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
+        console.log(error);
+        return {
+          error: `V1 API: ${error.message}`,
+        };
+      });
+
+    return response;
+  }
+
+  public async patchTenancyManagementInteraction(
+    tmi: TenancyManagementInteraction
+  ): Promise<patchTenancyManagementInteractionResponse> {
+    const response = await axios
+      .patch(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, tmi, {
+        headers: {
+          Authorization: `Bearer ${this.v1MatApiToken}`,
+        },
+      })
+      .then((response) => {
+        return {
+          body: response.data as TenancyManagementInteraction,
+        };
+      })
+      .catch((error: AxiosError) => {
         return {
           error: `V1 API: ${error.message}`,
         };
@@ -117,6 +151,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
       })
       .then((response) => {
         const data = response.data as GetContactsByUprnAPIResponse;
+        console.log(data);
         return {
           body: data.results,
           error: undefined,
@@ -180,6 +215,26 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
       .catch((error: AxiosError) => {
         return {
           error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async healthCheck(): Promise<CheckResult> {
+    const response = await axios
+      .get(`${this.v1MatApiUrl}/Values`, {
+        headers: {
+          Authorization: `Bearer ${this.v1MatApiToken}`,
+        },
+      })
+      .then(() => {
+        return { success: true };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          message: 'Could not connect to v1 MaT API',
+          success: false,
         };
       });
 

@@ -1,9 +1,8 @@
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
-import GetUser from './getUser';
 import GetOfficerPatch from './getOfficerPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import CrmGateway from '../../gateways/crmGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 
 interface TmiData {
   title: string;
@@ -35,7 +34,8 @@ interface CreateManualTaskResponse {
 }
 
 interface CreateManualTaskOptions {
-  gateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  crmGateway: CrmGatewayInterface;
 }
 
 interface CreateManualTaskInterface {
@@ -44,7 +44,6 @@ interface CreateManualTaskInterface {
 
 interface CreateManualTaskData {
   tagRef: string;
-  uprn: string;
   process: string;
   subProcess?: number;
   officerEmail: string;
@@ -53,33 +52,43 @@ interface CreateManualTaskData {
 
 class CreateManualTaskUseCase implements CreateManualTaskInterface {
   v1MatAPIGateway: v1MatAPIGatewayInterface;
+  crmGateway: CrmGatewayInterface;
 
   constructor(options: CreateManualTaskOptions) {
-    this.v1MatAPIGateway = options.gateway;
+    this.v1MatAPIGateway = options.v1MatAPIGateway;
+    this.crmGateway = options.crmGateway;
   }
 
   public async execute(
     processData: CreateManualTaskData
   ): Promise<CreateManualTaskResponse> {
-    const contacts = await this.v1MatAPIGateway.getContactsByUprn(
-      processData.uprn
+    const contacts = await this.crmGateway.getContactsByTagRef(
+      processData.tagRef.replace('-', '/')
     );
+
     if (
       contacts.error ||
       (contacts && contacts.body && contacts.body.length === 0) ||
       !contacts ||
       !contacts.body
     ) {
-      return { error: 'Error fetching contacts', body: undefined };
+      return { error: 'Error fetching contacts' };
     }
 
-    const contact = contacts.body[0];
+    const responsibleContacts = contacts.body
+      .filter(
+        (contact) => contact.responsible && contact.uhPersonNo !== undefined
+      )
+      .sort((a, b) => <number>a.uhPersonNo - <number>b.uhPersonNo);
+    if (responsibleContacts.length === 0) {
+      return { error: 'Error - no responsible contacts found for tenancy' };
+    }
+    const contact = responsibleContacts[0];
 
-    const crmGateway = new CrmGateway();
     const matPostgresGateway = new MatPostgresGateway();
     const getOfficerPatchId = new GetOfficerPatch({
       emailAddress: processData.officerEmail,
-      crmGateway,
+      crmGateway: this.crmGateway,
       matPostgresGateway,
     });
 
@@ -90,7 +99,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       !officerDetails.body.areaId ||
       !officerDetails.body.patchId
     ) {
-      return { error: 'Error fetching officer patch details', body: undefined };
+      return { error: 'Error fetching officer patch details' };
     }
 
     let tmi: TenancyManagementInteraction;
@@ -101,17 +110,17 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
       natureofEnquiry: '15',
       source: '1',
-      contactId: contact.contactId,
+      contactId: contact.crmContactId,
       estateOfficerId: officerDetails.body.officerId,
       estateOfficerName: processData.officerName,
       officerPatchId: officerDetails.body.patchId,
       areaName: officerDetails.body.areaId,
-      householdId: contact.houseRef,
+      householdId: contact.crmHouseholdId,
       processType: 1,
       serviceRequest: {
         title: tmiLookup[processData.process].title,
         description: tmiLookup[processData.process].description,
-        contactId: contact.contactId,
+        contactId: contact.crmContactId,
         subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
         createdBy: officerDetails.body.officerId,
         childRequests: [],

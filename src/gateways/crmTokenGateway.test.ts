@@ -6,35 +6,39 @@ jest.mock('axios');
 describe('TasksGateway', () => {
   beforeEach(() => {
     axios.mockClear();
+    process.env.CRM_TOKEN_API_URL = 'fakeUrl';
+    process.env.CRM_TOKEN_API_KEY = 'secret';
   });
 
   describe('Get Tasks', () => {
     it('successfully fetches data from an API', async () => {
       const token = faker.lorem.word();
       const crmResponse = {
-        data: token,
+        data: {
+          accessToken: token,
+        },
       };
 
-      axios.get.mockResolvedValue(crmResponse);
+      axios.post.mockReturnValue(Promise.resolve(crmResponse));
 
       const crmTokenGateway = new CrmTokenGateway();
-      const response = await crmTokenGateway.getCloudToken();
+      const response = await crmTokenGateway.getToken();
 
-      expect(response).toEqual({ token: token });
+      expect(response).toEqual({ body: token });
     });
 
     it('returns an human readable error when unsuccessful', async () => {
       const errorMessage = 'Network Error';
-      const errorResponse = {
-        token: undefined,
+      const expectedErrorResponse = {
+        error: errorMessage,
       };
 
-      axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
+      axios.post.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
       const crmTokenGateway = new CrmTokenGateway();
-      const response = await crmTokenGateway.getCloudToken();
+      const response = await crmTokenGateway.getToken();
 
-      expect(response).toEqual(errorResponse);
+      expect(response).toEqual(expectedErrorResponse);
     });
   });
 });

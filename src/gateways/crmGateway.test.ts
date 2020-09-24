@@ -3,6 +3,8 @@ import axios from 'axios';
 import faker from 'faker';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
+import MockCrmOfficersResponse from '../tests/helpers/generateCrmOfficersResponse';
+
 import { crmResponseToTasks } from '../mappings/crmToTask';
 
 import MockCrmNoteResponse from '../tests/helpers/generateCrmNoteResponse';
@@ -11,11 +13,17 @@ import MockCrmPropertyPatchResponse from '../tests/helpers/generatePropertyPatch
 
 import MockCrmOfficersPerAreaIdResponse from '../tests/helpers/generateMockCrmOfficersPerAreaIdResponse';
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
+import CrmTokenGateway from '../gateways/crmTokenGateway';
+
 jest.mock('axios');
+jest.mock('../gateways/crmTokenGateway');
 
 describe('CrmGateway', () => {
   beforeEach(() => {
     axios.mockClear();
+    CrmTokenGateway.prototype.getToken.mockResolvedValue(() =>
+      Promise.resolve({ body: 'fakeToken' })
+    );
   });
 
   describe('Get Tasks by patch id', () => {

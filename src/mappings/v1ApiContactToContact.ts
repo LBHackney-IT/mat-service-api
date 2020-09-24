@@ -1,4 +1,4 @@
-import { Contact } from '../interfaces/contact';
+import Contact from '../interfaces/contact';
 import V1ApiContact from '../interfaces/v1ApiContact';
 
 export default (v1ApiContact: V1ApiContact): Contact => {
@@ -15,7 +15,7 @@ export default (v1ApiContact: V1ApiContact): Contact => {
     telephone3: v1ApiContact.telephone3,
     title: v1ApiContact.title,
     postCode: v1ApiContact.postCode,
-    dateOfBirth: v1ApiContact.dateOfBirth,
+    dateOfBirth: new Date(Date.parse(v1ApiContact.dateOfBirth)),
     disabled: v1ApiContact.disabled,
     relationship: v1ApiContact.relationship,
     extendedrelationship: v1ApiContact.extendedrelationship,

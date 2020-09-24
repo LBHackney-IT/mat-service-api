@@ -76,8 +76,8 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
     'V1_MAT_API_URL',
     'V1_MAT_API_TOKEN',
     'CRM_API_URL',
-    'CRM_CLOUD_AUTHORIZATION',
-    'CRM_CLOUD_URL',
+    'CRM_TOKEN_API_KEY',
+    'CRM_TOKEN_API_URL',
   ];
   const failures = [];
   for (let envVar of vars) {
@@ -98,8 +98,9 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
 const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
   const checkPromise = new Promise(async (resolve, reject) => {
     const crmTokenGateway = new CrmTokenGateway();
-    const response = await crmTokenGateway.getCloudToken();
-    response.token ? resolve() : reject();
+    const response = await crmTokenGateway.getToken();
+    console.dir(response);
+    response.body ? resolve() : reject();
   });
   return promiseTimeout(5000, checkPromise)
     .then(() => {

@@ -110,16 +110,29 @@ class CrmGateway implements CrmGatewayInterface {
     this.crmApiToken = undefined;
   }
 
+  headers() {
+    return {
+      headers: {
+        Authorization: `Bearer ${this.crmApiToken.body}`,
+        Prefer:
+          'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+      },
+    };
+  }
+
+  async updateToken() {
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getToken();
+    }
+  }
+
   public async getTasksForAPatch(
     officerId: string,
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
   ): Promise<GetTasksResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getTasksByPatchAndOfficerIdQuery(
@@ -129,16 +142,10 @@ class CrmGateway implements CrmGatewayInterface {
       patchId
     );
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data as CrmResponse;
@@ -153,28 +160,18 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-
-    return response;
   }
 
   public async getTasksForTagRef(tag_ref: string): Promise<GetTasksResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getTasksByTagRef(tag_ref);
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data as CrmResponse;
@@ -191,33 +188,21 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-
-    return response;
   }
 
   public async getTask(taskId: string): Promise<GetTaskResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getTaskById(taskId);
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data as CrmResponse;
-        console.log(data);
         const task = crmResponseToTask(data);
 
         return {
@@ -231,31 +216,20 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-
-    return response;
   }
 
   public async getNotesForTask(
     taskId: string
   ): Promise<GetNotesForTaskResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getNotesForTaskById(taskId);
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data as CrmResponse;
@@ -272,31 +246,20 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-
-    return response;
   }
 
   public async getUser(
     emailAddress: string
   ): Promise<CrmGatewayGetUserResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getUserByEmail(emailAddress);
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data;
@@ -311,7 +274,6 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-    return response;
   }
 
   public async createUser(
@@ -320,6 +282,9 @@ class CrmGateway implements CrmGatewayInterface {
     firstName: string,
     familyName: string
   ) {
+    await this.updateToken();
+    if (this.crmApiToken.error) return this.crmApiToken;
+
     const crmUser = {
       hackney_name: fullName,
       hackney_firstname: firstName,
@@ -327,23 +292,11 @@ class CrmGateway implements CrmGatewayInterface {
       hackney_emailaddress: emailAddress,
     };
 
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
-    if (this.crmApiToken.error) return this.crmApiToken;
-
-    const response = await axios
+    return await axios
       .post(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers`,
         crmUser,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.headers.location.match(/\((.*?)\)/)[1];
@@ -358,30 +311,20 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-    return response;
   }
 
   public async getPatchByOfficerId(
     officerId: string
   ): Promise<GetPatchByOfficerIdResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getPatchByOfficerId(officerId);
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data;
@@ -398,31 +341,20 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-
-    return response;
   }
 
   public async getPropertyPatch(
     uprn: string
   ): Promise<GetPropertyPatchResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getPropertyPatchByUprn(uprn);
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data as CrmResponseInterface;
@@ -440,29 +372,20 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-    return response;
   }
 
   public async getOfficersByAreaId(
     areaId: number
   ): Promise<GetOfficersByAreaIdResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
+
     const crmQuery = getOfficersByAreaId(areaId);
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data;
@@ -479,30 +402,20 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-
-    return response;
   }
 
   public async getContactsByTagRef(
     tagRef: string
   ): Promise<GetContactsByTagRefResponse> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
+
     const crmQuery = getContactsByTagRef(tagRef);
 
-    const response = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response) => {
         const data = response.data;
@@ -519,31 +432,20 @@ class CrmGateway implements CrmGatewayInterface {
           error: error.message,
         };
       });
-
-    return response;
   }
 
   public async healthCheck(): Promise<CheckResult> {
-    if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
-    }
-
+    await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const errorMsg = {
       success: false,
       message: `Could not query dynamics`,
     };
-    const result = await axios
+    return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/contacts?$select=createdon&$top=1`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.crmApiToken.body}`,
-            Prefer:
-              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
-          },
-        }
+        this.headers()
       )
       .then((response: any) => {
         if (
@@ -559,7 +461,6 @@ class CrmGateway implements CrmGatewayInterface {
       .catch((error: AxiosError) => {
         return errorMsg;
       });
-    return result;
   }
 }
 

@@ -9,6 +9,7 @@
     "start": "next start",
     "serverless:offline": "npm run build && serverless offline",
     "test:unit": "jest --config ./jest.unit.config.js",
+    "test:unit:ci": "jest --config ./jest.unit.config.js -w 2",
     "test:unit:watch": "jest --config ./jest.unit.config.js --watch",
     "test:unit:coverage": "jest --config ./jest.unit.config.js --coverage",
     "test:integration": "jest --config ./jest.integration.config.js",

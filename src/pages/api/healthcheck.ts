@@ -20,6 +20,19 @@ type AllResults = {
 
 let CheckFn: () => Promise<CheckResult>;
 
+const promiseTimeout = function (ms, promise) {
+  // Create a promise that rejects in <ms> milliseconds
+  let timeout = new Promise((resolve, reject) => {
+    let id = setTimeout(() => {
+      clearTimeout(id);
+      reject('Timed out in ' + ms + 'ms.');
+    }, ms);
+  });
+
+  // Returns a race between our timeout and the passed in promise
+  return Promise.race([promise, timeout]);
+};
+
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   switch (req.method) {
     case 'GET':
@@ -83,16 +96,21 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
 };
 
 const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
-  const crmTokenGateway = new CrmTokenGateway();
-  const response = await crmTokenGateway.getCloudToken();
-  if (response.token) {
-    return { success: true };
-  } else {
-    return {
-      success: false,
-      message: `Could not fetch dynamics token`,
-    };
-  }
+  const checkPromise = new Promise(async (resolve, reject) => {
+    const crmTokenGateway = new CrmTokenGateway();
+    const response = await crmTokenGateway.getCloudToken();
+    response.token ? resolve() : reject();
+  });
+  return promiseTimeout(5000, checkPromise)
+    .then(() => {
+      return { success: true };
+    })
+    .catch(() => {
+      return {
+        success: false,
+        message: `Could not fetch dynamics token`,
+      };
+    });
 };
 
 const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {

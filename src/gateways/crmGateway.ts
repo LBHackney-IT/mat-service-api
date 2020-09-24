@@ -26,6 +26,7 @@ import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
 import { Note, CrmNote } from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
+import { CheckResult } from '../pages/api/healthcheck';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -72,6 +73,7 @@ export interface CrmGatewayInterface {
   getTasksForTagRef(tag_ref: string): Promise<GetTasksResponse>;
   getNotesForTask(taskId: string): Promise<GetNotesForTaskResponse>;
   getContactsByTagRef(tagRef: string): Promise<GetContactsByTagRefResponse>;
+  healthCheck(): Promise<CheckResult>;
 }
 
 interface GetTasksResponse {
@@ -519,6 +521,45 @@ class CrmGateway implements CrmGatewayInterface {
       });
 
     return response;
+  }
+
+  public async healthCheck(): Promise<CheckResult> {
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getToken();
+    }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
+
+    const errorMsg = {
+      success: false,
+      message: `Could not query dynamics`,
+    };
+    const result = await axios
+      .get(
+        `${process.env.CRM_API_URL}/api/data/v8.2/contacts?$select=createdon&$top=1`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.crmApiToken.body}`,
+            Prefer:
+              'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+          },
+        }
+      )
+      .then((response: any) => {
+        if (
+          response.data &&
+          response.data.value &&
+          response.data.value.length
+        ) {
+          return { success: true };
+        } else {
+          return errorMsg;
+        }
+      })
+      .catch((error: AxiosError) => {
+        return errorMsg;
+      });
+    return result;
   }
 }
 

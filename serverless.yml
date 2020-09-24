@@ -6,6 +6,7 @@ provider:
   region: eu-west-2
   api-name: hn-mat-service-api
   stage: dev
+  timeout: 15
   environment:
     NODE_ENV: ${self:custom.stage}
     DB_NAME: matServiceDb

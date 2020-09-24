@@ -58,9 +58,8 @@ describe('GetExternalAngularProcessUrl', () => {
     expect(
       result.body.startsWith(`${externalProcessUrls.test.itv}?data=`)
     ).toBe(true);
-    const token = result.body.replace(
-      `${externalProcessUrls.test.itv}?data=`,
-      ''
+    const token = decodeURIComponent(
+      result.body.replace(`${externalProcessUrls.test.itv}?data=`, '')
     );
 
     const payload = decrypt(token, encryptionKey);

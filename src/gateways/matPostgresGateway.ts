@@ -1,9 +1,13 @@
+import { CheckResult } from '../pages/api/healthcheck';
+import { FaLeaf } from 'react-icons/fa';
+
 export interface MatPostgresGatewayInterface {
   getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>;
   getUserMapping(emailAddress: string): Promise<GetUserMappingResponse>;
   createUserMapping(
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse>;
+  healthCheck(): Promise<CheckResult>;
 }
 
 interface GetUserMappingResponse {
@@ -149,6 +153,21 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
         body: error,
         error: 500,
       });
+    }
+  }
+
+  public async healthCheck(): Promise<CheckResult> {
+    await this.setupInstance();
+    const error = { success: false, message: 'Could not connect to postgres' };
+    try {
+      const result = await this.instance.one('SELECT true as success');
+      if (result.success) {
+        return { success: true };
+      } else {
+        return error;
+      }
+    } catch (e) {
+      return error;
     }
   }
 }

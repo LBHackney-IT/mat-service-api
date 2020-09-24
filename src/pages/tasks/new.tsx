@@ -3,6 +3,7 @@ import { useRouter, NextRouter } from 'next/router';
 import Layout from '../../components/layout';
 import { Button, Heading, HeadingLevels, Radios } from 'lbh-frontend-react';
 import createTask from '../../usecases/ui/createTask';
+import { ErrorMessage } from 'lbh-frontend-react';
 
 type Props = {
   router: NextRouter;
@@ -10,12 +11,13 @@ type Props = {
 type State = {
   process?: string;
   subProcess?: string;
+  error?: string | null;
 };
 
 class NewProcessPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { process: undefined };
+    this.state = { process: undefined, error: null };
     this.createTaskHandler = this.createTaskHandler.bind(this);
   }
 
@@ -29,10 +31,15 @@ class NewProcessPage extends React.Component<Props, State> {
       process: this.state.process,
       subProcess: this.state.subProcess,
     })
-      .then((_) => {
-        window.location.href = `${process.env.NEXT_PUBLIC_SINGLEVIEW_URL}/tenancies/${tagRef}`;
+      .then((response) => {
+        if (response && response.data) {
+          window.location.href = `/tasks/${response.data.id}`;
+        } else {
+          this.setState({ error: 'createError' });
+        }
       })
       .catch((error) => {
+        this.setState({ error: 'createError' });
         console.log(error);
       });
   }
@@ -56,6 +63,11 @@ class NewProcessPage extends React.Component<Props, State> {
         >
           Select process
         </Button>
+        {this.state.error === 'createError' && (
+          <ErrorMessage className="sendToManagerError">
+            Error creating action
+          </ErrorMessage>
+        )}
       </Layout>
     );
   }

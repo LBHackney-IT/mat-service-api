@@ -6,6 +6,7 @@ provider:
   region: eu-west-2
   api-name: hn-mat-service-api
   stage: dev
+  timeout: 15
   environment:
     NODE_ENV: ${self:custom.stage}
     DB_NAME: matServiceDb
@@ -20,6 +21,9 @@ provider:
     NEXT_PUBLIC_API_PATH: https://${self:custom.aliases.${self:custom.stage}}/api
     V1_MAT_API_URL: ${ssm:/${self:custom.stage}-mat-service-V1_MAT_API_URL, env:V1_MAT_API_URL}
     V1_MAT_API_TOKEN: ${ssm:/${self:custom.stage}-mat-service-V1_MAT_API_TOKEN~true, env:V1_MAT_API_TOKEN}
+    CRM_API_URL: ${ssm:/${self:custom.stage}-${self:service}-CRM_API_URL, env:CRM_API_URL}
+    CRM_TOKEN_API_URL: ${ssm:/${self:custom.stage}-${self:service}-CRM_TOKEN_API_URL, env:CRM_TOKEN_API_URL}
+    CRM_TOKEN_API_KEY: ${ssm:/${self:custom.stage}-${self:service}-CRM_TOKEN_API_URL~true, env:CRM_TOKEN_API_KEY}
 
 plugins:
   - serverless-dotenv-plugin
@@ -49,10 +53,6 @@ functions:
           path: /api/{proxy+}
           method: ANY
           authorizer: ${self:custom.authorizer.authorizer}
-    environment:
-      CRM_API_URL: ${ssm:/${self:custom.stage}-${self:service}-crm-api-url, env:CRM_API_URL}
-      CRM_CLOUD_AUTHORIZATION: ${ssm:/${self:custom.stage}-${self:service}-crm-cloud-authorization~true, env:CRM_CLOUD_AUTHORIZATION}
-      CRM_CLOUD_URL: ${ssm:/${self:custom.stage}-${self:service}-crm-cloud-url, env:CRM_CLOUD_URL}
 
   authorizer:
     handler: authorizer.handler

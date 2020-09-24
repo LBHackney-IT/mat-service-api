@@ -1,21 +1,35 @@
 import CreateManualTaskUseCase from './createManualTask';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import GetOfficerPatch from './getOfficerPatch';
-import { mockV1MatApiGateway } from '../../tests/helpers/mockGateways';
+import {
+  mockV1MatApiGateway,
+  mockCrmGateway,
+} from '../../tests/helpers/mockGateways';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 jest.mock('./getOfficerPatch');
 
 describe('createManualTasks', () => {
   let usecase: CreateManualTaskUseCase;
-  let dummyGateway: v1MatAPIGatewayInterface;
+  let v1MatAPIGateway: v1MatAPIGatewayInterface;
+  let crmGateway: CrmGatewayInterface;
   let dummyGetOfficerPatch = { execute: jest.fn() };
   let dummyCallData: any;
   let dummyOfficerId = 'dummyOfficerId';
   let dummyOfficerPatchData: any;
+  let getContactsByTagRefResponse = {
+    body: [
+      {
+        crmContactId: 'dummyContactId',
+        crmHouseholdId: 'dummyHouseholdId',
+        uhPersonNo: 1,
+        responsible: true,
+      },
+    ],
+  };
 
   beforeEach(() => {
     dummyCallData = {
-      tagRef: 'fakeTagRef',
-      uprn: 'fakeUPRN',
+      tagRef: '1234567-01',
       process: 'homecheck',
       officerEmail: 'fake@email.com',
       officerName: 'Fake Name',
@@ -26,41 +40,38 @@ describe('createManualTasks', () => {
       areaId: 5,
     };
     GetOfficerPatch.mockImplementationOnce(() => dummyGetOfficerPatch);
-    dummyGateway = mockV1MatApiGateway();
-    usecase = new CreateManualTaskUseCase({ gateway: dummyGateway });
+    v1MatAPIGateway = mockV1MatApiGateway();
+    crmGateway = mockCrmGateway();
+    usecase = new CreateManualTaskUseCase({ v1MatAPIGateway, crmGateway });
   });
 
   it('should use the correct data for the TMI', async () => {
-    dummyGateway.createTenancyManagementInteraction.mockResolvedValue(
+    v1MatAPIGateway.createTenancyManagementInteraction.mockResolvedValue(
       Promise.resolve({
         interactionId: 'dummy',
       })
     );
-    dummyGateway.getContactsByUprn.mockResolvedValue({
-      body: [
-        {
-          contactId: 'dummyContactId',
-          houseRef: 'dummyHouseRef',
-        },
-      ],
-    });
+    crmGateway.getContactsByTagRef = jest.fn(() =>
+      Promise.resolve(getContactsByTagRefResponse)
+    );
     dummyGetOfficerPatch.execute.mockResolvedValue({
       body: dummyOfficerPatchData,
     });
     const result = await usecase.execute(dummyCallData);
-    expect(dummyGateway.getContactsByUprn).toHaveBeenCalledWith(
-      dummyCallData.uprn
+    expect(crmGateway.getContactsByTagRef).toHaveBeenCalledWith(
+      dummyCallData.tagRef.replace('-', '/')
     );
+    expect(result.error).toBe(undefined);
 
     expect(
-      dummyGateway.createTenancyManagementInteraction
+      v1MatAPIGateway.createTenancyManagementInteraction
     ).toHaveBeenCalledWith({
       areaName: 5,
       contactId: 'dummyContactId',
       enquirySubject: '100000052',
       estateOfficerId: dummyOfficerId,
       estateOfficerName: 'Fake Name',
-      householdId: 'dummyHouseRef',
+      householdId: 'dummyHouseholdId',
       natureofEnquiry: '15',
       officerPatchId: 'ID1',
       reasonForStartingProcess: undefined,
@@ -83,33 +94,32 @@ describe('createManualTasks', () => {
   });
 
   it('should return an error if there is a problem fetching the contacts', async () => {
-    dummyGateway.getContactsByUprn.mockResolvedValue({
-      error: 500,
-    });
+    crmGateway.getContactsByTagRef = () =>
+      Promise.resolve({
+        error: 500,
+      });
     const result = await usecase.execute(dummyCallData);
     expect(result.error).toEqual('Error fetching contacts');
   });
 
   it('should return an error if there are no contacts found', async () => {
-    dummyGateway.getContactsByUprn.mockResolvedValue({
-      contacts: [],
-    });
+    crmGateway.getContactsByTagRef = () =>
+      Promise.resolve({
+        contacts: [],
+      });
     const result = await usecase.execute(dummyCallData);
     expect(result.error).toEqual('Error fetching contacts');
   });
 
   it('should create the correct TMI for homechecks', async () => {
-    dummyGateway.getContactsByUprn.mockResolvedValue({
-      body: [
-        {
-          contactId: 'dummyContactId',
-          houseRef: 'dummyHouseRef',
-        },
-      ],
-    });
+    crmGateway.getContactsByTagRef = () =>
+      Promise.resolve(getContactsByTagRefResponse);
     await usecase.execute(dummyCallData);
+    expect(
+      v1MatAPIGateway.createTenancyManagementInteraction
+    ).toHaveBeenCalledTimes(1);
     const gwCall =
-      dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];
+      v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0];
     expect(gwCall.enquirySubject).toEqual('100000052');
     expect(gwCall.serviceRequest.description).toEqual('Starting a home check');
     expect(gwCall.serviceRequest.title).toEqual('Home Check');
@@ -117,17 +127,14 @@ describe('createManualTasks', () => {
 
   it('should create the correct TMI for itvs', async () => {
     dummyCallData.process = 'itv';
-    dummyGateway.getContactsByUprn.mockResolvedValue({
-      body: [
-        {
-          contactId: 'dummyContactId',
-          houseRef: 'dummyHouseRef',
-        },
-      ],
-    });
+    crmGateway.getContactsByTagRef = () =>
+      Promise.resolve(getContactsByTagRefResponse);
     await usecase.execute(dummyCallData);
+    expect(
+      v1MatAPIGateway.createTenancyManagementInteraction
+    ).toHaveBeenCalledTimes(1);
     const gwCall =
-      dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];
+      v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0];
     expect(gwCall.enquirySubject).toEqual('100000060');
     expect(gwCall.serviceRequest.description).toEqual(
       'Starting an introductory tenancy visit'
@@ -138,17 +145,11 @@ describe('createManualTasks', () => {
   it('should create the correct TMI for thcs', async () => {
     dummyCallData.process = 'thc';
     dummyCallData.subProcess = '6';
-    dummyGateway.getContactsByUprn.mockResolvedValue({
-      body: [
-        {
-          contactId: 'dummyContactId',
-          houseRef: 'dummyHouseRef',
-        },
-      ],
-    });
+    crmGateway.getContactsByTagRef = () =>
+      Promise.resolve(getContactsByTagRefResponse);
     await usecase.execute(dummyCallData);
     const gwCall =
-      dummyGateway.createTenancyManagementInteraction.mock.calls[0][0];
+      v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0];
     expect(gwCall.enquirySubject).toEqual('100000156');
     expect(gwCall.serviceRequest.description).toEqual(
       'Starting a tenancy & household check'

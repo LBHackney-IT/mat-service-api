@@ -17,6 +17,12 @@ import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
 import { Note } from '../../../interfaces/note';
 import getNotesById from '../../../usecases/ui/getNotes';
+import Dropdown from '../../../components/dropdown';
+import getEmailAddress from '../../../usecases/ui/getEmailAddress';
+import getOfficersForManager from '../../../usecases/ui/getOfficersForManager';
+import sendTaskToOfficer from '../../../usecases/ui/sendTaskToOfficer';
+import closeTask from '../../../usecases/ui/closeTask';
+import { FaExclamation } from 'react-icons/fa';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -41,30 +47,66 @@ const mapResidents = (residents: Resident[]) => {
 export default function TaskPage() {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes] = useState<Note[] | null>(null);
+  const [officers, setOfficers] = useState<string[][] | null>(null);
+  const [selectedOfficerId, setSelectedOfficerId] = useState<
+    string | undefined
+  >(undefined);
 
   const router = useRouter();
   useEffect(() => {
-    getTaskById(`${router.query.id}`)
-      .then((task) => {
-        if (task) setTask(task);
-      })
-      .catch((e) => {
-        setError('loadingError');
-      });
-
-    getNotesById(`${router.query.id}`)
-      .then((notes) => {
-        if (notes) setNotes(notes);
-      })
-      .catch((e) => {
-        setError('notesError');
-      });
-  }, []);
+    if (!task) {
+      getTaskById(`${router.query.id}`)
+        .then((task) => {
+          if (task) setTask(task);
+        })
+        .catch((e) => {
+          setError('loadingError');
+        });
+    }
+    if (!notes) {
+      getNotesById(`${router.query.id}`)
+        .then((notes) => {
+          if (notes) setNotes(notes);
+        })
+        .catch((e) => {
+          setError('notesError');
+        });
+    }
+    if (!officers) {
+      // extract the officer email from token
+      const managerEmail = getEmailAddress();
+      if (managerEmail) {
+        getOfficersForManager(managerEmail).then((officers: any) => {
+          const officerSelect = officers.users.map((officer: any) => [
+            officer.id,
+            officer.name,
+          ]);
+          setOfficers(officerSelect);
+          setSelectedOfficerId(officerSelect[0][0]);
+        });
+      }
+    }
+  });
 
   if (!task) {
     return <LoadingPage error={error === 'loadingError'} />;
   }
+
+  const updateOfficer = () => {
+    if (task && selectedOfficerId) {
+      sendTaskToOfficer({
+        taskId: task.id,
+        housingOfficerId: selectedOfficerId,
+      }).catch(() => {
+        setError('sendToOfficerError');
+      });
+    }
+  };
+
+  const updateSelectedOfficerId = (officerId: string) => {
+    setSelectedOfficerId(officerId);
+  };
 
   const sendToManager = () => {
     sendTaskToManager(task.id)
@@ -74,7 +116,20 @@ export default function TaskPage() {
       });
   };
 
+  const closeTaskHandler = () => {
+    closeTask(task.id)
+      .then((x) => {
+        console.log(x);
+        router.push('/');
+      })
+      .catch((x) => {
+        console.log(x);
+        setError('closeTaskError');
+      });
+  };
+
   const renderNotes = () => {
+    if (!notes) return null;
     const notesJsx: JSX.Element[] = [];
     notes.map((note) => {
       notesJsx.push(
@@ -150,8 +205,28 @@ export default function TaskPage() {
     );
   };
 
+  const renderCloseTask = () => {
+    return (
+      <div>
+        <Button
+          onClick={closeTaskHandler}
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary closeTask"
+        >
+          Close action
+        </Button>
+        <Paragraph className="warningText">
+          <FaExclamation />
+          Once an action has been closed it cannot be reopened
+        </Paragraph>
+        {error === 'closeTaskError' && (
+          <ErrorMessage className="closeTaskError">
+            Error closing action
+          </ErrorMessage>
+        )}
+      </div>
+    );
+  };
   const renderSendToManager = () => {
-    if (task && task.assignedToManager) return null;
     return (
       <div>
         <Button
@@ -161,13 +236,35 @@ export default function TaskPage() {
           Send action to manager (optional)
         </Button>
         {error === 'sendToManagerError' && (
-          <ErrorMessage className="sendToManagerError">
-            Error sending action to manager
-          </ErrorMessage>
+          <ErrorMessage>Error sending action to manager</ErrorMessage>
         )}
       </div>
     );
   };
+
+  const renderSelectAndSendToOfficer = () => {
+    if (!officers) return null;
+    return (
+      <div className="selectAndSendToOfficerContainer">
+        <Dropdown
+          options={officers}
+          selected={selectedOfficerId}
+          onChange={updateSelectedOfficerId}
+        />
+        <span className="divider"></span>
+        <Button
+          onClick={updateOfficer}
+          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary sendToOfficer"
+        >
+          Send action to officer
+        </Button>
+        {error === 'sendToOfficerError' && (
+          <ErrorMessage>Error sending action to officer</ErrorMessage>
+        )}
+      </div>
+    );
+  };
+  //task.assignedToManager = true;
 
   return (
     <Layout>
@@ -190,7 +287,10 @@ export default function TaskPage() {
       <Heading level={HeadingLevels.H4}>Notes</Heading>
       {renderNotes()}
       {renderNotesUpdate()}
-      {renderSendToManager()}
+      {task.assignedToManager
+        ? renderSelectAndSendToOfficer()
+        : renderSendToManager()}
+      {renderCloseTask()}
       <style jsx>{`
         .tile-container {
           display: flex;
@@ -198,6 +298,9 @@ export default function TaskPage() {
         .sendToManager,
         sendToManagerError {
           display: inline;
+        }
+        .selectAndSendToOfficerContainer {
+          display: flex;
         }
         .text-area {
           height: 5em;

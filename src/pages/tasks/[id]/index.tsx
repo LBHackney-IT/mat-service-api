@@ -23,6 +23,8 @@ import getOfficersForManager from '../../../usecases/ui/getOfficersForManager';
 import sendTaskToOfficer from '../../../usecases/ui/sendTaskToOfficer';
 import closeTask from '../../../usecases/ui/closeTask';
 import { FaExclamation } from 'react-icons/fa';
+import createNote from '../../../usecases/ui/createNote';
+import getFullName from '../../../usecases/ui/getFullName';
 
 const mapResidents = (residents: Resident[]) => {
   return residents.map((resident) => {
@@ -52,6 +54,14 @@ export default function TaskPage() {
   const [selectedOfficerId, setSelectedOfficerId] = useState<
     string | undefined
   >(undefined);
+  const [officerName, setOfficerName] = useState<string | undefined>(undefined);
+  const [officerEmail, setOfficerEmail] = useState<string | undefined>(
+    undefined
+  );
+  const [noteText, setNoteText] = useState<string | undefine>(undefined);
+  const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
+    boolean | undefined
+  >(undefined);
 
   const router = useRouter();
   useEffect(() => {
@@ -75,9 +85,9 @@ export default function TaskPage() {
     }
     if (!officers) {
       // extract the officer email from token
-      const managerEmail = getEmailAddress();
-      if (managerEmail) {
-        getOfficersForManager(managerEmail).then((officers: any) => {
+      const managerEmailAddress = getEmailAddress();
+      if (managerEmailAddress) {
+        getOfficersForManager(managerEmailAddress).then((officers: any) => {
           const officerSelect = officers.users.map((officer: any) => [
             officer.id,
             officer.name,
@@ -86,6 +96,12 @@ export default function TaskPage() {
           setSelectedOfficerId(officerSelect[0][0]);
         });
       }
+    }
+    if (!officerName) {
+      setOfficerName(getFullName());
+    }
+    if (!officerEmail) {
+      setOfficerEmail(getEmailAddress());
     }
   });
 
@@ -126,6 +142,26 @@ export default function TaskPage() {
       });
   };
 
+  const handleNoteChange = (event: any) => {
+    setNoteText(event.target.value);
+  };
+
+  const submitNote = async () => {
+    const email = officerEmail ? officerEmail : '';
+    const note = {
+      interactionId: router.query.id,
+      estateOfficerName: officerName,
+      ServiceRequest: {
+        description: noteText,
+        requestCallback: false,
+        Id: task.incidentId,
+      },
+      status: 1,
+    };
+    const response = await createNote(note, email);
+    setSubmitNoteSuccess(response);
+  };
+
   const renderNotes = () => {
     if (!notes) return null;
     const notesJsx: JSX.Element[] = [];
@@ -144,12 +180,27 @@ export default function TaskPage() {
     return notesJsx;
   };
 
+  const renderNoteSuccess = () => {
+    if (submitNoteSuccess) {
+      return <Paragraph>Note was submitted successfully</Paragraph>;
+    }
+    if (submitNoteSuccess === false) {
+      return <Paragraph>An error has occurred, please try again</Paragraph>;
+    }
+    return null;
+  };
+
   const renderNotesUpdate = () => {
     return (
       <div>
         <Heading level={HeadingLevels.H4}>Update Notes</Heading>
-        <textarea className={'govuk-input lbh-input text-area'} />
-        <Button>Save Update</Button>
+        <textarea
+          className={'govuk-input lbh-input text-area'}
+          value={noteText}
+          onChange={handleNoteChange}
+        />
+        <Button onClick={() => submitNote()}>Save Note</Button>
+        {renderNoteSuccess()}
       </div>
     );
   };

@@ -98,6 +98,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         },
       })
       .then((response) => {
+        console.log('CRM RESPONSE', response);
         return {
           body: response.data,
         };

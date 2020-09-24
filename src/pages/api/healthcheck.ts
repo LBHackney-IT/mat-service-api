@@ -99,7 +99,6 @@ const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
   const checkPromise = new Promise(async (resolve, reject) => {
     const crmTokenGateway = new CrmTokenGateway();
     const response = await crmTokenGateway.getToken();
-    console.dir(response);
     response.body ? resolve() : reject();
   });
   return promiseTimeout(5000, checkPromise)

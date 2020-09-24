@@ -115,8 +115,10 @@ class CrmGateway implements CrmGatewayInterface {
     patchId?: string
   ): Promise<GetTasksResponse> {
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+      this.crmApiToken = await this.crmTokenGateway.getToken();
     }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getTasksByPatchAndOfficerIdQuery(
       officerId,
@@ -130,7 +132,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -155,8 +157,9 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getTasksForTagRef(tag_ref: string): Promise<GetTasksResponse> {
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+      this.crmApiToken = await this.crmTokenGateway.getToken();
     }
+    if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getTasksByTagRef(tag_ref);
 
@@ -165,7 +168,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -192,8 +195,10 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getTask(taskId: string): Promise<GetTaskResponse> {
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+      this.crmApiToken = await this.crmTokenGateway.getToken();
     }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getTaskById(taskId);
 
@@ -202,7 +207,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -232,8 +237,10 @@ class CrmGateway implements CrmGatewayInterface {
     taskId: string
   ): Promise<GetNotesForTaskResponse> {
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+      this.crmApiToken = await this.crmTokenGateway.getToken();
     }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getNotesForTaskById(taskId);
 
@@ -242,7 +249,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -271,8 +278,11 @@ class CrmGateway implements CrmGatewayInterface {
     emailAddress: string
   ): Promise<CrmGatewayGetUserResponse> {
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+      this.crmApiToken = await this.crmTokenGateway.getToken();
     }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
+
     const crmQuery = getUserByEmail(emailAddress);
 
     const response = await axios
@@ -280,7 +290,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -316,8 +326,10 @@ class CrmGateway implements CrmGatewayInterface {
     };
 
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+      this.crmApiToken = await this.crmTokenGateway.getToken();
     }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
 
     const response = await axios
       .post(
@@ -325,7 +337,7 @@ class CrmGateway implements CrmGatewayInterface {
         crmUser,
         {
           headers: {
-            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -350,8 +362,12 @@ class CrmGateway implements CrmGatewayInterface {
   public async getPatchByOfficerId(
     officerId: string
   ): Promise<GetPatchByOfficerIdResponse> {
-    const crmTokenGateway = new CrmTokenGateway();
-    const crmApiToken = await crmTokenGateway.getCloudToken();
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getToken();
+    }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
+
     const crmQuery = getPatchByOfficerId(officerId);
 
     const response = await axios
@@ -359,7 +375,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -388,8 +404,10 @@ class CrmGateway implements CrmGatewayInterface {
     uprn: string
   ): Promise<GetPropertyPatchResponse> {
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getCloudToken();
+      this.crmApiToken = await this.crmTokenGateway.getToken();
     }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getPropertyPatchByUprn(uprn);
 
@@ -398,7 +416,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${this.crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -426,8 +444,11 @@ class CrmGateway implements CrmGatewayInterface {
   public async getOfficersByAreaId(
     areaId: number
   ): Promise<GetOfficersByAreaIdResponse> {
-    const crmTokenGateway = new CrmTokenGateway();
-    const crmApiToken = await crmTokenGateway.getCloudToken();
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getToken();
+    }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
     const crmQuery = getOfficersByAreaId(areaId);
 
     const response = await axios
@@ -435,7 +456,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },
@@ -463,8 +484,11 @@ class CrmGateway implements CrmGatewayInterface {
   public async getContactsByTagRef(
     tagRef: string
   ): Promise<GetContactsByTagRefResponse> {
-    const crmTokenGateway = new CrmTokenGateway();
-    const crmApiToken = await crmTokenGateway.getCloudToken();
+    if (!this.crmApiToken) {
+      this.crmApiToken = await this.crmTokenGateway.getToken();
+    }
+
+    if (this.crmApiToken.error) return this.crmApiToken;
     const crmQuery = getContactsByTagRef(tagRef);
 
     const response = await axios
@@ -472,7 +496,7 @@ class CrmGateway implements CrmGatewayInterface {
         `${process.env.CRM_API_URL}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
         {
           headers: {
-            Authorization: `Bearer ${crmApiToken.token}`,
+            Authorization: `Bearer ${this.crmApiToken.body}`,
             Prefer:
               'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
           },

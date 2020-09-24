@@ -31,7 +31,7 @@ export default function Home() {
         <div>
           <div className="container">
             <Head>
-              <title>Manage A Tenancy</title>
+              <title>Manage a Tenancy</title>
               <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>

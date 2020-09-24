@@ -1,21 +1,5 @@
 import React from 'react';
-import {
-  Header,
-  PhaseBanner,
-  Container,
-  NavigationBar,
-} from 'lbh-frontend-react';
-
-const pageRedirect = [
-  {
-    name: 'Home',
-    url: '/',
-  },
-  {
-    name: 'Residents',
-    url: `${process.env.NEXT_PUBLIC_SINGLEVIEW_URL}`,
-  },
-];
+import { Header, PhaseBanner, Container } from 'lbh-frontend-react';
 
 const Layout: React.FC = (props: any) => {
   const feedbackLink = process.env.NEXT_PUBLIC_FEEDBACK_LINK
@@ -27,8 +11,6 @@ const Layout: React.FC = (props: any) => {
       <Header serviceName="Manage a Tenancy" />
       <Container>
         <PhaseBanner phase="BETA" url={feedbackLink} />
-        <NavigationBar targets={pageRedirect} />
-        {props.children}
       </Container>
     </div>
   );

@@ -1,15 +1,15 @@
 import React from 'react';
 import isLoggedIn from '../usecases/ui/isLoggedIn';
-import Layout from '../components/layout';
+import LayoutLogin from '../components/layout';
 import { Paragraph, Heading, HeadingLevels, Link } from 'lbh-frontend-react';
 import cookie from 'cookie';
 
 const LoginRedirectPage: React.FC = () => {
   return (
-    <Layout>
+    <LayoutLogin>
       <div className="lbh-container">
         <div className="loginPage">
-          <Heading level={HeadingLevels.H1}>Please log in</Heading>
+          <Heading level={HeadingLevels.H1}>Please sign in</Heading>
           <Link
             data-test="login-link"
             href={
@@ -17,10 +17,10 @@ const LoginRedirectPage: React.FC = () => {
               process.env.UI_PATH
             }
           >
-            Log in with Google
+            Sign in with Google
           </Link>
           <div className="privacy-notice">
-            <Heading level={HeadingLevels.H3}>Privacy Notice</Heading>
+            <Heading level={HeadingLevels.H3}>Privacy notice</Heading>
             <Paragraph>
               We use Google Analytics and Hotjar to collect information about
               how you use this site. We do this to make sure it’s meeting your
@@ -38,7 +38,7 @@ const LoginRedirectPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </LayoutLogin>
   );
 };
 

@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { Tenancy } from '../interfaces/tenancy';
 import V1ApiContact from '../interfaces/v1ApiContact';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
+import { CheckResult } from '../pages/api/healthcheck';
 
 export interface v1MatAPIGatewayInterface {
   getNewTenancies(): Promise<GetNewTenanciesResponse>;
@@ -15,6 +16,7 @@ export interface v1MatAPIGatewayInterface {
   transferCall(
     tmi: TenancyManagementInteraction
   ): Promise<TransferCallResponse>;
+  healthCheck(): Promise<CheckResult>;
 }
 
 export interface GetNewTenanciesResponse {
@@ -213,6 +215,26 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
       .catch((error: AxiosError) => {
         return {
           error: error.message,
+        };
+      });
+
+    return response;
+  }
+
+  public async healthCheck(): Promise<CheckResult> {
+    const response = await axios
+      .get(`${this.v1MatApiUrl}/Values`, {
+        headers: {
+          Authorization: `Bearer ${this.v1MatApiToken}`,
+        },
+      })
+      .then(() => {
+        return { success: true };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          message: 'Could not connect to v1 MaT API',
+          success: false,
         };
       });
 

@@ -1,6 +1,7 @@
 import {
   Task,
   Stage,
+  State,
   DueState,
   TenancyType,
   ProcessType,
@@ -29,6 +30,7 @@ const MockTask = (): Task => {
     },
     dueTime: faker.date.future(),
     stage: Stage.started,
+    state: State.active,
     dueState: DueState.imminent,
     completedTime: faker.date.recent(),
     referenceNumber: faker.random.alphaNumeric(),

@@ -182,8 +182,6 @@ class CrmGateway implements CrmGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
-        console.log('error: ' + error);
-
         return {
           body: undefined,
           error: error.message,
@@ -215,7 +213,6 @@ class CrmGateway implements CrmGatewayInterface {
       )
       .then((response) => {
         const data = response.data as CrmResponse;
-        console.log(data);
         const task = crmResponseToTask(data);
 
         return {

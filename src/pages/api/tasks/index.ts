@@ -60,7 +60,6 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     : req.query.tag_ref;
 
   if (req.query.tag_ref) {
-    console.log('Searching for tasks with tag_ref: ' + tag_ref);
     const getTasks = new GetTasksForTagRef({
       crmGateway,
     });
@@ -75,7 +74,6 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     // Ensure the user is correctly set up
     const setupUserResult = await setupUser(<string>req.cookies.hackneyToken);
     if (setupUserResult.error) {
-      console.log(setupUserResult.error);
       return res.status(400).end();
     }
     const emailAddress = req.query.emailAddress
@@ -123,7 +121,6 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         res.status(response.error).end();
       }
     } else {
-      console.log(officerPatch);
       res.status(400).json({ error: 'No user patch found' });
     }
   }

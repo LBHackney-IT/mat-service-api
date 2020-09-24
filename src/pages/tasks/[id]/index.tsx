@@ -119,11 +119,9 @@ export default function TaskPage() {
   const closeTaskHandler = () => {
     closeTask(task.id)
       .then((x) => {
-        console.log(x);
         router.push('/');
       })
       .catch((x) => {
-        console.log(x);
         setError('closeTaskError');
       });
   };

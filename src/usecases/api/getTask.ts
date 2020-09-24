@@ -21,7 +21,6 @@ class GetTask implements GetTaskInterface {
 
   public async execute(): Promise<GetTaskResponse> {
     const response = await this.crmGateway.getTask(this.taskId);
-    console.log(response);
     switch (response.error) {
       case undefined:
         return {

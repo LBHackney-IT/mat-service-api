@@ -20,7 +20,7 @@ type AllResults = {
 
 let CheckFn: () => Promise<CheckResult>;
 
-const promiseTimeout = function (ms, promise) {
+const promiseTimeout = function (ms: number, promise: Promise<any>) {
   // Create a promise that rejects in <ms> milliseconds
   let timeout = new Promise((resolve, reject) => {
     let id = setTimeout(() => {

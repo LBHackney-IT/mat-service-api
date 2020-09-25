@@ -1,5 +1,4 @@
 const getTasksByPatchAndOfficerIdQuery = (
-  officerId: string,
   isManager: boolean,
   areaManagerId: string,
   patchId?: string

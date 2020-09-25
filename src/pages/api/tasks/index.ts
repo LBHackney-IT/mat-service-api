@@ -107,19 +107,26 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       let response;
 
       getTasks = new GetTasksForAPatch({
-        patchId,
-        officerId,
-        isManager,
-        areaManagerId,
         crmGateway,
       });
 
-      response = await getTasks.execute();
+      response = await getTasks.execute(
+        officerId,
+        isManager,
+        areaManagerId,
+        patchId
+      );
+      if (!response) {
+        return res.status(400).json({ error: 'Error fetching tasks from crm' });
+      }
 
-      if (response && response.error === undefined) {
+      if (response.body) {
         res.status(200).json(response.body);
-      } else if (response && response.error) {
-        res.status(response.error).end();
+      } else if (response.error) {
+        if (response.error === 'NotAuthorised') {
+          return res.status(401).json({ error: 'Not authorised' });
+        }
+        return res.status(500).json(response as Data);
       }
     } else {
       res.status(400).json({ error: 'No user patch found' });

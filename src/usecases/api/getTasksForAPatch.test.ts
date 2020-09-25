@@ -8,123 +8,81 @@ jest.mock('../../gateways/crmGateway');
 const dummyMock = jest.fn(async () => ({}));
 
 describe('GetTasks', () => {
-  it('Returns a list of tasks when no errors are found', async () => {
-    const mockTasks: Task[] = [MockTask(), MockTask()];
+  let patchId: string;
+  let officerId: string;
+  let areaManagerId: string;
+  let isManager: boolean;
+  let getTasksForAPatch: any;
+  let mockTasks: Task[];
+  let crmGateway: object;
+  let getTasks: GetTasksForAPatch;
 
-    const getTasksForAPatch = jest.fn((async) => ({
+  beforeEach(() => {
+    mockTasks = [MockTask(), MockTask()];
+    patchId = faker.random.uuid();
+    officerId = faker.random.uuid();
+    areaManagerId = faker.random.uuid();
+    isManager = false;
+    getTasksForAPatch = jest.fn((async) => ({
       body: mockTasks,
       error: undefined,
     }));
 
-    const crmGateway = {
+    crmGateway = {
       getPatchByOfficerId: <jest.Mock>dummyMock,
       getTasksForAPatch: <jest.Mock>getTasksForAPatch,
       getTask: <jest.Mock>dummyMock,
       getUser: <jest.Mock>dummyMock,
       createUser: <jest.Mock>dummyMock,
     };
-
-    const patchId = faker.random.uuid();
-    const officerId = faker.random.uuid();
-    const isManager = false;
-
-    const getTasks = new GetTasksForAPatch({
+    getTasks = new GetTasksForAPatch({
       crmGateway,
-      patchId,
+    });
+  });
+
+  it('Returns a list of tasks when no errors are found', async () => {
+    const response = await getTasks.execute(
       officerId,
       isManager,
-    });
-    const response = await getTasks.execute();
+      areaManagerId,
+      patchId
+    );
     expect(getTasksForAPatch).toHaveBeenCalledTimes(1);
+    expect(getTasksForAPatch).toHaveBeenCalledWith(
+      officerId,
+      isManager,
+      areaManagerId,
+      patchId
+    );
     expect(response.body).toEqual(mockTasks);
   });
 
   it('Returns a empty list when tasks are not found', async () => {
-    const mockTasks: Task[] = [];
+    mockTasks = [];
 
-    const getTasksForAPatch = jest.fn((async) => ({
-      body: mockTasks,
-      error: undefined,
-    }));
-
-    const crmGateway = {
-      getPatchByOfficerId: <jest.Mock>dummyMock,
-      getTasksForAPatch: <jest.Mock>getTasksForAPatch,
-      getTask: <jest.Mock>dummyMock,
-      getUser: <jest.Mock>dummyMock,
-      createUser: <jest.Mock>dummyMock,
-    };
-
-    const patchId = faker.random.uuid();
-    const officerId = faker.random.uuid();
-    const isManager = false;
-
-    const getTasks = new GetTasksForAPatch({
-      crmGateway,
-      patchId,
+    const response = await getTasks.execute(
       officerId,
       isManager,
-    });
-    const response = await getTasks.execute();
+      areaManagerId,
+      patchId
+    );
     expect(getTasksForAPatch).toHaveBeenCalledTimes(1);
     expect(response.body).toEqual(mockTasks);
   });
 
-  it('Returns a 500 error when errors are found', async () => {
-    const getTasksForAPatch = jest.fn((async) => ({
-      body: undefined,
-      error: 500,
-    }));
-
-    const crmGateway = {
-      getPatchByOfficerId: <jest.Mock>dummyMock,
-      getTasksForAPatch: <jest.Mock>getTasksForAPatch,
-      getTask: <jest.Mock>dummyMock,
-      getUser: <jest.Mock>dummyMock,
-      createUser: <jest.Mock>dummyMock,
-    };
-
-    const patchId = faker.random.uuid();
-    const officerId = faker.random.uuid();
-    const isManager = false;
-
-    const getTasks = new GetTasksForAPatch({
-      crmGateway,
-      patchId,
-      officerId,
-      isManager,
-    });
-    const response = await getTasks.execute();
-    expect(getTasksForAPatch).toHaveBeenCalledTimes(1);
-    expect(response.error).toEqual(500);
-  });
-
-  it('Returns a 401 error when errors is NotAuthorised', async () => {
-    const getTasksForAPatch = jest.fn((async) => ({
+  it('Returns the error when errors are found', async () => {
+    crmGateway.getTasksForAPatch = jest.fn((async) => ({
       body: undefined,
       error: 'NotAuthorised',
     }));
 
-    const crmGateway = {
-      getPatchByOfficerId: <jest.Mock>dummyMock,
-      getTasksForAPatch: <jest.Mock>getTasksForAPatch,
-      getTask: <jest.Mock>dummyMock,
-      getUser: <jest.Mock>dummyMock,
-      createUser: <jest.Mock>dummyMock,
-    };
-
-    const patchId = faker.random.uuid();
-    const officerId = faker.random.uuid();
-    const isManager = false;
-
-    const getTasks = new GetTasksForAPatch({
-      crmGateway,
-      patchId,
+    const response = await getTasks.execute(
       officerId,
       isManager,
-    });
-    const response = await getTasks.execute();
-    expect(getTasksForAPatch).toHaveBeenCalledTimes(1);
-    expect(response.error).toEqual(401);
+      areaManagerId,
+      patchId
+    );
+    expect(crmGateway.getTasksForAPatch).toHaveBeenCalledTimes(1);
+    expect(response.error).toEqual('NotAuthorised');
   });
 });

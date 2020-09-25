@@ -6,6 +6,7 @@ import '../global.scss';
 import { ServerResponse } from 'http';
 
 const unauthenticatedLandingPage = '/login-redirect';
+const unauthenticatedErrorPage = '/login-error';
 
 function MaTApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;
@@ -25,7 +26,8 @@ MaTApp.getInitialProps = async (context: AppContext) => {
 
   if (
     context.ctx.pathname === unauthenticatedLandingPage ||
-    context.ctx.pathname.startsWith('/api')
+    context.ctx.pathname.startsWith('/api') ||
+    context.ctx.pathname === unauthenticatedErrorPage
   ) {
     return { ...appProps };
   }

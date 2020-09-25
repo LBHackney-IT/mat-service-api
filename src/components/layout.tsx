@@ -17,17 +17,21 @@ const pageRedirect = [
   },
 ];
 
-const Layout: React.FC = (props: any) => {
-  const feedbackLink = process.env.NEXT_PUBLIC_FEEDBACK_LINK
-    ? process.env.NEXT_PUBLIC_FEEDBACK_LINK
-    : '';
+interface LayoutProps {
+  showNavBar?: boolean;
+  children?: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = (props: LayoutProps) => {
+  const feedbackLink = process.env.NEXT_PUBLIC_FEEDBACK_LINK || '';
+  const showNavBar = props.showNavBar === undefined ? true : props.showNavBar;
 
   return (
     <div>
       <Header serviceName="Manage a Tenancy" />
       <Container>
         <PhaseBanner phase="BETA" url={feedbackLink} />
-        <NavigationBar targets={pageRedirect} />
+        {showNavBar ? <NavigationBar targets={pageRedirect} /> : null}
         {props.children}
       </Container>
     </div>

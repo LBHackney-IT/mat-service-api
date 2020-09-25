@@ -1,5 +1,5 @@
 import { Row } from '../components/worktray';
-import { Stage, Task } from '../interfaces/task';
+import { Stage, State, Task } from '../interfaces/task';
 import { Status } from 'lbh-frontend-react';
 
 const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {
@@ -27,7 +27,7 @@ const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {
         },
       ],
       workItemStatus:
-        element.stage == Stage.completed ? Status.complete : Status.inProgress,
+        element.state == State.inactive ? Status.complete : Status.inProgress,
       workItemId: element.id,
       workItemLink: `/tasks/${element.id}`,
     });

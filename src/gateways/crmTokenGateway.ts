@@ -1,31 +1,40 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
 interface GetTokenResponse {
-  token: string | undefined;
+  accessToken: string;
+  expiresAt: string;
+}
+export interface CrmTokenGatewayResponse {
+  body?: string;
+  error?: string;
 }
 
 export interface CrmTokenGatewayInterface {
-  getCloudToken(): any;
+  getToken(): Promise<CrmTokenGatewayResponse>;
 }
 
 class CrmTokenGateway implements CrmTokenGatewayInterface {
-  public async getCloudToken() {
-    const apiUrl = process.env.CRM_CLOUD_URL ? process.env.CRM_CLOUD_URL : '';
-    const authorizationHeader = process.env.CRM_CLOUD_AUTHORIZATION
-      ? process.env.CRM_CLOUD_AUTHORIZATION
-      : '';
+  public async getToken(): Promise<CrmTokenGatewayResponse> {
+    if (!process.env.CRM_TOKEN_API_URL || !process.env.CRM_TOKEN_API_KEY) {
+      return {
+        error: 'CRM token gateway configuration not set',
+      };
+    }
     const response = await axios
-      .get(apiUrl, {
-        headers: {
-          Authorization: authorizationHeader,
-        },
-      })
+      .post<GetTokenResponse>(
+        process.env.CRM_TOKEN_API_URL,
+        {},
+        {
+          headers: {
+            'x-api-key': process.env.CRM_TOKEN_API_KEY,
+          },
+        }
+      )
       .then((response) => {
-        const data = response as AxiosResponse<GetTokenResponse>;
-        return { token: data.data };
+        return { body: response.data.accessToken };
       })
       .catch((error: AxiosError) => {
-        return { token: undefined };
+        return { error: error.message };
       });
     return response;
   }

@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import CrmTokenGateway from '../../gateways/crmTokenGateway';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
+import CrmGateway from '../../gateways/crmGateway';
 
 type Data = {
   result: string;
@@ -76,8 +77,8 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
     'V1_MAT_API_URL',
     'V1_MAT_API_TOKEN',
     'CRM_API_URL',
-    'CRM_CLOUD_AUTHORIZATION',
-    'CRM_CLOUD_URL',
+    'CRM_TOKEN_API_KEY',
+    'CRM_TOKEN_API_URL',
   ];
   const failures = [];
   for (let envVar of vars) {
@@ -98,8 +99,8 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
 const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
   const checkPromise = new Promise(async (resolve, reject) => {
     const crmTokenGateway = new CrmTokenGateway();
-    const response = await crmTokenGateway.getCloudToken();
-    response.token ? resolve() : reject();
+    const response = await crmTokenGateway.getToken();
+    response.body ? resolve() : reject();
   });
   return promiseTimeout(5000, checkPromise)
     .then(() => {
@@ -111,6 +112,11 @@ const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
         message: `Could not fetch dynamics token`,
       };
     });
+};
+
+const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
+  const crmGateway = new CrmGateway();
+  return crmGateway.healthCheck();
 };
 
 const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {
@@ -132,4 +138,10 @@ const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
   return gateway.healthCheck();
 };
 
-const checks = [checkEnvVars, checkDynamicsToken, checkPostgres, checkV1MatApi];
+const checks = [
+  checkEnvVars,
+  checkDynamicsToken,
+  checkDynamics,
+  checkPostgres,
+  checkV1MatApi,
+];

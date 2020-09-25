@@ -26,14 +26,13 @@ export default async (
     // Extract the user details
     const hackneyToken = jwt.decode(hackneyTokenString) as HackneyToken;
     if (!hackneyToken || !hackneyToken.email) return { error: 'Invalid token' };
-    console.log(1);
+
     // Check if we already have a mapping for this user
     const checkUserMappingExists = new CheckUserMappingExists(
       hackneyToken.email
     );
     const existingUserMapping = await checkUserMappingExists.execute();
 
-    console.log(1);
     if (existingUserMapping.body) {
       return { body: undefined, error: undefined };
     } else {

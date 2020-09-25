@@ -1,6 +1,7 @@
 import {
   Task,
   Stage,
+  State,
   DueState,
   TenancyType,
   ProcessType,
@@ -73,6 +74,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
     dueState: DueState.imminent,
     completedTime: new Date(crmTask['completionDate']),
     stage: mapResponseToStage(crmTask['hackney_process_stage']),
+    state: mapResponseToState(crmTask['statecode']),
     children: [],
     parent: crmTask['parent@OData.Community.Display.V1.FormattedValue'],
     referenceNumber: crmTask['hackney_name'],
@@ -95,13 +97,14 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
 
   switch (processType) {
     case 1: // Process
+    case 2: // Post Visit Action
+    case 0: // Interaction (task created outside process i.e. not PVA)
       task.type =
         crmTask[
           'hackney_enquirysubject@OData.Community.Display.V1.FormattedValue'
         ];
       break;
 
-    case 2: // Post Visit Action
     case 3: // ETRA
       task.type =
         crmTask[
@@ -114,6 +117,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
 }
 
 interface CrmTaskValue {
+  statecode: number;
   _hackney_managerpropertypatchid_value?: string;
   _hackney_estateofficerpatchid_value?: string;
   hackney_processtype: number;
@@ -186,5 +190,16 @@ export const mapResponseToStage = (stage: number): Stage => {
       return Stage.validating;
     default:
       return Stage.unstarted;
+  }
+};
+
+export const mapResponseToState = (state: number): State => {
+  switch (state) {
+    case 0:
+      return State.active;
+    case 1:
+      return State.inactive;
+    default:
+      return State.active;
   }
 };

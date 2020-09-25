@@ -1,26 +1,26 @@
 {
   "development": {
-    "thc": "https://dev.thc.manageatenancy.hackney.gov.uk/",
-    "itv": "https://dev.itv.manageatenancy.hackney.gov.uk/",
-    "homecheck": "https://dev.homecheck.manageatenancy.hackney.gov.uk/",
-    "etra": "https://etra.manageatenancy.hackney.gov.uk"
+    "thc": "https://manageatenancy-test.hackney.gov.uk/",
+    "itv": "https://manageatenancy-test.hackney.gov.uk/",
+    "homecheck": "https://manageatenancy-test.hackney.gov.uk/",
+    "etra": "https://dev.etra.manage-a-tenancy.hackney.gov.uk/"
   },
   "test": {
-    "thc": "https://test.thc.manageatenancy.hackney.gov.uk/",
-    "itv": "https://test.itv.manageatenancy.hackney.gov.uk/",
-    "homecheck": "https://test.homecheck.manageatenancy.hackney.gov.uk/",
-    "etra": "https://etra.manageatenancy.hackney.gov.uk"
+    "thc": "https://manageatenancy-test.hackney.gov.uk/",
+    "itv": "https://manageatenancy-test.hackney.gov.uk/",
+    "homecheck": "https://manageatenancy-test.hackney.gov.uk/",
+    "etra": "https://dev.etra.manage-a-tenancy.hackney.gov.uk/"
   },
   "staging": {
-    "thc": "https://staging.thc.manageatenancy.hackney.gov.uk/",
-    "itv": "https://staging.itv.manageatenancy.hackney.gov.uk/",
-    "homecheck": "https://staging.homecheck.manageatenancy.hackney.gov.uk/",
-    "etra": "https://etra.manageatenancy.hackney.gov.uk"
+    "thc": "https://manageatenancy-test.hackney.gov.uk/",
+    "itv": "https://manageatenancy-test.hackney.gov.uk/",
+    "homecheck": "https://manageatenancy-test.hackney.gov.uk/",
+    "etra": "https://dev.etra.manage-a-tenancy.hackney.gov.uk/"
   },
   "production": {
-    "thc": "https://staging.thc.manageatenancy.hackney.gov.uk/",
-    "itv": "https://staging.itv.manageatenancy.hackney.gov.uk/",
-    "homecheck": "https://staging.homecheck.manageatenancy.hackney.gov.uk/",
-    "etra": "https://etra.manageatenancy.hackney.gov.uk"
+    "thc": "https://manageatenancy.hackney.gov.uk/",
+    "itv": "https://manageatenancy.hackney.gov.uk/",
+    "homecheck": "https://manageatenancy.hackney.gov.uk/",
+    "etra": "https://etra.manage-a-tenancy.hackney.gov.uk/"
   }
 }

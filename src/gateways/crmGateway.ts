@@ -5,8 +5,6 @@ import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
 import getTasksByTagRef from './xmlQueryStrings/getTasksByTagRef';
 import getUserByEmail from './xmlQueryStrings/getUserByEmail';
-import getOfficerByAreaIdQuery from './xmlQueryStrings/getOfficerByAreaId';
-
 import getPatchByOfficerId from './xmlQueryStrings/getPatchByOfficerId';
 import getContactsByTagRef from './xmlQueryStrings/getContactsByTagRef';
 import crmToPatchDetails, {
@@ -33,21 +31,8 @@ export interface CrmResponse {
   value: object | object[];
 }
 
-interface GetPatchByOfficerIdResponse {
-  body?: PatchDetailsInterface;
-  error?: string;
-}
-
-export interface GetPropertyPatchResponse {
-  body?: PropertyPatchDetailsInterface;
-  error?: string;
-}
-
-export interface CrmGatewayGetUserResponse {
-  body?: {
-    '@odata.etag': string;
-    hackney_estateofficerid: string;
-  }[];
+export interface GatewayResponse<T> {
+  body?: T;
   error?: string;
 }
 
@@ -57,48 +42,26 @@ export interface CrmGatewayInterface {
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
-  ): Promise<GetTasksResponse>;
-  getTask(taskId: string): Promise<GetTaskResponse>;
-  getUser(emailAddress: string): Promise<CrmGatewayGetUserResponse>;
+  ): Promise<GatewayResponse<Task[]>>;
+  getTask(taskId: string): Promise<GatewayResponse<Task>>;
+  getUserId(emailAddress: string): Promise<GatewayResponse<string>>;
   createUser(
     emailAddress: string,
     fullName: string,
     firstName: string,
     familyName: string
-  ): any;
+  ): Promise<GatewayResponse<object>>;
   getPatchByOfficerId(
     emailAddress: string
-  ): Promise<GetPatchByOfficerIdResponse>;
-  getOfficersByAreaId(areaId: number): any;
-  getTasksForTagRef(tag_ref: string): Promise<GetTasksResponse>;
-  getNotesForTask(taskId: string): Promise<GetNotesForTaskResponse>;
-  getContactsByTagRef(tagRef: string): Promise<GetContactsByTagRefResponse>;
+  ): Promise<GatewayResponse<PatchDetailsInterface>>;
+  getPropertyPatch(
+    uprn: string
+  ): Promise<GatewayResponse<PropertyPatchDetailsInterface>>;
+  getOfficersByAreaId(areaId: number): Promise<GatewayResponse<Officer[]>>;
+  getTasksForTagRef(tag_ref: string): Promise<GatewayResponse<Task[]>>;
+  getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
+  getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
   healthCheck(): Promise<CheckResult>;
-}
-
-interface GetTasksResponse {
-  body?: Task[];
-  error?: string;
-}
-
-interface GetTaskResponse {
-  body?: Task;
-  error?: string;
-}
-
-interface GetNotesForTaskResponse {
-  body?: Note[];
-  error?: string;
-}
-
-export interface GetOfficersByAreaIdResponse {
-  body?: Officer[];
-  error?: string;
-}
-
-interface GetContactsByTagRefResponse {
-  body?: Contact[];
-  error?: string;
 }
 
 class CrmGateway implements CrmGatewayInterface {
@@ -131,7 +94,7 @@ class CrmGateway implements CrmGatewayInterface {
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
-  ): Promise<GetTasksResponse> {
+  ): Promise<GatewayResponse<Task[]>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -151,18 +114,18 @@ class CrmGateway implements CrmGatewayInterface {
         const data = response.data as CrmResponse;
         return {
           body: crmResponseToTasks(data),
-          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });
   }
 
-  public async getTasksForTagRef(tag_ref: string): Promise<GetTasksResponse> {
+  public async getTasksForTagRef(
+    tag_ref: string
+  ): Promise<GatewayResponse<Task[]>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -177,20 +140,18 @@ class CrmGateway implements CrmGatewayInterface {
         const data = response.data as CrmResponse;
         return {
           body: crmResponseToTasks(data),
-          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
         console.log('error: ' + error);
 
         return {
-          body: undefined,
           error: error.message,
         };
       });
   }
 
-  public async getTask(taskId: string): Promise<GetTaskResponse> {
+  public async getTask(taskId: string): Promise<GatewayResponse<Task>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -207,12 +168,10 @@ class CrmGateway implements CrmGatewayInterface {
 
         return {
           body: task,
-          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });
@@ -220,7 +179,7 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getNotesForTask(
     taskId: string
-  ): Promise<GetNotesForTaskResponse> {
+  ): Promise<GatewayResponse<Note[]>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -237,20 +196,18 @@ class CrmGateway implements CrmGatewayInterface {
 
         return {
           body: notes,
-          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });
   }
 
-  public async getUser(
+  public async getUserId(
     emailAddress: string
-  ): Promise<CrmGatewayGetUserResponse> {
+  ): Promise<GatewayResponse<string>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -262,15 +219,19 @@ class CrmGateway implements CrmGatewayInterface {
         this.headers()
       )
       .then((response) => {
-        const data = response.data;
-        return {
-          body: data.value,
-          error: undefined,
-        };
+        if (
+          response.data &&
+          response.data.value &&
+          response.data.value.length > 0 &&
+          response.data.value[0].hackney_estateofficerid
+        ) {
+          return { body: response.data.value[0].hackney_estateofficerid };
+        } else {
+          return { error: 'Could not find user in crm' };
+        }
       })
       .catch((error) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });
@@ -281,7 +242,7 @@ class CrmGateway implements CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ) {
+  ): Promise<GatewayResponse<object>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -302,12 +263,10 @@ class CrmGateway implements CrmGatewayInterface {
         const data = response.headers.location.match(/\((.*?)\)/)[1];
         return {
           body: data,
-          error: undefined,
         };
       })
       .catch((error) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });
@@ -315,7 +274,7 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getPatchByOfficerId(
     officerId: string
-  ): Promise<GetPatchByOfficerIdResponse> {
+  ): Promise<GatewayResponse<PatchDetailsInterface>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -332,12 +291,10 @@ class CrmGateway implements CrmGatewayInterface {
 
         return {
           body: patchDetails,
-          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });
@@ -345,7 +302,7 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getPropertyPatch(
     uprn: string
-  ): Promise<GetPropertyPatchResponse> {
+  ): Promise<GatewayResponse<PropertyPatchDetailsInterface>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -363,12 +320,10 @@ class CrmGateway implements CrmGatewayInterface {
         );
         return {
           body: patchData,
-          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });
@@ -376,7 +331,7 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getOfficersByAreaId(
     areaId: number
-  ): Promise<GetOfficersByAreaIdResponse> {
+  ): Promise<GatewayResponse<Officer[]>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -393,12 +348,10 @@ class CrmGateway implements CrmGatewayInterface {
 
         return {
           body: officers,
-          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });
@@ -406,7 +359,7 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getContactsByTagRef(
     tagRef: string
-  ): Promise<GetContactsByTagRefResponse> {
+  ): Promise<GatewayResponse<Contact[]>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
 
@@ -423,12 +376,10 @@ class CrmGateway implements CrmGatewayInterface {
 
         return {
           body: contacts,
-          error: undefined,
         };
       })
       .catch((error: AxiosError) => {
         return {
-          body: undefined,
           error: error.message,
         };
       });

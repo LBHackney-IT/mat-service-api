@@ -38,7 +38,6 @@ export interface GatewayResponse<T> {
 
 export interface CrmGatewayInterface {
   getTasksForAPatch(
-    officerId: string,
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
@@ -90,7 +89,6 @@ class CrmGateway implements CrmGatewayInterface {
   }
 
   public async getTasksForAPatch(
-    officerId: string,
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
@@ -99,7 +97,6 @@ class CrmGateway implements CrmGatewayInterface {
     if (this.crmApiToken.error) return this.crmApiToken;
 
     const crmQuery = getTasksByPatchAndOfficerIdQuery(
-      officerId,
       isManager,
       areaManagerId,
       patchId
@@ -117,6 +114,7 @@ class CrmGateway implements CrmGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
+        if (error.response) console.log(error.response.data);
         return {
           error: error.message,
         };

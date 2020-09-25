@@ -12,7 +12,6 @@ interface GetTasksForAPatchOptions {
 
 interface GetTasksInterface {
   execute(
-    officerId: string,
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
@@ -26,13 +25,11 @@ class GetTasksForAPatch implements GetTasksInterface {
     this.crmGateway = options.crmGateway;
   }
   public async execute(
-    officerId: string,
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
   ): Promise<GetTasksResponse> {
     return await this.crmGateway.getTasksForAPatch(
-      officerId,
       isManager,
       areaManagerId,
       patchId

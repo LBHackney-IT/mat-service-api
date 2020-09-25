@@ -9,7 +9,6 @@ const dummyMock = jest.fn(async () => ({}));
 
 describe('GetTasks', () => {
   let patchId: string;
-  let officerId: string;
   let areaManagerId: string;
   let isManager: boolean;
   let getTasksForAPatch: any;
@@ -20,7 +19,6 @@ describe('GetTasks', () => {
   beforeEach(() => {
     mockTasks = [MockTask(), MockTask()];
     patchId = faker.random.uuid();
-    officerId = faker.random.uuid();
     areaManagerId = faker.random.uuid();
     isManager = false;
     getTasksForAPatch = jest.fn((async) => ({
@@ -41,15 +39,9 @@ describe('GetTasks', () => {
   });
 
   it('Returns a list of tasks when no errors are found', async () => {
-    const response = await getTasks.execute(
-      officerId,
-      isManager,
-      areaManagerId,
-      patchId
-    );
+    const response = await getTasks.execute(isManager, areaManagerId, patchId);
     expect(getTasksForAPatch).toHaveBeenCalledTimes(1);
     expect(getTasksForAPatch).toHaveBeenCalledWith(
-      officerId,
       isManager,
       areaManagerId,
       patchId
@@ -60,12 +52,7 @@ describe('GetTasks', () => {
   it('Returns a empty list when tasks are not found', async () => {
     mockTasks = [];
 
-    const response = await getTasks.execute(
-      officerId,
-      isManager,
-      areaManagerId,
-      patchId
-    );
+    const response = await getTasks.execute(isManager, areaManagerId, patchId);
     expect(getTasksForAPatch).toHaveBeenCalledTimes(1);
     expect(response.body).toEqual(mockTasks);
   });
@@ -76,12 +63,7 @@ describe('GetTasks', () => {
       error: 'NotAuthorised',
     }));
 
-    const response = await getTasks.execute(
-      officerId,
-      isManager,
-      areaManagerId,
-      patchId
-    );
+    const response = await getTasks.execute(isManager, areaManagerId, patchId);
     expect(crmGateway.getTasksForAPatch).toHaveBeenCalledTimes(1);
     expect(response.error).toEqual('NotAuthorised');
   });

@@ -9,7 +9,14 @@ export interface MatPostgresGatewayInterface {
   createUserMapping(
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse>;
+  getLatestItvTaskSyncDate(): Promise<GenericResponse<Date | null>>;
+  insertItvTask(task: ITVTaskTable): Promise<GenericResponse<boolean>>;
   healthCheck(): Promise<CheckResult>;
+}
+
+interface GenericResponse<T> {
+  body?: T;
+  error?: string;
 }
 
 interface GetUserMappingResponse {
@@ -38,6 +45,20 @@ interface TRAPatchMapping {
   name: string;
   traid: number;
   patchcrmid: string;
+}
+
+interface ITVTaskTable {
+  tag_ref: string;
+  created: Date;
+  crm_id: string;
+}
+
+interface PostgresOptions {
+  user: string;
+  password: string;
+  host: string;
+  port: string;
+  database: string;
 }
 
 class MatPostgresGateway implements MatPostgresGatewayInterface {
@@ -130,6 +151,41 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
         body: error,
         error: 500,
       });
+    }
+  }
+
+  public async getLatestItvTaskSyncDate(): Promise<
+    GenericResponse<Date | null>
+  > {
+    await this.setupInstance();
+
+    try {
+      const results = await this.instance.one(
+        'SELECT MAX(created) FROM itv_tasks'
+      );
+
+      return Promise.resolve({
+        body: results.max,
+        error: undefined,
+      });
+    } catch (error) {
+      return {
+        error: error.message,
+      };
+    }
+  }
+
+  async insertItvTask(task: ITVTaskTable): Promise<GenericResponse<boolean>> {
+    await this.setupInstance();
+
+    try {
+      const results = await this.instance.none(
+        'INSERT INTO itv_tasks (tag_ref, created, crm_id) VALUES (${tag_ref}, ${created}, ${crm_id})',
+        task
+      );
+      return { body: true };
+    } catch (error) {
+      return { error: error.message };
     }
   }
 

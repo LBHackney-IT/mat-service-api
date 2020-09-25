@@ -1,1 +1,1 @@
-DROP TABLE ITVTasks;
+DROP TABLE itv_tasks;

@@ -28,7 +28,7 @@ const Layout: React.FC<LayoutProps> = (props: LayoutProps) => {
 
   return (
     <div>
-      <Header serviceName="Manage A Tenancy" />
+      <Header serviceName="Manage a Tenancy" />
       <Container>
         <PhaseBanner phase="BETA" url={feedbackLink} />
         {showNavBar ? <NavigationBar targets={pageRedirect} /> : null}

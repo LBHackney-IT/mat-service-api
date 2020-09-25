@@ -53,7 +53,11 @@ describe('authentication and authorisation', () => {
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',
-      ['housing-officer-dev'],
+      [
+        'housing-officer-dev',
+        'housing-officer-staging',
+        'housing-officer-production',
+      ],
       jwtSecret
     );
 
@@ -75,12 +79,16 @@ describe('authentication and authorisation', () => {
     expect(response.status).toEqual(200);
   });
 
-  it(`succeeds when the user is authenticated and belongs to the area-housing-manager-dev group`, async () => {
+  it(`succeeds when the user is authenticated and belongs to the area-housing-manager group`, async () => {
     let token = generateToken(
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',
-      ['area-housing-manager-dev'],
+      [
+        'area-housing-manager-dev',
+        'area-housing-manager-staging',
+        'area-housing-manager-production',
+      ],
       jwtSecret
     );
 

@@ -11,7 +11,7 @@ describe('GetUser', () => {
   it('returns 404 when no user exists', async () => {
     CrmGateway.mockImplementationOnce(() => {
       return {
-        getUser: () => ({
+        getUserId: () => ({
           body: undefined,
           error: undefined,
         }),
@@ -30,7 +30,7 @@ describe('GetUser', () => {
   it('returns a 401 if the error is NotAuthorised', async () => {
     CrmGateway.mockImplementationOnce(() => {
       return {
-        getUser: () => ({
+        getUserId: () => ({
           body: undefined,
           error: 'NotAuthorised',
         }),
@@ -49,7 +49,7 @@ describe('GetUser', () => {
   it('returns a 500 for any other error', async () => {
     CrmGateway.mockImplementationOnce(() => {
       return {
-        getUser: () => ({
+        getUserId: () => ({
           body: undefined,
           error: faker.lorem.word(),
         }),
@@ -69,8 +69,8 @@ describe('GetUser', () => {
     const crmUserGuid = faker.lorem.word();
     CrmGateway.mockImplementationOnce(() => {
       return {
-        getUser: () => ({
-          body: [{ hackney_estateofficerid: crmUserGuid }],
+        getUserId: () => ({
+          body: crmUserGuid,
           error: undefined,
         }),
       };

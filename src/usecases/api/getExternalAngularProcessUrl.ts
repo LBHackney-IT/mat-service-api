@@ -88,6 +88,6 @@ export default class GetExternalAngularProcessUrl
     if (!url) return { error: 'Could not load external URL' };
 
     const token = encrypt(JSON.stringify(tokenData), this.encryptionKey);
-    return { body: `${url}?data=${token}` };
+    return { body: `${url}?data=${encodeURIComponent(token)}` };
   }
 }

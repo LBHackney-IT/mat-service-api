@@ -94,7 +94,11 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       });
       officerPatch = await getOfficerPatch.execute();
     }
-    if (officerPatch !== undefined && officerPatch.body !== undefined) {
+    if (
+      officerPatch &&
+      officerPatch.body &&
+      officerPatch.body.patchId !== undefined
+    ) {
       const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
       let patchId = officerPatchDetails.patchId;
       const isManager = officerPatchDetails.isManager;

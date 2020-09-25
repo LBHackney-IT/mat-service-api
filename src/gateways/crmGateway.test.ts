@@ -38,13 +38,12 @@ describe('CrmGateway', () => {
 
       const tasks = crmResponseToTasks(data);
 
-      expect(response).toStrictEqual({ body: tasks, error: undefined });
+      expect(response).toStrictEqual({ body: tasks });
     });
 
     it('returns an human readable error when unsuccessful', async () => {
       const errorMessage = 'Network Error';
       const errorResponse = {
-        body: undefined,
         error: errorMessage,
       };
       const officerId = faker.lorem.word();
@@ -74,9 +73,11 @@ describe('CrmGateway', () => {
       axios.get.mockResolvedValue({ data: data });
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getUser(emailAddress);
+      const response = await crmGateway.getUserId(emailAddress);
 
-      expect(response).toStrictEqual({ body: data.value, error: undefined });
+      expect(response).toStrictEqual({
+        body: data.value[0].hackney_estateofficerid,
+      });
     });
 
     it('returns an error from the API', async () => {
@@ -87,7 +88,7 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getNotesForTask(emailAddress);
 
-      expect(response).toStrictEqual({ body: undefined, error: error });
+      expect(response).toStrictEqual({ error: error });
     });
   });
 
@@ -102,7 +103,7 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getNotesForTask(id);
 
-      expect(response).toStrictEqual({ body: notes, error: undefined });
+      expect(response).toStrictEqual({ body: notes });
     });
 
     it('returns an error from the API', async () => {
@@ -113,7 +114,7 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getNotesForTask(id);
 
-      expect(response).toStrictEqual({ body: undefined, error: error });
+      expect(response).toStrictEqual({ error: error });
     });
   });
 
@@ -141,7 +142,7 @@ describe('CrmGateway', () => {
       axios.get.mockResolvedValue({ data: data });
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getPropertyPatch(uprn);
-      expect(response).toEqual({ body: expectedData, error: undefined });
+      expect(response).toEqual({ body: expectedData });
     });
 
     it('returns an error from the API', async () => {
@@ -152,7 +153,7 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getPropertyPatch(uprn);
 
-      expect(response).toEqual({ body: undefined, error: error });
+      expect(response).toEqual({ error: error });
     });
   });
 
@@ -168,13 +169,12 @@ describe('CrmGateway', () => {
 
       const tasks = crmResponseToTasks(data);
 
-      expect(response).toStrictEqual({ body: tasks, error: undefined });
+      expect(response).toStrictEqual({ body: tasks });
     });
 
     it('returns an human readable error when unsuccessful', async () => {
       const errorMessage = 'Network Error';
       const errorResponse = {
-        body: undefined,
         error: errorMessage,
       };
       const tagRef = '123456/01';
@@ -200,7 +200,6 @@ describe('CrmGateway', () => {
 
       expect(response).toEqual({
         body: crmToOfficersDetails(data),
-        error: undefined,
       });
     });
 
@@ -212,7 +211,7 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getOfficersByAreaId(areaId);
 
-      expect(response).toEqual({ body: undefined, error: error });
+      expect(response).toEqual({ error: error });
     });
   });
 });

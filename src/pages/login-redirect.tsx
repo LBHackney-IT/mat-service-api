@@ -1,12 +1,12 @@
 import React from 'react';
 import isLoggedIn from '../usecases/ui/isLoggedIn';
-import LayoutLogin from '../components/layout';
+import Layout from '../components/layout';
 import { Paragraph, Heading, HeadingLevels, Link } from 'lbh-frontend-react';
 import cookie from 'cookie';
 
 const LoginRedirectPage: React.FC = () => {
   return (
-    <LayoutLogin>
+    <Layout>
       <div className="lbh-container">
         <div className="loginPage">
           <Heading level={HeadingLevels.H1}>Please sign in</Heading>
@@ -38,7 +38,7 @@ const LoginRedirectPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </LayoutLogin>
+    </Layout>
   );
 };
 

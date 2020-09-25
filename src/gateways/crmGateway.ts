@@ -8,6 +8,7 @@ import getUserByEmail from './xmlQueryStrings/getUserByEmail';
 import getPatchByOfficerId from './xmlQueryStrings/getPatchByOfficerId';
 import getContactsByTagRef from './xmlQueryStrings/getContactsByTagRef';
 import crmToPatchDetails, {
+  CrmPatchDetailsInterface,
   PatchDetailsInterface,
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
@@ -20,10 +21,10 @@ import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
 import crmToPropertyPatch, {
   PropertyPatchDetailsInterface,
 } from '../mappings/crmToPropertyPatch';
-import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
+import { CrmPropertyPatchInterface } from '../mappings/crmToPropertyPatch';
 import { Note, CrmNote } from '../interfaces/note';
 import Contact from '../interfaces/contact';
-import { crmResponseToContacts } from '../mappings/crmToContact';
+import { CrmContacts, crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
 
 export interface CrmResponse {
@@ -63,6 +64,11 @@ export interface CrmGatewayInterface {
   healthCheck(): Promise<CheckResult>;
 }
 
+interface AxiosResponse {
+  data?: CrmResponse;
+  error?: AxiosError;
+}
+
 class CrmGateway implements CrmGatewayInterface {
   crmTokenGateway: CrmTokenGatewayInterface;
   crmApiToken: any;
@@ -88,91 +94,64 @@ class CrmGateway implements CrmGatewayInterface {
     }
   }
 
+  async doAxiosGet(url: string): Promise<AxiosResponse> {
+    await this.updateToken();
+    if (this.crmApiToken.error) return this.crmApiToken;
+
+    return axios
+      .get(`${process.env.CRM_API_URL}${url}`, this.headers())
+      .then((response) => {
+        return { data: response.data as CrmResponse };
+      })
+      .catch((error: AxiosError) => {
+        return { error };
+      });
+  }
+
   public async getTasksForAPatch(
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
   ): Promise<GatewayResponse<Task[]>> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getTasksByPatchAndOfficerIdQuery(
       isManager,
       areaManagerId,
       patchId
     );
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`
+    );
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        const data = response.data as CrmResponse;
-        return {
-          body: crmResponseToTasks(data),
-        };
-      })
-      .catch((error: AxiosError) => {
-        if (error.response) console.log(error.response.data);
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error || !result.data) {
+      return { error: 'Error getting tasks by patch and officer' };
+    }
+    return { body: crmResponseToTasks(result.data) };
   }
 
   public async getTasksForTagRef(
     tag_ref: string
   ): Promise<GatewayResponse<Task[]>> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getTasksByTagRef(tag_ref);
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`
+    );
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        const data = response.data as CrmResponse;
-        return {
-          body: crmResponseToTasks(data),
-        };
-      })
-      .catch((error: AxiosError) => {
-        console.log('error: ' + error);
-
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error || !result.data) {
+      return { error: 'Error getting tasks for tag ref' };
+    }
+    return { body: crmResponseToTasks(result.data) };
   }
 
   public async getTask(taskId: string): Promise<GatewayResponse<Task>> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getTaskById(taskId);
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`
+    );
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        const data = response.data as CrmResponse;
-        const task = crmResponseToTask(data);
-
-        return {
-          body: task,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error || !result.data) {
+      return { error: 'Error getting task' };
+    }
+    return { body: crmResponseToTask(result.data) };
   }
 
   public async getNotesForTask(
@@ -180,59 +159,38 @@ class CrmGateway implements CrmGatewayInterface {
   ): Promise<GatewayResponse<Note[]>> {
     await this.updateToken();
     if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getNotesForTaskById(taskId);
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        const data = response.data as CrmResponse;
-        const notes = crmToNotes(data);
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`
+    );
 
-        return {
-          body: notes,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error || !result.data) {
+      return { error: 'Error getting notes for task' };
+    }
+    return { body: crmToNotes(result.data) };
   }
 
   public async getUserId(
     emailAddress: string
   ): Promise<GatewayResponse<string>> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getUserByEmail(emailAddress);
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`
+    );
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        if (
-          response.data &&
-          response.data.value &&
-          response.data.value.length > 0 &&
-          response.data.value[0].hackney_estateofficerid
-        ) {
-          return { body: response.data.value[0].hackney_estateofficerid };
-        } else {
-          return { error: 'Could not find user in crm' };
-        }
-      })
-      .catch((error) => {
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error) return { error: result.error.message };
+    const data = result.data as any;
+    if (
+      data &&
+      data.value &&
+      data.value.length > 0 &&
+      data.value[0].hackney_estateofficerid
+    ) {
+      return { body: data.value[0].hackney_estateofficerid };
+    } else {
+      return { error: 'Could not find user in crm' };
+    }
   }
 
   public async createUser(
@@ -273,114 +231,65 @@ class CrmGateway implements CrmGatewayInterface {
   public async getPatchByOfficerId(
     officerId: string
   ): Promise<GatewayResponse<PatchDetailsInterface>> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getPatchByOfficerId(officerId);
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`
+    );
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        const data = response.data;
-        const patchDetails: PatchDetailsInterface = crmToPatchDetails(data);
-
-        return {
-          body: patchDetails,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error || !result.data) {
+      return { error: 'Error getting patch by officer id' };
+    }
+    return {
+      body: crmToPatchDetails(result.data as CrmPatchDetailsInterface),
+    };
   }
 
   public async getPropertyPatch(
     uprn: string
   ): Promise<GatewayResponse<PropertyPatchDetailsInterface>> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getPropertyPatchByUprn(uprn);
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`
+    );
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        const data = response.data as CrmResponseInterface;
-        const patchData: PropertyPatchDetailsInterface = crmToPropertyPatch(
-          data
-        );
-        return {
-          body: patchData,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error || !result.data) {
+      return { error: 'Error getting property patch' };
+    }
+    return {
+      body: crmToPropertyPatch(result.data as CrmPropertyPatchInterface),
+    };
   }
 
   public async getOfficersByAreaId(
     areaId: number
   ): Promise<GatewayResponse<Officer[]>> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getOfficersByAreaId(areaId);
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`
+    );
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        const data = response.data;
-        const officers: Officer[] = crmToOfficersDetails(data);
-
-        return {
-          body: officers,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error || !result.data) {
+      return { error: 'Error getting officers by area id' };
+    }
+    return {
+      body: crmToOfficersDetails(result.data),
+    };
   }
 
   public async getContactsByTagRef(
     tagRef: string
   ): Promise<GatewayResponse<Contact[]>> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const crmQuery = getContactsByTagRef(tagRef);
+    const result = await this.doAxiosGet(
+      `/api/data/v8.2/contacts?fetchXml=${crmQuery}`
+    );
 
-    return await axios
-      .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
-        this.headers()
-      )
-      .then((response) => {
-        const data = response.data;
-        const contacts = crmResponseToContacts(data);
-
-        return {
-          body: contacts,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+    if (result.error || !result.data) {
+      return { error: 'Error getting contacts by tag ref' };
+    }
+    return {
+      body: crmResponseToContacts(result.data as CrmContacts),
+    };
   }
 
   public async healthCheck(): Promise<CheckResult> {

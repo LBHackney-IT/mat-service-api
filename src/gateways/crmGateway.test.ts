@@ -47,24 +47,18 @@ describe('CrmGateway', () => {
     });
 
     it('returns an human readable error when unsuccessful', async () => {
-      const errorMessage = 'Network Error';
-      const errorResponse = {
-        error: errorMessage,
-      };
-      const isManager = faker.random.boolean();
-      const areaManagerId = faker.lorem.word();
-      const patchId = faker.lorem.word();
-
-      axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
+      axios.get.mockReturnValue(Promise.reject(new Error()));
 
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksForAPatch(
-        isManager,
-        areaManagerId,
-        patchId
+        faker.random.boolean(),
+        faker.lorem.word(),
+        faker.lorem.word()
       );
 
-      expect(response).toStrictEqual(errorResponse);
+      expect(response).toStrictEqual({
+        error: 'Error getting tasks by patch and officer',
+      });
     });
   });
 
@@ -84,14 +78,12 @@ describe('CrmGateway', () => {
     });
 
     it('returns an error from the API', async () => {
-      const emailAddress = faker.internet.email();
-      const error = faker.lorem.words();
-      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+      axios.get.mockReturnValue(Promise.reject(new Error()));
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getNotesForTask(emailAddress);
+      const response = await crmGateway.getNotesForTask(faker.internet.email());
 
-      expect(response).toStrictEqual({ error: error });
+      expect(response).toStrictEqual({ error: 'Error getting notes for task' });
     });
   });
 
@@ -117,7 +109,7 @@ describe('CrmGateway', () => {
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getNotesForTask(id);
 
-      expect(response).toStrictEqual({ error: error });
+      expect(response).toStrictEqual({ error: 'Error getting notes for task' });
     });
   });
 
@@ -150,13 +142,12 @@ describe('CrmGateway', () => {
 
     it('returns an error from the API', async () => {
       const uprn = '100023006827';
-      const error = faker.lorem.words();
-      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+      axios.get.mockReturnValue(Promise.reject(new Error()));
 
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getPropertyPatch(uprn);
 
-      expect(response).toEqual({ error: error });
+      expect(response).toEqual({ error: 'Error getting property patch' });
     });
   });
 
@@ -176,18 +167,12 @@ describe('CrmGateway', () => {
     });
 
     it('returns an human readable error when unsuccessful', async () => {
-      const errorMessage = 'Network Error';
-      const errorResponse = {
-        error: errorMessage,
-      };
-      const tagRef = '123456/01';
-
-      axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
+      axios.get.mockReturnValue(Promise.reject(new Error()));
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getTasksForTagRef(tagRef);
+      const response = await crmGateway.getTasksForTagRef('123456/01');
 
-      expect(response).toEqual(errorResponse);
+      expect(response).toEqual({ error: 'Error getting tasks for tag ref' });
     });
   });
 
@@ -207,14 +192,12 @@ describe('CrmGateway', () => {
     });
 
     it('returns an error from the API', async () => {
-      const areaId = 1;
-      const error = faker.lorem.words();
-      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+      axios.get.mockReturnValue(Promise.reject(new Error()));
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getOfficersByAreaId(areaId);
+      const response = await crmGateway.getOfficersByAreaId(1);
 
-      expect(response).toEqual({ error: error });
+      expect(response).toEqual({ error: 'Error getting officers by area id' });
     });
   });
 });

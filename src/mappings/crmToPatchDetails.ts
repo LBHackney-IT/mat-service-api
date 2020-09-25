@@ -8,7 +8,7 @@ export interface PatchDetailsInterface {
   areaId?: number;
 }
 
-interface crmResponseInterface {
+export interface CrmPatchDetailsInterface {
   '@odata.context': string;
   value: {
     hackney_name: string;
@@ -25,7 +25,7 @@ interface crmResponseInterface {
 }
 
 const crmToPatchDetails = (
-  crmResponse: crmResponseInterface
+  crmResponse: CrmPatchDetailsInterface
 ): PatchDetailsInterface => {
   const patchDetails: PatchDetailsInterface = {
     patchId: crmResponse.value[0].officerPatchId,
@@ -40,7 +40,7 @@ const crmToPatchDetails = (
   return patchDetails;
 };
 
-const getAreaManagerId = (crmResponse: crmResponseInterface) => {
+const getAreaManagerId = (crmResponse: CrmPatchDetailsInterface) => {
   let areaManagerId = undefined;
 
   if (crmResponse.value[0].managerId != undefined) {
@@ -51,7 +51,7 @@ const getAreaManagerId = (crmResponse: crmResponseInterface) => {
   return areaManagerId;
 };
 
-const getAreaId = (crmResponse: crmResponseInterface) => {
+const getAreaId = (crmResponse: CrmPatchDetailsInterface) => {
   let areaId = undefined;
   if (crmResponse.value[0].officerAreaId != undefined) {
     areaId = crmResponse.value[0].officerAreaId;

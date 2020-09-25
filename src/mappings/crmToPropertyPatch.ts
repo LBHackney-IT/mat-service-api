@@ -1,4 +1,4 @@
-export interface CrmResponseInterface {
+export interface CrmPropertyPatchInterface {
   '@odata.context': string;
   value: [
     {
@@ -21,11 +21,11 @@ export interface PropertyPatchDetailsInterface {
   areaName: string;
   ward: string;
   officerFullName: string;
-  original: CrmResponseInterface;
+  original: CrmPropertyPatchInterface;
 }
 
 const crmToPropertyPatch = (
-  crmData: CrmResponseInterface
+  crmData: CrmPropertyPatchInterface
 ): PropertyPatchDetailsInterface => {
   const patchData = crmData.value[0];
   return {

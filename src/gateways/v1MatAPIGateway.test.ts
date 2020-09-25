@@ -218,9 +218,9 @@ describe('v1MatAPIGateway', () => {
   describe('createTaskNotes', () => {
     it('makes the request to the correct URL with the correct token', () => {
       const dummyPayload = MockCreateNote();
-      axios.post.mockResolvedValue(Promise.resolve());
+      axios.patch.mockResolvedValue(Promise.resolve());
       gateway.createTaskNote(dummyPayload);
-      expect(axios.post).toHaveBeenCalledWith(
+      expect(axios.patch).toHaveBeenCalledWith(
         'http://dummy-api.com/v1/TenancyManagementInteractions',
         dummyPayload,
         {
@@ -234,7 +234,7 @@ describe('v1MatAPIGateway', () => {
     it('returns the result after a successful request', async () => {
       const dummyPayload = MockCreateNote();
 
-      axios.post.mockResolvedValue({ data: { interactionId: 'dummy' } });
+      axios.patch.mockResolvedValue({ data: { interactionId: 'dummy' } });
       const response = await gateway.createTenancyManagementInteraction(
         dummyPayload
       );
@@ -247,7 +247,7 @@ describe('v1MatAPIGateway', () => {
       const error = 'Network Error';
       const errorResponse = { error: `V1 API: ${error}` };
 
-      axios.post.mockReturnValue(Promise.reject(new Error(error)));
+      axios.patch.mockReturnValue(Promise.reject(new Error(error)));
 
       const response = await gateway.createTaskNote(dummyPayload);
 

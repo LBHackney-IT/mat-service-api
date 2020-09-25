@@ -44,7 +44,6 @@ export default async (
     req: NextApiRequest,
     res: NextApiResponse<boolean | Error>
   ) => {
-    console.log(req.body);
     if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
       return res.status(500).end();
     }

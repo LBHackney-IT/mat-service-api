@@ -91,8 +91,9 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
   }
 
   public async createTaskNote(note: NewNote) {
+    console.log('NOTE', note);
     const response = await axios
-      .post(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, note, {
+      .patch(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, note, {
         headers: {
           Authorization: `Bearer ${this.v1MatApiToken}`,
         },
@@ -104,6 +105,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
+        console.log('ERROR', error);
         return {
           error: `V1 API: ${error.message}`,
         };

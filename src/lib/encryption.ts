@@ -1,5 +1,5 @@
 const Rijndael = require('rijndael-js');
-var pkcs7 = require('pkcs7-padding');
+const pkcs7 = require('pkcs7-padding');
 
 const iv = Buffer.from([
   53,

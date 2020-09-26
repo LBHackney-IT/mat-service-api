@@ -7,7 +7,7 @@ export default function generateToken(
   groups: string[],
   secret: string
 ) {
-  let body = {
+  const body = {
     sub: id,
     email: email,
     iss: 'Hackney',

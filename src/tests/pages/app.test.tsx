@@ -14,7 +14,7 @@ describe('App', () => {
       headers: {},
     };
 
-    let res = {
+    const res = {
       writeHead: jest.fn().mockReturnValue({ end: () => {} }),
       end: jest.fn(),
     };
@@ -30,7 +30,7 @@ describe('App', () => {
   });
 
   it('redirects to login redirect page if authenticated but not in a valid group', async () => {
-    let token = generateToken(
+    const token = generateToken(
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',
@@ -44,7 +44,7 @@ describe('App', () => {
       },
     };
 
-    let res = {
+    const res = {
       writeHead: jest.fn().mockReturnValue({ end: () => {} }),
       end: jest.fn(),
     };
@@ -60,7 +60,7 @@ describe('App', () => {
   });
 
   it('does not redirect if authenticated and in a valid group', async () => {
-    let token = generateToken(
+    const token = generateToken(
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',
@@ -74,11 +74,11 @@ describe('App', () => {
       },
     };
 
-    let res = {
+    const res = {
       writeHead: jest.fn().mockReturnValue({ end: () => {} }),
       end: jest.fn(),
     };
-    let pathname = '/foo';
+    const pathname = '/foo';
 
     expect.assertions(1);
 

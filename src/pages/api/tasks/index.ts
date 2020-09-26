@@ -101,7 +101,7 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       officerPatch.body.patchId !== undefined
     ) {
       const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
-      let patchId = officerPatchDetails.patchId;
+      const patchId = officerPatchDetails.patchId;
       const isManager = officerPatchDetails.isManager;
       const areaManagerId =
         officerPatchDetails.areaManagerId !== undefined

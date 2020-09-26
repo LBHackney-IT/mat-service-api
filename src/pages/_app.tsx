@@ -33,7 +33,7 @@ MaTApp.getInitialProps = async (context: AppContext) => {
   }
 
   if (context.ctx.req.headers && context.ctx.req.headers.cookie) {
-    let parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
+    const parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
 
     if (
       !parsedCookie ||

@@ -44,7 +44,7 @@ const LoginRedirectPage: React.FC = () => {
 
 export function getServerSideProps(context: any) {
   if (context.req.headers.cookie) {
-    let parsedCookie = cookie.parse(context.req.headers.cookie);
+    const parsedCookie = cookie.parse(context.req.headers.cookie);
 
     if (
       parsedCookie &&

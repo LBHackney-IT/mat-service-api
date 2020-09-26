@@ -21,9 +21,7 @@ jest.mock('../gateways/crmTokenGateway');
 describe('CrmGateway', () => {
   beforeEach(() => {
     axios.mockClear();
-    CrmTokenGateway.prototype.getToken.mockResolvedValue(() =>
-      Promise.resolve({ body: 'fakeToken' })
-    );
+    CrmTokenGateway.prototype.getToken.mockResolvedValue(() => 'fakeToken');
   });
 
   describe('Get Tasks by patch id', () => {

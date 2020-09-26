@@ -3,6 +3,7 @@ import CrmTokenGateway from '../../gateways/crmTokenGateway';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
 import CrmGateway from '../../gateways/crmGateway';
+import { isSuccess } from '../../lib/utils';
 
 type Data = {
   result: string;
@@ -100,7 +101,7 @@ const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
   const checkPromise = new Promise(async (resolve, reject) => {
     const crmTokenGateway = new CrmTokenGateway();
     const response = await crmTokenGateway.getToken();
-    response.body ? resolve() : reject();
+    isSuccess(response) ? resolve() : reject();
   });
   return promiseTimeout(5000, checkPromise)
     .then(() => {

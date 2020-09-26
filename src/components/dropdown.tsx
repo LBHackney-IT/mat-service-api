@@ -30,7 +30,9 @@ const Dropdown = ({ options, selected, onChange }: DropdownProps) => {
 
   return (
     <div className="govuk-form-group lbh-form-group">
-      <Label id="selectLabel">Select</Label>
+      <Label id="selectLabel" labelFor="selectOption">
+        Select
+      </Label>
       <div className="govuk-select lbh-select">
         <select
           defaultValue={currentlySelected}

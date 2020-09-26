@@ -32,7 +32,7 @@ import { Tenancy } from '../interfaces/tenancy';
 
 export interface CrmResponse {
   '@odata.context': string;
-  value: object | object[];
+  value: Record<string, unknown> | Record<string, unknown>[];
 }
 
 export interface GenericCrmResponse<T> {
@@ -58,7 +58,7 @@ export interface CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<object>>;
+  ): Promise<GatewayResponse<Record<string, unknown>>>;
   getPatchByOfficerId(
     emailAddress: string
   ): Promise<GatewayResponse<PatchDetailsInterface>>;
@@ -249,7 +249,7 @@ class CrmGateway implements CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<object>> {
+  ): Promise<GatewayResponse<Record<string, unknown>>> {
     await this.updateToken();
     if (!this.crmApiToken) return { error: 'CRM token missing' };
 

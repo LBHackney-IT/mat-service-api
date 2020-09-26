@@ -6,16 +6,16 @@ export interface Officer {
   patchid: string;
 }
 
-interface CrmOfficerValue {
+type CrmOfficerValue = {
   'estateOfficerId@OData.Community.Display.V1.FormattedValue': string;
   estateOfficerId: string;
   estateOfficerPatchId: string;
-}
+};
 
-export interface CrmOfficers {
+export type CrmOfficers = {
   '@odata.context': string;
   value: CrmOfficerValue[];
-}
+};
 
 export const crmToOfficersDetails = (data: CrmResponse): Officer[] => {
   const crmOfficers = data as CrmOfficers;

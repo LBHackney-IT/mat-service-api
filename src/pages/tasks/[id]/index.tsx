@@ -125,11 +125,9 @@ export default function TaskPage() {
   };
 
   const sendToManager = () => {
-    sendTaskToManager(task.id)
-      .then(() => {})
-      .catch(() => {
-        setError('sendToManagerError');
-      });
+    sendTaskToManager(task.id).catch(() => {
+      setError('sendToManagerError');
+    });
   };
 
   const closeTaskHandler = () => {

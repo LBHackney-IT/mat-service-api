@@ -17,7 +17,7 @@ export interface NewNote {
   estateOfficerId: string; //officer's CRM id
 }
 
-export interface CrmNote {
+export type CrmNote = {
   '@odata.etag': string;
   hackney_tenancymanagementinteractionsid: string;
   'incident1_x002e_housing_requestcallback@OData.Community.Display.V1.FormattedValue': string;
@@ -33,4 +33,4 @@ export interface CrmNote {
   //createdOn is in the format YYYY-MM-DDTHH:MM:SSZ
   incident1_x002e_incidentid: string;
   annotation2_x002e_annotationid: string;
-}
+};

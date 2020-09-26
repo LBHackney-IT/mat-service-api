@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const server = require('restana')();
 const app = require('next')({ dev: false });
 const files = require('serve-static');

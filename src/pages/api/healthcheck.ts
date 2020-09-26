@@ -36,18 +36,16 @@ const promiseTimeout = function (ms: number, promise: Promise<any>) {
 };
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  switch (req.method) {
-    case 'GET':
-      const result = await runChecks(checks);
-      if (result.success) {
-        res.status(200).json({ result: 'success' });
-      } else {
-        res.status(500).json({ result: 'failure', messages: result.messages });
-      }
-      break;
-    default:
-      res.setHeader('Allow', ['GET']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+  if (req.method === 'GET') {
+    const result = await runChecks(checks);
+    if (result.success) {
+      res.status(200).json({ result: 'success' });
+    } else {
+      res.status(500).json({ result: 'failure', messages: result.messages });
+    }
+  } else {
+    res.setHeader('Allow', ['GET']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };
 
@@ -98,9 +96,9 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
 };
 
 const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
-  const checkPromise = new Promise(async (resolve, reject) => {
+  const checkPromise = new Promise((resolve, reject) => {
     const crmTokenGateway = new CrmTokenGateway();
-    const response = await crmTokenGateway.getToken();
+    const response = crmTokenGateway.getToken();
     isSuccess(response) ? resolve() : reject();
   });
   return promiseTimeout(5000, checkPromise)

@@ -1,8 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import CrmTokenGateway, {
-  CrmTokenGatewayInterface,
-  CrmTokenGatewayResponse,
-} from './crmTokenGateway';
+import CrmTokenGateway, { CrmTokenGatewayInterface } from './crmTokenGateway';
 import { Task } from '../interfaces/task';
 import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';

@@ -1,8 +1,6 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import UserMapping from '../../interfaces/userMapping';
-import { Task, ProcessType } from '../../interfaces/task';
-import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
+import { Task } from '../../interfaces/task';
 import {
   GetExternalProcessUrlInterface,
   GetExternalProcessUrlOptions,

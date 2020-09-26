@@ -8,7 +8,7 @@ import { ServerResponse } from 'http';
 const unauthenticatedLandingPage = '/login-redirect';
 const unauthenticatedErrorPage = '/login-error';
 
-function MaTApp({ Component, pageProps }: AppProps) {
+function MaTApp({ Component, pageProps }: AppProps): React.ReactNode {
   return <Component {...pageProps} />;
 }
 

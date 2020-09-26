@@ -47,7 +47,10 @@ const doPost = async (
   res.status(postResponse.error).end();
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   switch (req.method) {
     case 'GET':
       await doGet(req, res);

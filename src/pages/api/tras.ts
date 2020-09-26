@@ -6,7 +6,10 @@ import { officerPatchAssociationInterface } from '../../usecases/api/getTRAs';
 
 type Data = officerPatchAssociationInterface | undefined;
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   if (req.method === 'GET') {
     const emailAddress = req.query.emailAddress
       ? Array.isArray(req.query.emailAddress)

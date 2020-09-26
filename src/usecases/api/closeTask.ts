@@ -1,5 +1,4 @@
-import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { Task } from '../../interfaces/task';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';

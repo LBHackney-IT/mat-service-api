@@ -5,7 +5,6 @@ import CreateUser from '../../usecases/api/createUser';
 import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import { FaGoogleWallet } from 'react-icons/fa';
 
 interface Data {
   users?: any;
@@ -94,7 +93,10 @@ const doPost = async (
   res.status(postResponse.error).end();
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   switch (req.method) {
     case 'GET':
       await doGet(req, res);

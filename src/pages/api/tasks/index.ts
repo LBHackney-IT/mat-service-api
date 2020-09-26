@@ -13,7 +13,10 @@ import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayloa
 
 type Data = Task[] | { error: string } | undefined;
 
-const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+const postHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
     return res.status(500).end();
   }
@@ -55,7 +58,10 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 };
 
-const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+const getHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   const crmGateway = new CrmGateway();
   const tag_ref = Array.isArray(req.query.tag_ref)
     ? req.query.tag_ref[0]
@@ -133,7 +139,10 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   switch (req.method) {
     case 'GET':
       return await getHandler(req, res);

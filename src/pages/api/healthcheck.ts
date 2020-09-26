@@ -35,7 +35,10 @@ const promiseTimeout = function (ms: number, promise: Promise<any>) {
   return Promise.race([promise, timeout]);
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   if (req.method === 'GET') {
     const result = await runChecks(checks);
     if (result.success) {

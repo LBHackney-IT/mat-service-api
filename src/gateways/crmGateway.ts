@@ -1,5 +1,8 @@
 import axios, { AxiosError } from 'axios';
-import CrmTokenGateway, { CrmTokenGatewayInterface } from './crmTokenGateway';
+import CrmTokenGateway, {
+  CrmTokenGatewayInterface,
+  CrmTokenGatewayResponse,
+} from './crmTokenGateway';
 import { Task } from '../interfaces/task';
 import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
@@ -22,7 +25,7 @@ import crmToPropertyPatch, {
   PropertyPatchDetailsInterface,
 } from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
-import { Note, CrmNote } from '../interfaces/note';
+import { Note } from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
@@ -73,6 +76,13 @@ export interface CrmGatewayInterface {
   healthCheck(): Promise<CheckResult>;
 }
 
+type Headers = {
+  headers: {
+    Authorization: string;
+    Prefer: string;
+  };
+};
+
 class CrmGateway implements CrmGatewayInterface {
   crmTokenGateway: CrmTokenGatewayInterface;
   crmApiToken: string | undefined;
@@ -92,7 +102,7 @@ class CrmGateway implements CrmGatewayInterface {
     };
   }
 
-  async updateToken() {
+  async updateToken(): Promise<void> {
     if (!this.crmApiToken) {
       const result = await this.crmTokenGateway.getToken();
       if (isSuccess(result)) this.crmApiToken = result;
@@ -420,11 +430,11 @@ class CrmGateway implements CrmGatewayInterface {
     if (this.crmApiToken) return errorMsg;
 
     return await axios
-      .get(
+      .get<CrmResponse>(
         `${process.env.CRM_API_URL}/api/data/v8.2/contacts?$select=createdon&$top=1`,
         this.headers()
       )
-      .then((response: any) => {
+      .then((response) => {
         if (
           response.data &&
           response.data.value &&
@@ -436,6 +446,7 @@ class CrmGateway implements CrmGatewayInterface {
         }
       })
       .catch((error: AxiosError) => {
+        if (error.response) console.log(error.response.data);
         return errorMsg;
       });
   }

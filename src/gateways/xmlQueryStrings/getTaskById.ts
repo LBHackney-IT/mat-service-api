@@ -1,6 +1,5 @@
-const getTaskById = (taskId: string) => {
-  return `
-    <fetch>
+export default (taskId: string): string => `
+<fetch>
     <entity name="hackney_tenancymanagementinteractions">
         <attribute name="hackney_contactid" />
         <attribute name="hackney_handleby" />
@@ -56,6 +55,3 @@ const getTaskById = (taskId: string) => {
     </entity>
     </fetch>
     `;
-};
-
-export default getTaskById;

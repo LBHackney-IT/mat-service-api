@@ -4,14 +4,17 @@ import GetOfficerPatch from './getOfficerPatch';
 import {
   mockV1MatApiGateway,
   mockCrmGateway,
+  mockMatPostgresGateway,
 } from '../../tests/helpers/mockGateways';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 jest.mock('./getOfficerPatch');
 
 describe('createManualTasks', () => {
   let usecase: CreateManualTaskUseCase;
   let v1MatAPIGateway: v1MatAPIGatewayInterface;
   let crmGateway: CrmGatewayInterface;
+  let matPostgresGateway: MatPostgresGatewayInterface;
   let dummyGetOfficerPatch = { execute: jest.fn() };
   let dummyCallData: any;
   let dummyOfficerId = 'dummyOfficerId';
@@ -42,7 +45,12 @@ describe('createManualTasks', () => {
     GetOfficerPatch.mockImplementationOnce(() => dummyGetOfficerPatch);
     v1MatAPIGateway = mockV1MatApiGateway();
     crmGateway = mockCrmGateway();
-    usecase = new CreateManualTaskUseCase({ v1MatAPIGateway, crmGateway });
+    matPostgresGateway = mockMatPostgresGateway();
+    usecase = new CreateManualTaskUseCase({
+      v1MatAPIGateway,
+      crmGateway,
+      matPostgresGateway,
+    });
   });
 
   it('should use the correct data for the TMI', async () => {

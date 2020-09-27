@@ -1,5 +1,7 @@
+import PostgresConnection, { PostgresOptions } from '../lib/postgresConnection';
 import { CheckResult } from '../pages/api/healthcheck';
-import { FaLeaf } from 'react-icons/fa';
+import pgPromise from 'pg-promise';
+import { IClient } from 'pg-promise/typescript/pg-subset';
 
 export interface MatPostgresGatewayInterface {
   getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>;
@@ -16,8 +18,8 @@ interface GetUserMappingResponse {
 }
 
 export interface CreateUserMappingResponse {
-  body: UserMappingTable[];
-  error: number | undefined;
+  body?: boolean;
+  error?: number;
 }
 
 interface UserMappingTable {
@@ -38,51 +40,33 @@ interface TRAPatchMapping {
   patchcrmid: string;
 }
 
-interface PostgresOptions {
-  user: string;
-  password: string;
-  host: string;
-  port: string;
-  database: string;
-}
-
 class MatPostgresGateway implements MatPostgresGatewayInterface {
-  instance: any;
+  instance: pgPromise.IDatabase<{}, IClient>;
+
   constructor() {
-    this.instance;
-  }
-
-  async setupInstance() {
     if (
-      !process.env.DB_HOST ||
-      !process.env.DB_PASSWORD ||
-      !process.env.DB_USER ||
-      !process.env.DB_NAME
+      process.env.DB_HOST &&
+      process.env.DB_PASSWORD &&
+      process.env.DB_USER &&
+      process.env.DB_NAME
     ) {
-      return;
-    }
-
-    let db = this.instance;
-    if (!db) {
-      const { default: pgp } = await import('pg-promise');
-      let options = {
+      const options: PostgresOptions = {
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         host: process.env.DB_HOST,
         port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
         database: process.env.DB_NAME,
       };
-
-      this.instance = pgp()(options);
-      delete this.instance.constructor;
+      const pgConn = new PostgresConnection(options);
+      this.instance = pgConn.getConnection();
+    } else {
+      throw new Error('Missing postgres configuration variables');
     }
   }
 
   public async getTrasByPatchId(
     patchId: string
   ): Promise<GetTRAPatchMappingResponse> {
-    await this.setupInstance();
-
     try {
       const results: TRAPatchMapping[] = await this.instance.many(
         'SELECT  TRA.Name, TRA.TraId, TRAPatchAssociation.PatchCRMId FROM	TRA INNER JOIN TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId WHERE TRAPatchAssociation.PatchCRMId = ${id}',
@@ -105,8 +89,6 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
   public async getUserMapping(
     emailAddress: string
   ): Promise<GetUserMappingResponse> {
-    await this.setupInstance();
-
     try {
       const result: UserMappingTable = await this.instance.one(
         'SELECT * FROM usermappings WHERE emailaddress = $1',
@@ -135,18 +117,16 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
   public async createUserMapping(
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse> {
-    await this.setupInstance();
-
     try {
       const results = await this.instance.none(
         'INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${username})',
         userMapping
       );
 
-      return Promise.resolve({
-        body: results,
+      return {
+        body: true,
         error: undefined,
-      });
+      };
     } catch (error) {
       console.log('Error:', error.message);
       return Promise.resolve({
@@ -157,7 +137,6 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
   }
 
   public async healthCheck(): Promise<CheckResult> {
-    await this.setupInstance();
     const error = { success: false, message: 'Could not connect to postgres' };
     try {
       const result = await this.instance.one('SELECT true as success');

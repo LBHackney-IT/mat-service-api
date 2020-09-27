@@ -24,10 +24,12 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   });
 
   const crmGateway = new CrmGateway();
+  const matPostgresGateway = new MatPostgresGateway();
 
   const createTask = new CreateManualTaskUseCase({
     v1MatAPIGateway,
     crmGateway,
+    matPostgresGateway,
   });
 
   const userToken = getTokenPayloadFromRequest(req);

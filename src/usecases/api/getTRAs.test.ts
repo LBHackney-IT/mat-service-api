@@ -1,10 +1,11 @@
-import CrmGateway from '../../gateways/crmGateway';
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import {
+  mockMatPostgresGateway,
+  mockCrmGateway,
+} from '../../tests/helpers/mockGateways';
 import GetTRAs from '../../usecases/api/getTRAs';
 import faker from 'faker';
-
-jest.mock('../../gateways/crmGateway.ts');
-jest.mock('../../gateways/matPostgresGateway.ts');
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 
 const mockOfficerName = `${faker.name.firstName()} ${faker.name.lastName()}`;
 const mockPatchName = faker.random.word();
@@ -26,48 +27,42 @@ const mockTRA = {
 };
 
 describe('GetTRAs', () => {
+  let crmGateway: CrmGatewayInterface;
+  let matPostgresGateway: MatPostgresGatewayInterface;
+  let getTRAs: GetTRAs;
+
   beforeEach(() => {
-    CrmGateway.mockClear();
-    MatPostgresGateway.mockClear();
+    crmGateway = mockCrmGateway();
+    matPostgresGateway = mockMatPostgresGateway();
+
+    getTRAs = new GetTRAs({ crmGateway, matPostgresGateway });
   });
 
   it('Returns a response when no errors are found', async () => {
-    MatPostgresGateway.mockImplementationOnce(() => {
-      return {
-        getUserMapping: () => ({
-          //userMappingTable
-          body: mockValidUserMapping,
-          error: undefined,
-        }),
-        getTrasByPatchId: () => ({
-          body: [mockTRA],
-          error: undefined,
-        }),
-      };
-    });
+    matPostgresGateway.getUserMapping = () =>
+      Promise.resolve({
+        body: mockValidUserMapping,
+      });
+    matPostgresGateway.getTrasByPatchId = () =>
+      Promise.resolve({
+        body: [mockTRA],
+      });
 
-    CrmGateway.mockImplementationOnce(() => {
-      return {
-        getPatchByOfficerId: () => ({
-          body: {
-            patchId: mockCRMPatchId,
-            patchName: mockPatchName,
-            officerName: mockOfficerName,
-            officerId: 'dummyId',
-            isManager: true,
-            areaManagerId: 'dummyAreaManagerId',
-            areaId: 5,
-          },
-          error: undefined,
-        }),
-      };
-    });
+    crmGateway.getPatchByOfficerId = () =>
+      Promise.resolve({
+        body: {
+          patchId: mockCRMPatchId,
+          patchName: mockPatchName,
+          officerName: mockOfficerName,
+          officerId: 'dummyId',
+          isManager: true,
+          areaManagerId: 'dummyAreaManagerId',
+          areaId: 5,
+        },
+        error: undefined,
+      });
 
-    const getTRAs = new GetTRAs(mockEmailAddress);
-    const response = await getTRAs.execute();
-
-    expect(MatPostgresGateway).toHaveBeenCalledTimes(1);
-    expect(CrmGateway).toHaveBeenCalledTimes(1);
+    const response = await getTRAs.execute(mockEmailAddress);
 
     expect(response).toEqual({
       body: {
@@ -80,11 +75,7 @@ describe('GetTRAs', () => {
   });
 
   it('returns status code 400 when email address is not provided', async () => {
-    const getTRAs = new GetTRAs();
-    const response = await getTRAs.execute();
-
-    expect(MatPostgresGateway).toHaveBeenCalledTimes(0);
-    expect(CrmGateway).toHaveBeenCalledTimes(0);
+    const response = await getTRAs.execute(undefined);
 
     expect(response).toEqual({
       body: undefined,
@@ -93,15 +84,11 @@ describe('GetTRAs', () => {
   });
 
   it('returns status code 500 when MatPostgresGateway throws an error', async () => {
-    MatPostgresGateway.mockImplementationOnce(() => {
+    matPostgresGateway.getUserMapping = () => {
       throw new Error();
-    });
+    };
 
-    const getTRAs = new GetTRAs(mockEmailAddress);
-    const response = await getTRAs.execute();
-
-    expect(MatPostgresGateway).toHaveBeenCalledTimes(1);
-    expect(CrmGateway).toHaveBeenCalledTimes(0);
+    const response = await getTRAs.execute(mockEmailAddress);
 
     expect(response).toEqual({
       body: undefined,
@@ -110,28 +97,23 @@ describe('GetTRAs', () => {
   });
 
   it('returns status code 500 when CRMGateway throws an error', async () => {
-    MatPostgresGateway.mockImplementationOnce(() => {
-      return {
-        getUserMapping: () => ({
-          body: mockValidUserMapping,
-          error: undefined,
-        }),
-        getTrasByPatchId: () => ({
-          body: [mockTRA],
-          error: undefined,
-        }),
-      };
-    });
+    matPostgresGateway.getUserMapping = () =>
+      Promise.resolve({
+        body: mockValidUserMapping,
+        error: undefined,
+      });
 
-    CrmGateway.mockImplementationOnce(() => {
+    matPostgresGateway.getTrasByPatchId = () =>
+      Promise.resolve({
+        body: [mockTRA],
+        error: undefined,
+      });
+
+    crmGateway.getPatchByOfficerId = () => {
       throw new Error();
-    });
+    };
 
-    const getTRAs = new GetTRAs(mockEmailAddress);
-    const response = await getTRAs.execute();
-
-    expect(MatPostgresGateway).toHaveBeenCalledTimes(1);
-    expect(CrmGateway).toHaveBeenCalledTimes(1);
+    const response = await getTRAs.execute(mockEmailAddress);
 
     expect(response).toEqual({
       body: undefined,
@@ -140,37 +122,28 @@ describe('GetTRAs', () => {
   });
 
   it('returns a empty list of TRAs when officer is not linked to a patch', async () => {
-    MatPostgresGateway.mockImplementationOnce(() => {
-      return {
-        getUserMapping: () => ({
-          body: mockValidUserMapping,
-          error: undefined,
-        }),
-        getTrasByPatchId: () => ({
-          body: [mockTRA],
-          error: undefined,
-        }),
-      };
-    });
+    matPostgresGateway.getUserMapping = () =>
+      Promise.resolve({
+        body: mockValidUserMapping,
+        error: undefined,
+      });
+    matPostgresGateway.getTrasByPatchId = () =>
+      Promise.resolve({
+        body: [mockTRA],
+        error: undefined,
+      });
 
-    CrmGateway.mockImplementationOnce(() => {
-      return {
-        getPatchByOfficerId: () => ({
-          body: {
-            patchid: undefined,
-            patchname: undefined,
-            officername: undefined,
-          },
-          error: undefined,
-        }),
-      };
-    });
+    crmGateway.getPatchByOfficerId = () =>
+      Promise.resolve({
+        body: {
+          patchid: undefined,
+          patchname: undefined,
+          officername: undefined,
+        },
+        error: undefined,
+      });
 
-    const getTRAs = new GetTRAs(mockEmailAddress);
-    const response = await getTRAs.execute();
-
-    expect(MatPostgresGateway).toHaveBeenCalledTimes(1);
-    expect(CrmGateway).toHaveBeenCalledTimes(1);
+    const response = await getTRAs.execute(mockEmailAddress);
 
     expect(response).toEqual({
       body: {

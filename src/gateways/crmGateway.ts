@@ -25,6 +25,7 @@ import { Note, CrmNote } from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
+import { isSuccess } from '../lib/utils';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -65,7 +66,7 @@ export interface CrmGatewayInterface {
 
 class CrmGateway implements CrmGatewayInterface {
   crmTokenGateway: CrmTokenGatewayInterface;
-  crmApiToken: any;
+  crmApiToken: string | undefined;
 
   constructor() {
     this.crmTokenGateway = new CrmTokenGateway();
@@ -75,7 +76,7 @@ class CrmGateway implements CrmGatewayInterface {
   headers() {
     return {
       headers: {
-        Authorization: `Bearer ${this.crmApiToken.body}`,
+        Authorization: `Bearer ${this.crmApiToken}`,
         Prefer:
           'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
       },
@@ -84,7 +85,8 @@ class CrmGateway implements CrmGatewayInterface {
 
   async updateToken() {
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
+      const result = await this.crmTokenGateway.getToken();
+      if (isSuccess(result)) this.crmApiToken = result;
     }
   }
 
@@ -94,7 +96,7 @@ class CrmGateway implements CrmGatewayInterface {
     patchId?: string
   ): Promise<GatewayResponse<Task[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getTasksByPatchAndOfficerIdQuery(
       isManager,
@@ -125,7 +127,7 @@ class CrmGateway implements CrmGatewayInterface {
     tag_ref: string
   ): Promise<GatewayResponse<Task[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getTasksByTagRef(tag_ref);
 
@@ -151,7 +153,7 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getTask(taskId: string): Promise<GatewayResponse<Task>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getTaskById(taskId);
 
@@ -179,7 +181,7 @@ class CrmGateway implements CrmGatewayInterface {
     taskId: string
   ): Promise<GatewayResponse<Note[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getNotesForTaskById(taskId);
 
@@ -207,7 +209,7 @@ class CrmGateway implements CrmGatewayInterface {
     emailAddress: string
   ): Promise<GatewayResponse<string>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getUserByEmail(emailAddress);
 
@@ -242,7 +244,7 @@ class CrmGateway implements CrmGatewayInterface {
     familyName: string
   ): Promise<GatewayResponse<object>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmUser = {
       hackney_name: fullName,
@@ -274,7 +276,7 @@ class CrmGateway implements CrmGatewayInterface {
     officerId: string
   ): Promise<GatewayResponse<PatchDetailsInterface>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getPatchByOfficerId(officerId);
 
@@ -302,7 +304,7 @@ class CrmGateway implements CrmGatewayInterface {
     uprn: string
   ): Promise<GatewayResponse<PropertyPatchDetailsInterface>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getPropertyPatchByUprn(uprn);
 
@@ -331,7 +333,7 @@ class CrmGateway implements CrmGatewayInterface {
     areaId: number
   ): Promise<GatewayResponse<Officer[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getOfficersByAreaId(areaId);
 
@@ -359,7 +361,7 @@ class CrmGateway implements CrmGatewayInterface {
     tagRef: string
   ): Promise<GatewayResponse<Contact[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getContactsByTagRef(tagRef);
 
@@ -384,13 +386,13 @@ class CrmGateway implements CrmGatewayInterface {
   }
 
   public async healthCheck(): Promise<CheckResult> {
-    await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
-
     const errorMsg = {
       success: false,
       message: `Could not query dynamics`,
     };
+    await this.updateToken();
+    if (this.crmApiToken) return errorMsg;
+
     return await axios
       .get(
         `${process.env.CRM_API_URL}/api/data/v8.2/contacts?$select=createdon&$top=1`,

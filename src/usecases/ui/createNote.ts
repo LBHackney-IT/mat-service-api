@@ -36,7 +36,7 @@ const createNote = async (
 
   const response = await axios
     .post(
-      `${process.env.NEXT_PUBLIC_API_PATH}/notes/${note.interactionId}`,
+      `${process.env.NEXT_PUBLIC_API_PATH}/tasks/${note.interactionId}/notes`,
       newNote
     )
     .then((response) => {

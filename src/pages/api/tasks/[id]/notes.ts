@@ -1,9 +1,8 @@
-import { result } from 'cypress/types/lodash';
 import { NextApiRequest, NextApiResponse } from 'next';
-import v1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
-import { NewNote, Note } from '../../../interfaces/note';
-import CreateTaskNote from '../../../usecases/api/createNote';
-import getNotesForTask from '../../../usecases/api/getNotesForTask';
+import v1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';
+import { NewNote, Note } from '../../../../interfaces/note';
+import CreateTaskNote from '../../../../usecases/api/createNote';
+import getNotesForTask from '../../../../usecases/api/getNotesForTask';
 
 interface Error {
   error: string;

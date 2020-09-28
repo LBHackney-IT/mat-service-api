@@ -26,7 +26,7 @@ import { Note, CrmNote } from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
-import { isSuccess } from '../lib/utils';
+import { Result, isSuccess } from '../lib/utils';
 import getTenanciesByDateQuery from './xmlQueryStrings/getTenanciesByDate';
 import { Tenancy } from '../interfaces/tenancy';
 
@@ -38,11 +38,6 @@ export interface CrmResponse {
 export interface GatewayResponse<T> {
   body?: T;
   error?: string;
-}
-
-interface AxiosResponse {
-  data?: CrmResponse;
-  error?: AxiosError;
 }
 
 export interface CrmGatewayInterface {
@@ -69,7 +64,7 @@ export interface CrmGatewayInterface {
   getTasksForTagRef(tag_ref: string): Promise<GatewayResponse<Task[]>>;
   getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
-  getTenanciesByDate(date: Date): Promise<GatewayResponse<Tenancy[]>>;
+  getTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -392,11 +387,9 @@ class CrmGateway implements CrmGatewayInterface {
       });
   }
 
-  public async getTenanciesByDate(
-    date: Date
-  ): Promise<GatewayResponse<Tenancy[]>> {
+  public async getTenanciesByDate(date: Date): Promise<Result<Tenancy[]>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getTenanciesByDateQuery(date);
 
@@ -409,14 +402,10 @@ class CrmGateway implements CrmGatewayInterface {
         const data = response.data;
         const contacts = crmResponseToTenancies(data);
 
-        return {
-          body: contacts,
-        };
+        return contacts;
       })
       .catch((error: AxiosError) => {
-        return {
-          error: 'Error fetching latest tenancies from crm',
-        };
+        return new Error('Error fetching latest tenancies from crm');
       });
   }
 

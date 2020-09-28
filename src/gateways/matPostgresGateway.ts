@@ -2,6 +2,7 @@ import PostgresConnection, { PostgresOptions } from '../lib/postgresConnection';
 import { CheckResult } from '../pages/api/healthcheck';
 import pgPromise from 'pg-promise';
 import { IClient } from 'pg-promise/typescript/pg-subset';
+import { Result } from '../lib/utils';
 
 export interface MatPostgresGatewayInterface {
   getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>;
@@ -9,8 +10,8 @@ export interface MatPostgresGatewayInterface {
   createUserMapping(
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse>;
-  getLatestItvTaskSyncDate(): Promise<GenericResponse<Date | null>>;
-  createItvTask(task: ITVTaskTable): Promise<GenericResponse<boolean>>;
+  getLatestItvTaskSyncDate(): Promise<Result<Date | null>>;
+  createItvTask(task: ITVTaskTable): Promise<Result<boolean>>;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -51,14 +52,6 @@ interface ITVTaskTable {
   tag_ref: string;
   created: Date;
   crm_id: string;
-}
-
-interface PostgresOptions {
-  user: string;
-  password: string;
-  host: string;
-  port: string;
-  database: string;
 }
 
 class MatPostgresGateway implements MatPostgresGatewayInterface {
@@ -154,9 +147,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
     }
   }
 
-  public async getLatestItvTaskSyncDate(): Promise<
-    GenericResponse<Date | null>
-  > {
+  public async getLatestItvTaskSyncDate(): Promise<Result<Date | null>> {
     await this.setupInstance();
 
     try {
@@ -164,18 +155,13 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
         'SELECT MAX(created) FROM itv_tasks'
       );
 
-      return Promise.resolve({
-        body: results.max,
-        error: undefined,
-      });
+      return Promise.resolve(results.max);
     } catch (error) {
-      return {
-        error: error.message,
-      };
+      return new Error(error.message);
     }
   }
 
-  async createItvTask(task: ITVTaskTable): Promise<GenericResponse<boolean>> {
+  async createItvTask(task: ITVTaskTable): Promise<Result<boolean>> {
     await this.setupInstance();
 
     try {
@@ -183,9 +169,9 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
         'INSERT INTO itv_tasks (tag_ref, created, crm_id) VALUES (${tag_ref}, ${created}, ${crm_id})',
         task
       );
-      return { body: true };
+      return true;
     } catch (error) {
-      return { error: error.message };
+      return new Error(error.message);
     }
   }
 

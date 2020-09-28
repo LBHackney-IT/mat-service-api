@@ -4,50 +4,52 @@ import MatPostgresGateway, {
 } from '../../gateways/matPostgresGateway';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
+import { isError, Result } from '../../lib/utils';
 import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
-
-interface CreateITVTasksResponse {
-  body?: boolean;
-  error?: string;
-}
 
 interface CreateITVTasksOptions {
   matPostgresGateway: MatPostgresGatewayInterface;
   v1MatAPIGateway: v1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
+  logger?: Console;
 }
 
 interface CreateITVTasksInterface {
-  execute(): Promise<CreateITVTasksResponse>;
+  execute(): Promise<Result<boolean>>;
 }
 
 export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
   matPostgresGateway: MatPostgresGatewayInterface;
   v1MatAPIGateway: v1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
+  logger: Console;
 
   constructor(options: CreateITVTasksOptions) {
     this.matPostgresGateway = options.matPostgresGateway;
     this.v1MatAPIGateway = options.v1MatAPIGateway;
     this.crmGateway = options.crmGateway;
+    this.logger = options.logger || console;
   }
 
-  public async execute(): Promise<CreateITVTasksResponse> {
+  public async execute(): Promise<Result<boolean>> {
     // Get the last date from postgres
-    const lastDateResult = await this.matPostgresGateway.getLatestItvTaskSyncDate();
-    const lastDate =
-      lastDateResult.body || new Date(Date.parse('2020-09-01T00:00:00Z'));
+    let lastDate = await this.matPostgresGateway.getLatestItvTaskSyncDate();
+    if (isError(lastDate)) {
+      return new Error('Error fetching the last date from Postgres');
+    }
+    if (lastDate === null) {
+      lastDate = new Date(Date.parse('2020-09-01T00:00:00Z'));
+    }
 
     const tenancies = await this.crmGateway.getTenanciesByDate(lastDate);
-    if (tenancies.error || !tenancies.body) {
-      return { error: 'Error fetching new tenancies' };
-    }
+    if (isError(tenancies)) return new Error('Error fetching new tenancies');
+
     // Filter out all non-introductory tenancies
-    let introductoryTenancies = tenancies.body.filter((tenancy) => {
+    let introductoryTenancies = tenancies.filter((tenancy) => {
       return tenancy.housingTenure === 'INT';
     });
 
-    console.log(`Creating ${introductoryTenancies.length} ITV tasks`);
+    this.logger.log(`Creating ${introductoryTenancies.length} ITV tasks`);
 
     // Send to the api endpoint to create a tmi
     for (const tenancy of introductoryTenancies) {
@@ -58,9 +60,9 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
       );
 
       if (!createdTask.body || !createdTask.body.interactionId) {
-        return {
-          error: `Error creating ITV Task. Tenancy: ${tenancy.tagReference}`,
-        };
+        return new Error(
+          `Error creating ITV Task. Tenancy: ${tenancy.tagReference}`
+        );
       }
 
       // Save to the database
@@ -70,14 +72,10 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
         created: tenancy.accountCreatedOn,
       });
 
-      if (dbResult.error) {
-        return {
-          error: `Error writing to db: ${dbResult.error}`,
-        };
+      if (isError(dbResult)) {
+        return new Error(`Error writing to db: ${dbResult.message}`);
       }
     }
-    return {
-      body: true,
-    };
+    return true;
   }
 }

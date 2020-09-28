@@ -1,6 +1,7 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import MockTenancy from './generateTenancy';
 
 export const mockCrmGateway = (): CrmGatewayInterface => ({
   getTasksForAPatch: jest.fn(() => Promise.resolve({})),
@@ -13,7 +14,9 @@ export const mockCrmGateway = (): CrmGatewayInterface => ({
   getTasksForTagRef: jest.fn(() => Promise.resolve({})),
   getNotesForTask: jest.fn(() => Promise.resolve({})),
   getContactsByTagRef: jest.fn(() => Promise.resolve({})),
-  getTenanciesByDate: jest.fn(() => Promise.resolve({})),
+  getTenanciesByDate: jest.fn(() =>
+    Promise.resolve([MockTenancy(true), MockTenancy(true)])
+  ),
   healthCheck: jest.fn(() => Promise.resolve({ success: true })),
 });
 
@@ -21,8 +24,8 @@ export const mockMatPostgresGateway = (): MatPostgresGatewayInterface => ({
   getTrasByPatchId: jest.fn(() => Promise.resolve({})),
   getUserMapping: jest.fn(() => Promise.resolve({})),
   createUserMapping: jest.fn(() => Promise.resolve({})),
-  getLatestItvTaskSyncDate: jest.fn(() => Promise.resolve({})),
-  createItvTask: jest.fn(() => Promise.resolve({})),
+  getLatestItvTaskSyncDate: jest.fn(() => Promise.resolve(new Date())),
+  createItvTask: jest.fn(() => Promise.resolve(true)),
   healthCheck: jest.fn(() => Promise.resolve({ success: true })),
 });
 

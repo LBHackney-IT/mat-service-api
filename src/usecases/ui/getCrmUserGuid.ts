@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const getCrmUserGuid = async (emailAddress: string) => {
+interface GetCrmUserGuidResponse {
+  users: string;
+}
+
+const getCrmUserGuid = async (
+  emailAddress: string
+): Promise<GetCrmUserGuidResponse | undefined> => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) {
     return undefined;
   }

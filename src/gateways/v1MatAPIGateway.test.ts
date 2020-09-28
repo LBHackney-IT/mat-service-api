@@ -2,6 +2,7 @@ import v1MatAPIGateway from './v1MatAPIGateway';
 import axios from 'axios';
 import faker from 'faker';
 import MockTMI from '../tests/helpers/generateTMI';
+import MockCreateNote from '../tests/helpers/generateCreateNote';
 jest.mock('axios');
 const dummyToken = 'abc123';
 
@@ -210,6 +211,46 @@ describe('v1MatAPIGateway', () => {
 
       axios.put.mockReturnValue(Promise.reject(new Error(error)));
       const response = await gateway.transferCall(dummyTmi);
+      expect(response).toEqual(errorResponse);
+    });
+  });
+
+  describe('createTaskNotes', () => {
+    it('makes the request to the correct URL with the correct token', () => {
+      const dummyPayload = MockCreateNote();
+      axios.patch.mockResolvedValue(Promise.resolve());
+      gateway.createTaskNote(dummyPayload);
+      expect(axios.patch).toHaveBeenCalledWith(
+        'http://dummy-api.com/v1/TenancyManagementInteractions',
+        dummyPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${dummyToken}`,
+          },
+        }
+      );
+    });
+
+    it('returns the result after a successful request', async () => {
+      const dummyPayload = MockCreateNote();
+
+      axios.patch.mockResolvedValue({ data: { interactionId: 'dummy' } });
+      const response = await gateway.createTenancyManagementInteraction(
+        dummyPayload
+      );
+
+      expect(response).toEqual({ body: { interactionId: 'dummy' } });
+    });
+
+    it('returns an human readable error when unsuccessful', async () => {
+      const dummyPayload = MockCreateNote();
+      const error = 'Network Error';
+      const errorResponse = { error: `V1 API: ${error}` };
+
+      axios.patch.mockReturnValue(Promise.reject(new Error(error)));
+
+      const response = await gateway.createTaskNote(dummyPayload);
+
       expect(response).toEqual(errorResponse);
     });
   });

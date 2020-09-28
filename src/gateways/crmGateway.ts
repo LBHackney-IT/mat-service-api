@@ -143,8 +143,6 @@ class CrmGateway implements CrmGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
-        console.log('error: ' + error);
-
         return {
           error: error.message,
         };

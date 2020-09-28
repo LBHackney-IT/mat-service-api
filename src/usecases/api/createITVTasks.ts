@@ -1,9 +1,6 @@
-import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
-import MatPostgresGateway, {
-  MatPostgresGatewayInterface,
-} from '../../gateways/matPostgresGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
-import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { isError, Result } from '../../lib/utils';
 import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
 

@@ -24,6 +24,7 @@ export default class GetExternalReactEtraProcessUrl
     officerEmail: string
   ): Promise<GetExternalProcessUrlResponse> {
     const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
+    if (!officerEmail) return { error: 'Officer email required' };
     if (!task) return { error: 'Could not load task from crm' };
     if (!task.processType) {
       return { error: 'Task does not have a process type' };

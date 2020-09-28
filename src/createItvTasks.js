@@ -1,5 +1,7 @@
 import CreateITVTasksUseCase from './usecases/api/createITVTasks';
 import V1MatAPIGateway from './gateways/v1MatAPIGateway';
+import CrmGateway from './gateways/crmGateway';
+import MatPostgresGateway from './gateways/matPostgresGateway';
 import { isError } from 'cypress/types/lodash';
 
 module.exports = async () => {

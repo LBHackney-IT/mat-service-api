@@ -8,3 +8,4 @@ next.config.js
 *.spec.js
 *.spec.ts
 db
+cypress

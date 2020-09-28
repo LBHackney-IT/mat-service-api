@@ -89,7 +89,7 @@ class CrmGateway implements CrmGatewayInterface {
     this.crmApiToken = undefined;
   }
 
-  headers() {
+  headers(): Headers {
     return {
       headers: {
         Authorization: `Bearer ${this.crmApiToken}`,
@@ -413,7 +413,7 @@ class CrmGateway implements CrmGatewayInterface {
       .then((response) => {
         return crmResponseToTenancies(response.data);
       })
-      .catch((error: AxiosError) => {
+      .catch(() => {
         return new Error('Error fetching latest tenancies from crm');
       });
   }

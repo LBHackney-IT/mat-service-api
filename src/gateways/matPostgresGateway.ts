@@ -15,11 +15,6 @@ export interface MatPostgresGatewayInterface {
   healthCheck(): Promise<CheckResult>;
 }
 
-interface GenericResponse<T> {
-  body?: T;
-  error?: string;
-}
-
 interface GetUserMappingResponse {
   body?: UserMappingTable;
   error?: number;
@@ -55,7 +50,7 @@ interface ITVTaskTable {
 }
 
 class MatPostgresGateway implements MatPostgresGatewayInterface {
-  instance: pgPromise.IDatabase<{}, IClient>;
+  instance: pgPromise.IDatabase<Record<string, unknown>, IClient>;
 
   constructor() {
     if (
@@ -130,7 +125,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse> {
     try {
-      const results = await this.instance.none(
+      await this.instance.none(
         'INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${username})',
         userMapping
       );
@@ -161,7 +156,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
 
   async createItvTask(task: ITVTaskTable): Promise<Result<boolean>> {
     try {
-      const results = await this.instance.none(
+      await this.instance.none(
         'INSERT INTO itv_tasks (tag_ref, created, crm_id) VALUES (${tag_ref}, ${created}, ${crm_id})',
         task
       );

@@ -39,12 +39,8 @@ const createNote = async (
       `${process.env.NEXT_PUBLIC_API_PATH}/tasks/${note.interactionId}/notes`,
       newNote
     )
-    .then((response) => {
-      return true;
-    })
-    .catch((error) => {
-      return false;
-    });
+    .then(() => true)
+    .catch(() => false);
 
   return response;
 };

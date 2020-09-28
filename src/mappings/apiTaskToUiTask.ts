@@ -1,5 +1,5 @@
 import { Row } from '../components/worktray';
-import { Stage, State, Task } from '../interfaces/task';
+import { State, Task } from '../interfaces/task';
 import { Status } from 'lbh-frontend-react';
 
 const apiTaskToUiTask = (apiTasks: Task[]): Row[] => {

@@ -147,31 +147,36 @@ export default function TaskPage() {
   };
 
   const submitNote = async () => {
-    const email = officerEmail ? officerEmail : '';
-    const note = {
-      interactionId: router.query.id,
-      estateOfficerName: officerName,
-      ServiceRequest: {
-        description: noteText,
-        requestCallback: false,
-        Id: task.incidentId,
-      },
-      status: 1,
-    };
-    const response = await createNote(note, email);
-
-    if (response) {
-      const notesArray = notes;
-      const newNote: Note = {
-        text: `${note.ServiceRequest.description}`,
-        createdBy: `${note.estateOfficerName}`,
-        createdOn: moment().toString(),
-        incidentId: note.ServiceRequest.Id,
+    if (noteText === undefined || noteText === '') {
+      setSubmitNoteSuccess(false);
+    } else {
+      const email = officerEmail ? officerEmail : '';
+      const note = {
+        interactionId: router.query.id,
+        estateOfficerName: officerName,
+        ServiceRequest: {
+          description: noteText,
+          requestCallback: false,
+          Id: task.incidentId,
+        },
+        status: 1,
       };
-      if (notesArray) {
-        notesArray.push(newNote);
-        setSubmitNoteSuccess(response);
-        setNotes(notesArray);
+      const response = await createNote(note, email);
+
+      if (response) {
+        const notesArray = notes;
+        const newNote: Note = {
+          text: `${note.ServiceRequest.description}`,
+          createdBy: `${note.estateOfficerName}`,
+          createdOn: moment().toString(),
+          incidentId: note.ServiceRequest.Id,
+        };
+        if (notesArray) {
+          notesArray.push(newNote);
+          setSubmitNoteSuccess(response);
+          setNoteText('');
+          setNotes(notesArray);
+        }
       }
     }
   };

@@ -340,10 +340,11 @@ export default function TaskPage() {
       {renderLaunchProcess()}
       <Heading level={HeadingLevels.H2}>{task.type}</Heading>
       {renderTenancyInfo()}
-      <Heading level={HeadingLevels.H3}>Residents</Heading>
+      {/* Resident information being disabled due to duplicate resident information in source data */}
+      {/* <Heading level={HeadingLevels.H3}>Residents</Heading>
       <div className="tile-container">
         {mapResidents(task.tenancy.residents)}
-      </div>
+      </div> */}
       <Heading level={HeadingLevels.H3}>Action</Heading>
       <Paragraph>
         <Label>Due:</Label>

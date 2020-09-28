@@ -159,7 +159,21 @@ export default function TaskPage() {
       status: 1,
     };
     const response = await createNote(note, email);
-    setSubmitNoteSuccess(response);
+
+    if (response) {
+      const notesArray = notes;
+      const newNote: Note = {
+        text: note.ServiceRequest.description,
+        createdBy: `${note.estateOfficerName}`,
+        createdOn: moment().toString(),
+        incidentId: note.ServiceRequest.Id,
+      };
+      if (notesArray) {
+        notesArray.push(newNote);
+        setNotes(notesArray);
+        setSubmitNoteSuccess(response);
+      }
+    }
   };
 
   const renderNotes = () => {

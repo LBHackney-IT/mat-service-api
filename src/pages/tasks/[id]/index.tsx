@@ -170,8 +170,8 @@ export default function TaskPage() {
       };
       if (notesArray) {
         notesArray.push(newNote);
-        setNotes(notesArray);
         setSubmitNoteSuccess(response);
+        setNotes(notesArray);
       }
     }
   };
@@ -184,8 +184,7 @@ export default function TaskPage() {
         <Paragraph>
           <span className="strong">
             {moment(note.createdOn).format('DD/MM/YYYY')}
-          </span>{' '}
-          Created by {note.createdBy}
+          </span>
           <br />
           {note.text}
         </Paragraph>

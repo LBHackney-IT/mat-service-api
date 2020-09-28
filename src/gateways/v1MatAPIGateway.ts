@@ -91,7 +91,6 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
   }
 
   public async createTaskNote(note: NewNote) {
-    console.log('NOTE', note);
     const response = await axios
       .patch(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, note, {
         headers: {
@@ -99,13 +98,11 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         },
       })
       .then((response) => {
-        console.log('CRM RESPONSE', response);
         return {
           body: response.data,
         };
       })
       .catch((error: AxiosError) => {
-        console.log('ERROR', error);
         return {
           error: `V1 API: ${error.message}`,
         };

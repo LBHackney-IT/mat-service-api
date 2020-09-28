@@ -191,9 +191,7 @@ describe('v1MatAPIGateway', () => {
       const dummyPayload = MockCreateNote();
 
       axios.patch.mockResolvedValue({ data: { interactionId: 'dummy' } });
-      const response = await gateway.createTenancyManagementInteraction(
-        dummyPayload
-      );
+      const response = await gateway.createTaskNote(dummyPayload);
 
       expect(response).toEqual({ body: { interactionId: 'dummy' } });
     });

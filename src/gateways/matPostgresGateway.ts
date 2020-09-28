@@ -26,7 +26,7 @@ interface GetUserMappingResponse {
 }
 
 export interface CreateUserMappingResponse {
-  body?: UserMappingTable[];
+  body?: true;
   error?: number;
 }
 
@@ -148,8 +148,6 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
   }
 
   public async getLatestItvTaskSyncDate(): Promise<Result<Date | null>> {
-    await this.setupInstance();
-
     try {
       const results = await this.instance.one(
         'SELECT MAX(created) FROM itv_tasks'
@@ -162,8 +160,6 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
   }
 
   async createItvTask(task: ITVTaskTable): Promise<Result<boolean>> {
-    await this.setupInstance();
-
     try {
       const results = await this.instance.none(
         'INSERT INTO itv_tasks (tag_ref, created, crm_id) VALUES (${tag_ref}, ${created}, ${crm_id})',

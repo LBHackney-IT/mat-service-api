@@ -58,7 +58,7 @@ export default function TaskPage() {
   const [officerEmail, setOfficerEmail] = useState<string | undefined>(
     undefined
   );
-  const [noteText, setNoteText] = useState<string | undefine>(undefined);
+  const [noteText, setNoteText] = useState<string | undefined>(undefined);
   const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
     boolean | undefined
   >(undefined);

@@ -6,7 +6,6 @@ import { NewNote } from '../interfaces/note';
 import { CheckResult } from '../pages/api/healthcheck';
 
 export interface v1MatAPIGatewayInterface {
-  getNewTenancies(): Promise<GetNewTenanciesResponse>;
   createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
@@ -68,26 +67,6 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
   constructor(options: v1MatAPIGatewayOptions) {
     this.v1MatApiUrl = options.v1MatApiUrl;
     this.v1MatApiToken = options.v1MatApiToken;
-  }
-
-  public async getNewTenancies(): Promise<GetNewTenanciesResponse> {
-    const response = await axios
-      .get(`${this.v1MatApiUrl}/v1/tenancy/new`, {
-        headers: {
-          Authorization: `Bearer ${this.v1MatApiToken}`,
-        },
-      })
-      .then((response) => {
-        return <GetNewTenanciesResponse>(<unknown>response);
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-          result: undefined,
-        };
-      });
-
-    return response;
   }
 
   public async createTaskNote(note: NewNote) {

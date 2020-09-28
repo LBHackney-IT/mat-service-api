@@ -2,6 +2,7 @@ import PostgresConnection, { PostgresOptions } from '../lib/postgresConnection';
 import { CheckResult } from '../pages/api/healthcheck';
 import pgPromise from 'pg-promise';
 import { IClient } from 'pg-promise/typescript/pg-subset';
+import { Result } from '../lib/utils';
 
 export interface MatPostgresGatewayInterface {
   getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>;
@@ -9,12 +10,19 @@ export interface MatPostgresGatewayInterface {
   createUserMapping(
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse>;
+  getLatestItvTaskSyncDate(): Promise<Result<Date | null>>;
+  createItvTask(task: ITVTaskTable): Promise<Result<boolean>>;
   healthCheck(): Promise<CheckResult>;
 }
 
+interface GenericResponse<T> {
+  body?: T;
+  error?: string;
+}
+
 interface GetUserMappingResponse {
-  body: UserMappingTable | undefined;
-  error: number | undefined;
+  body?: UserMappingTable;
+  error?: number;
 }
 
 export interface CreateUserMappingResponse {
@@ -30,14 +38,20 @@ interface UserMappingTable {
 }
 
 interface GetTRAPatchMappingResponse {
-  body: TRAPatchMapping[];
-  error: number | undefined;
+  body?: TRAPatchMapping[];
+  error?: number;
 }
 
 interface TRAPatchMapping {
   name: string;
   traid: number;
   patchcrmid: string;
+}
+
+interface ITVTaskTable {
+  tag_ref: string;
+  created: Date;
+  crm_id: string;
 }
 
 class MatPostgresGateway implements MatPostgresGatewayInterface {
@@ -130,6 +144,30 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
         body: error,
         error: 500,
       });
+    }
+  }
+
+  public async getLatestItvTaskSyncDate(): Promise<Result<Date | null>> {
+    try {
+      const results = await this.instance.one(
+        'SELECT MAX(created) FROM itv_tasks'
+      );
+
+      return Promise.resolve(results.max);
+    } catch (error) {
+      return new Error(error.message);
+    }
+  }
+
+  async createItvTask(task: ITVTaskTable): Promise<Result<boolean>> {
+    try {
+      const results = await this.instance.none(
+        'INSERT INTO itv_tasks (tag_ref, created, crm_id) VALUES (${tag_ref}, ${created}, ${crm_id})',
+        task
+      );
+      return true;
+    } catch (error) {
+      return new Error(error.message);
     }
   }
 

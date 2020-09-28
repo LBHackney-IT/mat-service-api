@@ -1,6 +1,6 @@
 export interface Contact {
   contactId: string;
-  responsible: true;
+  responsible: boolean;
   title: string;
   firstName: string;
   lastName: string;

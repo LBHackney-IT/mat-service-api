@@ -1,0 +1,1 @@
+DROP TABLE itv_tasks;

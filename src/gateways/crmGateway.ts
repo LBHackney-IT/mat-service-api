@@ -13,6 +13,7 @@ import crmToPatchDetails, {
 import getTaskById from './xmlQueryStrings/getTaskById';
 import getOfficersByAreaId from './xmlQueryStrings/getOfficersByAreaId';
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
+import { crmResponseToTenancies, CrmTenancy } from '../mappings/crmToTenancy';
 import { Officer } from '../mappings/crmToOfficersDetails';
 import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
 import { crmToNotes } from '../mappings/crmToNotes';
@@ -25,11 +26,18 @@ import { Note, CrmNote } from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
-import { isSuccess } from '../lib/utils';
+import { Result, isSuccess } from '../lib/utils';
+import getTenanciesByDateQuery from './xmlQueryStrings/getTenanciesByDate';
+import { Tenancy } from '../interfaces/tenancy';
 
 export interface CrmResponse {
   '@odata.context': string;
   value: object | object[];
+}
+
+export interface GenericCrmResponse<T> {
+  '@odata.context': string;
+  value: T;
 }
 
 export interface GatewayResponse<T> {
@@ -61,6 +69,7 @@ export interface CrmGatewayInterface {
   getTasksForTagRef(tag_ref: string): Promise<GatewayResponse<Task[]>>;
   getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
+  getTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -380,6 +389,25 @@ class CrmGateway implements CrmGatewayInterface {
         return {
           error: error.message,
         };
+      });
+  }
+
+  public async getTenanciesByDate(date: Date): Promise<Result<Tenancy[]>> {
+    await this.updateToken();
+    if (!this.crmApiToken) return new Error('CRM token missing');
+
+    const crmQuery = getTenanciesByDateQuery(date);
+
+    return await axios
+      .get<GenericCrmResponse<CrmTenancy[]>>(
+        `${process.env.CRM_API_URL}/api/data/v8.2/accounts?fetchXml=${crmQuery}`,
+        this.headers()
+      )
+      .then((response) => {
+        return crmResponseToTenancies(response.data);
+      })
+      .catch((error: AxiosError) => {
+        return new Error('Error fetching latest tenancies from crm');
       });
   }
 

@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { Tenancy } from '../interfaces/tenancy';
 import V1ApiContact from '../interfaces/v1ApiContact';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
+import { NewNote } from '../interfaces/note';
 import { CheckResult } from '../pages/api/healthcheck';
 
 export interface v1MatAPIGatewayInterface {
@@ -16,6 +17,7 @@ export interface v1MatAPIGatewayInterface {
   transferCall(
     tmi: TenancyManagementInteraction
   ): Promise<TransferCallResponse>;
+  createTaskNote(note: NewNote): any;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -88,6 +90,27 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
     return response;
   }
 
+  public async createTaskNote(note: NewNote) {
+    const response = await axios
+      .patch(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, note, {
+        headers: {
+          Authorization: `Bearer ${this.v1MatApiToken}`,
+        },
+      })
+      .then((response) => {
+        return {
+          body: response.data,
+        };
+      })
+      .catch((error: AxiosError) => {
+        return {
+          error: `V1 API: ${error.message}`,
+        };
+      });
+
+    return response;
+  }
+
   public async createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse> {
@@ -107,7 +130,6 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
-        console.log(error);
         return {
           error: `V1 API: ${error.message}`,
         };

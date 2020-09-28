@@ -74,7 +74,6 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     // Ensure the user is correctly set up
     const setupUserResult = await setupUser(<string>req.cookies.hackneyToken);
     if (setupUserResult.error) {
-      console.log(setupUserResult.error);
       return res.status(400).end();
     }
     const emailAddress = req.query.emailAddress

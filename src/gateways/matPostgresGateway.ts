@@ -94,7 +94,6 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
         error: undefined,
       });
     } catch (error) {
-      console.log('Error:', error.message);
       return Promise.resolve({
         body: [],
         error: 500,
@@ -124,7 +123,6 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
           error: undefined,
         });
       }
-      console.log('Error:', error.message);
       return Promise.resolve({
         body: undefined,
         error: 500,
@@ -148,7 +146,6 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
         error: undefined,
       });
     } catch (error) {
-      console.log('Error:', error.message);
       return Promise.resolve({
         body: error,
         error: 500,

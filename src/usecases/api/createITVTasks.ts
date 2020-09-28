@@ -64,7 +64,7 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
       }
 
       // Save to the database
-      const dbResult = await this.matPostgresGateway.insertItvTask({
+      const dbResult = await this.matPostgresGateway.createItvTask({
         tag_ref: tenancy.tagReference,
         crm_id: createdTask.body.interactionId,
         created: tenancy.accountCreatedOn,

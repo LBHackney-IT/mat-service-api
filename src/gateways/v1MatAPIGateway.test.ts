@@ -18,50 +18,6 @@ describe('v1MatAPIGateway', () => {
     });
   });
 
-  describe('getNewTenancies', () => {
-    it('makes the request to the correct URL with the correct token', () => {
-      axios.get.mockResolvedValue(Promise.resolve({ result: [] }));
-      gateway.getNewTenancies();
-      expect(axios.get).toHaveBeenCalledWith(
-        'http://dummy-api.com/v1/tenancy/new',
-        {
-          headers: {
-            Authorization: `Bearer ${dummyToken}`,
-          },
-        }
-      );
-    });
-
-    it('successfully returns data from an API', async () => {
-      const dummyResponse = {
-        result: [
-          { accountId: faker.lorem.word() },
-          { accountId: faker.lorem.word() },
-        ],
-      };
-
-      axios.get.mockResolvedValue(dummyResponse);
-
-      const response = await gateway.getNewTenancies();
-
-      expect(response).toEqual(dummyResponse);
-    });
-
-    it('returns an human readable error when unsuccessful', async () => {
-      const error = 'Network Error';
-      const errorResponse = {
-        body: undefined,
-        error,
-      };
-
-      axios.get.mockReturnValue(Promise.reject(new Error(error)));
-
-      const response = await gateway.getNewTenancies();
-
-      expect(response).toEqual(errorResponse);
-    });
-  });
-
   describe('createTenancyManagementInteraction', () => {
     it('makes the request to the correct URL with the correct token', () => {
       const dummyPayload = MockTMI();
@@ -91,11 +47,11 @@ describe('v1MatAPIGateway', () => {
 
     it('returns an human readable error when unsuccessful', async () => {
       const error = 'Network Error';
-      const errorResponse = { error };
+      const errorResponse = { error: `V1 API: ${error}` };
 
-      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+      axios.post.mockReturnValue(Promise.reject(new Error(error)));
 
-      const response = await gateway.getNewTenancies();
+      const response = await gateway.createTenancyManagementInteraction();
 
       expect(response).toEqual(errorResponse);
     });

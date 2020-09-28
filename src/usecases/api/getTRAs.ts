@@ -69,7 +69,7 @@ class GetTRAs implements GetTRAsInterface {
 
       const traDetails: officerPatchAssociationInterface = {
         patchname: userPatch.body.patchName,
-        tras: tras.body,
+        tras: tras.body || [],
         officername: userPatch.body.officerName,
       };
 

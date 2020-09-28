@@ -10,7 +10,7 @@ export interface MatPostgresGatewayInterface {
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse>;
   getLatestItvTaskSyncDate(): Promise<GenericResponse<Date | null>>;
-  insertItvTask(task: ITVTaskTable): Promise<GenericResponse<boolean>>;
+  createItvTask(task: ITVTaskTable): Promise<GenericResponse<boolean>>;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -20,12 +20,12 @@ interface GenericResponse<T> {
 }
 
 interface GetUserMappingResponse {
-  body: UserMappingTable | undefined;
-  error: number | undefined;
+  body?: UserMappingTable;
+  error?: number;
 }
 
 export interface CreateUserMappingResponse {
-  body?: boolean;
+  body?: UserMappingTable[];
   error?: number;
 }
 
@@ -37,8 +37,8 @@ interface UserMappingTable {
 }
 
 interface GetTRAPatchMappingResponse {
-  body: TRAPatchMapping[];
-  error: number | undefined;
+  body?: TRAPatchMapping[];
+  error?: number;
 }
 
 interface TRAPatchMapping {
@@ -175,7 +175,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
     }
   }
 
-  async insertItvTask(task: ITVTaskTable): Promise<GenericResponse<boolean>> {
+  async createItvTask(task: ITVTaskTable): Promise<GenericResponse<boolean>> {
     await this.setupInstance();
 
     try {

@@ -198,7 +198,9 @@ export default function TaskPage() {
       return <Paragraph>Note was submitted successfully</Paragraph>;
     }
     if (submitNoteSuccess === false) {
-      return <Paragraph>An error has occurred, please try again</Paragraph>;
+      return (
+        <ErrorMessage>An error has occurred, please try again</ErrorMessage>
+      );
     }
     return null;
   };

@@ -23,7 +23,7 @@ provider:
     V1_MAT_API_TOKEN: ${ssm:/${self:custom.stage}-mat-service-V1_MAT_API_TOKEN~true, env:V1_MAT_API_TOKEN}
     CRM_API_URL: ${ssm:/${self:custom.stage}-${self:service}-CRM_API_URL, env:CRM_API_URL}
     CRM_TOKEN_API_URL: ${ssm:/${self:custom.stage}-${self:service}-CRM_TOKEN_API_URL, env:CRM_TOKEN_API_URL}
-    CRM_TOKEN_API_KEY: ${ssm:/${self:custom.stage}-${self:service}-CRM_TOKEN_API_URL~true, env:CRM_TOKEN_API_KEY}
+    CRM_TOKEN_API_KEY: ${ssm:/${self:custom.stage}-${self:service}-CRM_TOKEN_API_KEY~true, env:CRM_TOKEN_API_KEY}
 
 plugins:
   - serverless-dotenv-plugin

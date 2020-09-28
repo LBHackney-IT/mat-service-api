@@ -12,6 +12,7 @@ export interface Task {
   dueState?: DueState;
   completedTime: Date;
   stage: Stage;
+  state: State;
   children?: Task[];
   parent?: string;
   referenceNumber: string;
@@ -62,4 +63,9 @@ export enum Stage {
 export enum DueState {
   imminent,
   overdue,
+}
+
+export enum State {
+  inactive,
+  active,
 }

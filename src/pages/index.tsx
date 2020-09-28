@@ -5,10 +5,12 @@ import { ErrorMessage } from 'lbh-frontend-react';
 import Layout from '../components/layout';
 import LoadingPage from '../components/loadingPage';
 import getTasksByOfficerEmail from '../usecases/ui/getTasksByOfficerEmail';
+import { useRouter } from 'next/router';
 
 type FetchState = 'fetching' | 'error' | 'done';
 
 export default function Home() {
+  const router = useRouter();
   const [tasks, setTasks] = useState<Row[]>([]);
   const [fetchState, setFetchState]: [FetchState, any] = useState<FetchState>(
     'fetching'
@@ -21,7 +23,11 @@ export default function Home() {
         setFetchState('done');
       })
       .catch((e) => {
-        setFetchState('error');
+        if (e.response.data.error === 'No user patch found') {
+          router.push('/login-error');
+        } else {
+          setFetchState('error');
+        }
       });
   }, []);
 
@@ -31,7 +37,7 @@ export default function Home() {
         <div>
           <div className="container">
             <Head>
-              <title>Manage A Tenancy</title>
+              <title>Manage a Tenancy</title>
               <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>

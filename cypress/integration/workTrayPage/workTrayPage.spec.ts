@@ -5,24 +5,28 @@ import generateToken from '../../../src/tests/helpers/generateToken';
 
 const jwtSecret = Cypress.env('JWT_SECRET');
 
-describe('Work Tray Page Elements', () => {
-  it('', () => {
-    cy.server();
-    cy.fixture('tasks').then((tasks) => {
-      cy.route('/api/tasks?emailAddress=test.user@hackney.gov.uk', tasks).as(
-        'getTasks'
-      );
-    });
+describe('Work Tray Page', () => {
+  let token: string;
 
-    let token = generateToken(
+  beforeEach(() => {
+    token = generateToken(
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',
       ['housing-officer-dev'],
       jwtSecret
     );
-
+    cy.server();
     cy.setCookie('hackneyToken', token);
+  });
+
+  it('displays the key elements', () => {
+    cy.fixture('tasks').then((tasks) => {
+      cy.route('/api/tasks?emailAddress=test.user@hackney.gov.uk', tasks).as(
+        'getTasks'
+      );
+    });
+
     cy.visit('/');
     cy.wait('@getTasks');
 
@@ -45,8 +49,18 @@ describe('Work Tray Page Elements', () => {
     cy.get(
       '.worktray-container th.govuk-table__header:nth-child(3)'
     ).dblclick();
+  });
 
-    // Date/Completion Column
-    // cy.get('.worktray-container th.govuk-table__header:last').dblclick();
+  it('redirects to the login error page if no patch is set for the user', () => {
+    cy.route({
+      method: 'GET',
+      url: '/api/tasks?emailAddress=test.user@hackney.gov.uk',
+      status: 400,
+      response: { error: 'No user patch found' },
+    });
+
+    cy.visit('/');
+    cy.contains('Problem logging in');
+    cy.location('pathname').should('equal', '/login-error');
   });
 });

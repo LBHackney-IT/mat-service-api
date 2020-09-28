@@ -1,5 +1,4 @@
 const getTasksByPatchAndOfficerIdQuery = (
-  officerId: string,
   isManager: boolean,
   areaManagerId: string,
   patchId?: string
@@ -31,22 +30,7 @@ const getTasksByPatchAndOfficerIdQuery = (
                 <attribute name="hackney_traid" />
                 <attribute name="hackney_issuelocation" />
                 <filter type="and">
-                    <filter type="or">
-                        <filter type="or">
-                            <filter type="and">
-                                <condition attribute="hackney_estateofficerpatchid" value="${patchId}" operator="eq"/>
-                                <condition attribute="hackney_estateofficer_createdbyid" value="${officerId}" operator="eq"/>
-                            </filter>
-                            <filter type="and">
-                                <condition attribute="hackney_estateofficerpatchid" value="${patchId}" operator="ne"/>
-                                <condition attribute="hackney_estateofficer_createdbyid" value="${officerId}" operator="eq"/>
-                            </filter>
-                        </filter>
-                        <filter type="and">
-                            <condition attribute="hackney_enquirysubject" value="100000060" operator="eq"/>
-                            <condition attribute="hackney_estateofficerpatchid" value="${patchId}" operator="eq"/>
-                        </filter>
-                    </filter>
+                    <condition attribute="hackney_estateofficerpatchid" value="${patchId}" operator="eq"/>
                 </filter>
                 <link-entity name="contact" from="contactid" to="hackney_contactid" link-type="outer">
                     <attribute name="fullname" alias="name"/>

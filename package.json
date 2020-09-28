@@ -7,7 +7,7 @@
     "dev:debug": "NODE_OPTIONS='--inspect' next dev -p 3100",
     "build": "next build",
     "start": "next start",
-    "serverless:offline": "npm run build && serverless offline",
+    "serverless:offline": "npm run build && serverless offline -p 3200",
     "test:unit": "jest --config ./jest.unit.config.js",
     "test:unit:ci": "jest --config ./jest.unit.config.js -w 2",
     "test:unit:watch": "jest --config ./jest.unit.config.js --watch",

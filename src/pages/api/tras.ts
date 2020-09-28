@@ -1,4 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import CrmGateway from '../../gateways/crmGateway';
+import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import GetTRAs from '../../usecases/api/getTRAs';
 import { officerPatchAssociationInterface } from '../../usecases/api/getTRAs';
 
@@ -12,10 +14,12 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     : undefined;
 
   if (emailAddress != undefined) {
-    const getTRAs = new GetTRAs(emailAddress);
+    const crmGateway = new CrmGateway();
+    const matPostgresGateway = new MatPostgresGateway();
+    const getTRAs = new GetTRAs({ crmGateway, matPostgresGateway });
     switch (req.method) {
       case 'GET':
-        const response = await getTRAs.execute();
+        const response = await getTRAs.execute(emailAddress);
         if (response.error === undefined) {
           res.status(200).json(response.body);
         } else {

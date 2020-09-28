@@ -1,5 +1,5 @@
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import CRMGateway from '../../gateways/crmGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { TRAPatchMappingResponseInterface } from '../../mappings/apiTRAToUiTRA';
 
 export interface officerPatchAssociationInterface {
@@ -9,37 +9,41 @@ export interface officerPatchAssociationInterface {
 }
 
 interface GetTRAsResponseInterface {
-  body: officerPatchAssociationInterface | undefined;
-  error: number | undefined;
+  body?: officerPatchAssociationInterface;
+  error?: number;
 }
 
 interface GetTRAsInterface {
-  execute(): Promise<GetTRAsResponseInterface>;
+  execute(emailAddress: string): Promise<GetTRAsResponseInterface>;
+}
+
+interface GetTRAsOptions {
+  matPostgresGateway: MatPostgresGatewayInterface;
+  crmGateway: CrmGatewayInterface;
 }
 
 class GetTRAs implements GetTRAsInterface {
-  emailAddress: string;
+  matPostgresGateway: MatPostgresGatewayInterface;
+  crmGateway: CrmGatewayInterface;
 
-  constructor(emailAddress: string) {
-    this.emailAddress = emailAddress;
+  constructor(options: GetTRAsOptions) {
+    this.matPostgresGateway = options.matPostgresGateway;
+    this.crmGateway = options.crmGateway;
   }
 
-  public async execute(): Promise<GetTRAsResponseInterface> {
-    if (this.emailAddress === undefined) {
-      return Promise.resolve({
-        body: undefined,
-        error: 400,
-      });
-    }
-    try {
-      const matGateway = new MatPostgresGateway();
-      const crmGateway = new CRMGateway();
+  public async execute(
+    emailAddress: string
+  ): Promise<GetTRAsResponseInterface> {
+    if (emailAddress === undefined) return { error: 400 };
 
-      const userDetails = await matGateway.getUserMapping(this.emailAddress);
+    try {
+      const userDetails = await this.matPostgresGateway.getUserMapping(
+        emailAddress
+      );
 
       if (!userDetails.body) throw new Error('User not found');
 
-      const userPatch = await crmGateway.getPatchByOfficerId(
+      const userPatch = await this.crmGateway.getPatchByOfficerId(
         userDetails.body.usercrmid
       );
 
@@ -50,16 +54,17 @@ class GetTRAs implements GetTRAsInterface {
         userPatch.body !== undefined &&
         userPatch.body.patchId !== undefined
       ) {
-        tras = await matGateway.getTrasByPatchId(userPatch.body.patchId);
+        tras = await this.matPostgresGateway.getTrasByPatchId(
+          userPatch.body.patchId
+        );
       } else {
-        return Promise.resolve({
+        return {
           body: {
             patchname: '',
             tras: [],
             officername: '',
           },
-          error: undefined,
-        });
+        };
       }
 
       const traDetails: officerPatchAssociationInterface = {
@@ -68,15 +73,9 @@ class GetTRAs implements GetTRAsInterface {
         officername: userPatch.body.officerName,
       };
 
-      return Promise.resolve({
-        body: traDetails,
-        error: undefined,
-      });
+      return { body: traDetails };
     } catch (error) {
-      return Promise.resolve({
-        body: undefined,
-        error: 500,
-      });
+      return { error: 500 };
     }
   }
 }

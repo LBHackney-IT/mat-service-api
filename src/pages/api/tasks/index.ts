@@ -93,32 +93,37 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       });
       officerPatch = await getOfficerPatch.execute();
     }
-    if (officerPatch !== undefined && officerPatch.body !== undefined) {
+    if (
+      officerPatch &&
+      officerPatch.body &&
+      officerPatch.body.patchId !== undefined
+    ) {
       const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
       let patchId = officerPatchDetails.patchId;
-      const officerId = officerPatchDetails.officerId;
       const isManager = officerPatchDetails.isManager;
       const areaManagerId =
         officerPatchDetails.areaManagerId !== undefined
           ? officerPatchDetails.areaManagerId
           : ''; //crm query will handle officer/manager queries
-      let getTasks;
-      let response;
 
-      getTasks = new GetTasksForAPatch({
-        patchId,
-        officerId,
-        isManager,
-        areaManagerId,
+      const getTasks = new GetTasksForAPatch({
         crmGateway,
       });
+      const response = await getTasks.execute(
+        isManager,
+        areaManagerId,
+        patchId
+      );
 
-      response = await getTasks.execute();
-
-      if (response && response.error === undefined) {
+      if (response.body) {
         res.status(200).json(response.body);
-      } else if (response && response.error) {
-        res.status(response.error).end();
+      } else if (response.error) {
+        if (response.error === 'NotAuthorised') {
+          return res.status(401).json({ error: 'Not authorised' });
+        }
+        return res
+          .status(500)
+          .json({ error: `Unknown error: ${response.error}` });
       }
     } else {
       res.status(400).json({ error: 'No user patch found' });

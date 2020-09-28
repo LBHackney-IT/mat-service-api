@@ -1,9 +1,4 @@
 import faker from 'faker';
-import { GetPropertyPatchResponse } from '../../gateways/crmGateway';
-import {
-  PropertyPatchDetailsInterface,
-  CrmResponseInterface,
-} from '../../mappings/crmToPropertyPatch';
 
 const MockCrmPropertyPatchResponse = () => {
   return {

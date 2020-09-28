@@ -26,7 +26,7 @@ interface GetUserMappingResponse {
 }
 
 export interface CreateUserMappingResponse {
-  body?: true;
+  body?: boolean;
   error?: number;
 }
 

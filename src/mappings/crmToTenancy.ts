@@ -1,4 +1,4 @@
-import { CrmResponse } from '../gateways/crmGateway';
+import { CrmResponse, GenericCrmResponse } from '../gateways/crmGateway';
 import { Tenancy } from '../interfaces/tenancy';
 
 export interface CrmTenancy {
@@ -26,9 +26,11 @@ export interface CrmTenancy {
   contact1_x002e_contactid: string;
 }
 
-export function crmResponseToTenancies(crmResponse: CrmResponse): Tenancy[] {
+export function crmResponseToTenancies(
+  crmResponse: GenericCrmResponse<CrmTenancy[]>
+): Tenancy[] {
   return Object.values(
-    (crmResponse.value as CrmTenancy[]).reduce((acc, t) => {
+    crmResponse.value.reduce((acc, t) => {
       const tenancy = crmTenancyToTenancy(t);
       const key = `${tenancy.accountId}-${tenancy.housingTenure}-${tenancy.fullAddress}`;
       if (!acc[key]) {

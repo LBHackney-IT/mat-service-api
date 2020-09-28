@@ -13,7 +13,7 @@ import crmToPatchDetails, {
 import getTaskById from './xmlQueryStrings/getTaskById';
 import getOfficersByAreaId from './xmlQueryStrings/getOfficersByAreaId';
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
-import { crmResponseToTenancies } from '../mappings/crmToTenancy';
+import { crmResponseToTenancies, CrmTenancy } from '../mappings/crmToTenancy';
 import { Officer } from '../mappings/crmToOfficersDetails';
 import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
 import { crmToNotes } from '../mappings/crmToNotes';
@@ -33,6 +33,11 @@ import { Tenancy } from '../interfaces/tenancy';
 export interface CrmResponse {
   '@odata.context': string;
   value: object | object[];
+}
+
+export interface GenericCrmResponse<T> {
+  '@odata.context': string;
+  value: T;
 }
 
 export interface GatewayResponse<T> {
@@ -394,15 +399,12 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getTenanciesByDateQuery(date);
 
     return await axios
-      .get(
+      .get<GenericCrmResponse<CrmTenancy[]>>(
         `${process.env.CRM_API_URL}/api/data/v8.2/accounts?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
-        const data = response.data;
-        const contacts = crmResponseToTenancies(data);
-
-        return contacts;
+        return crmResponseToTenancies(response.data);
       })
       .catch((error: AxiosError) => {
         return new Error('Error fetching latest tenancies from crm');

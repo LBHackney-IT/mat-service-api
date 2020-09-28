@@ -2,10 +2,10 @@ import axios, { AxiosError } from 'axios';
 import { Tenancy } from '../interfaces/tenancy';
 import V1ApiContact from '../interfaces/v1ApiContact';
 import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInteraction';
+import { NewNote } from '../interfaces/note';
 import { CheckResult } from '../pages/api/healthcheck';
 
 export interface v1MatAPIGatewayInterface {
-  getNewTenancies(): Promise<GetNewTenanciesResponse>;
   createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
@@ -16,6 +16,7 @@ export interface v1MatAPIGatewayInterface {
   transferCall(
     tmi: TenancyManagementInteraction
   ): Promise<TransferCallResponse>;
+  createTaskNote(note: NewNote): any;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -68,20 +69,21 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
     this.v1MatApiToken = options.v1MatApiToken;
   }
 
-  public async getNewTenancies(): Promise<GetNewTenanciesResponse> {
+  public async createTaskNote(note: NewNote) {
     const response = await axios
-      .get(`${this.v1MatApiUrl}/v1/tenancy/new`, {
+      .patch(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, note, {
         headers: {
           Authorization: `Bearer ${this.v1MatApiToken}`,
         },
       })
       .then((response) => {
-        return <GetNewTenanciesResponse>(<unknown>response);
+        return {
+          body: response.data,
+        };
       })
       .catch((error: AxiosError) => {
         return {
-          error: error.message,
-          result: undefined,
+          error: `V1 API: ${error.message}`,
         };
       });
 
@@ -107,7 +109,6 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
-        console.log(error);
         return {
           error: `V1 API: ${error.message}`,
         };
@@ -231,6 +232,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
         return { success: true };
       })
       .catch((error: AxiosError) => {
+        if (error.response) console.log(error.response.data);
         return {
           message: 'Could not connect to v1 MaT API',
           success: false,

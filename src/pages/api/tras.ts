@@ -1,32 +1,38 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import CrmGateway from '../../gateways/crmGateway';
+import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import GetTRAs from '../../usecases/api/getTRAs';
 import { officerPatchAssociationInterface } from '../../usecases/api/getTRAs';
 
 type Data = officerPatchAssociationInterface | undefined;
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  const emailAddress = req.query.emailAddress
-    ? Array.isArray(req.query.emailAddress)
-      ? req.query.emailAddress[0]
-      : req.query.emailAddress
-    : undefined;
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
+  if (req.method === 'GET') {
+    const emailAddress = req.query.emailAddress
+      ? Array.isArray(req.query.emailAddress)
+        ? req.query.emailAddress[0]
+        : req.query.emailAddress
+      : undefined;
 
-  if (emailAddress != undefined) {
-    const getTRAs = new GetTRAs(emailAddress);
-    switch (req.method) {
-      case 'GET':
-        const response = await getTRAs.execute();
-        if (response.error === undefined) {
-          res.status(200).json(response.body);
-        } else {
-          res.status(response.error).end();
-        }
-        break;
-      default:
-        res.setHeader('Allow', ['GET']);
-        res.status(405).end(`Methoid ${req.method} Not Allowed`);
+    if (emailAddress != undefined) {
+      const crmGateway = new CrmGateway();
+      const matPostgresGateway = new MatPostgresGateway();
+      const getTRAs = new GetTRAs({ crmGateway, matPostgresGateway });
+
+      const response = await getTRAs.execute(emailAddress);
+      if (response.error === undefined) {
+        res.status(200).json(response.body);
+      } else {
+        res.status(response.error).end();
+      }
+    } else {
+      res.status(400).end();
     }
   } else {
-    res.status(400).end();
+    res.setHeader('Allow', ['GET']);
+    res.status(405).end(`Methoid ${req.method} Not Allowed`);
   }
 };

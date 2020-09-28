@@ -7,11 +7,11 @@ const getNotesById = async (taskId: string): Promise<Note[]> => {
   }
 
   const response = await axios
-    .get(`${process.env.NEXT_PUBLIC_API_PATH}/notes/${taskId}`)
+    .get(`${process.env.NEXT_PUBLIC_API_PATH}/tasks/${taskId}/notes`)
     .then((response) => {
       return response.data;
     })
-    .catch((error) => {
+    .catch(() => {
       return [];
     });
 

@@ -2,7 +2,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
 import v1ApiContactToContact from '../../mappings/v1ApiContactToContact';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   const uprn = req.query.uprn
     ? Array.isArray(req.query.uprn)
       ? req.query.uprn[0]

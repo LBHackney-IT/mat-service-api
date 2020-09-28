@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import CrmGateway from '../../../../gateways/crmGateway';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   const uprn = req.query.uprn
     ? Array.isArray(req.query.uprn)
       ? req.query.uprn[0]

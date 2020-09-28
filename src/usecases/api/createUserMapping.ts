@@ -16,7 +16,7 @@ class CreateUserMapping implements CreateUserMappingInterface {
     this.userMapping = userMapping;
   }
 
-  public async execute() {
+  public async execute(): Promise<CreateUserMappingResponse> {
     const gateway = new MatPostgresGateway();
 
     const result = await gateway.createUserMapping(this.userMapping);

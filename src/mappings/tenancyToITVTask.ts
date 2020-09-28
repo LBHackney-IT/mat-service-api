@@ -5,18 +5,6 @@ export const tenancyToITVTask = (
   tenancy: Tenancy
 ): TenancyManagementInteraction => {
   return {
-    transferred: undefined,
-    status: undefined,
-    parentInteractionId: undefined,
-    householdId: undefined,
-    processStage: undefined,
-    reasonForStartingProcess: undefined,
-    assignedToPatch: undefined,
-    assignedToManager: undefined,
-    managerId: undefined,
-    estateOffice: undefined,
-    adviceGiven: undefined,
-    interactionId: undefined,
     contactId: tenancy.contacts[0].contactId,
     enquirySubject: '100000060',
     estateOfficerId: tenancy.officerId,
@@ -26,6 +14,7 @@ export const tenancyToITVTask = (
     estateOfficerName: tenancy.officerName,
     officerPatchId: tenancy.patchId,
     areaName: tenancy.areaId,
+    householdId: tenancy.householdId,
     serviceRequest: {
       id: undefined,
       title: 'Initial tenancy visit',

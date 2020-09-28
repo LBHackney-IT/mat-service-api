@@ -13,6 +13,7 @@ import crmToPatchDetails, {
 import getTaskById from './xmlQueryStrings/getTaskById';
 import getOfficersByAreaId from './xmlQueryStrings/getOfficersByAreaId';
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
+import { crmResponseToTenancies, CrmTenancy } from '../mappings/crmToTenancy';
 import { Officer } from '../mappings/crmToOfficersDetails';
 import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
 import { crmToNotes } from '../mappings/crmToNotes';
@@ -21,14 +22,22 @@ import crmToPropertyPatch, {
   PropertyPatchDetailsInterface,
 } from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
-import { Note, CrmNote } from '../interfaces/note';
+import { Note } from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
+import { Result, isSuccess } from '../lib/utils';
+import getTenanciesByDateQuery from './xmlQueryStrings/getTenanciesByDate';
+import { Tenancy } from '../interfaces/tenancy';
 
 export interface CrmResponse {
   '@odata.context': string;
-  value: object | object[];
+  value: Record<string, unknown> | Record<string, unknown>[];
+}
+
+export interface GenericCrmResponse<T> {
+  '@odata.context': string;
+  value: T;
 }
 
 export interface GatewayResponse<T> {
@@ -38,7 +47,6 @@ export interface GatewayResponse<T> {
 
 export interface CrmGatewayInterface {
   getTasksForAPatch(
-    officerId: string,
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
@@ -50,7 +58,7 @@ export interface CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<object>>;
+  ): Promise<GatewayResponse<Record<string, unknown>>>;
   getPatchByOfficerId(
     emailAddress: string
   ): Promise<GatewayResponse<PatchDetailsInterface>>;
@@ -61,45 +69,52 @@ export interface CrmGatewayInterface {
   getTasksForTagRef(tag_ref: string): Promise<GatewayResponse<Task[]>>;
   getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
+  getTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
   healthCheck(): Promise<CheckResult>;
 }
 
+type Headers = {
+  headers: {
+    Authorization: string;
+    Prefer: string;
+  };
+};
+
 class CrmGateway implements CrmGatewayInterface {
   crmTokenGateway: CrmTokenGatewayInterface;
-  crmApiToken: any;
+  crmApiToken: string | undefined;
 
   constructor() {
     this.crmTokenGateway = new CrmTokenGateway();
     this.crmApiToken = undefined;
   }
 
-  headers() {
+  headers(): Headers {
     return {
       headers: {
-        Authorization: `Bearer ${this.crmApiToken.body}`,
+        Authorization: `Bearer ${this.crmApiToken}`,
         Prefer:
           'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
       },
     };
   }
 
-  async updateToken() {
+  async updateToken(): Promise<void> {
     if (!this.crmApiToken) {
-      this.crmApiToken = await this.crmTokenGateway.getToken();
+      const result = await this.crmTokenGateway.getToken();
+      if (isSuccess(result)) this.crmApiToken = result;
     }
   }
 
   public async getTasksForAPatch(
-    officerId: string,
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
   ): Promise<GatewayResponse<Task[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getTasksByPatchAndOfficerIdQuery(
-      officerId,
       isManager,
       areaManagerId,
       patchId
@@ -117,6 +132,7 @@ class CrmGateway implements CrmGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
+        if (error.response) console.log(error.response.data);
         return {
           error: error.message,
         };
@@ -127,7 +143,7 @@ class CrmGateway implements CrmGatewayInterface {
     tag_ref: string
   ): Promise<GatewayResponse<Task[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getTasksByTagRef(tag_ref);
 
@@ -143,8 +159,6 @@ class CrmGateway implements CrmGatewayInterface {
         };
       })
       .catch((error: AxiosError) => {
-        console.log('error: ' + error);
-
         return {
           error: error.message,
         };
@@ -153,7 +167,7 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getTask(taskId: string): Promise<GatewayResponse<Task>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getTaskById(taskId);
 
@@ -181,7 +195,7 @@ class CrmGateway implements CrmGatewayInterface {
     taskId: string
   ): Promise<GatewayResponse<Note[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getNotesForTaskById(taskId);
 
@@ -209,7 +223,7 @@ class CrmGateway implements CrmGatewayInterface {
     emailAddress: string
   ): Promise<GatewayResponse<string>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getUserByEmail(emailAddress);
 
@@ -242,9 +256,9 @@ class CrmGateway implements CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<object>> {
+  ): Promise<GatewayResponse<Record<string, unknown>>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmUser = {
       hackney_name: fullName,
@@ -276,7 +290,7 @@ class CrmGateway implements CrmGatewayInterface {
     officerId: string
   ): Promise<GatewayResponse<PatchDetailsInterface>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getPatchByOfficerId(officerId);
 
@@ -304,7 +318,7 @@ class CrmGateway implements CrmGatewayInterface {
     uprn: string
   ): Promise<GatewayResponse<PropertyPatchDetailsInterface>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getPropertyPatchByUprn(uprn);
 
@@ -333,7 +347,7 @@ class CrmGateway implements CrmGatewayInterface {
     areaId: number
   ): Promise<GatewayResponse<Officer[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getOfficersByAreaId(areaId);
 
@@ -361,7 +375,7 @@ class CrmGateway implements CrmGatewayInterface {
     tagRef: string
   ): Promise<GatewayResponse<Contact[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getContactsByTagRef(tagRef);
 
@@ -385,20 +399,39 @@ class CrmGateway implements CrmGatewayInterface {
       });
   }
 
-  public async healthCheck(): Promise<CheckResult> {
+  public async getTenanciesByDate(date: Date): Promise<Result<Tenancy[]>> {
     await this.updateToken();
-    if (this.crmApiToken.error) return this.crmApiToken;
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
+    const crmQuery = getTenanciesByDateQuery(date);
+
+    return await axios
+      .get<GenericCrmResponse<CrmTenancy[]>>(
+        `${process.env.CRM_API_URL}/api/data/v8.2/accounts?fetchXml=${crmQuery}`,
+        this.headers()
+      )
+      .then((response) => {
+        return crmResponseToTenancies(response.data);
+      })
+      .catch(() => {
+        return new Error('Error fetching latest tenancies from crm');
+      });
+  }
+
+  public async healthCheck(): Promise<CheckResult> {
     const errorMsg = {
       success: false,
       message: `Could not query dynamics`,
     };
+    await this.updateToken();
+    if (!this.crmApiToken) return errorMsg;
+
     return await axios
-      .get(
+      .get<CrmResponse>(
         `${process.env.CRM_API_URL}/api/data/v8.2/contacts?$select=createdon&$top=1`,
         this.headers()
       )
-      .then((response: any) => {
+      .then((response) => {
         if (
           response.data &&
           response.data.value &&
@@ -410,6 +443,7 @@ class CrmGateway implements CrmGatewayInterface {
         }
       })
       .catch((error: AxiosError) => {
+        if (error.response) console.log(error.response.data);
         return errorMsg;
       });
   }

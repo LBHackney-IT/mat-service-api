@@ -3,6 +3,7 @@ import CrmTokenGateway from '../../gateways/crmTokenGateway';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
 import CrmGateway from '../../gateways/crmGateway';
+import { isSuccess } from '../../lib/utils';
 
 type Data = {
   result: string;
@@ -23,8 +24,8 @@ let CheckFn: () => Promise<CheckResult>;
 
 const promiseTimeout = function (ms: number, promise: Promise<any>) {
   // Create a promise that rejects in <ms> milliseconds
-  let timeout = new Promise((resolve, reject) => {
-    let id = setTimeout(() => {
+  const timeout = new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
       clearTimeout(id);
       reject('Timed out in ' + ms + 'ms.');
     }, ms);
@@ -34,19 +35,20 @@ const promiseTimeout = function (ms: number, promise: Promise<any>) {
   return Promise.race([promise, timeout]);
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  switch (req.method) {
-    case 'GET':
-      const result = await runChecks(checks);
-      if (result.success) {
-        res.status(200).json({ result: 'success' });
-      } else {
-        res.status(500).json({ result: 'failure', messages: result.messages });
-      }
-      break;
-    default:
-      res.setHeader('Allow', ['GET']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
+  if (req.method === 'GET') {
+    const result = await runChecks(checks);
+    if (result.success) {
+      res.status(200).json({ result: 'success' });
+    } else {
+      res.status(500).json({ result: 'failure', messages: result.messages });
+    }
+  } else {
+    res.setHeader('Allow', ['GET']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };
 
@@ -81,7 +83,7 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
     'CRM_TOKEN_API_URL',
   ];
   const failures = [];
-  for (let envVar of vars) {
+  for (const envVar of vars) {
     if (process.env[envVar] === undefined) {
       failures.push(envVar);
     }
@@ -97,10 +99,10 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
 };
 
 const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
-  const checkPromise = new Promise(async (resolve, reject) => {
+  const checkPromise = new Promise((resolve, reject) => {
     const crmTokenGateway = new CrmTokenGateway();
-    const response = await crmTokenGateway.getToken();
-    response.body ? resolve() : reject();
+    const response = crmTokenGateway.getToken();
+    isSuccess(response) ? resolve() : reject();
   });
   return promiseTimeout(5000, checkPromise)
     .then(() => {

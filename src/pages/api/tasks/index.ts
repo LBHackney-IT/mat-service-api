@@ -13,7 +13,10 @@ import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayloa
 
 type Data = Task[] | { error: string } | undefined;
 
-const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+const postHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
     return res.status(500).end();
   }
@@ -24,10 +27,12 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   });
 
   const crmGateway = new CrmGateway();
+  const matPostgresGateway = new MatPostgresGateway();
 
   const createTask = new CreateManualTaskUseCase({
     v1MatAPIGateway,
     crmGateway,
+    matPostgresGateway,
   });
 
   const userToken = getTokenPayloadFromRequest(req);
@@ -53,7 +58,10 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 };
 
-const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+const getHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   const crmGateway = new CrmGateway();
   const tag_ref = Array.isArray(req.query.tag_ref)
     ? req.query.tag_ref[0]
@@ -74,7 +82,6 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     // Ensure the user is correctly set up
     const setupUserResult = await setupUser(<string>req.cookies.hackneyToken);
     if (setupUserResult.error) {
-      console.log(setupUserResult.error);
       return res.status(400).end();
     }
     const emailAddress = req.query.emailAddress
@@ -94,32 +101,37 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       });
       officerPatch = await getOfficerPatch.execute();
     }
-    if (officerPatch !== undefined && officerPatch.body !== undefined) {
+    if (
+      officerPatch &&
+      officerPatch.body &&
+      officerPatch.body.patchId !== undefined
+    ) {
       const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
-      let patchId = officerPatchDetails.patchId;
-      const officerId = officerPatchDetails.officerId;
+      const patchId = officerPatchDetails.patchId;
       const isManager = officerPatchDetails.isManager;
       const areaManagerId =
         officerPatchDetails.areaManagerId !== undefined
           ? officerPatchDetails.areaManagerId
           : ''; //crm query will handle officer/manager queries
-      let getTasks;
-      let response;
 
-      getTasks = new GetTasksForAPatch({
-        patchId,
-        officerId,
-        isManager,
-        areaManagerId,
+      const getTasks = new GetTasksForAPatch({
         crmGateway,
       });
+      const response = await getTasks.execute(
+        isManager,
+        areaManagerId,
+        patchId
+      );
 
-      response = await getTasks.execute();
-
-      if (response && response.error === undefined) {
+      if (response.body) {
         res.status(200).json(response.body);
-      } else if (response && response.error) {
-        res.status(response.error).end();
+      } else if (response.error) {
+        if (response.error === 'NotAuthorised') {
+          return res.status(401).json({ error: 'Not authorised' });
+        }
+        return res
+          .status(500)
+          .json({ error: `Unknown error: ${response.error}` });
       }
     } else {
       res.status(400).json({ error: 'No user patch found' });
@@ -127,7 +139,10 @@ const getHandler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   switch (req.method) {
     case 'GET':
       return await getHandler(req, res);

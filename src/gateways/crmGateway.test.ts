@@ -21,20 +21,23 @@ jest.mock('../gateways/crmTokenGateway');
 describe('CrmGateway', () => {
   beforeEach(() => {
     axios.mockClear();
-    CrmTokenGateway.prototype.getToken.mockResolvedValue(() =>
-      Promise.resolve({ body: 'fakeToken' })
-    );
+    CrmTokenGateway.prototype.getToken.mockResolvedValue(() => 'fakeToken');
   });
 
   describe('Get Tasks by patch id', () => {
     it('successfully fetches data from an API', async () => {
       const data = MockCrmTaskResponse();
       const patchId = '9cd3823d-8653-e811-8126-70106faaf8c1';
+      const areaManagerId = faker.lorem.word();
 
       axios.get.mockResolvedValue({ data: data });
 
       const crmGateway = new CrmGateway();
-      const response = await crmGateway.getTasksForAPatch(patchId);
+      const response = await crmGateway.getTasksForAPatch(
+        false,
+        areaManagerId,
+        patchId
+      );
 
       const tasks = crmResponseToTasks(data);
 
@@ -46,7 +49,6 @@ describe('CrmGateway', () => {
       const errorResponse = {
         error: errorMessage,
       };
-      const officerId = faker.lorem.word();
       const isManager = faker.random.boolean();
       const areaManagerId = faker.lorem.word();
       const patchId = faker.lorem.word();
@@ -55,7 +57,6 @@ describe('CrmGateway', () => {
 
       const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksForAPatch(
-        officerId,
         isManager,
         areaManagerId,
         patchId

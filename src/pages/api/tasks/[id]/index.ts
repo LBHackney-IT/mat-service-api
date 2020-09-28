@@ -8,7 +8,10 @@ interface Error {
 
 type Data = Task | Error;
 
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+): Promise<void> => {
   const id = req.query.id
     ? Array.isArray(req.query.id)
       ? req.query.id[0]

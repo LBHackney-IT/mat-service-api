@@ -1,9 +1,8 @@
-const getTasksByPatchAndOfficerIdQuery = (
-  officerId: string,
+export default (
   isManager: boolean,
   areaManagerId: string,
   patchId?: string
-) => {
+): string => {
   return isManager === false
     ? `
         <fetch>
@@ -94,5 +93,3 @@ const getTasksByPatchAndOfficerIdQuery = (
         </fetch>
         `;
 };
-
-export default getTasksByPatchAndOfficerIdQuery;

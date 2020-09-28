@@ -5,7 +5,19 @@ export interface Note {
   incidentId: string;
 }
 
-export interface CrmNote {
+export interface NewNote {
+  interactionId: string; //TMI ID
+  estateOfficerName: string; //officer's full name
+  ServiceRequest: {
+    description: string; //note
+    requestCallback: false; //leave as false for now, call backs need to be supported later/separately
+    Id: string; //CRM incident/case Id
+  };
+  status: 1; //this will update the ticket, important to leave as 1
+  estateOfficerId: string; //officer's CRM id
+}
+
+export type CrmNote = {
   '@odata.etag': string;
   hackney_tenancymanagementinteractionsid: string;
   'incident1_x002e_housing_requestcallback@OData.Community.Display.V1.FormattedValue': string;
@@ -21,4 +33,4 @@ export interface CrmNote {
   //createdOn is in the format YYYY-MM-DDTHH:MM:SSZ
   incident1_x002e_incidentid: string;
   annotation2_x002e_annotationid: string;
-}
+};

@@ -29,14 +29,12 @@ class GetOfficerPatch implements GetOfficerPatchInterface {
   }
 
   public async execute(): Promise<GetOfficerPatchResponse> {
-    let officerPatch;
-
     const userDetails = await this.matPostgresGateway.getUserMapping(
       this.emailAddress
     );
     if (!userDetails.body || !userDetails.body.usercrmid) return { error: 404 };
 
-    officerPatch = await this.crmGateway.getPatchByOfficerId(
+    const officerPatch = await this.crmGateway.getPatchByOfficerId(
       userDetails.body.usercrmid
     );
     if (!officerPatch.body) return { error: 404 };

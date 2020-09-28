@@ -7,7 +7,7 @@ const jwtSecret = Cypress.env('JWT_SECRET');
 
 describe('The Redirect Page', () => {
   it('successfully loads Redirect Page', () => {
-    let token = generateToken(
+    const token = generateToken(
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',

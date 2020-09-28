@@ -1,4 +1,4 @@
-import React, { useState, useEffect, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../../components/layout';
 import LoadingPage from '../../../components/loadingPage';
@@ -23,8 +23,10 @@ import getOfficersForManager from '../../../usecases/ui/getOfficersForManager';
 import sendTaskToOfficer from '../../../usecases/ui/sendTaskToOfficer';
 import closeTask from '../../../usecases/ui/closeTask';
 import { FaExclamation } from 'react-icons/fa';
+import createNote from '../../../usecases/ui/createNote';
+import getFullName from '../../../usecases/ui/getFullName';
 
-const mapResidents = (residents: Resident[]) => {
+const mapResidents = (residents: Resident[]): React.ReactNode => {
   return residents.map((resident) => {
     return (
       <Tile link={`mailto:${resident.email}`} title={resident.presentationName}>
@@ -44,13 +46,21 @@ const mapResidents = (residents: Resident[]) => {
   });
 };
 
-export default function TaskPage() {
+export default function TaskPage(): React.ReactNode {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [officers, setOfficers] = useState<string[][] | null>(null);
   const [selectedOfficerId, setSelectedOfficerId] = useState<
     string | undefined
+  >(undefined);
+  const [officerName, setOfficerName] = useState<string | undefined>(undefined);
+  const [officerEmail, setOfficerEmail] = useState<string | undefined>(
+    undefined
+  );
+  const [noteText, setNoteText] = useState<string | undefined>(undefined);
+  const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
+    boolean | undefined
   >(undefined);
 
   const router = useRouter();
@@ -60,24 +70,20 @@ export default function TaskPage() {
         .then((task) => {
           if (task) setTask(task);
         })
-        .catch((e) => {
-          setError('loadingError');
-        });
+        .catch(() => setError('loadingError'));
     }
     if (!notes) {
       getNotesById(`${router.query.id}`)
         .then((notes) => {
           if (notes) setNotes(notes);
         })
-        .catch((e) => {
-          setError('notesError');
-        });
+        .catch(() => setError('notesError'));
     }
     if (!officers) {
       // extract the officer email from token
-      const managerEmail = getEmailAddress();
-      if (managerEmail) {
-        getOfficersForManager(managerEmail).then((officers: any) => {
+      const managerEmailAddress = getEmailAddress();
+      if (managerEmailAddress) {
+        getOfficersForManager(managerEmailAddress).then((officers: any) => {
           const officerSelect = officers.users.map((officer: any) => [
             officer.id,
             officer.name,
@@ -86,6 +92,12 @@ export default function TaskPage() {
           setSelectedOfficerId(officerSelect[0][0]);
         });
       }
+    }
+    if (!officerName) {
+      setOfficerName(getFullName());
+    }
+    if (!officerEmail) {
+      setOfficerEmail(getEmailAddress());
     }
   });
 
@@ -109,21 +121,54 @@ export default function TaskPage() {
   };
 
   const sendToManager = () => {
-    sendTaskToManager(task.id)
-      .then(() => {})
-      .catch(() => {
-        setError('sendToManagerError');
-      });
+    sendTaskToManager(task.id).catch(() => {
+      setError('sendToManagerError');
+    });
   };
 
   const closeTaskHandler = () => {
     closeTask(task.id)
-      .then((x) => {
-        router.push('/');
-      })
-      .catch((x) => {
-        setError('closeTaskError');
-      });
+      .then(() => router.push('/'))
+      .catch(() => setError('closeTaskError'));
+  };
+
+  const handleNoteChange = (event: any) => {
+    setNoteText(event.target.value);
+  };
+
+  const submitNote = async () => {
+    if (noteText === undefined || noteText === '') {
+      setSubmitNoteSuccess(false);
+    } else {
+      const email = officerEmail ? officerEmail : '';
+      const note = {
+        interactionId: router.query.id,
+        estateOfficerName: officerName,
+        ServiceRequest: {
+          description: noteText,
+          requestCallback: false,
+          Id: task.incidentId,
+        },
+        status: 1,
+      };
+      const response = await createNote(note, email);
+
+      if (response) {
+        const notesArray = notes;
+        const newNote: Note = {
+          text: `${note.ServiceRequest.description}`,
+          createdBy: `${note.estateOfficerName}`,
+          createdOn: moment().toString(),
+          incidentId: note.ServiceRequest.Id,
+        };
+        if (notesArray) {
+          notesArray.push(newNote);
+          setSubmitNoteSuccess(response);
+          setNoteText('');
+          setNotes(notesArray);
+        }
+      }
+    }
   };
 
   const renderNotes = () => {
@@ -134,8 +179,7 @@ export default function TaskPage() {
         <Paragraph>
           <span className="strong">
             {moment(note.createdOn).format('DD/MM/YYYY')}
-          </span>{' '}
-          Created by {note.createdBy}
+          </span>
           <br />
           {note.text}
         </Paragraph>
@@ -144,12 +188,29 @@ export default function TaskPage() {
     return notesJsx;
   };
 
+  const renderNoteSuccess = () => {
+    if (submitNoteSuccess) {
+      return <Paragraph>Note was submitted successfully</Paragraph>;
+    }
+    if (submitNoteSuccess === false) {
+      return (
+        <ErrorMessage>An error has occurred, please try again</ErrorMessage>
+      );
+    }
+    return null;
+  };
+
   const renderNotesUpdate = () => {
     return (
       <div>
         <Heading level={HeadingLevels.H4}>Update Notes</Heading>
-        <textarea className={'govuk-input lbh-input text-area'} />
-        <Button>Save Update</Button>
+        <textarea
+          className={'govuk-input lbh-input text-area'}
+          value={noteText}
+          onChange={handleNoteChange}
+        />
+        <Button onClick={() => submitNote()}>Save Note</Button>
+        {renderNoteSuccess()}
       </div>
     );
   };

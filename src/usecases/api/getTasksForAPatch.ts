@@ -3,59 +3,37 @@ import { Task } from '../../interfaces/task';
 
 interface GetTasksResponse {
   body?: Task[];
-  error?: number;
+  error?: string;
 }
 
 interface GetTasksForAPatchOptions {
   crmGateway: CrmGatewayInterface;
-  patchId?: string;
-  officerId: string;
-  isManager: boolean;
-  areaManagerId: string;
 }
 
 interface GetTasksInterface {
-  execute(): Promise<GetTasksResponse>;
+  execute(
+    isManager: boolean,
+    areaManagerId: string,
+    patchId?: string
+  ): Promise<GetTasksResponse>;
 }
 
 class GetTasksForAPatch implements GetTasksInterface {
   crmGateway: CrmGatewayInterface;
-  patchId?: string;
-  officerId: string;
-  isManager: boolean;
-  areaManagerId: string;
 
   constructor(options: GetTasksForAPatchOptions) {
     this.crmGateway = options.crmGateway;
-    this.patchId = options.patchId;
-    this.officerId = options.officerId;
-    this.isManager = options.isManager;
-    this.areaManagerId = options.areaManagerId;
   }
-  public async execute(): Promise<GetTasksResponse> {
-    const response = await this.crmGateway.getTasksForAPatch(
-      this.officerId,
-      this.isManager,
-      this.areaManagerId,
-      this.patchId
+  public async execute(
+    isManager: boolean,
+    areaManagerId: string,
+    patchId?: string
+  ): Promise<GetTasksResponse> {
+    return await this.crmGateway.getTasksForAPatch(
+      isManager,
+      areaManagerId,
+      patchId
     );
-    switch (response.error) {
-      case undefined:
-        return {
-          body: response.body,
-          error: undefined,
-        };
-      case 'NotAuthorised':
-        return {
-          body: undefined,
-          error: 401,
-        };
-      default:
-        return {
-          body: undefined,
-          error: 500,
-        };
-    }
   }
 }
 

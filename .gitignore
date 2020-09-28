@@ -4,6 +4,7 @@ jspm_packages
 .env
 .data
 .vscode
+jsconfig.json
 
 # Cypress
 cypress.json

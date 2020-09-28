@@ -5,7 +5,10 @@ import HackneyToken from '../../../../interfaces/hackneyToken';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<any>
+): Promise<void> => {
   if (!process.env.PROCESS_TOKEN_ENCRYPTION_KEY) return res.status(500).end();
 
   const id = req.query.id

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Worktray, { workTrayColumns, Row } from '../components/worktray';
-import { ErrorMessage } from 'lbh-frontend-react';
 import Layout from '../components/layout';
 import LoadingPage from '../components/loadingPage';
 import getTasksByOfficerEmail from '../usecases/ui/getTasksByOfficerEmail';
@@ -9,7 +8,7 @@ import { useRouter } from 'next/router';
 
 type FetchState = 'fetching' | 'error' | 'done';
 
-export default function Home() {
+export default function Home(): React.ReactNode {
   const router = useRouter();
   const [tasks, setTasks] = useState<Row[]>([]);
   const [fetchState, setFetchState]: [FetchState, any] = useState<FetchState>(

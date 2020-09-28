@@ -59,14 +59,10 @@ functions:
     environment:
       JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
 
-
-  # createItvTasks:
-  #   handler: src/lambda.createItvTasks
-  #   # events:
-  #   #   - schedule: rate(1 minute)
-  #   environment:
-  #     V1_MAT_API_URL: ${ssm:/${self:custom.stage}-${self:service}-v1-mat-api-url, env:V1_MAT_API_URL}
-  #     V1_MAT_API_TOKEN: ${ssm:/${self:custom.stage}-${self:service}-v1-mat-api-token, env:V1_MAT_API_TOKEN}
+  createItvTasks:
+    handler: src/lambda.createItvTasks
+    # events:
+    #   - schedule: rate(1 hour)
 
 resources:
   Resources:

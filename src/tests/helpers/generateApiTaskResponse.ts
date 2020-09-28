@@ -12,9 +12,9 @@ interface ApiTaskResponse {
   data: Task[];
   status: number;
   statusText: string;
-  headers: {};
-  config: {};
-  request: {};
+  headers: Record<string, unknown>;
+  config: Record<string, unknown>;
+  request: Record<string, unknown>;
 }
 
 const mockApiTaskResponse = (): ApiTaskResponse => {

@@ -163,7 +163,7 @@ export default function TaskPage() {
     if (response) {
       const notesArray = notes;
       const newNote: Note = {
-        text: note.ServiceRequest.description,
+        text: `${note.ServiceRequest.description}`,
         createdBy: `${note.estateOfficerName}`,
         createdOn: moment().toString(),
         incidentId: note.ServiceRequest.Id,

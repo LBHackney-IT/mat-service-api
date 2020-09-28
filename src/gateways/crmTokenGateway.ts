@@ -15,7 +15,6 @@ export default class CrmTokenGateway implements CrmTokenGatewayInterface {
     if (!process.env.CRM_TOKEN_API_URL || !process.env.CRM_TOKEN_API_KEY) {
       return new Error('CRM token gateway configuration not set');
     }
-
     return axios
       .post<GetTokenResponse>(
         process.env.CRM_TOKEN_API_URL,

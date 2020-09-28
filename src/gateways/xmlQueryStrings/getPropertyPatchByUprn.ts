@@ -1,6 +1,5 @@
-export default (uprn: string) => {
-  return `
-  <fetch>
+export default (uprn: string): string => `
+<fetch>
   <entity name='hackney_propertyareapatch' >
       <attribute name='hackney_areaname' />
       <attribute name='hackney_ward' />
@@ -20,4 +19,3 @@ export default (uprn: string) => {
       </link-entity>
   </entity>
 </fetch>`;
-};

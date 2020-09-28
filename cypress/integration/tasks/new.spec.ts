@@ -7,7 +7,7 @@ const jwtSecret = Cypress.env('JWT_SECRET');
 
 describe('Tenancy Page Elements', () => {
   beforeEach(() => {
-    let token = generateToken(
+    const token = generateToken(
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',

@@ -1,6 +1,5 @@
-const getPatchByOfficerId = (officerId: string) => {
-  return `
-  <fetch top='1'>
+export default (officerId: string): string => `
+<fetch top='1'>
     <entity name='hackney_estateofficer' from='hackney_estateofficerid' to='hackney_officerloginid'>
       <attribute name='hackney_estateofficerid' />
       <attribute name='hackney_name' />
@@ -23,6 +22,3 @@ const getPatchByOfficerId = (officerId: string) => {
       </link-entity>
     </entity>
 </fetch>`;
-};
-
-export default getPatchByOfficerId;

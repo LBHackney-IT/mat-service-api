@@ -116,7 +116,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
   return task;
 }
 
-interface CrmTaskValue {
+type CrmTaskValue = {
   statecode: number;
   _hackney_managerpropertypatchid_value?: string;
   _hackney_estateofficerpatchid_value?: string;
@@ -149,12 +149,12 @@ interface CrmTaskValue {
   contact1_x002e_hackney_uprn: string;
   _hackney_contactid_value: string;
   hackney_enquirysubject: number;
-}
+};
 
-export interface CrmTasks {
+export type CrmTasks = {
   '@odata.context': string;
   value: CrmTaskValue[];
-}
+};
 
 export const mapResponseToStage = (stage: number): Stage => {
   switch (stage) {

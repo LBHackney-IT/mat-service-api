@@ -1,5 +1,4 @@
 import Contact from '../interfaces/contact';
-import { CrmResponse } from '../gateways/crmGateway';
 
 export const convertCrmContactToContact = (crmContact: CrmContact): Contact => {
   return {

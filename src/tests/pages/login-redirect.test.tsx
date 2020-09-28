@@ -14,7 +14,7 @@ const allowedGroups = process.env.ALLOWED_GROUPS
 
 describe('LoginRedirect', () => {
   it('redirects to home page if already authenticated', () => {
-    let token = generateToken(
+    const token = generateToken(
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',
@@ -28,7 +28,7 @@ describe('LoginRedirect', () => {
       },
     };
 
-    let res = {
+    const res = {
       writeHead: jest.fn().mockReturnValue({ end: () => {} }),
       end: jest.fn(),
     };
@@ -39,7 +39,7 @@ describe('LoginRedirect', () => {
   });
 
   it('does not redirect to home page if in an invalid group', () => {
-    let token = generateToken(
+    const token = generateToken(
       '108854273331484808552',
       'Test User',
       'test.user@hackney.gov.uk',
@@ -53,7 +53,7 @@ describe('LoginRedirect', () => {
       },
     };
 
-    let res = {
+    const res = {
       writeHead: jest.fn().mockReturnValue({ end: () => {} }),
       end: jest.fn(),
     };
@@ -70,7 +70,7 @@ describe('LoginRedirect', () => {
       },
     };
 
-    let res = {
+    const res = {
       writeHead: jest.fn().mockReturnValue({ end: () => {} }),
       end: jest.fn(),
     };

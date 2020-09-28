@@ -8,7 +8,7 @@ import { ServerResponse } from 'http';
 const unauthenticatedLandingPage = '/login-redirect';
 const unauthenticatedErrorPage = '/login-error';
 
-function MaTApp({ Component, pageProps }: AppProps) {
+function MaTApp({ Component, pageProps }: AppProps): React.ReactNode {
   return <Component {...pageProps} />;
 }
 
@@ -33,7 +33,7 @@ MaTApp.getInitialProps = async (context: AppContext) => {
   }
 
   if (context.ctx.req.headers && context.ctx.req.headers.cookie) {
-    let parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
+    const parsedCookie = cookie.parse(context.ctx.req.headers.cookie);
 
     if (
       !parsedCookie ||

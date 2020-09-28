@@ -1,4 +1,4 @@
-import { CrmResponse, GenericCrmResponse } from '../gateways/crmGateway';
+import { GenericCrmResponse } from '../gateways/crmGateway';
 import { Tenancy } from '../interfaces/tenancy';
 
 export interface CrmTenancy {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../../components/layout';
 import LoadingPage from '../../../components/loadingPage';
@@ -26,7 +26,7 @@ import { FaExclamation } from 'react-icons/fa';
 import createNote from '../../../usecases/ui/createNote';
 import getFullName from '../../../usecases/ui/getFullName';
 
-const mapResidents = (residents: Resident[]) => {
+const mapResidents = (residents: Resident[]): React.ReactNode => {
   return residents.map((resident) => {
     return (
       <Tile link={`mailto:${resident.email}`} title={resident.presentationName}>
@@ -46,7 +46,7 @@ const mapResidents = (residents: Resident[]) => {
   });
 };
 
-export default function TaskPage() {
+export default function TaskPage(): React.ReactNode {
   const [error, setError] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
   const [notes, setNotes] = useState<Note[] | null>(null);
@@ -70,18 +70,14 @@ export default function TaskPage() {
         .then((task) => {
           if (task) setTask(task);
         })
-        .catch((e) => {
-          setError('loadingError');
-        });
+        .catch(() => setError('loadingError'));
     }
     if (!notes) {
       getNotesById(`${router.query.id}`)
         .then((notes) => {
           if (notes) setNotes(notes);
         })
-        .catch((e) => {
-          setError('notesError');
-        });
+        .catch(() => setError('notesError'));
     }
     if (!officers) {
       // extract the officer email from token
@@ -125,21 +121,15 @@ export default function TaskPage() {
   };
 
   const sendToManager = () => {
-    sendTaskToManager(task.id)
-      .then(() => {})
-      .catch(() => {
-        setError('sendToManagerError');
-      });
+    sendTaskToManager(task.id).catch(() => {
+      setError('sendToManagerError');
+    });
   };
 
   const closeTaskHandler = () => {
     closeTask(task.id)
-      .then((x) => {
-        router.push('/');
-      })
-      .catch((x) => {
-        setError('closeTaskError');
-      });
+      .then(() => router.push('/'))
+      .catch(() => setError('closeTaskError'));
   };
 
   const handleNoteChange = (event: any) => {

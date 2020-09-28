@@ -45,7 +45,10 @@ export default class GetExternalProcessUrlUseCase
     this.options = options;
   }
 
-  async execute(taskId: string, officerEmail: string) {
+  async execute(
+    taskId: string,
+    officerEmail: string
+  ): Promise<GetExternalProcessUrlResponse> {
     const task: Task | undefined = (
       await this.options.crmGateway.getTask(taskId)
     ).body;

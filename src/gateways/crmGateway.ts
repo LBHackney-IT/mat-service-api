@@ -22,7 +22,7 @@ import crmToPropertyPatch, {
   PropertyPatchDetailsInterface,
 } from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
-import { Note, CrmNote } from '../interfaces/note';
+import { Note } from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
@@ -32,7 +32,7 @@ import { Tenancy } from '../interfaces/tenancy';
 
 export interface CrmResponse {
   '@odata.context': string;
-  value: object | object[];
+  value: Record<string, unknown> | Record<string, unknown>[];
 }
 
 export interface GenericCrmResponse<T> {
@@ -58,7 +58,7 @@ export interface CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<object>>;
+  ): Promise<GatewayResponse<Record<string, unknown>>>;
   getPatchByOfficerId(
     emailAddress: string
   ): Promise<GatewayResponse<PatchDetailsInterface>>;
@@ -73,6 +73,13 @@ export interface CrmGatewayInterface {
   healthCheck(): Promise<CheckResult>;
 }
 
+type Headers = {
+  headers: {
+    Authorization: string;
+    Prefer: string;
+  };
+};
+
 class CrmGateway implements CrmGatewayInterface {
   crmTokenGateway: CrmTokenGatewayInterface;
   crmApiToken: string | undefined;
@@ -82,7 +89,7 @@ class CrmGateway implements CrmGatewayInterface {
     this.crmApiToken = undefined;
   }
 
-  headers() {
+  headers(): Headers {
     return {
       headers: {
         Authorization: `Bearer ${this.crmApiToken}`,
@@ -92,7 +99,7 @@ class CrmGateway implements CrmGatewayInterface {
     };
   }
 
-  async updateToken() {
+  async updateToken(): Promise<void> {
     if (!this.crmApiToken) {
       const result = await this.crmTokenGateway.getToken();
       if (isSuccess(result)) this.crmApiToken = result;
@@ -249,7 +256,7 @@ class CrmGateway implements CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<object>> {
+  ): Promise<GatewayResponse<Record<string, unknown>>> {
     await this.updateToken();
     if (!this.crmApiToken) return { error: 'CRM token missing' };
 
@@ -406,7 +413,7 @@ class CrmGateway implements CrmGatewayInterface {
       .then((response) => {
         return crmResponseToTenancies(response.data);
       })
-      .catch((error: AxiosError) => {
+      .catch(() => {
         return new Error('Error fetching latest tenancies from crm');
       });
   }
@@ -420,11 +427,11 @@ class CrmGateway implements CrmGatewayInterface {
     if (this.crmApiToken) return errorMsg;
 
     return await axios
-      .get(
+      .get<CrmResponse>(
         `${process.env.CRM_API_URL}/api/data/v8.2/contacts?$select=createdon&$top=1`,
         this.headers()
       )
-      .then((response: any) => {
+      .then((response) => {
         if (
           response.data &&
           response.data.value &&
@@ -436,6 +443,7 @@ class CrmGateway implements CrmGatewayInterface {
         }
       })
       .catch((error: AxiosError) => {
+        if (error.response) console.log(error.response.data);
         return errorMsg;
       });
   }

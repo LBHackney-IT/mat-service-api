@@ -1,5 +1,5 @@
-const getUserByEmail = (tagRef: string) => {
-  return `<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">
+export default (tagRef: string): string => `
+<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false">
   <entity name="contact">
     <attribute name="contactid" />
     <attribute name="hackney_personno" />
@@ -28,6 +28,3 @@ const getUserByEmail = (tagRef: string) => {
     </link-entity>
   </entity>
 </fetch>`;
-};
-
-export default getUserByEmail;

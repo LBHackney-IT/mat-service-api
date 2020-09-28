@@ -11,7 +11,7 @@ const getNotesById = async (taskId: string): Promise<Note[]> => {
     .then((response) => {
       return response.data;
     })
-    .catch((error) => {
+    .catch(() => {
       return [];
     });
 

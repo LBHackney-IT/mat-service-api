@@ -5,7 +5,10 @@ import CrmGateway from '../../../../gateways/crmGateway';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 
-export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<any>
+): Promise<void> => {
   const id = req.query.id
     ? Array.isArray(req.query.id)
       ? req.query.id[0]

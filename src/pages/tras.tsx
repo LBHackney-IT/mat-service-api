@@ -4,7 +4,7 @@ import { Heading, HeadingLevels, List, ListTypes } from 'lbh-frontend-react';
 import { TRAdetails } from '../interfaces/tra';
 import getTRAs from '../usecases/ui/getTRAs';
 
-export default function TRAs() {
+export default function TRAs(): React.ReactNode {
   const [traDetails, setTRAs] = useState<TRAdetails>({
     tras: [],
     officername: '',

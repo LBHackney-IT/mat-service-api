@@ -10,15 +10,6 @@ interface GetOfficersPerAreaOptions {
   crmGateway: CrmGatewayInterface;
 }
 
-interface OfficerInterface {
-  name: string;
-  id: string;
-}
-
-interface OfficersPerAreaInterface {
-  officers: OfficerInterface[];
-}
-
 interface GetOfficersPerAreaInterface {
   execute(): Promise<GetOfficersPerAreaResponse>;
 }

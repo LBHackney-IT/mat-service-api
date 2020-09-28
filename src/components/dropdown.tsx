@@ -1,5 +1,5 @@
 import { Label } from 'lbh-frontend-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 interface DropdownProps {
   /**

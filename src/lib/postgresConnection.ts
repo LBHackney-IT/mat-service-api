@@ -16,9 +16,9 @@ export default class PostgresConnection {
     this.options = options;
   }
 
-  getConnection(): pgPromise.IDatabase<{}, IClient> {
-    var globalSymbols = Object.getOwnPropertySymbols(global);
-    var isSetup = globalSymbols.indexOf(PG_CONN) > -1;
+  getConnection(): pgPromise.IDatabase<Record<string, unknown>, IClient> {
+    const globalSymbols = Object.getOwnPropertySymbols(global);
+    const isSetup = globalSymbols.indexOf(PG_CONN) > -1;
 
     if (isSetup) return (global as any)[PG_CONN];
 

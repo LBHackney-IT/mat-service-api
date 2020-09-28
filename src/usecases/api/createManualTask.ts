@@ -106,9 +106,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       return { error: 'Error fetching officer patch details' };
     }
 
-    let tmi: TenancyManagementInteraction;
-
-    tmi = {
+    const tmi: TenancyManagementInteraction = {
       enquirySubject: tmiLookup[processData.process].enquirySubject,
       reasonForStartingProcess: processData.subProcess,
       subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',

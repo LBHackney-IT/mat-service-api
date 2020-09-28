@@ -1,9 +1,6 @@
-import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
-import MatPostgresGateway, {
-  MatPostgresGatewayInterface,
-} from '../../gateways/matPostgresGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
-import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { isError, Result } from '../../lib/utils';
 import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
 
@@ -45,7 +42,7 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
     if (isError(tenancies)) return new Error('Error fetching new tenancies');
 
     // Filter out all non-introductory tenancies
-    let introductoryTenancies = tenancies.filter((tenancy) => {
+    const introductoryTenancies = tenancies.filter((tenancy) => {
       return tenancy.housingTenure === 'INT';
     });
 

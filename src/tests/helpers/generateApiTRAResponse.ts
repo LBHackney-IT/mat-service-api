@@ -4,9 +4,9 @@ interface ApiTRAResponse {
   data: any[];
   status: number;
   statusText: string;
-  headers: {};
-  config: {};
-  request: {};
+  headers: Record<string, unknown>;
+  config: Record<string, unknown>;
+  request: Record<string, unknown>;
 }
 
 const mockApiTRAResponse = (): ApiTRAResponse => {

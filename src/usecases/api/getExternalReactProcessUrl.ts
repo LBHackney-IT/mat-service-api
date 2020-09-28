@@ -1,8 +1,6 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import UserMapping from '../../interfaces/userMapping';
-import { Task, ProcessType } from '../../interfaces/task';
-import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
+import { Task } from '../../interfaces/task';
 import {
   GetExternalProcessUrlInterface,
   GetExternalProcessUrlOptions,
@@ -26,6 +24,7 @@ export default class GetExternalReactEtraProcessUrl
     officerEmail: string
   ): Promise<GetExternalProcessUrlResponse> {
     const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
+    if (!officerEmail) return { error: 'Officer email required' };
     if (!task) return { error: 'Could not load task from crm' };
     if (!task.processType) {
       return { error: 'Task does not have a process type' };

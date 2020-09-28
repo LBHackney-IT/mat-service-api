@@ -68,7 +68,7 @@ describe('Task Page', () => {
       cy.contains('James Cagney');
       cy.contains('james.cagney@yahoo.co.uk');
       cy.contains('CAS-00000-V2L7P6');
-      cy.contains('Save Update');
+      cy.contains('Save Note');
     });
 
     it('should link to the tenancy page on single view', () => {

@@ -424,7 +424,7 @@ class CrmGateway implements CrmGatewayInterface {
       message: `Could not query dynamics`,
     };
     await this.updateToken();
-    if (this.crmApiToken) return errorMsg;
+    if (!this.crmApiToken) return errorMsg;
 
     return await axios
       .get<CrmResponse>(

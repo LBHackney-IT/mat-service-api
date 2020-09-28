@@ -38,6 +38,7 @@
     "@types/moment": "^2.13.0",
     "@types/react-icons": "^3.0.0",
     "@types/react-router-dom": "^5.1.5",
+    "axios": "^0.20.0",
     "cookie": "^0.4.1",
     "dotenv-load": "^2.0.0",
     "faker": "^4.1.0",

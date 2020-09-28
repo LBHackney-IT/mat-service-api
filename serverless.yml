@@ -30,7 +30,6 @@ plugins:
   - serverless-offline-ssm
   - serverless-offline
   - serverless-offline-scheduler
-  - serverless-plugin-typescript
 
 package:
   exclude:

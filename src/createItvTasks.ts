@@ -5,6 +5,7 @@ import MatPostgresGateway from './gateways/matPostgresGateway';
 import { isError } from './lib/utils';
 
 export default async () => {
+  console.log('Calling function');
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
     throw new Error('Missing environment variable for createItvTasks');
   }

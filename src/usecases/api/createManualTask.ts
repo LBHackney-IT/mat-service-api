@@ -1,7 +1,9 @@
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import GetOfficerPatch from './getOfficerPatch';
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import MatPostgresGateway, {
+  MatPostgresGatewayInterface,
+} from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 
 interface TmiData {
@@ -36,6 +38,7 @@ interface CreateManualTaskResponse {
 interface CreateManualTaskOptions {
   v1MatAPIGateway: v1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
+  matPostgresGateway: MatPostgresGatewayInterface;
 }
 
 interface CreateManualTaskInterface {
@@ -53,10 +56,12 @@ interface CreateManualTaskData {
 class CreateManualTaskUseCase implements CreateManualTaskInterface {
   v1MatAPIGateway: v1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
+  matPostgresGateway: MatPostgresGatewayInterface;
 
   constructor(options: CreateManualTaskOptions) {
     this.v1MatAPIGateway = options.v1MatAPIGateway;
     this.crmGateway = options.crmGateway;
+    this.matPostgresGateway = options.matPostgresGateway;
   }
 
   public async execute(
@@ -85,11 +90,10 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     }
     const contact = responsibleContacts[0];
 
-    const matPostgresGateway = new MatPostgresGateway();
     const getOfficerPatchId = new GetOfficerPatch({
       emailAddress: processData.officerEmail,
       crmGateway: this.crmGateway,
-      matPostgresGateway,
+      matPostgresGateway: this.matPostgresGateway,
     });
 
     const officerDetails = await getOfficerPatchId.execute();

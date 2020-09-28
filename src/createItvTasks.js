@@ -4,7 +4,7 @@ import CrmGateway from './gateways/crmGateway';
 import MatPostgresGateway from './gateways/matPostgresGateway';
 import { isError } from 'cypress/types/lodash';
 
-module.exports = async () => {
+export default async () => {
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
     throw new Error('Missing environment variable for createItvTasks');
   }

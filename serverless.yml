@@ -6,7 +6,7 @@ provider:
   region: eu-west-2
   api-name: hn-mat-service-api
   stage: dev
-  timeout: 15
+  timeout: 29
   environment:
     NODE_ENV: ${self:custom.stage}
     DB_NAME: matServiceDb
@@ -58,11 +58,6 @@ functions:
     handler: authorizer.handler
     environment:
       JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
-
-  createItvTasks:
-    handler: src/lambda.createItvTasks
-    # events:
-    #   - schedule: rate(1 hour)
 
 resources:
   Resources:

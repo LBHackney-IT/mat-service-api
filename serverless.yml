@@ -30,6 +30,7 @@ plugins:
   - serverless-offline-ssm
   - serverless-offline
   - serverless-offline-scheduler
+  - serverless-plugin-typescript
 
 package:
   exclude:
@@ -57,7 +58,7 @@ functions:
   authorizer:
     handler: authorizer.handler
     environment:
-      JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
+      # JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
 
   createItvTasks:
     handler: src/lambda.createItvTasks

@@ -11,7 +11,7 @@ import {
   Button,
   ErrorMessage,
 } from 'lbh-frontend-react';
-import { Task, TenancyType, Resident } from '../../../interfaces/task';
+import { Task, TenancyType } from '../../../interfaces/task';
 import getTaskById from '../../../usecases/ui/getTaskById';
 import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
@@ -26,7 +26,8 @@ import { FaExclamation } from 'react-icons/fa';
 import createNote from '../../../usecases/ui/createNote';
 import getFullName from '../../../usecases/ui/getFullName';
 
-const mapResidents = (residents: Resident[]): React.ReactNode => {
+/*
+const mapResidents = (residents: Resident[]): React.ReactElement => {
   return residents.map((resident) => {
     return (
       <Tile link={`mailto:${resident.email}`} title={resident.presentationName}>
@@ -45,6 +46,7 @@ const mapResidents = (residents: Resident[]): React.ReactNode => {
     );
   });
 };
+*/
 
 export default function TaskPage(): React.ReactNode {
   const [error, setError] = useState<string>('none');

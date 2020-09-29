@@ -58,7 +58,7 @@ export interface CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<Record<string, unknown>>>;
+  ): Promise<GatewayResponse<string>>;
   getPatchByOfficerId(
     emailAddress: string
   ): Promise<GatewayResponse<PatchDetailsInterface>>;
@@ -256,7 +256,7 @@ class CrmGateway implements CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<Record<string, unknown>>> {
+  ): Promise<GatewayResponse<string>> {
     await this.updateToken();
     if (!this.crmApiToken) return { error: 'CRM token missing' };
 

@@ -1,4 +1,4 @@
-export default (date: Date) => {
+export default (date: Date): string => {
   return `
 <fetch>
   <entity name='account'>

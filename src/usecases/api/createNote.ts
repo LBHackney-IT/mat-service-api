@@ -19,8 +19,8 @@ class CreateTaskNote implements CreateTaskNote {
   public async execute(note: NewNote): Promise<boolean> {
     return await this.v1MatAPIGateway
       .createTaskNote(note)
-      .then((response: any) => true)
-      .catch((error: any) => false);
+      .then(() => true)
+      .catch(() => false);
   }
 }
 

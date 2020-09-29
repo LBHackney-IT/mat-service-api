@@ -10,7 +10,11 @@ interface DropdownProps {
   onChange: (option: string) => void;
 }
 
-const Dropdown = ({ options, selected, onChange }: DropdownProps) => {
+const Dropdown = ({
+  options,
+  selected,
+  onChange,
+}: DropdownProps): React.ReactElement => {
   const [currentlySelected, setCurrentlySelected] = useState(selected);
 
   const updateWithNewSelection = (selectedValue: string) => {

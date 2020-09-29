@@ -31,7 +31,7 @@ enum Status {
   complete,
 }
 
-const Worktray = (props: Props) => {
+const Worktray = (props: Props): React.ReactElement => {
   return (
     <div data-test="worktray-container">
       <WorkTray

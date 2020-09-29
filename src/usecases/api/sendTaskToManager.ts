@@ -4,7 +4,7 @@ import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 
 interface SendTaskToManagerResponse {
-  body?: any;
+  body?: boolean;
   error?: string;
 }
 

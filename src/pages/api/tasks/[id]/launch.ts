@@ -5,9 +5,13 @@ import HackneyToken from '../../../../interfaces/hackneyToken';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { NextApiRequest, NextApiResponse } from 'next';
 
+interface ErrorResponse {
+  error: string;
+}
+
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<any>
+  res: NextApiResponse<void | ErrorResponse>
 ): Promise<void> => {
   if (!process.env.PROCESS_TOKEN_ENCRYPTION_KEY) return res.status(500).end();
 

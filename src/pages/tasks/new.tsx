@@ -51,7 +51,7 @@ class NewProcessPage extends React.Component<Props, State> {
         <Radios
           name="processes"
           items={this.itemTypes(this.isCollapsed())}
-          onChange={(value: any): void => {
+          onChange={(value: string): void => {
             this.setState({ process: value, subProcess: undefined });
           }}
           required={true}
@@ -190,7 +190,7 @@ class NewProcessPage extends React.Component<Props, State> {
               value: '10',
             },
           ]}
-          onChange={(value: any): void => {
+          onChange={(value: string): void => {
             this.setState({ subProcess: value });
           }}
           required={true}
@@ -200,7 +200,7 @@ class NewProcessPage extends React.Component<Props, State> {
   }
 }
 
-export default (props: any) => {
+export default (props: Props): React.ReactElement => {
   const router = useRouter();
   return <NewProcessPage {...props} router={router} />;
 };

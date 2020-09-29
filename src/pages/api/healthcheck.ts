@@ -22,7 +22,10 @@ type AllResults = {
 
 let CheckFn: () => Promise<CheckResult>;
 
-const promiseTimeout = function (ms: number, promise: Promise<any>) {
+const promiseTimeout = function (
+  ms: number,
+  promise: Promise<unknown>
+): Promise<unknown> {
   // Create a promise that rejects in <ms> milliseconds
   const timeout = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
@@ -53,7 +56,7 @@ export default async (
 };
 
 const runChecks = async (checks: typeof CheckFn[]): Promise<AllResults> => {
-  const promises: Promise<CheckResult>[] = checks.map((check: any) => check());
+  const promises: Promise<CheckResult>[] = checks.map((check) => check());
   const results = await Promise.all(promises);
   const messages = results.reduce((acc, result) => {
     if (!result.success && result.message) acc.push(result.message);

@@ -5,7 +5,7 @@ import { Paragraph, Heading, HeadingLevels, Link } from 'lbh-frontend-react';
 import cookie from 'cookie';
 import { GetServerSidePropsContext } from 'next';
 
-const LoginRedirectPage: React.FC = () => {
+const LoginRedirectPage: React.FC = (): React.ReactElement => {
   return (
     <Layout>
       <div className="lbh-container">

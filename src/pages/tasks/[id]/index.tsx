@@ -62,13 +62,19 @@ export default function TaskPage(): React.ReactNode {
   const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
     boolean | undefined
   >(undefined);
+  const [taskIsNonProcess, setTaskIsNonProcess] = useState<boolean>(false);
 
   const router = useRouter();
   useEffect(() => {
     if (!task) {
       getTaskById(`${router.query.id}`)
         .then((task) => {
-          if (task) setTask(task);
+          if (task) {
+            setTaskIsNonProcess(
+              task.processType === null || task.processType === undefined
+            );
+            setTask(task);
+          }
         })
         .catch(() => setError('loadingError'));
     }
@@ -322,7 +328,22 @@ export default function TaskPage(): React.ReactNode {
       </div>
     );
   };
-  //task.assignedToManager = true;
+
+  const renderNotesTile = () => {
+    if (taskIsNonProcess) {
+      return (
+        <Tile title={'Notes and Actions'}>
+          {renderNotes()}
+          {renderNotesUpdate()}
+          {task.assignedToManager
+            ? renderSelectAndSendToOfficer()
+            : renderSendToManager()}
+          {renderCloseTask()}
+        </Tile>
+      );
+    }
+    return null;
+  };
 
   return (
     <Layout>
@@ -344,14 +365,7 @@ export default function TaskPage(): React.ReactNode {
           {task.parent ? task.parent : 'n/a'}
         </Paragraph>
       </Tile>
-      <Tile title={'Notes'}>
-        {renderNotes()}
-        {renderNotesUpdate()}
-        {task.assignedToManager
-          ? renderSelectAndSendToOfficer()
-          : renderSendToManager()}
-        {renderCloseTask()}
-      </Tile>
+      {renderNotesTile()}
       <style jsx>{`
         .tile-container {
           display: flex;

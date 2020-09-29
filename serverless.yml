@@ -60,6 +60,13 @@ functions:
     environment:
       JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
 
+  createITVTasks:
+    handler: src/lambda.createITVTasks
+    environment:
+      JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
+    events:
+      - schedule: rate(5 minutes)
+
 resources:
   Resources:
     matServiceDbSecurityGroup:

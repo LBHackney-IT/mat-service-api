@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Worktray, { workTrayColumns, Row } from '../components/worktray';
 import Layout from '../components/layout';
 import LoadingPage from '../components/loadingPage';
-import getTasksByOfficerEmail from '../usecases/ui/getTasksByOfficerEmail';
+import getTasksForCurrentOfficer from '../usecases/ui/getTasksForCurrentOfficer';
 import { useRouter } from 'next/router';
 import updateITVTasks from '../usecases/ui/updateITVTasks';
 
@@ -17,13 +17,13 @@ export default function Home(): React.ReactNode {
   );
 
   useEffect(() => {
-    getTasksByOfficerEmail()
+    getTasksForCurrentOfficer()
       .then((tasks) => {
         setTasks(tasks);
         setFetchState('done');
       })
       .catch((e) => {
-        if (e.response.data.error === 'No user patch found') {
+        if (e.response.data.error === 'No user patch or area found') {
           router.push('/login-error');
         } else {
           setFetchState('error');

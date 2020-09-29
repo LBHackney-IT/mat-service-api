@@ -84,35 +84,33 @@ const getHandler = async (
     if (setupUserResult.error) {
       return res.status(400).end();
     }
-    const emailAddress = req.query.emailAddress
-      ? Array.isArray(req.query.emailAddress)
-        ? req.query.emailAddress[0]
-        : req.query.emailAddress
-      : undefined;
 
-    let officerPatch;
+    const tokenPayload = getTokenPayloadFromRequest(req);
+    if (!tokenPayload || !tokenPayload.email) return res.status(400).end();
+
+    const emailAddress = tokenPayload.email;
+
     const matPostgresGateway = new MatPostgresGateway();
 
-    if (emailAddress !== undefined) {
-      const getOfficerPatch = new GetOfficerPatch({
-        emailAddress,
-        crmGateway,
-        matPostgresGateway,
-      });
-      officerPatch = await getOfficerPatch.execute();
-    }
+    const getOfficerPatch = new GetOfficerPatch({
+      emailAddress,
+      crmGateway,
+      matPostgresGateway,
+    });
+
+    const officerPatch = await getOfficerPatch.execute();
+
+    if (!officerPatch || !officerPatch.body) return res.status(400).end();
+
+    const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
+
     if (
-      officerPatch &&
-      officerPatch.body &&
-      officerPatch.body.patchId !== undefined
+      (officerPatchDetails.patchId && !officerPatchDetails.isManager) ||
+      (officerPatchDetails.isManager && officerPatchDetails.areaManagerId)
     ) {
-      const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
       const patchId = officerPatchDetails.patchId;
       const isManager = officerPatchDetails.isManager;
-      const areaManagerId =
-        officerPatchDetails.areaManagerId !== undefined
-          ? officerPatchDetails.areaManagerId
-          : ''; //crm query will handle officer/manager queries
+      const areaManagerId = officerPatchDetails.areaManagerId || ''; //crm query will handle officer/manager queries
 
       const getTasks = new GetTasksForAPatch({
         crmGateway,
@@ -134,7 +132,7 @@ const getHandler = async (
           .json({ error: `Unknown error: ${response.error}` });
       }
     } else {
-      res.status(400).json({ error: 'No user patch found' });
+      res.status(400).json({ error: 'No user patch or area found' });
     }
   }
 };

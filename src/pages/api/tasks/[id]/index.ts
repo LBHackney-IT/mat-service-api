@@ -2,11 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import GetTask from '../../../../usecases/api/getTask';
 import { Task } from '../../../../interfaces/task';
 
-interface Error {
+interface ErrorResponse {
   error: string;
 }
 
-type Data = Task | Error;
+type Data = Task | ErrorResponse;
 
 export default async (
   req: NextApiRequest,

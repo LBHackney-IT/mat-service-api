@@ -1,9 +1,10 @@
-export default (date: Date) => {
+export default (date: Date): string => {
   return `
 <fetch>
   <entity name='account'>
-    <filter>
-        <condition attribute='createdon' operator='gt' value='${date.toISOString()}'/>
+    <filter type='and'>
+      <condition attribute='createdon' operator='gt' value='${date.toISOString()}'/>
+      <condition attribute='housing_tenure' operator='eq' value='INT'/>
     </filter>
     <attribute name='accountid' />
     <attribute name='createdon' />
@@ -41,6 +42,7 @@ export default (date: Date) => {
         </link-entity>
       </link-entity>
     </link-entity>
+    <order attribute="createdon" descending="false" />
   </entity>
 </fetch>`;
 };

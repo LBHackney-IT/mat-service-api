@@ -39,7 +39,7 @@ export const crmResponseToTasks = (data: CrmResponse): Task[] => {
   const crmTasks = data as CrmTasks;
 
   const taskArray: Task[] = [];
-  crmTasks.value.forEach((element: any) => {
+  crmTasks.value.forEach((element) => {
     const task: Task = convertCrmTaskToTask(element as CrmTaskValue);
     taskArray.push(task);
   });

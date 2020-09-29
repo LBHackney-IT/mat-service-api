@@ -79,7 +79,7 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            NODE_ENV=staging NEXT_PUBLIC_API_PATH=$API_PATH_STAGING npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
+            NODE_ENV=staging NEXT_PUBLIC_API_PATH=$API_PATH_STAGING NEXT_PUBLIC_SINGLEVIEW_URL=$SINGLEVIEW_URL_STAGING npm run build && ./node_modules/serverless/bin/serverless.js deploy -s staging
 
       - run:
           name: Run integration tests
@@ -113,7 +113,7 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            NODE_ENV=production NEXT_PUBLIC_API_PATH=$API_PATH_PRODUCTION npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
+            NODE_ENV=production NEXT_PUBLIC_API_PATH=$API_PATH_PRODUCTION NEXT_PUBLIC_SINGLEVIEW_URL=$SINGLEVIEW_URL_PRODUCTION npm run build && ./node_modules/serverless/bin/serverless.js deploy -s production
 
       - run:
           name: Run integration tests

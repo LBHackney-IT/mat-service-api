@@ -1,26 +1,26 @@
 {
   "development": {
-    "thc": "https://manageatenancy-test.hackney.gov.uk/",
-    "itv": "https://manageatenancy-test.hackney.gov.uk/",
-    "homecheck": "https://manageatenancy-test.hackney.gov.uk/",
-    "etra": "https://dev.etra.manage-a-tenancy.hackney.gov.uk/"
+    "thc": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "itv": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "homecheck": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "etra": "https://dev-etra.manageatenancy.hackney.gov.uk/"
   },
   "test": {
-    "thc": "https://manageatenancy-test.hackney.gov.uk/",
-    "itv": "https://manageatenancy-test.hackney.gov.uk/",
-    "homecheck": "https://manageatenancy-test.hackney.gov.uk/",
-    "etra": "https://dev.etra.manage-a-tenancy.hackney.gov.uk/"
+    "thc": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "itv": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "homecheck": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "etra": "https://dev-etra.manageatenancy.hackney.gov.uk/"
   },
   "staging": {
-    "thc": "https://manageatenancy-test.hackney.gov.uk/",
-    "itv": "https://manageatenancy-test.hackney.gov.uk/",
-    "homecheck": "https://manageatenancy-test.hackney.gov.uk/",
-    "etra": "https://dev.etra.manage-a-tenancy.hackney.gov.uk/"
+    "thc": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "itv": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "homecheck": "https://staging-processes-manageatenancy.hackney.gov.uk/",
+    "etra": "https://staging-etra.manageatenancy.hackney.gov.uk/"
   },
   "production": {
-    "thc": "https://manageatenancy.hackney.gov.uk/",
-    "itv": "https://manageatenancy.hackney.gov.uk/",
-    "homecheck": "https://manageatenancy.hackney.gov.uk/",
-    "etra": "https://etra.manage-a-tenancy.hackney.gov.uk/"
+    "thc": "https://processes-manageatenancy.hackney.gov.uk/",
+    "itv": "https://processes-manageatenancy.hackney.gov.uk/",
+    "homecheck": "https://processes-manageatenancy.hackney.gov.uk/",
+    "etra": "https://etra.manageatenancy.hackney.gov.uk/"
   }
 }

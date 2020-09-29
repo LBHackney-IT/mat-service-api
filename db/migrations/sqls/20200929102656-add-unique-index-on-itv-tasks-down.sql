@@ -1,0 +1,1 @@
+ALTER TABLE itv_tasks DROP CONSTRAINT ItvTasksUniqueConstraint;

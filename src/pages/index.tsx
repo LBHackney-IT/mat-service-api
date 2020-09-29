@@ -5,7 +5,6 @@ import Layout from '../components/layout';
 import LoadingPage from '../components/loadingPage';
 import getTasksForCurrentOfficer from '../usecases/ui/getTasksForCurrentOfficer';
 import { useRouter } from 'next/router';
-import updateITVTasks from '../usecases/ui/updateITVTasks';
 
 type FetchState = 'fetching' | 'error' | 'done';
 
@@ -29,7 +28,6 @@ export default function Home(): React.ReactNode {
           setFetchState('error');
         }
       });
-    // updateITVTasks();
   }, []);
 
   if (fetchState === 'done') {

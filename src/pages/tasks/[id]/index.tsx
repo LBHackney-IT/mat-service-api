@@ -246,8 +246,7 @@ export default function TaskPage(): React.ReactNode {
 
   const renderTenancyInfo = () => {
     return (
-      <div>
-        <Heading level={HeadingLevels.H3}>Tenancy</Heading>
+      <Tile title={'Tenancy'}>
         <Paragraph>
           <Label>Address:</Label>
           {task.address.presentationShort}
@@ -257,10 +256,10 @@ export default function TaskPage(): React.ReactNode {
           {task.tenancy.startDate
             ? moment(task.tenancy.startDate).format('DD/MM/YYYY')
             : 'n/a'}
-          <Label>Tenancy Reference (Tag Ref):</Label>
+          <Label>Tenancy reference:</Label>
           {renderTagRef()}
         </Paragraph>
-      </div>
+      </Tile>
     );
   };
 
@@ -330,26 +329,29 @@ export default function TaskPage(): React.ReactNode {
       {renderLaunchProcess()}
       <Heading level={HeadingLevels.H2}>{task.type}</Heading>
       {renderTenancyInfo()}
-      <Heading level={HeadingLevels.H3}>Residents</Heading>
-      <div className="tile-container">
-        {mapResidents(task.tenancy.residents)}
-      </div>
-      <Heading level={HeadingLevels.H3}>Action</Heading>
-      <Paragraph>
-        <Label>Due:</Label>
-        {task.dueTime ? task.dueTime : 'n/a'}
-        <Label>Reference number:</Label>
-        {task.referenceNumber ? task.referenceNumber : 'n/a'}
-        <Label>Related item:</Label>
-        {task.parent ? task.parent : 'n/a'}
-      </Paragraph>
-      <Heading level={HeadingLevels.H4}>Notes</Heading>
-      {renderNotes()}
-      {renderNotesUpdate()}
-      {task.assignedToManager
-        ? renderSelectAndSendToOfficer()
-        : renderSendToManager()}
-      {renderCloseTask()}
+      {/*<Tile title={'Residents'}>
+        <div className="tile-container">
+          {mapResidents(task.tenancy.residents)}
+        </div>
+      </Tile>*/}
+      <Tile title={'Actions'}>
+        <Paragraph>
+          <Label>Due:</Label>
+          {task.dueTime ? task.dueTime : 'n/a'}
+          <Label>Reference number:</Label>
+          {task.referenceNumber ? task.referenceNumber : 'n/a'}
+          <Label>Related item:</Label>
+          {task.parent ? task.parent : 'n/a'}
+        </Paragraph>
+      </Tile>
+      <Tile title={'Notes'}>
+        {renderNotes()}
+        {renderNotesUpdate()}
+        {task.assignedToManager
+          ? renderSelectAndSendToOfficer()
+          : renderSendToManager()}
+        {renderCloseTask()}
+      </Tile>
       <style jsx>{`
         .tile-container {
           display: flex;

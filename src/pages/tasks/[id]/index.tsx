@@ -322,7 +322,22 @@ export default function TaskPage(): React.ReactNode {
       </div>
     );
   };
-  //task.assignedToManager = true;
+
+  const renderNotesTile = () => {
+    if (!task.processType) {
+      return (
+        <Tile title={'Notes and Actions'}>
+          {renderNotes()}
+          {renderNotesUpdate()}
+          {task.assignedToManager
+            ? renderSelectAndSendToOfficer()
+            : renderSendToManager()}
+          {renderCloseTask()}
+        </Tile>
+      );
+    }
+    return null;
+  };
 
   return (
     <Layout>
@@ -344,14 +359,7 @@ export default function TaskPage(): React.ReactNode {
           {task.parent ? task.parent : 'n/a'}
         </Paragraph>
       </Tile>
-      <Tile title={'Notes'}>
-        {renderNotes()}
-        {renderNotesUpdate()}
-        {task.assignedToManager
-          ? renderSelectAndSendToOfficer()
-          : renderSendToManager()}
-        {renderCloseTask()}
-      </Tile>
+      {renderNotesTile()}
       <style jsx>{`
         .tile-container {
           display: flex;

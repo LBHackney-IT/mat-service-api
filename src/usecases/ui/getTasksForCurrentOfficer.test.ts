@@ -1,4 +1,4 @@
-import getTasksByOfficerEmail from './getTasksByOfficerEmail';
+import getTasksForCurrentOfficer from './getTasksForCurrentOfficer';
 import axios from 'axios';
 import mockApiTaskResponse from '../../tests/helpers/generateApiTaskResponse';
 import apiTaskToUiTask from '../../mappings/apiTaskToUiTask';
@@ -9,14 +9,14 @@ jest.mock('axios');
 jest.mock('../../mappings/apiTaskToUiTask');
 jest.mock('./getEmailAddress');
 
-describe('getTasksByOfficerEmail', () => {
+describe('getTasksForCurrentOfficer', () => {
   beforeEach(() => {
     axios.mockClear();
   });
 
   it('returns an empty array when api path environment variable is not set', async () => {
     getEmailAddress.mockReturnValueOnce(faker.internet.email());
-    const response = await getTasksByOfficerEmail();
+    const response = await getTasksForCurrentOfficer();
     expect(response).toEqual([]);
   });
 
@@ -26,7 +26,7 @@ describe('getTasksByOfficerEmail', () => {
 
     process.env.NEXT_PUBLIC_API_PATH = 'http://localhost:3000/api';
 
-    const response = await getTasksByOfficerEmail();
+    const response = await getTasksForCurrentOfficer();
 
     expect(response).toEqual([]);
   });
@@ -42,7 +42,7 @@ describe('getTasksByOfficerEmail', () => {
     getEmailAddress.mockReturnValueOnce(faker.internet.email());
     apiTaskToUiTask.mockReturnValueOnce(mappedTasks);
 
-    const response = await getTasksByOfficerEmail();
+    const response = await getTasksForCurrentOfficer();
 
     expect(response).toEqual(apiTaskToUiTask(data.data));
   });

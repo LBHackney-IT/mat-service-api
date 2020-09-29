@@ -3,7 +3,7 @@ import apiTaskToUiTask from '../../mappings/apiTaskToUiTask';
 import { Row } from '../../components/worktray';
 import getEmailAddress from './getEmailAddress';
 
-const getTasksByOfficerEmail = async (): Promise<Row[]> => {
+const getTasksForCurrentOfficer = async (): Promise<Row[]> => {
   const emailAddress = getEmailAddress();
 
   if (
@@ -14,9 +14,7 @@ const getTasksByOfficerEmail = async (): Promise<Row[]> => {
   }
 
   const tasks: any = await axios
-    .get(
-      `${process.env.NEXT_PUBLIC_API_PATH}/tasks?emailAddress=${emailAddress}`
-    )
+    .get(`${process.env.NEXT_PUBLIC_API_PATH}/tasks`)
     .then((response) => {
       return response.data;
     });
@@ -24,4 +22,4 @@ const getTasksByOfficerEmail = async (): Promise<Row[]> => {
   return apiTaskToUiTask(tasks);
 };
 
-export default getTasksByOfficerEmail;
+export default getTasksForCurrentOfficer;

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import HackneyToken from '../../interfaces/hackneyToken';
 
 const isLoggedIn = (token: string | undefined): boolean => {
   if (process.env.ALLOWED_GROUPS === undefined) {
@@ -8,16 +9,14 @@ const isLoggedIn = (token: string | undefined): boolean => {
 
   if (!token) return false;
 
-  const payload: any = jwt.decode(token);
+  const payload = jwt.decode(token);
 
-  if (allowedGroups === undefined) {
-    return false;
-  }
+  if (!allowedGroups || !payload) return false;
+  const hackneyToken = payload as HackneyToken;
 
   return (
-    payload &&
-    payload.groups &&
-    payload.groups.some((g: string) => allowedGroups.includes(g))
+    hackneyToken.groups &&
+    hackneyToken.groups.some((g: string) => allowedGroups.includes(g))
   );
 };
 

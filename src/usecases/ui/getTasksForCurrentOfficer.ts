@@ -13,13 +13,11 @@ const getTasksForCurrentOfficer = async (): Promise<Row[]> => {
     return [];
   }
 
-  const tasks: any = await axios
+  return axios
     .get(`${process.env.NEXT_PUBLIC_API_PATH}/tasks`)
     .then((response) => {
-      return response.data;
+      return apiTaskToUiTask(response.data);
     });
-
-  return apiTaskToUiTask(tasks);
 };
 
 export default getTasksForCurrentOfficer;

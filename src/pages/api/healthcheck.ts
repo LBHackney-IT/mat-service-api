@@ -84,6 +84,7 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
     'CRM_API_URL',
     'CRM_TOKEN_API_KEY',
     'CRM_TOKEN_API_URL',
+    'PROCESS_TOKEN_ENCRYPTION_KEY',
   ];
   const failures = [];
   for (const envVar of vars) {

@@ -62,19 +62,13 @@ export default function TaskPage(): React.ReactNode {
   const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
     boolean | undefined
   >(undefined);
-  const [taskIsNonProcess, setTaskIsNonProcess] = useState<boolean>(false);
 
   const router = useRouter();
   useEffect(() => {
     if (!task) {
       getTaskById(`${router.query.id}`)
         .then((task) => {
-          if (task) {
-            setTaskIsNonProcess(
-              task.processType === null || task.processType === undefined
-            );
-            setTask(task);
-          }
+          if (task) setTask(task);
         })
         .catch(() => setError('loadingError'));
     }
@@ -330,7 +324,7 @@ export default function TaskPage(): React.ReactNode {
   };
 
   const renderNotesTile = () => {
-    if (taskIsNonProcess) {
+    if (!task.processType) {
       return (
         <Tile title={'Notes and Actions'}>
           {renderNotes()}

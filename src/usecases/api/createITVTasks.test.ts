@@ -34,7 +34,7 @@ describe('createITVTasks', () => {
     );
 
     tenancies = [MockTenancy(true), MockTenancy(true)];
-    crmGateway.getTenanciesByDate = jest.fn((date: Date) =>
+    crmGateway.getIntroductoryTenanciesByDate = jest.fn((date: Date) =>
       Promise.resolve(tenancies)
     );
 
@@ -49,56 +49,37 @@ describe('createITVTasks', () => {
   it('should set the default date to 2020-09-01T00:00:00Z', async () => {
     matPostgresGateway.getLatestItvTaskSyncDate = () => Promise.resolve(null);
     await createITVTasks.execute();
-    expect(crmGateway.getTenanciesByDate).toHaveBeenCalledWith(
-      new Date(Date.parse('2020-09-01T00:00:00Z'))
+    expect(crmGateway.getIntroductoryTenanciesByDate).toHaveBeenCalledWith(
+      new Date(Date.parse('2019-11-03T11:00:17.9033333Z'))
     );
   });
+
   it('should retrieve new tenancies and create ITV tasks for them and store the result in postgres', async () => {
     const result = await createITVTasks.execute();
+    const orderedTenancies = tenancies.sort(
+      (a, b) => a.accountCreatedOn.getTime() - b.accountCreatedOn.getTime()
+    );
     expect(isError(result)).toBe(false);
-    expect(crmGateway.getTenanciesByDate).toHaveBeenCalledTimes(1);
+    expect(crmGateway.getIntroductoryTenanciesByDate).toHaveBeenCalledTimes(1);
     expect(
       v1MatAPIGateway.createTenancyManagementInteraction
     ).toHaveBeenCalledTimes(2);
     expect(
       v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0]
-    ).toEqual(tenancyToITVTask(tenancies[0]));
+    ).toEqual(tenancyToITVTask(orderedTenancies[0]));
     expect(
       v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[1][0]
-    ).toEqual(tenancyToITVTask(tenancies[1]));
+    ).toEqual(tenancyToITVTask(orderedTenancies[1]));
     expect(matPostgresGateway.createItvTask.mock.calls[0][0]).toEqual({
-      created: tenancies[0].accountCreatedOn,
+      created: orderedTenancies[0].accountCreatedOn,
       crm_id: 'fakeAccountId',
-      tag_ref: tenancies[0].tagReference,
+      tag_ref: orderedTenancies[0].tagReference,
     });
     expect(matPostgresGateway.createItvTask.mock.calls[1][0]).toEqual({
-      created: tenancies[1].accountCreatedOn,
+      created: orderedTenancies[1].accountCreatedOn,
       crm_id: 'fakeAccountId',
-      tag_ref: tenancies[1].tagReference,
+      tag_ref: orderedTenancies[1].tagReference,
     });
     expect(dummyLogger.log).toHaveBeenCalledWith('Creating 2 ITV tasks');
-  });
-
-  it('should only create tasks for introductory tenancies', async () => {
-    const tenancies = [
-      MockTenancy(true),
-      MockTenancy(false),
-      MockTenancy(true),
-    ];
-    crmGateway.getTenanciesByDate = jest.fn((date: Date) =>
-      Promise.resolve(tenancies)
-    );
-
-    const result = await createITVTasks.execute();
-    expect(isError(result)).toBe(false);
-    expect(
-      v1MatAPIGateway.createTenancyManagementInteraction
-    ).toHaveBeenCalledTimes(2);
-    expect(
-      v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0]
-    ).toEqual(tenancyToITVTask(tenancies[0]));
-    expect(
-      v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[1][0]
-    ).toEqual(tenancyToITVTask(tenancies[2]));
   });
 });

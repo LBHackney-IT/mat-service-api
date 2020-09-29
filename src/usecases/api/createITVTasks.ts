@@ -35,21 +35,31 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
       return new Error('Error fetching the last date from Postgres');
     }
     if (lastDate === null) {
-      lastDate = new Date(Date.parse('2020-09-01T00:00:00Z'));
+      lastDate = new Date(Date.parse('2019-11-03T11:00:17.9033333Z'));
     }
 
-    const tenancies = await this.crmGateway.getTenanciesByDate(lastDate);
+    let tenancies = await this.crmGateway.getIntroductoryTenanciesByDate(
+      lastDate
+    );
     if (isError(tenancies)) return new Error('Error fetching new tenancies');
 
-    // Filter out all non-introductory tenancies
-    const introductoryTenancies = tenancies.filter((tenancy) => {
-      return tenancy.housingTenure === 'INT';
-    });
+    tenancies.sort(
+      (a, b) => a.accountCreatedOn.getTime() - b.accountCreatedOn.getTime()
+    );
+    tenancies = tenancies.slice(0, 10);
 
-    this.logger.log(`Creating ${introductoryTenancies.length} ITV tasks`);
+    this.logger.log(`Creating ${tenancies.length} ITV tasks`);
 
+    if (tenancies.length > 0) {
+      this.logger.log(
+        `Tenancies start: ${tenancies[0].accountCreatedOn} end: ${
+          tenancies[tenancies.length - 1].accountCreatedOn
+        }`
+      );
+    }
+    this.logger.log('Starting insert at:', new Date());
     // Send to the api endpoint to create a tmi
-    for (const tenancy of introductoryTenancies) {
+    for (const tenancy of tenancies) {
       // Create the new TMI
       const tmi = tenancyToITVTask(tenancy);
       const createdTask = await this.v1MatAPIGateway.createTenancyManagementInteraction(
@@ -73,6 +83,7 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
         return new Error(`Error writing to db: ${dbResult.message}`);
       }
     }
+    this.logger.log('Insert complete at:', new Date());
     return true;
   }
 }

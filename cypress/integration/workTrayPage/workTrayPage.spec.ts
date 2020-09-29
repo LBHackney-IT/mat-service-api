@@ -56,7 +56,7 @@ describe('Work Tray Page', () => {
       method: 'GET',
       url: '/api/tasks?emailAddress=test.user@hackney.gov.uk',
       status: 400,
-      response: { error: 'No user patch found' },
+      response: { error: 'No user patch or area found' },
     });
 
     cy.visit('/');

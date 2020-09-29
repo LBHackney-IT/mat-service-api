@@ -30,5 +30,5 @@ export default async (
   const url = await getTaskProcessUrl.execute(id, tokenPayload.email);
   if (url.error) return res.status(500).end();
 
-  return res.writeHead(301, { Location: url.body }).end();
+  return res.writeHead(302, { Location: url.body }).end();
 };

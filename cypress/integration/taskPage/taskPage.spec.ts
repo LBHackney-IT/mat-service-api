@@ -54,7 +54,7 @@ describe('Task Page', () => {
       cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.contains('Tenancy and household check');
       cy.contains('Tenancy');
-      cy.contains('Residents');
+      // cy.contains('Residents');
       cy.contains('Action');
       cy.contains('Notes');
       cy.contains('Update Notes');
@@ -65,8 +65,9 @@ describe('Task Page', () => {
       cy.contains('FLAT 33 KNIGHT COURT, GALES TERRACE');
       cy.contains('Secure');
       cy.contains('26/08/2013');
-      cy.contains('James Cagney');
-      cy.contains('james.cagney@yahoo.co.uk');
+      // Temporarily disable whilst residents information is disabled
+      // cy.contains('James Cagney');
+      // cy.contains('james.cagney@yahoo.co.uk');
       cy.contains('CAS-00000-V2L7P6');
       cy.contains('Save Note');
     });

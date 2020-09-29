@@ -329,11 +329,11 @@ export default function TaskPage(): React.ReactNode {
       {renderLaunchProcess()}
       <Heading level={HeadingLevels.H2}>{task.type}</Heading>
       {renderTenancyInfo()}
-      <Tile title={'Residents'}>
+      {/*<Tile title={'Residents'}>
         <div className="tile-container">
           {mapResidents(task.tenancy.residents)}
         </div>
-      </Tile>
+      </Tile>*/}
       <Tile title={'Actions'}>
         <Paragraph>
           <Label>Due:</Label>

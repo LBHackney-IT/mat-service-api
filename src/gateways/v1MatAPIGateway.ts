@@ -16,7 +16,7 @@ export interface v1MatAPIGatewayInterface {
   transferCall(
     tmi: TenancyManagementInteraction
   ): Promise<TransferCallResponse>;
-  createTaskNote(note: NewNote): any;
+  createTaskNote(note: NewNote): Promise<CreateTaskNoteResponse>;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -60,6 +60,11 @@ export interface TransferCallResponse {
   error?: string;
 }
 
+export interface CreateTaskNoteResponse {
+  body?: boolean;
+  error?: string;
+}
+
 export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
   v1MatApiUrl: string;
   v1MatApiToken: string;
@@ -69,7 +74,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
     this.v1MatApiToken = options.v1MatApiToken;
   }
 
-  public async createTaskNote(note: NewNote) {
+  public async createTaskNote(note: NewNote): Promise<CreateTaskNoteResponse> {
     const response = await axios
       .patch(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, note, {
         headers: {

@@ -4,16 +4,16 @@ import { NewNote, Note } from '../../../../interfaces/note';
 import CreateTaskNote from '../../../../usecases/api/createNote';
 import getNotesForTask from '../../../../usecases/api/getNotesForTask';
 
-interface Error {
+interface ErrorResponse {
   error: string;
 }
 
-type Data = Note[] | Error;
+type Data = Note[] | ErrorResponse;
 
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<Data | boolean>
-) => {
+  res: NextApiResponse<Data>
+): Promise<void> => {
   const getHandler = async (
     req: NextApiRequest,
     res: NextApiResponse<Data>
@@ -41,7 +41,7 @@ export default async (
 
   const postHandler = async (
     req: NextApiRequest,
-    res: NextApiResponse<boolean | Error>
+    res: NextApiResponse<Data>
   ) => {
     if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
       return res.status(500).end();

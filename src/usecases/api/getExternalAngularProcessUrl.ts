@@ -82,9 +82,10 @@ export default class GetExternalAngularProcessUrl
       ProcessCRMReference: task.referenceNumber,
     };
 
-    const url = (externalProcessUrls as any)[process.env.NODE_ENV][
-      task.processType
-    ];
+    const url = (externalProcessUrls as Record<
+      string,
+      Record<string, unknown>
+    >)[process.env.NODE_ENV][task.processType];
     if (!url) return { error: 'Could not load external URL' };
 
     const token = encrypt(JSON.stringify(tokenData), this.encryptionKey);

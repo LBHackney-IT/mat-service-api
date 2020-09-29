@@ -9,9 +9,7 @@ import setupUser from '../../../usecases/api/setupUser';
 import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
 import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
-import getTokenPayload, {
-  getTokenPayloadFromRequest,
-} from '../../../usecases/api/getTokenPayload';
+import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 
 type Data = Task[] | { error: string } | undefined;
 
@@ -92,7 +90,6 @@ const getHandler = async (
 
     const emailAddress = tokenPayload.email;
 
-    //let officerPatch;
     const matPostgresGateway = new MatPostgresGateway();
 
     const getOfficerPatch = new GetOfficerPatch({

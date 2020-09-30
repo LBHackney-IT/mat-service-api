@@ -29,8 +29,11 @@ export default (
                 <attribute name="hackney_parent_interactionid" />
                 <attribute name="hackney_traid" />
                 <attribute name="hackney_issuelocation" />
-                <filter type="and">
+                <filter>
                     <condition attribute="hackney_estateofficerpatchid" value="${patchId}" operator="eq"/>
+                </filter>
+                <filter>
+                    <condition attribute="hackney_natureofenquiry" operator="neq" value="28" />
                 </filter>
                 <link-entity name="contact" from="contactid" to="hackney_contactid" link-type="outer">
                     <attribute name="fullname" alias="name"/>
@@ -75,6 +78,9 @@ export default (
                 <attribute name="hackney_issuelocation" />
                 <filter>
                     <condition attribute="hackney_managerpropertypatchid" operator="eq" value="${areaManagerId}" />
+                </filter>
+                <filter>
+                    <condition attribute="hackney_natureofenquiry" operator="neq" value="28" />
                 </filter>
                 <link-entity name="contact" from="contactid" to="hackney_contactid" link-type="outer">
                     <attribute name="fullname" alias="name"/>

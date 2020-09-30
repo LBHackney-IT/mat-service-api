@@ -27,7 +27,7 @@ import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
 import { Result, isSuccess } from '../lib/utils';
-import getTenanciesByDateQuery from './xmlQueryStrings/getTenanciesByDate';
+import getIntroductoryTenanciesByDateQuery from './xmlQueryStrings/getIntroductoryTenanciesByDate';
 import { Tenancy } from '../interfaces/tenancy';
 
 export interface CrmResponse {
@@ -58,7 +58,7 @@ export interface CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<Record<string, unknown>>>;
+  ): Promise<GatewayResponse<string>>;
   getPatchByOfficerId(
     emailAddress: string
   ): Promise<GatewayResponse<PatchDetailsInterface>>;
@@ -69,7 +69,7 @@ export interface CrmGatewayInterface {
   getTasksForTagRef(tag_ref: string): Promise<GatewayResponse<Task[]>>;
   getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
-  getTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
+  getIntroductoryTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -256,7 +256,7 @@ class CrmGateway implements CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<Record<string, unknown>>> {
+  ): Promise<GatewayResponse<string>> {
     await this.updateToken();
     if (!this.crmApiToken) return { error: 'CRM token missing' };
 
@@ -399,11 +399,13 @@ class CrmGateway implements CrmGatewayInterface {
       });
   }
 
-  public async getTenanciesByDate(date: Date): Promise<Result<Tenancy[]>> {
+  public async getIntroductoryTenanciesByDate(
+    date: Date
+  ): Promise<Result<Tenancy[]>> {
     await this.updateToken();
     if (!this.crmApiToken) return new Error('CRM token missing');
 
-    const crmQuery = getTenanciesByDateQuery(date);
+    const crmQuery = getIntroductoryTenanciesByDateQuery(date);
 
     return await axios
       .get<GenericCrmResponse<CrmTenancy[]>>(
@@ -411,7 +413,10 @@ class CrmGateway implements CrmGatewayInterface {
         this.headers()
       )
       .then((response) => {
-        return crmResponseToTenancies(response.data);
+        const tenancies = crmResponseToTenancies(response.data);
+        // If we've retrieved the max number of rows then the last record might not be complete
+        if (response.data.value.length === 5000) tenancies.pop();
+        return tenancies;
       })
       .catch(() => {
         return new Error('Error fetching latest tenancies from crm');

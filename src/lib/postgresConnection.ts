@@ -1,6 +1,15 @@
+/*  eslint-disable @typescript-eslint/no-namespace */
 import pgPromise from 'pg-promise';
 import { IClient } from 'pg-promise/typescript/pg-subset';
 const PG_CONN = Symbol.for('mat.db.pg');
+
+declare global {
+  namespace NodeJS {
+    interface Global {
+      [PG_CONN]: pgPromise.IDatabase<Record<string, unknown>, IClient>;
+    }
+  }
+}
 
 export interface PostgresOptions {
   host: string;
@@ -12,6 +21,7 @@ export interface PostgresOptions {
 
 export default class PostgresConnection {
   options: PostgresOptions;
+
   constructor(options: PostgresOptions) {
     this.options = options;
   }
@@ -20,9 +30,8 @@ export default class PostgresConnection {
     const globalSymbols = Object.getOwnPropertySymbols(global);
     const isSetup = globalSymbols.indexOf(PG_CONN) > -1;
 
-    if (isSetup) return (global as any)[PG_CONN];
+    if (!isSetup) global[PG_CONN] = pgPromise()(this.options);
 
-    (global as any)[PG_CONN] = pgPromise()(this.options);
-    return (global as any)[PG_CONN];
+    return global[PG_CONN];
   }
 }

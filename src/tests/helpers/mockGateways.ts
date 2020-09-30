@@ -14,7 +14,7 @@ export const mockCrmGateway = (): CrmGatewayInterface => ({
   getTasksForTagRef: jest.fn(() => Promise.resolve({})),
   getNotesForTask: jest.fn(() => Promise.resolve({})),
   getContactsByTagRef: jest.fn(() => Promise.resolve({})),
-  getTenanciesByDate: jest.fn(() =>
+  getIntroductoryTenanciesByDate: jest.fn(() =>
     Promise.resolve([MockTenancy(true), MockTenancy(true)])
   ),
   healthCheck: jest.fn(() => Promise.resolve({ success: true })),

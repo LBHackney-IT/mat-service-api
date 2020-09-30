@@ -11,7 +11,7 @@ import {
   Button,
   ErrorMessage,
 } from 'lbh-frontend-react';
-import { Task, TenancyType, Resident } from '../../../interfaces/task';
+import { Task, TenancyType } from '../../../interfaces/task';
 import getTaskById from '../../../usecases/ui/getTaskById';
 import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
@@ -26,7 +26,8 @@ import { FaExclamation } from 'react-icons/fa';
 import createNote from '../../../usecases/ui/createNote';
 import getFullName from '../../../usecases/ui/getFullName';
 
-const mapResidents = (residents: Resident[]): React.ReactNode => {
+/*
+const mapResidents = (residents: Resident[]): React.ReactElement => {
   return residents.map((resident) => {
     return (
       <Tile link={`mailto:${resident.email}`} title={resident.presentationName}>
@@ -44,6 +45,7 @@ const mapResidents = (residents: Resident[]): React.ReactNode => {
     );
   });
 };
+*/
 
 export default function TaskPage(): React.ReactNode {
   const [error, setError] = useState<string>('none');
@@ -82,14 +84,16 @@ export default function TaskPage(): React.ReactNode {
       // extract the officer email from token
       const managerEmailAddress = getEmailAddress();
       if (managerEmailAddress) {
-        getOfficersForManager(managerEmailAddress).then((officers: any) => {
-          const officerSelect = officers.users.map((officer: any) => [
-            officer.id,
-            officer.name,
-          ]);
-          setOfficers(officerSelect);
-          setSelectedOfficerId(officerSelect[0][0]);
-        });
+        getOfficersForManager(managerEmailAddress)
+          .then((officers) => {
+            const officerSelect = officers.map((officer) => [
+              officer.id,
+              officer.name,
+            ]);
+            setOfficers(officerSelect);
+            setSelectedOfficerId(officerSelect[0][0]);
+          })
+          .catch((e) => console.log(e));
       }
     }
     if (!officerName) {
@@ -124,9 +128,13 @@ export default function TaskPage(): React.ReactNode {
   };
 
   const sendToManager = () => {
-    sendTaskToManager(task.id).catch(() => {
-      setError('sendToManagerError');
-    });
+    sendTaskToManager(task.id)
+      .then(() => {
+        router.push('/');
+      })
+      .catch(() => {
+        setError('sendToManagerError');
+      });
   };
 
   const closeTaskHandler = () => {
@@ -135,7 +143,7 @@ export default function TaskPage(): React.ReactNode {
       .catch(() => setError('closeTaskError'));
   };
 
-  const handleNoteChange = (event: any) => {
+  const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNoteText(event.target.value);
   };
 
@@ -325,18 +333,33 @@ export default function TaskPage(): React.ReactNode {
       </div>
     );
   };
-  // task.assignedToManager = true;
+
+  const renderNotesTile = () => {
+    if (!task.processType) {
+      return (
+        <Tile title={'Notes and Actions'}>
+          {renderNotes()}
+          {renderNotesUpdate()}
+          {task.assignedToManager
+            ? renderSelectAndSendToOfficer()
+            : renderSendToManager()}
+          {renderCloseTask()}
+        </Tile>
+      );
+    }
+    return null;
+  };
 
   return (
     <Layout>
       {renderLaunchProcess()}
       <Heading level={HeadingLevels.H2}>{task.type}</Heading>
       {renderTenancyInfo()}
-      <Tile title={'Residents'}>
+      {/*<Tile title={'Residents'}>
         <div className="tile-container">
           {mapResidents(task.tenancy.residents)}
         </div>
-      </Tile>
+      </Tile>*/}
       <Tile title={'Actions'}>
         <Paragraph>
           <Label>Due:</Label>
@@ -347,14 +370,7 @@ export default function TaskPage(): React.ReactNode {
           {task.parent ? task.parent : 'n/a'}
         </Paragraph>
       </Tile>
-      <Tile title={'Notes'}>
-        {renderNotes()}
-        {renderNotesUpdate()}
-        {task.assignedToManager
-          ? renderSelectAndSendToOfficer()
-          : renderSendToManager()}
-        {renderCloseTask()}
-      </Tile>
+      {renderNotesTile()}
       <style jsx>{`
         .tile-container {
           display: flex;

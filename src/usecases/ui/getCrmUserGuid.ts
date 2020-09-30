@@ -4,22 +4,17 @@ interface GetCrmUserGuidResponse {
   users: string;
 }
 
-const getCrmUserGuid = async (
-  emailAddress: string
-): Promise<GetCrmUserGuidResponse | undefined> => {
-  if (process.env.NEXT_PUBLIC_API_PATH === undefined) {
-    return undefined;
-  }
-
-  const response: any = await axios
-    .get(
-      `${process.env.NEXT_PUBLIC_API_PATH}/users?emailAddress=${emailAddress}`
+const getCrmUserGuid = async (emailAddress: string): Promise<string | null> => {
+  return axios
+    .get<GetCrmUserGuidResponse>(
+      `${
+        process.env.NEXT_PUBLIC_API_PATH || '/api'
+      }/users?emailAddress=${emailAddress}`
     )
     .then((response) => {
-      return response;
-    });
-
-  return response.data;
+      return response.data.users;
+    })
+    .catch(() => null);
 };
 
 export default getCrmUserGuid;

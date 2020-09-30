@@ -10,11 +10,7 @@ interface Task {
 const createTask = async (task: Task) => {
   if (process.env.NEXT_PUBLIC_API_PATH === undefined) return null;
 
-  return await axios
-    .post(`${process.env.NEXT_PUBLIC_API_PATH}/tasks`, task)
-    .then((response) => {
-      return response;
-    });
+  return axios.post(`${process.env.NEXT_PUBLIC_API_PATH}/tasks`, task);
 };
 
 export default createTask;

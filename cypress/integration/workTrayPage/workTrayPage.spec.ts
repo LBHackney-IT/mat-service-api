@@ -22,9 +22,7 @@ describe('Work Tray Page', () => {
 
   it('displays the key elements', () => {
     cy.fixture('tasks').then((tasks) => {
-      cy.route('/api/tasks?emailAddress=test.user@hackney.gov.uk', tasks).as(
-        'getTasks'
-      );
+      cy.route('/api/tasks', tasks).as('getTasks');
     });
 
     cy.visit('/');
@@ -54,9 +52,9 @@ describe('Work Tray Page', () => {
   it('redirects to the login error page if no patch is set for the user', () => {
     cy.route({
       method: 'GET',
-      url: '/api/tasks?emailAddress=test.user@hackney.gov.uk',
+      url: '/api/tasks',
       status: 400,
-      response: { error: 'No user patch found' },
+      response: { error: 'No user patch or area found' },
     });
 
     cy.visit('/');

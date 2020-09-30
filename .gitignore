@@ -13,3 +13,5 @@ cypress/screenshots
 cypress/videos
 
 coverage
+
+.serverless

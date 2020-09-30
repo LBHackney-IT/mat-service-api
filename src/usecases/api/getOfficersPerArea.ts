@@ -1,7 +1,8 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { Officer } from '../../mappings/crmToOfficersDetails';
 
 interface GetOfficersPerAreaResponse {
-  body?: any;
+  body?: Officer[];
   error?: number;
 }
 

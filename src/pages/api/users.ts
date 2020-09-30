@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import GetUser from '../../usecases/api/getUser';
 import GetOfficersPerArea from '../../usecases/api/getOfficersPerArea';
-import CreateUser from '../../usecases/api/createUser';
 import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
@@ -73,39 +72,14 @@ const doGet = async (
   res.status(400).end();
 };
 
-const doPost = async (
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-): Promise<void> => {
-  const user = {
-    emailAddress: req.body.emailAddress,
-    fullName: req.body.fullName,
-    firstName: req.body.firstName,
-    familyName: req.body.familyName,
-  };
-
-  const createUser = new CreateUser(user);
-
-  const postResponse = await createUser.execute();
-  if (postResponse.error === undefined) {
-    return res.status(201).json(postResponse.body);
-  }
-  res.status(postResponse.error).end();
-};
-
 export default async (
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ): Promise<void> => {
-  switch (req.method) {
-    case 'GET':
-      await doGet(req, res);
-      break;
-    case 'POST':
-      await doPost(req, res);
-      break;
-    default:
-      res.setHeader('Allow', ['GET', 'POST']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+  if (req.method === 'GET') {
+    await doGet(req, res);
+  } else {
+    res.setHeader('Allow', ['GET']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };

@@ -3,8 +3,9 @@ import isLoggedIn from '../usecases/ui/isLoggedIn';
 import Layout from '../components/layout';
 import { Paragraph, Heading, HeadingLevels, Link } from 'lbh-frontend-react';
 import cookie from 'cookie';
+import { GetServerSideProps } from 'next';
 
-const LoginRedirectPage: React.FC = () => {
+const LoginRedirectPage: React.FC = (): React.ReactElement => {
   return (
     <Layout>
       <div className="lbh-container">
@@ -42,7 +43,7 @@ const LoginRedirectPage: React.FC = () => {
   );
 };
 
-export function getServerSideProps(context: any) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   if (context.req.headers.cookie) {
     const parsedCookie = cookie.parse(context.req.headers.cookie);
 
@@ -57,6 +58,6 @@ export function getServerSideProps(context: any) {
   }
 
   return { props: {} };
-}
+};
 
 export default LoginRedirectPage;

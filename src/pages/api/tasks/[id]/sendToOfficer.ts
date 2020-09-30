@@ -5,9 +5,13 @@ import CrmGateway from '../../../../gateways/crmGateway';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 
+interface ErrorResponse {
+  error: string;
+}
+
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<any>
+  res: NextApiResponse<void | ErrorResponse>
 ): Promise<void> => {
   const taskId = req.query.id
     ? Array.isArray(req.query.id)

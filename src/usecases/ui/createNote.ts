@@ -10,15 +10,9 @@ const createNote = async (
     return false;
   }
 
-  const getCrmUserGuidResponse = await getCrmUserGuid(emailAddress);
-  const estateOfficerId = getCrmUserGuidResponse
-    ? getCrmUserGuidResponse.users
-    : undefined;
+  const estateOfficerId = await getCrmUserGuid(emailAddress);
 
-  if (
-    note.ServiceRequest.description === undefined ||
-    estateOfficerId === undefined
-  ) {
+  if (note.ServiceRequest.description === undefined || !estateOfficerId) {
     return false;
   }
 

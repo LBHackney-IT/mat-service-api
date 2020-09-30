@@ -16,7 +16,7 @@ export interface v1MatAPIGatewayInterface {
   transferCall(
     tmi: TenancyManagementInteraction
   ): Promise<TransferCallResponse>;
-  createTaskNote(note: NewNote): any;
+  createTaskNote(note: NewNote): Promise<CreateTaskNoteResponse>;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -50,12 +50,12 @@ export interface GetContactsByUprnResponse {
   error?: string;
 }
 
-export interface GetAreaPatchResponse {
-  body?: any;
+export interface TransferCallResponse {
+  body?: boolean;
   error?: string;
 }
 
-export interface TransferCallResponse {
+export interface CreateTaskNoteResponse {
   body?: boolean;
   error?: string;
 }
@@ -69,7 +69,7 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
     this.v1MatApiToken = options.v1MatApiToken;
   }
 
-  public async createTaskNote(note: NewNote) {
+  public async createTaskNote(note: NewNote): Promise<CreateTaskNoteResponse> {
     const response = await axios
       .patch(`${this.v1MatApiUrl}/v1/TenancyManagementInteractions`, note, {
         headers: {
@@ -166,34 +166,6 @@ export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
     return response;
   }
 
-  public async getAreaPatch(
-    uprn: string,
-    postcode: string
-  ): Promise<GetAreaPatchResponse> {
-    const response = await axios
-      .get(
-        `${this.v1MatApiUrl}/v1/AreaPatch/GetAreaPatch?postcode=${postcode}&uprn=${uprn}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.v1MatApiToken}`,
-          },
-        }
-      )
-      .then((response) => {
-        const data = response.data;
-        return {
-          body: data.result,
-          error: undefined,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
-
-    return response;
-  }
   public async transferCall(
     tmi: TenancyManagementInteraction
   ): Promise<TransferCallResponse> {

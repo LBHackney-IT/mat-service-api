@@ -6,7 +6,7 @@ provider:
   region: eu-west-2
   api-name: hn-mat-service-api
   stage: dev
-  timeout: 15
+  timeout: 29
   environment:
     NODE_ENV: ${self:custom.stage}
     DB_NAME: matServiceDb
@@ -24,6 +24,7 @@ provider:
     CRM_API_URL: ${ssm:/${self:custom.stage}-${self:service}-CRM_API_URL, env:CRM_API_URL}
     CRM_TOKEN_API_URL: ${ssm:/${self:custom.stage}-${self:service}-CRM_TOKEN_API_URL, env:CRM_TOKEN_API_URL}
     CRM_TOKEN_API_KEY: ${ssm:/${self:custom.stage}-${self:service}-CRM_TOKEN_API_KEY~true, env:CRM_TOKEN_API_KEY}
+    PROCESS_TOKEN_ENCRYPTION_KEY: ${ssm:/${self:custom.stage}-${self:service}-PROCESS_TOKEN_ENCRYPTION_KEY~true, env:PROCESS_TOKEN_ENCRYPTION_KEY}
 
 plugins:
   - serverless-dotenv-plugin
@@ -59,10 +60,12 @@ functions:
     environment:
       JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
 
-  createItvTasks:
-    handler: src/lambda.createItvTasks
-    # events:
-    #   - schedule: rate(1 hour)
+  createITVTasks:
+    handler: src/lambda.createITVTasks
+    environment:
+      JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
+    events:
+      - schedule: rate(1 hour)
 
 resources:
   Resources:

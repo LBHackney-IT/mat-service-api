@@ -1,66 +1,68 @@
-[
-  {
-    "id": "e3e3e777-73ae-e911-a97f-002248072fe8",
-    "createdTime": "2019-07-25T00:30:58.000Z",
-    "category": "Process",
-    "type": "Introductory tenancy visit",
-    "resident": {
-      "presentationName": "James Jones",
-      "role": "Tenant",
-      "dateOfBirth": null,
-      "workPhoneNumber": "12345 678 910"
+{
+  "tasks": [
+    {
+      "id": "e3e3e777-73ae-e911-a97f-002248072fe8",
+      "createdTime": "2019-07-25T00:30:58.000Z",
+      "category": "Process",
+      "type": "Introductory tenancy visit",
+      "resident": {
+        "presentationName": "James Jones",
+        "role": "Tenant",
+        "dateOfBirth": null,
+        "workPhoneNumber": "12345 678 910"
+      },
+      "address": { "presentationShort": "undefined, undefined" },
+      "dueTime": null,
+      "dueState": 0,
+      "completedTime": null,
+      "stage": 1,
+      "children": [],
+      "referenceNumber": "CAS-12345-K5Z4B4",
+      "tenancy": {
+        "type": 1,
+        "startDate": null,
+        "residents": [
+          {
+            "presentationName": "James Jones",
+            "role": "Tenant",
+            "dateOfBirth": null,
+            "workPhoneNumber": "12345 678 910"
+          }
+        ]
+      }
     },
-    "address": { "presentationShort": "undefined, undefined" },
-    "dueTime": null,
-    "dueState": 0,
-    "completedTime": null,
-    "stage": 1,
-    "children": [],
-    "referenceNumber": "CAS-12345-K5Z4B4",
-    "tenancy": {
-      "type": 1,
-      "startDate": null,
-      "residents": [
-        {
-          "presentationName": "James Jones",
-          "role": "Tenant",
-          "dateOfBirth": null,
-          "workPhoneNumber": "12345 678 910"
-        }
-      ]
+    {
+      "id": "f940c2fb-8b74-e911-a97c-002248072cc3",
+      "createdTime": "2019-05-12T08:00:21.000Z",
+      "category": "Process",
+      "type": "Introductory tenancy visit",
+      "resident": {
+        "presentationName": "Jenny Jones",
+        "role": "Tenant",
+        "dateOfBirth": null,
+        "workPhoneNumber": "07771234567",
+        "email": "test.email@internet.org"
+      },
+      "address": { "presentationShort": "FLAT A 19, SEAL STREET" },
+      "dueTime": null,
+      "dueState": 0,
+      "completedTime": null,
+      "stage": 1,
+      "children": [],
+      "referenceNumber": "CAS-12345-J2G5J3",
+      "tenancy": {
+        "type": 1,
+        "startDate": null,
+        "residents": [
+          {
+            "presentationName": "Jenny Jones",
+            "role": "Tenant",
+            "dateOfBirth": null,
+            "workPhoneNumber": "07771234567",
+            "email": "test.email@internet.org"
+          }
+        ]
+      }
     }
-  },
-  {
-    "id": "f940c2fb-8b74-e911-a97c-002248072cc3",
-    "createdTime": "2019-05-12T08:00:21.000Z",
-    "category": "Process",
-    "type": "Introductory tenancy visit",
-    "resident": {
-      "presentationName": "Jenny Jones",
-      "role": "Tenant",
-      "dateOfBirth": null,
-      "workPhoneNumber": "07771234567",
-      "email": "test.email@internet.org"
-    },
-    "address": { "presentationShort": "FLAT A 19, SEAL STREET" },
-    "dueTime": null,
-    "dueState": 0,
-    "completedTime": null,
-    "stage": 1,
-    "children": [],
-    "referenceNumber": "CAS-12345-J2G5J3",
-    "tenancy": {
-      "type": 1,
-      "startDate": null,
-      "residents": [
-        {
-          "presentationName": "Jenny Jones",
-          "role": "Tenant",
-          "dateOfBirth": null,
-          "workPhoneNumber": "07771234567",
-          "email": "test.email@internet.org"
-        }
-      ]
-    }
-  }
-]
+  ]
+}

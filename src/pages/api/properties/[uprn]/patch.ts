@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
 import CrmGateway from '../../../../gateways/crmGateway';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
 import { PropertyPatchDetails } from '../../../../interfaces/propertyPatchDetails';

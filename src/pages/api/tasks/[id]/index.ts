@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
 import GetTask from '../../../../usecases/api/getTask';
 import { Task } from '../../../../interfaces/task';
 import { ApiResponse } from '../../../../interfaces/apiResponses';

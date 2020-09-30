@@ -1,5 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { Task } from '../../../interfaces/task';
+import { NextApiRequest } from 'next';
 import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
 import GetTasksForTagRef from '../../../usecases/api/getTasksForTagRef';
 import MatPostgresGateway from '../../../gateways/matPostgresGateway';

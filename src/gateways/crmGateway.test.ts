@@ -136,7 +136,6 @@ describe('CrmGateway', () => {
           data.value[0][
             'hackney_ward@OData.Community.Display.V1.FormattedValue'
           ],
-        original: data,
       };
       const uprn = '100023006827';
 

@@ -7,7 +7,7 @@
     "dev:debug": "NODE_OPTIONS='--inspect' next dev -p 3100",
     "build": "next build",
     "start": "next start",
-    "preflight": "npm run lint && npm run build && npm run test:unit && npm run prettier:test",
+    "preflight": "npm run lint && npm run test:unit && npm run prettier:test && npm run build",
     "serverless:offline": "npm run build && serverless offline -p 3200",
     "test:unit": "jest --config ./jest.unit.config.js",
     "test:unit:ci": "jest --config ./jest.unit.config.js -w 2",

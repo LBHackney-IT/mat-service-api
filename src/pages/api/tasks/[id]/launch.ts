@@ -3,15 +3,12 @@ import CrmGateway from '../../../../gateways/crmGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import HackneyToken from '../../../../interfaces/hackneyToken';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
-import { NextApiRequest, NextApiResponse } from 'next';
-
-interface ErrorResponse {
-  error: string;
-}
+import { NextApiRequest } from 'next';
+import { ApiResponse } from '../../../../interfaces/apiResponses';
 
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<void | ErrorResponse>
+  res: ApiResponse<void>
 ): Promise<void> => {
   if (!process.env.PROCESS_TOKEN_ENCRYPTION_KEY) return res.status(500).end();
 

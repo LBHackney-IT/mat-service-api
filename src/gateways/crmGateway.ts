@@ -20,7 +20,7 @@ import { crmToNotes } from '../mappings/crmToNotes';
 import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
 import crmToPropertyPatch from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
-import { Note } from '../interfaces/note';
+import Note from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';

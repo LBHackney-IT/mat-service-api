@@ -1,5 +1,5 @@
 import { CrmResponse } from '../gateways/crmGateway';
-import { Note, CrmNote } from '../interfaces/note';
+import Note, { CrmNote } from '../interfaces/note';
 
 export const crmToNotes = (data: CrmResponse): Note[] => {
   const notes: Note[] = [];

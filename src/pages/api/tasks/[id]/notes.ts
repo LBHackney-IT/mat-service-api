@@ -1,22 +1,17 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
 import v1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';
-import { NewNote, Note } from '../../../../interfaces/note';
+import { ApiResponse, NoteList } from '../../../../interfaces/apiResponses';
+import { NewNote } from '../../../../interfaces/note';
 import CreateTaskNote from '../../../../usecases/api/createNote';
 import getNotesForTask from '../../../../usecases/api/getNotesForTask';
 
-interface ErrorResponse {
-  error: string;
-}
-
-type Data = Note[] | ErrorResponse;
-
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: ApiResponse<NoteList>
 ): Promise<void> => {
   const getHandler = async (
     req: NextApiRequest,
-    res: NextApiResponse<Data>
+    res: ApiResponse<NoteList>
   ) => {
     const id = req.query.id
       ? Array.isArray(req.query.id)
@@ -28,7 +23,7 @@ export default async (
       const response = await getNotesForTask(id);
 
       if (response.body) {
-        res.status(200).json(response.body);
+        res.status(200).json({ notes: response.body });
       } else {
         res
           .status(response.error || 500)
@@ -39,10 +34,7 @@ export default async (
     }
   };
 
-  const postHandler = async (
-    req: NextApiRequest,
-    res: NextApiResponse<Data>
-  ) => {
+  const postHandler = async (req: NextApiRequest, res: ApiResponse<void>) => {
     if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
       return res.status(500).end();
     }
@@ -68,7 +60,7 @@ export default async (
     case 'GET':
       return await getHandler(req, res);
     case 'POST':
-      return await postHandler(req, res);
+      return await postHandler(req, res as ApiResponse<void>);
     default:
       res.setHeader('Allow', ['GET', 'POST']);
       res.status(405).end(`Method ${req.method} Not Allowed`);

@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
 import CloseTask from '../../../../usecases/api/closeTask';
 import v1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';
 import CrmGateway from '../../../../gateways/crmGateway';

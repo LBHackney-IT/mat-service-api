@@ -11,9 +11,7 @@ type FetchState = 'fetching' | 'error' | 'done';
 export default function Home(): React.ReactNode {
   const router = useRouter();
   const [tasks, setTasks] = useState<Row[]>([]);
-  const [fetchState, setFetchState]: [FetchState, any] = useState<FetchState>(
-    'fetching'
-  );
+  const [fetchState, setFetchState] = useState<FetchState>('fetching');
 
   useEffect(() => {
     getTasksForCurrentOfficer()

@@ -1,12 +1,19 @@
 import axios from 'axios';
+import { Officer } from '../../mappings/crmToOfficersDetails';
 
-const getOfficersForManager = async (email: string) => {
-  if (process.env.NEXT_PUBLIC_API_PATH === undefined) return null;
+interface GetUsersResponse {
+  users: Officer[];
+}
 
+const getOfficersForManager = async (email: string): Promise<Officer[]> => {
   return await axios
-    .get(`${process.env.NEXT_PUBLIC_API_PATH}/users?managerEmail=${email}`)
+    .get<GetUsersResponse>(
+      `${
+        process.env.NEXT_PUBLIC_API_PATH || '/api'
+      }/users?managerEmail=${email}`
+    )
     .then((response) => {
-      return response.data;
+      return response.data.users;
     });
 };
 

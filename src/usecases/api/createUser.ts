@@ -1,8 +1,8 @@
 import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
 
 interface CreateUserResponse {
-  body: any | undefined;
-  error: number | undefined;
+  body?: string;
+  error?: number;
 }
 
 interface CreateUserInterface {
@@ -40,16 +40,13 @@ class CreateUser implements CreateUserInterface {
       case undefined:
         return {
           body: response.body,
-          error: undefined,
         };
       case 'NotAuthorised':
         return {
-          body: undefined,
           error: 401,
         };
       default:
         return {
-          body: undefined,
           error: 500,
         };
     }

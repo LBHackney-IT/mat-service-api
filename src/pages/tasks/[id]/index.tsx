@@ -85,14 +85,16 @@ export default function TaskPage(): React.ReactNode {
       // extract the officer email from token
       const managerEmailAddress = getEmailAddress();
       if (managerEmailAddress) {
-        getOfficersForManager(managerEmailAddress).then((officers: any) => {
-          const officerSelect = officers.users.map((officer: any) => [
-            officer.id,
-            officer.name,
-          ]);
-          setOfficers(officerSelect);
-          setSelectedOfficerId(officerSelect[0][0]);
-        });
+        getOfficersForManager(managerEmailAddress)
+          .then((officers) => {
+            const officerSelect = officers.map((officer) => [
+              officer.id,
+              officer.name,
+            ]);
+            setOfficers(officerSelect);
+            setSelectedOfficerId(officerSelect[0][0]);
+          })
+          .catch((e) => console.log(e));
       }
     }
     if (!officerName) {
@@ -138,7 +140,7 @@ export default function TaskPage(): React.ReactNode {
       .catch(() => setError('closeTaskError'));
   };
 
-  const handleNoteChange = (event: any) => {
+  const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNoteText(event.target.value);
   };
 

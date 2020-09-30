@@ -352,7 +352,7 @@ export default function TaskPage(): React.ReactNode {
   return (
     <Layout>
       {renderLaunchProcess()}
-      <Heading level={HeadingLevels.H1}>{task.type} - Manage a Tenancy</Heading>
+      <Heading level={HeadingLevels.H1}>{task.type}</Heading>
       {renderTenancyInfo()}
       {/*<Tile title={'Residents'}>
         <div className="tile-container">

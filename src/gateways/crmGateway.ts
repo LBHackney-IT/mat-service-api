@@ -18,17 +18,16 @@ import { Officer } from '../mappings/crmToOfficersDetails';
 import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
 import { crmToNotes } from '../mappings/crmToNotes';
 import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
-import crmToPropertyPatch, {
-  PropertyPatchDetailsInterface,
-} from '../mappings/crmToPropertyPatch';
+import crmToPropertyPatch from '../mappings/crmToPropertyPatch';
 import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
-import { Note } from '../interfaces/note';
+import Note from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
 import { Result, isSuccess } from '../lib/utils';
 import getIntroductoryTenanciesByDateQuery from './xmlQueryStrings/getIntroductoryTenanciesByDate';
 import { Tenancy } from '../interfaces/tenancy';
+import { PropertyPatchDetails } from '../interfaces/propertyPatchDetails';
 
 export interface CrmResponse {
   '@odata.context': string;
@@ -64,7 +63,7 @@ export interface CrmGatewayInterface {
   ): Promise<GatewayResponse<PatchDetailsInterface>>;
   getPropertyPatch(
     uprn: string
-  ): Promise<GatewayResponse<PropertyPatchDetailsInterface>>;
+  ): Promise<GatewayResponse<PropertyPatchDetails>>;
   getOfficersByAreaId(areaId: number): Promise<GatewayResponse<Officer[]>>;
   getTasksForTagRef(tag_ref: string): Promise<GatewayResponse<Task[]>>;
   getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
@@ -316,24 +315,20 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getPropertyPatch(
     uprn: string
-  ): Promise<GatewayResponse<PropertyPatchDetailsInterface>> {
+  ): Promise<GatewayResponse<PropertyPatchDetails>> {
     await this.updateToken();
     if (!this.crmApiToken) return { error: 'CRM token missing' };
 
     const crmQuery = getPropertyPatchByUprn(uprn);
 
     return await axios
-      .get(
+      .get<CrmResponseInterface>(
         `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
-        const data = response.data as CrmResponseInterface;
-        const patchData: PropertyPatchDetailsInterface = crmToPropertyPatch(
-          data
-        );
         return {
-          body: patchData,
+          body: crmToPropertyPatch(response.data),
         };
       })
       .catch((error: AxiosError) => {

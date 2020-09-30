@@ -15,7 +15,7 @@ import { Task, TenancyType } from '../../../interfaces/task';
 import getTaskById from '../../../usecases/ui/getTaskById';
 import sendTaskToManager from '../../../usecases/ui/sendTaskToManager';
 import moment from 'moment';
-import { Note } from '../../../interfaces/note';
+import Note from '../../../interfaces/note';
 import getNotesById from '../../../usecases/ui/getNotes';
 import Dropdown from '../../../components/dropdown';
 import getEmailAddress from '../../../usecases/ui/getEmailAddress';

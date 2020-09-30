@@ -1,4 +1,4 @@
-export interface Note {
+export default interface Note {
   text: string;
   createdBy: string;
   createdOn: string;

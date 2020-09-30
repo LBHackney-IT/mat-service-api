@@ -1,5 +1,5 @@
 import CrmGateway from '../../gateways/crmGateway';
-import { Note } from '../../interfaces/note';
+import Note from '../../interfaces/note';
 
 interface GetNotesForTaskResponse {
   body?: Note[];

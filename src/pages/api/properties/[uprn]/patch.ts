@@ -1,9 +1,11 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
 import CrmGateway from '../../../../gateways/crmGateway';
+import { ApiResponse } from '../../../../interfaces/apiResponses';
+import { PropertyPatchDetails } from '../../../../interfaces/propertyPatchDetails';
 
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse
+  res: ApiResponse<PropertyPatchDetails>
 ): Promise<void> => {
   const uprn = req.query.uprn
     ? Array.isArray(req.query.uprn)
@@ -21,7 +23,7 @@ export default async (
   const response = await crm.getPropertyPatch(uprn);
 
   if (response.body) {
-    res.status(200).json({ patch: response.body });
+    res.status(200).json(response.body);
   } else {
     res.status(500).json({ error: 'Could not retrieve property patch' });
   }

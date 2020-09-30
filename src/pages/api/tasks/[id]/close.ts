@@ -1,17 +1,14 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
 import CloseTask from '../../../../usecases/api/closeTask';
 import v1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';
 import CrmGateway from '../../../../gateways/crmGateway';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
-
-interface ErrorResponse {
-  error: string;
-}
+import { ApiResponse } from '../../../../interfaces/apiResponses';
 
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<void | ErrorResponse>
+  res: ApiResponse<void>
 ): Promise<void> => {
   const id = req.query.id
     ? Array.isArray(req.query.id)

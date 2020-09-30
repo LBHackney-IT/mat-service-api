@@ -1,6 +1,4 @@
-import crmToPropertyPatch, {
-  PropertyPatchDetailsInterface,
-} from '../mappings/crmToPropertyPatch';
+import crmToPropertyPatch from '../mappings/crmToPropertyPatch';
 import faker from 'faker';
 
 describe('crmToPropertyPatch', () => {
@@ -23,9 +21,7 @@ describe('crmToPropertyPatch', () => {
       ],
     };
 
-    const convertedPropertyPatch: PropertyPatchDetailsInterface = crmToPropertyPatch(
-      crmResponse
-    );
+    const convertedPropertyPatch = crmToPropertyPatch(crmResponse);
 
     expect(convertedPropertyPatch.patchCode).toEqual(
       crmResponse.value[0][

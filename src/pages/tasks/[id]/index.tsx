@@ -31,7 +31,6 @@ const mapResidents = (residents: Resident[]): React.ReactElement => {
   return residents.map((resident) => {
     return (
       <Tile link={`mailto:${resident.email}`} title={resident.presentationName}>
-        <Paragraph>{resident.role}</Paragraph>
         <Label>Date of birth:</Label>
         {moment(resident.dateOfBirth).format('DD/MM/YYYY')}
         <Label>Mobile:</Label>
@@ -114,9 +113,13 @@ export default function TaskPage(): React.ReactNode {
       sendTaskToOfficer({
         taskId: task.id,
         housingOfficerId: selectedOfficerId,
-      }).catch(() => {
-        setError('sendToOfficerError');
-      });
+      })
+        .then(() => {
+          router.push('/');
+        })
+        .catch(() => {
+          setError('sendToOfficerError');
+        });
     }
   };
 

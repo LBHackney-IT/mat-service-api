@@ -215,9 +215,11 @@ export default function TaskPage(): React.ReactNode {
     return (
       <div>
         <Heading level={HeadingLevels.H4}>Update Notes</Heading>
+        <label htmlFor={'notes-text-area'}></label>
         <textarea
           className={'govuk-input lbh-input text-area'}
           value={noteText}
+          id={'notes-text-area'}
           onChange={handleNoteChange}
         />
         <Button onClick={() => submitNote()}>Save Note</Button>
@@ -353,7 +355,7 @@ export default function TaskPage(): React.ReactNode {
   return (
     <Layout>
       {renderLaunchProcess()}
-      <Heading level={HeadingLevels.H2}>{task.type}</Heading>
+      <Heading level={HeadingLevels.H1}>{task.type}</Heading>
       {renderTenancyInfo()}
       {/*<Tile title={'Residents'}>
         <div className="tile-container">

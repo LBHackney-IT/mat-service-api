@@ -8,17 +8,18 @@ describe('getCrmUserGuid', () => {
     axios.mockClear();
   });
 
-  it('returns undefined when no env var is set', async () => {
+  it('returns null when no env var is set', async () => {
+    axios.get.mockResolvedValue(Promise.reject());
     const response = await getCrmUserGuid(faker.internet.email());
 
-    expect(response).toEqual(undefined);
+    expect(response).toEqual(null);
   });
 
   it('successfully fetches data from an API', async () => {
     process.env.NEXT_PUBLIC_API_PATH = 'http://localhost:3000/api';
     const guid = faker.lorem.word();
 
-    axios.get.mockResolvedValue({ data: guid });
+    axios.get.mockResolvedValue({ data: { users: guid } });
 
     const response = await getCrmUserGuid(faker.internet.email());
 

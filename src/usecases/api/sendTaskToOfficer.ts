@@ -52,16 +52,22 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       return { error: 'Error fetching mapped user' };
 
     // fetch patch data from crm
-    const patch = await this.crmGateway.getPatchByOfficerId(
-      officer.body.usercrmid
+    const housingOfficerPatch = await this.crmGateway.getPatchByOfficerId(
+      newOfficerId
     );
-    if (!patch || !patch.body) return { error: 'Error fetching patch' };
+    if (
+      !housingOfficerPatch ||
+      !housingOfficerPatch.body ||
+      !housingOfficerPatch.body.patchId ||
+      !housingOfficerPatch.body.areaId
+    )
+      return { error: 'Error fetching patch' };
 
     const updateObject: TenancyManagementInteraction = {
       interactionId: taskId, //TMI id
       estateOfficerId: newOfficerId, //officer id
-      officerPatchId: patch.body.patchId, //patch id
-      areaName: patch.body.areaId, //areaId
+      officerPatchId: housingOfficerPatch.body.patchId, //patch id
+      areaName: housingOfficerPatch.body.areaId, //areaId
       serviceRequest: {
         description: `Transferred from: ${userDetails.name}`, //use the same value as below for estateOfficerName
         requestCallback: false, //leave as false for now
@@ -78,7 +84,7 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       };
     } else {
       return {
-        error: 'Problem assigning task to manager',
+        error: 'Problem assigning task to officer',
       };
     }
   }

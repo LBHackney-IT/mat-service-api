@@ -10,6 +10,7 @@ import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
 import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
+import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 
 type Data = Task[] | { error: string } | undefined;
 
@@ -39,11 +40,14 @@ const postHandler = async (
   if (!userToken) {
     return res.status(500).json({ error: 'could not find user token' });
   }
-
+  const body = req.body as CreateTaskRequest;
+  if (!body.processType || !body.tagRef) {
+    return res.status(400).json({ error: 'invalid request' });
+  }
   const result = await createTask.execute({
-    process: req.body.process,
-    subProcess: <number>req.body.subProcess,
-    tagRef: req.body.tagRef,
+    process: body.processType,
+    subProcess: body.subProcess,
+    tagRef: body.tagRef,
     officerEmail: userToken.email,
     officerName: userToken.name,
   });

@@ -9,39 +9,35 @@ type Props = {
   router: NextRouter;
 };
 type State = {
-  process?: string;
-  subProcess?: string;
+  processType?: string;
+  subProcess?: number;
   error?: string | null;
 };
 
 class NewProcessPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { process: undefined, error: null };
+    this.state = { processType: undefined, error: null };
     this.createTaskHandler = this.createTaskHandler.bind(this);
   }
 
   createTaskHandler() {
-    if (!this.state.process) return;
+    if (!this.state.processType) return;
     const tagRef = this.props.router.query.tag_ref as string;
-    const uprn = this.props.router.query.uprn as string;
+
     createTask({
       tagRef,
-      uprn,
-      process: this.state.process,
+      processType: this.state.processType,
       subProcess: this.state.subProcess,
     })
-      .then((response) => {
-        if (response && response.data) {
-          window.location.href = `/tasks/${response.data.id}`;
+      .then((task) => {
+        if (task && task.id) {
+          window.location.href = `/tasks/${task.id}`;
         } else {
           this.setState({ error: 'createError' });
         }
       })
-      .catch((error) => {
-        this.setState({ error: 'createError' });
-        console.log(error);
-      });
+      .catch(() => this.setState({ error: 'createError' }));
   }
 
   render() {
@@ -52,7 +48,7 @@ class NewProcessPage extends React.Component<Props, State> {
           name="processes"
           items={this.itemTypes(this.isCollapsed())}
           onChange={(value: string): void => {
-            this.setState({ process: value, subProcess: undefined });
+            this.setState({ processType: value, subProcess: undefined });
           }}
           required={true}
         />
@@ -73,11 +69,11 @@ class NewProcessPage extends React.Component<Props, State> {
   }
 
   isCollapsed(): boolean {
-    return this.state.process !== 'thc';
+    return this.state.processType !== 'thc';
   }
 
   isReadyToSubmit(): boolean {
-    return (this.state.process &&
+    return (this.state.processType &&
       (this.isCollapsed() || this.state.subProcess)) as boolean;
   }
 
@@ -191,7 +187,7 @@ class NewProcessPage extends React.Component<Props, State> {
             },
           ]}
           onChange={(value: string): void => {
-            this.setState({ subProcess: value });
+            this.setState({ subProcess: parseInt(value) });
           }}
           required={true}
         />

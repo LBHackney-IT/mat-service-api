@@ -1,16 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import GetTask from '../../../../usecases/api/getTask';
 import { Task } from '../../../../interfaces/task';
-
-interface ErrorResponse {
-  error: string;
-}
-
-type Data = Task | ErrorResponse;
+import { ApiResponse } from '../../../../interfaces/apiResponses';
 
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: ApiResponse<Task>
 ): Promise<void> => {
   const id = req.query.id
     ? Array.isArray(req.query.id)

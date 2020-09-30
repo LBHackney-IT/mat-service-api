@@ -11,12 +11,11 @@ import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
-
-type Data = Task[] | { error: string } | undefined;
+import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
 
 const postHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: ApiResponse<void>
 ): Promise<void> => {
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
     return res.status(500).end();
@@ -58,13 +57,13 @@ const postHandler = async (
       .setHeader('Location', `/api/tasks/${result.body.interactionId}`);
     res.end();
   } else {
-    res.status(500).json(<Data>result);
+    res.status(500).json({ error: result.error || 'unknown' });
   }
 };
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: ApiResponse<TaskList>
 ): Promise<void> => {
   const crmGateway = new CrmGateway();
   const tag_ref = Array.isArray(req.query.tag_ref)
@@ -77,8 +76,8 @@ const getHandler = async (
     });
 
     const response = await getTasks.execute(tag_ref.replace('-', '/'));
-    if (response && response.error === undefined) {
-      res.status(200).json(response.body);
+    if (response && response.body) {
+      res.status(200).json({ tasks: response.body });
     } else if (response && response.error) {
       res.status(response.error).end();
     }
@@ -126,7 +125,7 @@ const getHandler = async (
       );
 
       if (response.body) {
-        res.status(200).json(response.body);
+        res.status(200).json({ tasks: response.body });
       } else if (response.error) {
         if (response.error === 'NotAuthorised') {
           return res.status(401).json({ error: 'Not authorised' });
@@ -143,11 +142,11 @@ const getHandler = async (
 
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: ApiResponse<unknown>
 ): Promise<void> => {
   switch (req.method) {
     case 'GET':
-      return await getHandler(req, res);
+      return await getHandler(req, res as ApiResponse<TaskList>);
     case 'POST':
       return await postHandler(req, res);
     default:

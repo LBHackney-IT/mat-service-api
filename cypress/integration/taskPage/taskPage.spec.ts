@@ -119,7 +119,7 @@ describe('Task Page', () => {
     beforeEach(() => {});
     it('should only display on post visit actions');
 
-    it('should make the correct api request when clicked', () => {
+    it('should make the correct api request when clicked and redirect to worktray page', () => {
       cy.visit('/tasks/99999999-116f-e811-8133-70106faa6a11');
       cy.route(
         'POST',
@@ -128,6 +128,7 @@ describe('Task Page', () => {
       ).as('sendToOfficer');
       cy.get('button.sendToOfficer').click();
       cy.wait('@sendToOfficer', { timeout: 1000 });
+      cy.location('pathname').should('eq', '/');
     });
 
     it('should show an error if necessary', () => {

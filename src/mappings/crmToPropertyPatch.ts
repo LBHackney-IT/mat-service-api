@@ -1,3 +1,5 @@
+import { PropertyPatchDetails } from '../interfaces/propertyPatchDetails';
+
 export interface CrmResponseInterface {
   '@odata.context': string;
   value: [
@@ -16,17 +18,9 @@ export interface CrmResponseInterface {
   ];
 }
 
-export interface PropertyPatchDetailsInterface {
-  patchCode: string;
-  areaName: string;
-  ward: string;
-  officerFullName: string;
-  original: CrmResponseInterface;
-}
-
 const crmToPropertyPatch = (
   crmData: CrmResponseInterface
-): PropertyPatchDetailsInterface => {
+): PropertyPatchDetails => {
   const patchData = crmData.value[0];
   return {
     patchCode:
@@ -37,7 +31,6 @@ const crmToPropertyPatch = (
       patchData['hackney_areaname@OData.Community.Display.V1.FormattedValue'],
     ward: patchData['hackney_ward@OData.Community.Display.V1.FormattedValue'],
     officerFullName: patchData['OfficerFullName'],
-    original: crmData,
   };
 };
 

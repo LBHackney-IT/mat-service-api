@@ -65,7 +65,7 @@ functions:
     environment:
       JWT_SECRET: ${ssm:/${self:custom.stage}-${self:service}-jwt-secret~true, env:JWT_SECRET}
     events:
-      - schedule: rate(1 hour)
+      - schedule: rate(1 minute)
 
 resources:
   Resources:

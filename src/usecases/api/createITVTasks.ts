@@ -12,7 +12,7 @@ interface CreateITVTasksOptions {
 }
 
 interface CreateITVTasksInterface {
-  execute(): Promise<Result<boolean>>;
+  execute(taskCount: number): Promise<Result<boolean>>;
 }
 
 export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
@@ -28,7 +28,7 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
     this.logger = options.logger || console;
   }
 
-  public async execute(): Promise<Result<boolean>> {
+  public async execute(taskCount: number): Promise<Result<boolean>> {
     // Get the last date from postgres
     let lastDate = await this.matPostgresGateway.getLatestItvTaskSyncDate();
     if (isError(lastDate)) {
@@ -46,7 +46,7 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
     tenancies.sort(
       (a, b) => a.accountCreatedOn.getTime() - b.accountCreatedOn.getTime()
     );
-    tenancies = tenancies.slice(0, 10);
+    tenancies = tenancies.slice(0, taskCount);
 
     this.logger.log(`Creating ${tenancies.length} ITV tasks`);
 

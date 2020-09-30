@@ -32,7 +32,7 @@ export default async (
       matPostgresGateway,
     });
 
-    const result = await usecase.execute();
+    const result = await usecase.execute(1);
 
     if (isSuccess(result)) {
       res.status(200).json({ result: 'success' });

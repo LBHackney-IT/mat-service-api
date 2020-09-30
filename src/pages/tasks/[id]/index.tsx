@@ -126,9 +126,13 @@ export default function TaskPage(): React.ReactNode {
   };
 
   const sendToManager = () => {
-    sendTaskToManager(task.id).catch(() => {
-      setError('sendToManagerError');
-    });
+    sendTaskToManager(task.id)
+      .then(() => {
+        router.push('/');
+      })
+      .catch(() => {
+        setError('sendToManagerError');
+      });
   };
 
   const closeTaskHandler = () => {

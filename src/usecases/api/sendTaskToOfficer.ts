@@ -9,12 +9,6 @@ interface SendTaskToOfficerResponse {
   error?: string;
 }
 
-interface SendTaskToOfficerOptions {
-  crmGateway: CrmGatewayInterface;
-  v1ApiGateway: V1MatAPIGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
-}
-
 interface SendTaskToOfficerInterface {
   execute(
     taskId: string,
@@ -29,10 +23,14 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
   matPostgresGateway: MatPostgresGatewayInterface;
 
   //TODO: use args not options
-  constructor(options: SendTaskToOfficerOptions) {
-    this.crmGateway = options.crmGateway;
-    this.v1ApiGateway = options.v1ApiGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    v1ApiGateway: V1MatAPIGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.crmGateway = crmGateway;
+    this.v1ApiGateway = v1ApiGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(

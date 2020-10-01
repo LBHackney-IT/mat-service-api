@@ -1,10 +1,14 @@
 import SendTaskToOfficerUseCase from './sendTaskToOfficer';
+import { mockCrmGateway } from '../../tests/helpers/mockGateways';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 
 describe('sendTaskToOfficer', () => {
-  let crmGateway;
-  let matPostgresGateway;
-  let v1ApiGateway;
-  let useCase;
+  let crmGateway: CrmGatewayInterface;
+  let matPostgresGateway: MatPostgresGatewayInterface;
+  let v1ApiGateway: V1MatAPIGatewayInterface;
+  let useCase: SendTaskToOfficerUseCase;
   let dummyTaskId = 'abc-123-def';
   let dummyToken = {
     name: 'Fake User',
@@ -30,6 +34,7 @@ describe('sendTaskToOfficer', () => {
   };
 
   beforeEach(() => {
+    crmGateway = mockCrmGateway();
     crmGateway = {
       getTask: () => fakeTaskResponse,
       getPatchByOfficerId: () => fakePatchResponse,
@@ -41,11 +46,11 @@ describe('sendTaskToOfficer', () => {
     v1ApiGateway = {
       transferCall: jest.fn(() => ({ body: true })),
     };
-    useCase = new SendTaskToOfficerUseCase({
+    useCase = new SendTaskToOfficerUseCase(
       crmGateway,
-      matPostgresGateway,
       v1ApiGateway,
-    });
+      matPostgresGateway
+    );
   });
 
   it('Should assemble the correct  data to send to the API', async () => {
@@ -73,7 +78,8 @@ describe('sendTaskToOfficer', () => {
     crmGateway.getTask = jest.fn();
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.email
+      fakeUserMappingResponse.body.email,
+      'dummyOfficerId'
     );
     expect(result).toEqual({ error: 'Error fetching task from crm' });
   });
@@ -82,7 +88,8 @@ describe('sendTaskToOfficer', () => {
     matPostgresGateway.getUserMapping = jest.fn();
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.email
+      fakeUserMappingResponse.body.email,
+      'dummyOfficerId'
     );
     expect(result).toEqual({ error: 'Error fetching mapped user' });
   });
@@ -91,7 +98,8 @@ describe('sendTaskToOfficer', () => {
     crmGateway.getPatchByOfficerId = jest.fn();
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.email
+      fakeUserMappingResponse.body.email,
+      'dummyOfficerId'
     );
     expect(result).toEqual({ error: 'Error fetching patch' });
   });

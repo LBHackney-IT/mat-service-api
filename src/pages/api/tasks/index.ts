@@ -10,7 +10,7 @@ import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
-import { crmGateway } from '../../../gateways';
+import { crmGateway, matPostgresGateway } from '../../../gateways';
 
 const postHandler = async (
   req: NextApiRequest,
@@ -19,8 +19,6 @@ const postHandler = async (
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
     return res.status(500).end();
   }
-
-  const matPostgresGateway = new MatPostgresGateway();
 
   const createTask = new CreateManualTaskUseCase({
     v1MatAPIGateway,
@@ -86,8 +84,6 @@ const getHandler = async (
     if (!tokenPayload || !tokenPayload.email) return res.status(400).end();
 
     const emailAddress = tokenPayload.email;
-
-    const matPostgresGateway = new MatPostgresGateway();
 
     const getOfficerPatch = new GetOfficerPatch({
       emailAddress,

@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import CreateITVTasks from '../../../usecases/api/createITVTasks';
-import { v1MatAPIGateway } from '../../../gateways';
-import MatPostgresGateway from '../../../gateways/matPostgresGateway';
 import { isSuccess } from '../../../lib/utils';
-import { crmGateway } from '../../../gateways';
+import {
+  crmGateway,
+  v1MatAPIGateway,
+  matPostgresGateway,
+} from '../../../gateways';
 
 type Data = {
   result: string;
@@ -21,7 +23,6 @@ export default async (
         .json({ result: 'failure', message: 'Missing env vars' });
     }
 
-    const matPostgresGateway = new MatPostgresGateway();
     const usecase = new CreateITVTasks({
       v1MatAPIGateway,
       crmGateway,

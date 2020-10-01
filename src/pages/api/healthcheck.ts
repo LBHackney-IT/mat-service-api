@@ -1,8 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import { v1MatAPIGateway } from '../../gateways';
 import { isSuccess } from '../../lib/utils';
-import { crmTokenGateway, crmGateway } from '../../gateways';
+import {
+  crmTokenGateway,
+  crmGateway,
+  v1MatAPIGateway,
+  matPostgresGateway,
+} from '../../gateways';
 
 type Data = {
   result: string;
@@ -123,8 +126,7 @@ const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
 };
 
 const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {
-  const gateway = new MatPostgresGateway();
-  return gateway.healthCheck();
+  return matPostgresGateway.healthCheck();
 };
 
 const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {

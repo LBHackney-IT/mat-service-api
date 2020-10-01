@@ -1,10 +1,9 @@
 import GetExternalProcessUrlUseCase from '../../../../usecases/api/getExternalProcessUrl';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import HackneyToken from '../../../../interfaces/hackneyToken';
-import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { NextApiRequest } from 'next';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
-import { crmGateway } from '../../../../gateways';
+import { crmGateway, matPostgresGateway } from '../../../../gateways';
 
 export default async (
   req: NextApiRequest,
@@ -22,7 +21,7 @@ export default async (
   const getTaskProcessUrl = new GetExternalProcessUrlUseCase({
     encryptionKey: process.env.PROCESS_TOKEN_ENCRYPTION_KEY,
     crmGateway,
-    matPostgresGateway: new MatPostgresGateway(),
+    matPostgresGateway,
   });
 
   const tokenPayload: HackneyToken | null = getTokenPayloadFromRequest(req);

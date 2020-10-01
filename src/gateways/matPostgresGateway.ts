@@ -1,4 +1,3 @@
-import PostgresConnection, { PostgresOptions } from '../lib/postgresConnection';
 import { CheckResult } from '../pages/api/healthcheck';
 import pgPromise from 'pg-promise';
 import { IClient } from 'pg-promise/typescript/pg-subset';
@@ -50,25 +49,19 @@ interface ITVTaskTable {
 }
 
 class MatPostgresGateway implements MatPostgresGatewayInterface {
-  instance: pgPromise.IDatabase<Record<string, unknown>, IClient>;
+  connection: pgPromise.IDatabase<Record<string, unknown>, IClient>;
 
-  constructor() {
-    const options: PostgresOptions = {
-      user: `${process.env.DB_USER}`,
-      password: `${process.env.DB_PASSWORD}`,
-      host: `${process.env.DB_HOST}`,
-      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-      database: `${process.env.DB_NAME}`,
-    };
-    const pgConn = new PostgresConnection(options);
-    this.instance = pgConn.getConnection();
+  constructor(
+    connection: pgPromise.IDatabase<Record<string, unknown>, IClient>
+  ) {
+    this.connection = connection;
   }
 
   public async getTrasByPatchId(
     patchId: string
   ): Promise<GetTRAPatchMappingResponse> {
     try {
-      const results: TRAPatchMapping[] = await this.instance.many(
+      const results: TRAPatchMapping[] = await this.connection.many(
         'SELECT  TRA.Name, TRA.TraId, TRAPatchAssociation.PatchCRMId FROM	TRA INNER JOIN TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId WHERE TRAPatchAssociation.PatchCRMId = ${id}',
         { id: patchId }
       );
@@ -89,7 +82,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
     emailAddress: string
   ): Promise<GetUserMappingResponse> {
     try {
-      const result: UserMappingTable = await this.instance.one(
+      const result: UserMappingTable = await this.connection.one(
         'SELECT * FROM usermappings WHERE emailaddress = $1',
         emailAddress
       );
@@ -116,7 +109,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse> {
     try {
-      await this.instance.none(
+      await this.connection.none(
         'INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${username})',
         userMapping
       );
@@ -135,7 +128,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
 
   public async getLatestItvTaskSyncDate(): Promise<Result<Date | null>> {
     try {
-      const results = await this.instance.one(
+      const results = await this.connection.one(
         'SELECT MAX(created) FROM itv_tasks'
       );
 
@@ -147,7 +140,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
 
   async createItvTask(task: ITVTaskTable): Promise<Result<boolean>> {
     try {
-      await this.instance.none(
+      await this.connection.none(
         'INSERT INTO itv_tasks (tag_ref, created, crm_id) VALUES (${tag_ref}, ${created}, ${crm_id})',
         task
       );
@@ -160,7 +153,7 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
   public async healthCheck(): Promise<CheckResult> {
     const error = { success: false, message: 'Could not connect to postgres' };
     try {
-      const result = await this.instance.one('SELECT true as success');
+      const result = await this.connection.one('SELECT true as success');
       if (result.success) {
         return { success: true };
       } else {

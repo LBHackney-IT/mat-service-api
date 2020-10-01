@@ -1,10 +1,12 @@
 import { NextApiRequest } from 'next';
 import SendTaskToOfficerUseCase from '../../../../usecases/api/sendTaskToOfficer';
-import { v1MatAPIGateway } from '../../../../gateways';
-import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
-import { crmGateway } from '../../../../gateways';
+import {
+  crmGateway,
+  matPostgresGateway,
+  v1MatAPIGateway,
+} from '../../../../gateways';
 
 export default async (
   req: NextApiRequest,
@@ -25,8 +27,6 @@ export default async (
   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
     return res.status(500).end();
   }
-
-  const matPostgresGateway = new MatPostgresGateway();
 
   const sendTaskToOfficer = new SendTaskToOfficerUseCase({
     v1ApiGateway: v1MatAPIGateway,

@@ -8,7 +8,6 @@ import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
 import moment from 'moment';
 import {
   GetExternalProcessUrlInterface,
-  GetExternalProcessUrlOptions,
   GetExternalProcessUrlResponse,
 } from './getExternalProcessUrl';
 import externalProcessUrls from './externalProcessUrls.json';
@@ -32,11 +31,14 @@ export default class GetExternalAngularProcessUrl
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  //TODO: use args not options
-  constructor(options: GetExternalProcessUrlOptions) {
-    this.encryptionKey = options.encryptionKey;
-    this.crmGateway = options.crmGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    encryptionKey: string,
+    crmGateway: CrmGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.encryptionKey = encryptionKey;
+    this.crmGateway = crmGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(

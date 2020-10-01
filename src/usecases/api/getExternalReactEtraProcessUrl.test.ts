@@ -13,11 +13,11 @@ describe('GetExternalReactProcessUrl', () => {
   beforeEach(() => {
     crmGateway = mockCrmGateway();
     matPostgresGateway = mockMatPostgresGateway();
-    useCase = new GetExternalReactEtraProcessUrl({
+    useCase = new GetExternalReactEtraProcessUrl(
       encryptionKey,
       crmGateway,
-      matPostgresGateway,
-    });
+      matPostgresGateway
+    );
   });
 
   test.todo('should create the correct URL');

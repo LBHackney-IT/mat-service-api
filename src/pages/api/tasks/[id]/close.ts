@@ -1,12 +1,7 @@
 import { NextApiRequest } from 'next';
-import CloseTask from '../../../../usecases/api/closeTask';
+import { closeTask } from '../../../../usecases/api';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
-import {
-  v1MatAPIGateway,
-  crmGateway,
-  matPostgresGateway,
-} from '../../../../gateways';
 
 export default async (
   req: NextApiRequest,
@@ -27,11 +22,6 @@ export default async (
     return res.status(500).end();
   }
 
-  const closeTask = new CloseTask({
-    crmGateway,
-    v1ApiGateway: v1MatAPIGateway,
-    matPostgresGateway,
-  });
   const response = await closeTask.execute(id, loggedInUser.email);
 
   if (response.body) {

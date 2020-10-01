@@ -38,24 +38,24 @@ describe('createITVTasks', () => {
       Promise.resolve(tenancies)
     );
 
-    createITVTasks = new CreateITVTasksUseCase({
-      v1MatAPIGateway: v1MatAPIGateway,
-      crmGateway,
+    createITVTasks = new CreateITVTasksUseCase(
       matPostgresGateway,
-      logger: dummyLogger,
-    });
+      v1MatAPIGateway,
+      crmGateway,
+      dummyLogger
+    );
   });
 
   it('should set the default date to 2020-09-01T00:00:00Z', async () => {
     matPostgresGateway.getLatestItvTaskSyncDate = () => Promise.resolve(null);
-    await createITVTasks.execute();
+    await createITVTasks.execute(1);
     expect(crmGateway.getIntroductoryTenanciesByDate).toHaveBeenCalledWith(
       new Date(Date.parse('2019-11-03T11:00:17.9033333Z'))
     );
   });
 
   it('should retrieve new tenancies and create ITV tasks for them and store the result in postgres', async () => {
-    const result = await createITVTasks.execute();
+    const result = await createITVTasks.execute(5);
     const orderedTenancies = tenancies.sort(
       (a, b) => a.accountCreatedOn.getTime() - b.accountCreatedOn.getTime()
     );
@@ -81,5 +81,15 @@ describe('createITVTasks', () => {
       tag_ref: orderedTenancies[1].tagReference,
     });
     expect(dummyLogger.log).toHaveBeenCalledWith('Creating 2 ITV tasks');
+  });
+
+  it('should limit the number of tasks to the number passed in', async () => {
+    const result = await createITVTasks.execute(1);
+    expect(isError(result)).toBe(false);
+    expect(
+      v1MatAPIGateway.createTenancyManagementInteraction
+    ).toHaveBeenCalledTimes(1);
+
+    expect(dummyLogger.log).toHaveBeenCalledWith('Creating 1 ITV tasks');
   });
 });

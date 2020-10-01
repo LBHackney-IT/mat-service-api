@@ -1,9 +1,8 @@
-import GetExternalProcessUrlUseCase from '../../../../usecases/api/getExternalProcessUrl';
+import { getExternalProcessUrl } from '../../../../usecases/api';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import HackneyToken from '../../../../interfaces/hackneyToken';
 import { NextApiRequest } from 'next';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
-import { crmGateway, matPostgresGateway } from '../../../../gateways';
 
 export default async (
   req: NextApiRequest,
@@ -18,16 +17,10 @@ export default async (
     : undefined;
   if (!id) return res.status(500).end();
 
-  const getTaskProcessUrl = new GetExternalProcessUrlUseCase({
-    encryptionKey: process.env.PROCESS_TOKEN_ENCRYPTION_KEY,
-    crmGateway,
-    matPostgresGateway,
-  });
-
   const tokenPayload: HackneyToken | null = getTokenPayloadFromRequest(req);
   if (!tokenPayload) return res.status(500).end();
 
-  const url = await getTaskProcessUrl.execute(id, tokenPayload.email);
+  const url = await getExternalProcessUrl.execute(id, tokenPayload.email);
   if (url.error) return res.status(500).end();
 
   return res.writeHead(302, { Location: url.body }).end();

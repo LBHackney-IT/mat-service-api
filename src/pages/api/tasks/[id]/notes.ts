@@ -1,8 +1,7 @@
 import { NextApiRequest } from 'next';
-import { v1MatAPIGateway } from '../../../../gateways';
 import { ApiResponse, NoteList } from '../../../../interfaces/apiResponses';
 import { NewNote } from '../../../../interfaces/note';
-import CreateTaskNote from '../../../../usecases/api/createNote';
+import { createNote } from '../../../../usecases/api';
 import getNotesForTask from '../../../../usecases/api/getNotesForTask';
 
 export default async (
@@ -40,9 +39,8 @@ export default async (
     }
 
     const note = req.body as NewNote;
-    const createTaskNote = new CreateTaskNote({ gateway: v1MatAPIGateway });
 
-    const response = await createTaskNote.execute(note);
+    const response = await createNote.execute(note);
 
     if (response) {
       res.status(204).end();

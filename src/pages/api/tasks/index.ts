@@ -2,7 +2,6 @@ import { NextApiRequest } from 'next';
 import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
 import GetTasksForTagRef from '../../../usecases/api/getTasksForTagRef';
 import MatPostgresGateway from '../../../gateways/matPostgresGateway';
-import CrmGateway from '../../../gateways/crmGateway';
 import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
 import setupUser from '../../../usecases/api/setupUser';
 import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
@@ -11,7 +10,7 @@ import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
-import CrmTokenGateway from '../../../gateways/crmTokenGateway';
+import { crmGateway } from '../../../gateways';
 
 const postHandler = async (
   req: NextApiRequest,
@@ -25,15 +24,6 @@ const postHandler = async (
     v1MatApiUrl: process.env.V1_MAT_API_URL,
     v1MatApiToken: process.env.V1_MAT_API_TOKEN,
   });
-
-  const crmTokenGateway = new CrmTokenGateway(
-    `${process.env.CRM_TOKEN_API_URL}`,
-    `${process.env.CRM_TOKEN_API_KEY}`
-  );
-  const crmGateway = new CrmGateway(
-    `${process.env.CRM_API_URL}`,
-    crmTokenGateway
-  );
   const matPostgresGateway = new MatPostgresGateway();
 
   const createTask = new CreateManualTaskUseCase({
@@ -72,14 +62,6 @@ const getHandler = async (
   req: NextApiRequest,
   res: ApiResponse<TaskList>
 ): Promise<void> => {
-  const crmTokenGateway = new CrmTokenGateway(
-    `${process.env.CRM_TOKEN_API_URL}`,
-    `${process.env.CRM_TOKEN_API_KEY}`
-  );
-  const crmGateway = new CrmGateway(
-    `${process.env.CRM_API_URL}`,
-    crmTokenGateway
-  );
   const tag_ref = Array.isArray(req.query.tag_ref)
     ? req.query.tag_ref[0]
     : req.query.tag_ref;

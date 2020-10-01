@@ -1,5 +1,5 @@
-import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
-import CrmTokenGateway from '../../gateways/crmTokenGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { crmGateway } from '../../gateways';
 
 interface CreateUserResponse {
   body?: string;
@@ -25,14 +25,6 @@ class CreateUser implements CreateUserInterface {
     firstName: string;
     familyName: string;
   }) {
-    const crmTokenGateway = new CrmTokenGateway(
-      `${process.env.CRM_TOKEN_API_URL}`,
-      `${process.env.CRM_TOKEN_API_KEY}`
-    );
-    const crmGateway = new CrmGateway(
-      `${process.env.CRM_API_URL}`,
-      crmTokenGateway
-    );
     this.tasksGateway = crmGateway;
     this.user = user;
   }

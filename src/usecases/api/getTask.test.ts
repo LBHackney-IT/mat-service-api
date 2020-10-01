@@ -1,71 +1,54 @@
 import GetTask from './getTask';
-import CrmGateway from '../../gateways/crmGateway';
+import { crmGateway } from '../../gateways';
 import { Task } from '../../interfaces/task';
 import MockTask from '../../tests/helpers/generateTask';
 import faker from 'faker';
-jest.mock('../../gateways/crmGateway');
 
 describe('GetTask', () => {
-  beforeEach(() => {
-    CrmGateway.mockClear();
-  });
-
   it('Returns a response when no errors are found', async () => {
     const mockResponse: Task = MockTask();
 
-    CrmGateway.mockImplementationOnce(() => {
-      return {
-        getTask: () => ({
-          body: mockResponse,
-          error: undefined,
-        }),
-      };
-    });
+    crmGateway.getTask = () =>
+      Promise.resolve({
+        body: mockResponse,
+        error: undefined,
+      });
 
     const taskId = faker.lorem.word();
 
     const getTask = new GetTask(taskId);
     const response = await getTask.execute();
 
-    expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: mockResponse, error: undefined });
   });
 
   it('Returns a 500 error when errors are found', async () => {
-    CrmGateway.mockImplementationOnce(() => {
-      return {
-        getTask: () => ({
-          body: undefined,
-          error: 'Anything',
-        }),
-      };
-    });
+    crmGateway.getTask = () =>
+      Promise.resolve({
+        body: undefined,
+        error: 'Anything',
+      });
 
     const taskId = faker.lorem.word();
 
     const getTask = new GetTask(taskId);
     const response = await getTask.execute();
 
-    expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 500 });
   });
 
   it('Returns a 401 error when errors is NotAuthorised', async () => {
-    CrmGateway.mockImplementationOnce(() => {
-      return {
-        getTask: () => ({
-          body: undefined,
-          error: 'NotAuthorised',
-        }),
-      };
-    });
+    crmGateway.getTask = () =>
+      Promise.resolve({
+        body: undefined,
+        error: 'NotAuthorised',
+      });
 
     const taskId = faker.lorem.word();
 
     const getTask = new GetTask(taskId);
     const response = await getTask.execute();
 
-    expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: undefined, error: 401 });
   });
 });

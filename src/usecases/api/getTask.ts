@@ -1,6 +1,6 @@
-import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
-import CrmTokenGateway from '../../gateways/crmTokenGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { Task } from '../../interfaces/task';
+import { crmGateway } from '../../gateways';
 
 interface GetTaskResponse {
   body: Task | undefined;
@@ -16,14 +16,6 @@ class GetTask implements GetTaskInterface {
   taskId: string;
 
   constructor(taskId: string) {
-    const crmTokenGateway = new CrmTokenGateway(
-      `${process.env.CRM_TOKEN_API_URL}`,
-      `${process.env.CRM_TOKEN_API_KEY}`
-    );
-    const crmGateway = new CrmGateway(
-      `${process.env.CRM_API_URL}`,
-      crmTokenGateway
-    );
     this.crmGateway = crmGateway;
     this.taskId = taskId;
   }

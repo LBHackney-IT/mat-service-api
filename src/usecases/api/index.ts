@@ -11,6 +11,7 @@ import SetupUser from './setupUser';
 import GetExternalProcessUrl from './getExternalProcessUrl';
 import CloseTask from './closeTask';
 import CreateITVTasks from './createITVTasks';
+import CreateNote from './createNote';
 
 export const createUser = new CreateUser(crmGateway);
 export const creatUserMapping = new CreateUserMapping(matPostgresGateway);
@@ -39,3 +40,4 @@ export const createITVTasks = new CreateITVTasks(
   v1MatAPIGateway,
   crmGateway
 );
+export const createNote = new CreateNote(v1MatAPIGateway);

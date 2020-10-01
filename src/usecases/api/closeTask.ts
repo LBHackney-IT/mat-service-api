@@ -7,13 +7,8 @@ interface CloseTaskResponse {
   body?: boolean;
   error?: string;
 }
-interface CloseTaskOptions {
-  crmGateway: CrmGatewayInterface;
-  v1ApiGateway: V1MatAPIGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
-}
 
-interface CloseTaskInterface {
+export interface CloseTaskInterface {
   execute(taskId: string, userEmail: string): Promise<CloseTaskResponse>;
 }
 
@@ -22,11 +17,14 @@ class CloseTaskUseCase implements CloseTaskInterface {
   v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  //TODO: use args not options
-  constructor(options: CloseTaskOptions) {
-    this.crmGateway = options.crmGateway;
-    this.v1ApiGateway = options.v1ApiGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    v1ApiGateway: V1MatAPIGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.crmGateway = crmGateway;
+    this.v1ApiGateway = v1ApiGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(
@@ -71,7 +69,7 @@ class CloseTaskUseCase implements CloseTaskInterface {
       };
     } else {
       return {
-        error: 'Problem assigning task to manager',
+        error: 'Unknown error closing task',
       };
     }
   }

@@ -2,11 +2,6 @@ import { NextApiRequest } from 'next';
 import { closeTask } from '../../../../usecases/api';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
-import {
-  v1MatAPIGateway,
-  crmGateway,
-  matPostgresGateway,
-} from '../../../../gateways';
 
 export default async (
   req: NextApiRequest,

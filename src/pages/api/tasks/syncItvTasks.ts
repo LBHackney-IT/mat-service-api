@@ -1,11 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import CreateITVTasks from '../../../usecases/api/createITVTasks';
+import { createITVTasks } from '../../../usecases/api';
 import { isSuccess } from '../../../lib/utils';
-import {
-  crmGateway,
-  v1MatAPIGateway,
-  matPostgresGateway,
-} from '../../../gateways';
 
 type Data = {
   result: string;
@@ -23,13 +18,7 @@ export default async (
         .json({ result: 'failure', message: 'Missing env vars' });
     }
 
-    const usecase = new CreateITVTasks({
-      v1MatAPIGateway,
-      crmGateway,
-      matPostgresGateway,
-    });
-
-    const result = await usecase.execute(1);
+    const result = await createITVTasks.execute(1);
 
     if (isSuccess(result)) {
       res.status(200).json({ result: 'success' });

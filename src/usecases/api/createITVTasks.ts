@@ -1,15 +1,8 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
-import { isError, Result } from '../../lib/utils';
+import { isError, Logger, Result } from '../../lib/utils';
 import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
-
-interface CreateITVTasksOptions {
-  matPostgresGateway: MatPostgresGatewayInterface;
-  v1MatAPIGateway: V1MatAPIGatewayInterface;
-  crmGateway: CrmGatewayInterface;
-  logger?: Console;
-}
 
 interface CreateITVTasksInterface {
   execute(taskCount: number): Promise<Result<boolean>>;
@@ -19,14 +12,18 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
   matPostgresGateway: MatPostgresGatewayInterface;
   v1MatAPIGateway: V1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
-  logger: Console;
+  logger: Logger;
 
-  //TODO: use args not options
-  constructor(options: CreateITVTasksOptions) {
-    this.matPostgresGateway = options.matPostgresGateway;
-    this.v1MatAPIGateway = options.v1MatAPIGateway;
-    this.crmGateway = options.crmGateway;
-    this.logger = options.logger || console;
+  constructor(
+    matPostgresGateway: MatPostgresGatewayInterface,
+    v1MatAPIGateway: V1MatAPIGatewayInterface,
+    crmGateway: CrmGatewayInterface,
+    logger?: Logger
+  ) {
+    this.matPostgresGateway = matPostgresGateway;
+    this.v1MatAPIGateway = v1MatAPIGateway;
+    this.crmGateway = crmGateway;
+    this.logger = logger || console;
   }
 
   public async execute(taskCount: number): Promise<Result<boolean>> {

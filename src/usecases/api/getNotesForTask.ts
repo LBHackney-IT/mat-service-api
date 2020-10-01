@@ -6,6 +6,7 @@ interface GetNotesForTaskResponse {
   error?: number;
 }
 
+//TODO: turn into class based use case, pass in crmGateway to constructor
 const getNotesForTask = async (
   taskId: string
 ): Promise<GetNotesForTaskResponse> => {

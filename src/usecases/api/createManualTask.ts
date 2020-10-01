@@ -56,6 +56,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
+  //TODO: use args not options
   constructor(options: CreateManualTaskOptions) {
     this.v1MatAPIGateway = options.v1MatAPIGateway;
     this.crmGateway = options.crmGateway;

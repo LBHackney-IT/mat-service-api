@@ -19,6 +19,8 @@ class GetOfficersPerArea implements GetOfficersPerAreaInterface {
   areaId?: number;
   crmGateway: CrmGatewayInterface;
 
+  //TODO: use args not options
+  //TODO: pass arg to execute
   constructor(options: GetOfficersPerAreaOptions) {
     this.areaId = options.areaId;
     this.crmGateway = options.crmGateway;

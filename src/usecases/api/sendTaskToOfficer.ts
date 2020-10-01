@@ -28,6 +28,7 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
   v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
+  //TODO: use args not options
   constructor(options: SendTaskToOfficerOptions) {
     this.crmGateway = options.crmGateway;
     this.v1ApiGateway = options.v1ApiGateway;

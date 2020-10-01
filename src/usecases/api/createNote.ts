@@ -12,6 +12,7 @@ interface CreateTaskNote {
 class CreateTaskNote implements CreateTaskNote {
   v1MatAPIGateway: V1MatAPIGatewayInterface;
 
+  //TODO: use args not options
   constructor(options: CreateTaskNoteOptions) {
     this.v1MatAPIGateway = options.gateway;
   }

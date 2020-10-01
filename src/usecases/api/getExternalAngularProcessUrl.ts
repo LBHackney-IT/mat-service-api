@@ -32,6 +32,7 @@ export default class GetExternalAngularProcessUrl
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
+  //TODO: use args not options
   constructor(options: GetExternalProcessUrlOptions) {
     this.encryptionKey = options.encryptionKey;
     this.crmGateway = options.crmGateway;

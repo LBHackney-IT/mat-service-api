@@ -22,6 +22,7 @@ class CloseTaskUseCase implements CloseTaskInterface {
   v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
+  //TODO: use args not options
   constructor(options: CloseTaskOptions) {
     this.crmGateway = options.crmGateway;
     this.v1ApiGateway = options.v1ApiGateway;

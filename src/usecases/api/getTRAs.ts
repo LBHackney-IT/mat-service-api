@@ -26,6 +26,7 @@ class GetTRAs implements GetTRAsInterface {
   matPostgresGateway: MatPostgresGatewayInterface;
   crmGateway: CrmGatewayInterface;
 
+  //TODO: use args not options
   constructor(options: GetTRAsOptions) {
     this.matPostgresGateway = options.matPostgresGateway;
     this.crmGateway = options.crmGateway;

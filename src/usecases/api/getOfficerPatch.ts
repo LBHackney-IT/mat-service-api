@@ -22,6 +22,7 @@ class GetOfficerPatch implements GetOfficerPatchInterface {
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
+  //TODO: use args not options
   constructor(options: GetOfficerPatchOptions) {
     this.emailAddress = options.emailAddress;
     this.crmGateway = options.crmGateway;

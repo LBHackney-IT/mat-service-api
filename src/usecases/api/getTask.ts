@@ -15,6 +15,8 @@ class GetTask implements GetTaskInterface {
   crmGateway: CrmGatewayInterface;
   taskId: string;
 
+  //TODO: use args not options
+  //TODO: pass arg to execute
   constructor(taskId: string) {
     this.crmGateway = crmGateway;
     this.taskId = taskId;

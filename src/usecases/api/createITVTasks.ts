@@ -21,6 +21,7 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
   crmGateway: CrmGatewayInterface;
   logger: Console;
 
+  //TODO: use args not options
   constructor(options: CreateITVTasksOptions) {
     this.matPostgresGateway = options.matPostgresGateway;
     this.v1MatAPIGateway = options.v1MatAPIGateway;

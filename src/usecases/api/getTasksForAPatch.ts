@@ -21,9 +21,11 @@ interface GetTasksInterface {
 class GetTasksForAPatch implements GetTasksInterface {
   crmGateway: CrmGatewayInterface;
 
+  //TODO: use args not options
   constructor(options: GetTasksForAPatchOptions) {
     this.crmGateway = options.crmGateway;
   }
+
   public async execute(
     isManager: boolean,
     areaManagerId: string,

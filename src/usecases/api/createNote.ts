@@ -1,8 +1,8 @@
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { NewNote } from '../../interfaces/note';
 
 interface CreateTaskNoteOptions {
-  gateway: v1MatAPIGatewayInterface;
+  gateway: V1MatAPIGatewayInterface;
 }
 
 interface CreateTaskNote {
@@ -10,7 +10,7 @@ interface CreateTaskNote {
 }
 
 class CreateTaskNote implements CreateTaskNote {
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
 
   constructor(options: CreateTaskNoteOptions) {
     this.v1MatAPIGateway = options.gateway;

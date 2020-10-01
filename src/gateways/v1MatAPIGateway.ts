@@ -5,7 +5,7 @@ import { TenancyManagementInteraction } from '../interfaces/tenancyManagementInt
 import { NewNote } from '../interfaces/note';
 import { CheckResult } from '../pages/api/healthcheck';
 
-export interface v1MatAPIGatewayInterface {
+export interface V1MatAPIGatewayInterface {
   createTenancyManagementInteraction(
     tmi: TenancyManagementInteraction
   ): Promise<createTenancyManagementInteractionResponse>;
@@ -35,11 +35,6 @@ export interface createTenancyManagementInteractionResponse {
   error?: string;
 }
 
-export interface v1MatAPIGatewayOptions {
-  v1MatApiUrl: string;
-  v1MatApiToken: string;
-}
-
 interface GetContactsByUprnAPIResponse {
   results?: V1ApiContact[];
   error?: string;
@@ -60,13 +55,13 @@ export interface CreateTaskNoteResponse {
   error?: string;
 }
 
-export default class v1MatAPIGateway implements v1MatAPIGatewayInterface {
+export default class V1MatAPIGateway implements V1MatAPIGatewayInterface {
   v1MatApiUrl: string;
   v1MatApiToken: string;
 
-  constructor(options: v1MatAPIGatewayOptions) {
-    this.v1MatApiUrl = options.v1MatApiUrl;
-    this.v1MatApiToken = options.v1MatApiToken;
+  constructor(v1MatApiUrl: string, v1MatApiToken: string) {
+    this.v1MatApiUrl = v1MatApiUrl;
+    this.v1MatApiToken = v1MatApiToken;
   }
 
   public async createTaskNote(note: NewNote): Promise<CreateTaskNoteResponse> {

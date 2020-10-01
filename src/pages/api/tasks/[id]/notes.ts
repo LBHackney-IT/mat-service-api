@@ -1,5 +1,5 @@
 import { NextApiRequest } from 'next';
-import v1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';
+import { v1MatAPIGateway } from '../../../../gateways';
 import { ApiResponse, NoteList } from '../../../../interfaces/apiResponses';
 import { NewNote } from '../../../../interfaces/note';
 import CreateTaskNote from '../../../../usecases/api/createNote';
@@ -39,13 +39,8 @@ export default async (
       return res.status(500).end();
     }
 
-    const gateway: v1MatAPIGateway = new v1MatAPIGateway({
-      v1MatApiUrl: process.env.V1_MAT_API_URL,
-      v1MatApiToken: process.env.V1_MAT_API_TOKEN,
-    });
-
     const note = req.body as NewNote;
-    const createTaskNote = new CreateTaskNote({ gateway: gateway });
+    const createTaskNote = new CreateTaskNote({ gateway: v1MatAPIGateway });
 
     const response = await createTaskNote.execute(note);
 

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
+import { v1MatAPIGateway } from '../../gateways';
 import { isSuccess } from '../../lib/utils';
 import { crmTokenGateway, crmGateway } from '../../gateways';
 
@@ -134,11 +134,8 @@ const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
       message: `MaT API env vars not configured`,
     };
   }
-  const gateway = new v1MatAPIGateway({
-    v1MatApiUrl: process.env.V1_MAT_API_URL,
-    v1MatApiToken: process.env.V1_MAT_API_TOKEN,
-  });
-  return gateway.healthCheck();
+
+  return v1MatAPIGateway.healthCheck();
 };
 
 const checks = [

@@ -4,7 +4,7 @@ import GetTasksForTagRef from '../../../usecases/api/getTasksForTagRef';
 import MatPostgresGateway from '../../../gateways/matPostgresGateway';
 import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
 import { setupUser } from '../../../usecases/api';
-import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
+import { v1MatAPIGateway } from '../../../gateways';
 import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
@@ -20,10 +20,6 @@ const postHandler = async (
     return res.status(500).end();
   }
 
-  const v1MatAPIGateway = new V1MatAPIGateway({
-    v1MatApiUrl: process.env.V1_MAT_API_URL,
-    v1MatApiToken: process.env.V1_MAT_API_TOKEN,
-  });
   const matPostgresGateway = new MatPostgresGateway();
 
   const createTask = new CreateManualTaskUseCase({

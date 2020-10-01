@@ -53,24 +53,15 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
   instance: pgPromise.IDatabase<Record<string, unknown>, IClient>;
 
   constructor() {
-    if (
-      process.env.DB_HOST &&
-      process.env.DB_PASSWORD &&
-      process.env.DB_USER &&
-      process.env.DB_NAME
-    ) {
-      const options: PostgresOptions = {
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        host: process.env.DB_HOST,
-        port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-        database: process.env.DB_NAME,
-      };
-      const pgConn = new PostgresConnection(options);
-      this.instance = pgConn.getConnection();
-    } else {
-      throw new Error('Missing postgres configuration variables');
-    }
+    const options: PostgresOptions = {
+      user: `${process.env.DB_USER}`,
+      password: `${process.env.DB_PASSWORD}`,
+      host: `${process.env.DB_HOST}`,
+      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
+      database: `${process.env.DB_NAME}`,
+    };
+    const pgConn = new PostgresConnection(options);
+    this.instance = pgConn.getConnection();
   }
 
   public async getTrasByPatchId(

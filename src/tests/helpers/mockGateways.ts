@@ -1,7 +1,7 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { CrmTokenGatewayInterface } from '../../gateways/crmTokenGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import MockTenancy from './generateTenancy';
 
 export const mockCrmTokenGateway = (): CrmTokenGatewayInterface => ({
@@ -34,7 +34,7 @@ export const mockMatPostgresGateway = (): MatPostgresGatewayInterface => ({
   healthCheck: jest.fn(() => Promise.resolve({ success: true })),
 });
 
-export const mockV1MatApiGateway = (): v1MatAPIGatewayInterface => ({
+export const mockV1MatApiGateway = (): V1MatAPIGatewayInterface => ({
   getContactsByUprn: jest.fn(() => Promise.resolve({})),
   createTenancyManagementInteraction: jest.fn(() => Promise.resolve({})),
   patchTenancyManagementInteraction: jest.fn(() => Promise.resolve({})),

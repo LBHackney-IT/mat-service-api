@@ -1,4 +1,4 @@
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import GetOfficerPatch from './getOfficerPatch';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
@@ -34,7 +34,7 @@ interface CreateManualTaskResponse {
 }
 
 interface CreateManualTaskOptions {
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 }
@@ -52,7 +52,7 @@ interface CreateManualTaskData {
 }
 
 class CreateManualTaskUseCase implements CreateManualTaskInterface {
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 

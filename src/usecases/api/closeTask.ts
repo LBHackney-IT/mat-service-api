@@ -1,5 +1,5 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 
@@ -9,7 +9,7 @@ interface CloseTaskResponse {
 }
 interface CloseTaskOptions {
   crmGateway: CrmGatewayInterface;
-  v1ApiGateway: v1MatAPIGatewayInterface;
+  v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 }
 
@@ -19,7 +19,7 @@ interface CloseTaskInterface {
 
 class CloseTaskUseCase implements CloseTaskInterface {
   crmGateway: CrmGatewayInterface;
-  v1ApiGateway: v1MatAPIGatewayInterface;
+  v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
   constructor(options: CloseTaskOptions) {

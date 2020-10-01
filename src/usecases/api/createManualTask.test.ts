@@ -1,5 +1,5 @@
 import CreateManualTaskUseCase from './createManualTask';
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import GetOfficerPatch from './getOfficerPatch';
 import {
   mockV1MatApiGateway,
@@ -12,7 +12,7 @@ jest.mock('./getOfficerPatch');
 
 describe('createManualTasks', () => {
   let usecase: CreateManualTaskUseCase;
-  let v1MatAPIGateway: v1MatAPIGatewayInterface;
+  let v1MatAPIGateway: V1MatAPIGatewayInterface;
   let crmGateway: CrmGatewayInterface;
   let matPostgresGateway: MatPostgresGatewayInterface;
   let dummyGetOfficerPatch = { execute: jest.fn() };

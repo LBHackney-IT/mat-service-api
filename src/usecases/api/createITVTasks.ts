@@ -1,12 +1,12 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { isError, Result } from '../../lib/utils';
 import { tenancyToITVTask } from '../../mappings/tenancyToITVTask';
 
 interface CreateITVTasksOptions {
   matPostgresGateway: MatPostgresGatewayInterface;
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
   logger?: Console;
 }
@@ -17,7 +17,7 @@ interface CreateITVTasksInterface {
 
 export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
   matPostgresGateway: MatPostgresGatewayInterface;
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
   logger: Console;
 

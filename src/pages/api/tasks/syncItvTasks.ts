@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import CreateITVTasks from '../../../usecases/api/createITVTasks';
-import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
+import { v1MatAPIGateway } from '../../../gateways';
 import MatPostgresGateway from '../../../gateways/matPostgresGateway';
 import { isSuccess } from '../../../lib/utils';
 import { crmGateway } from '../../../gateways';
@@ -20,10 +20,6 @@ export default async (
         .status(500)
         .json({ result: 'failure', message: 'Missing env vars' });
     }
-    const v1MatAPIGateway: V1MatAPIGateway = new V1MatAPIGateway({
-      v1MatApiUrl: process.env.V1_MAT_API_URL,
-      v1MatApiToken: process.env.V1_MAT_API_TOKEN,
-    });
 
     const matPostgresGateway = new MatPostgresGateway();
     const usecase = new CreateITVTasks({

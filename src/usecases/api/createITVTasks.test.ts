@@ -7,7 +7,7 @@ import {
   mockMatPostgresGateway,
   mockV1MatApiGateway,
 } from '../../tests/helpers/mockGateways';
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { isError } from '../../lib/utils';
@@ -16,7 +16,7 @@ import { Tenancy } from '../../interfaces/tenancy';
 describe('createITVTasks', () => {
   let crmGateway: CrmGatewayInterface;
   let matPostgresGateway: MatPostgresGatewayInterface;
-  let v1MatAPIGateway: v1MatAPIGatewayInterface;
+  let v1MatAPIGateway: V1MatAPIGatewayInterface;
   let createITVTasks: CreateITVTasksUseCase;
   let tenancies: Tenancy[];
   const dummyLogger = { log: jest.fn() };

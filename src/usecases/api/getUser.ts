@@ -1,4 +1,5 @@
 import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
+import CrmTokenGateway from '../../gateways/crmTokenGateway';
 
 interface GetUserResponse {
   body?: string;
@@ -14,7 +15,12 @@ class GetUser implements GetUserInterface {
   emailAddress: string;
 
   constructor(emailAddress: string) {
-    this.tasksGateway = new CrmGateway();
+    const crmTokenGateway = new CrmTokenGateway();
+    const crmGateway = new CrmGateway(
+      `${process.env.CRM_API_URL}`,
+      crmTokenGateway
+    );
+    this.tasksGateway = crmGateway;
     this.emailAddress = emailAddress;
   }
 

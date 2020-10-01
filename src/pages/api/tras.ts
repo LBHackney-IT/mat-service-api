@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import CrmGateway from '../../gateways/crmGateway';
+import CrmTokenGateway from '../../gateways/crmTokenGateway';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import GetTRAs from '../../usecases/api/getTRAs';
 import { officerPatchAssociationInterface } from '../../usecases/api/getTRAs';
@@ -18,7 +19,11 @@ export default async (
       : undefined;
 
     if (emailAddress != undefined) {
-      const crmGateway = new CrmGateway();
+      const crmTokenGateway = new CrmTokenGateway();
+      const crmGateway = new CrmGateway(
+        `${process.env.CRM_API_URL}`,
+        crmTokenGateway
+      );
       const matPostgresGateway = new MatPostgresGateway();
       const getTRAs = new GetTRAs({ crmGateway, matPostgresGateway });
 

@@ -1,5 +1,6 @@
 import { NextApiRequest } from 'next';
 import CrmGateway from '../../../../gateways/crmGateway';
+import CrmTokenGateway from '../../../../gateways/crmTokenGateway';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
 import { PropertyPatchDetails } from '../../../../interfaces/propertyPatchDetails';
 
@@ -18,9 +19,13 @@ export default async (
     return res.status(500).end();
   }
 
-  const crm = new CrmGateway();
+  const crmTokenGateway = new CrmTokenGateway();
+  const crmGateway = new CrmGateway(
+    `${process.env.CRM_API_URL}`,
+    crmTokenGateway
+  );
 
-  const response = await crm.getPropertyPatch(uprn);
+  const response = await crmGateway.getPropertyPatch(uprn);
 
   if (response.body) {
     res.status(200).json(response.body);

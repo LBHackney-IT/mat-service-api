@@ -1,27 +1,28 @@
-import CrmGateway from './crmGateway';
+import CrmGateway, { CrmGatewayInterface } from './crmGateway';
 import axios from 'axios';
 import faker from 'faker';
 import MockCrmTaskResponse from '../tests/helpers/generateCrmTaskResponse';
 import MockCrmUserResponse from '../tests/helpers/generateCrmUserResponse';
-import MockCrmOfficersResponse from '../tests/helpers/generateCrmOfficersResponse';
-
 import { crmResponseToTasks } from '../mappings/crmToTask';
-
 import MockCrmNoteResponse from '../tests/helpers/generateCrmNoteResponse';
 import { crmToNotes } from '../mappings/crmToNotes';
 import MockCrmPropertyPatchResponse from '../tests/helpers/generatePropertyPatchResponse';
-
 import MockCrmOfficersPerAreaIdResponse from '../tests/helpers/generateMockCrmOfficersPerAreaIdResponse';
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
-import CrmTokenGateway from '../gateways/crmTokenGateway';
+import { mockCrmTokenGateway } from '../tests/helpers/mockGateways';
+import { CrmTokenGatewayInterface } from './crmTokenGateway';
 
 jest.mock('axios');
-jest.mock('../gateways/crmTokenGateway');
 
 describe('CrmGateway', () => {
+  let crmTokenGateway: CrmTokenGatewayInterface;
+  let crmGateway: CrmGatewayInterface;
+
   beforeEach(() => {
+    crmTokenGateway = mockCrmTokenGateway();
+    crmGateway = new CrmGateway('http://fakeurl.com', crmTokenGateway);
+
     axios.mockClear();
-    CrmTokenGateway.prototype.getToken.mockResolvedValue(() => 'fakeToken');
   });
 
   describe('Get Tasks by patch id', () => {
@@ -32,7 +33,6 @@ describe('CrmGateway', () => {
 
       axios.get.mockResolvedValue({ data: data });
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksForAPatch(
         false,
         areaManagerId,
@@ -55,7 +55,6 @@ describe('CrmGateway', () => {
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksForAPatch(
         isManager,
         areaManagerId,
@@ -73,7 +72,6 @@ describe('CrmGateway', () => {
 
       axios.get.mockResolvedValue({ data: data });
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getUserId(emailAddress);
 
       expect(response).toStrictEqual({
@@ -86,7 +84,6 @@ describe('CrmGateway', () => {
       const error = faker.lorem.words();
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getNotesForTask(emailAddress);
 
       expect(response).toStrictEqual({ error: error });
@@ -101,7 +98,6 @@ describe('CrmGateway', () => {
 
       axios.get.mockResolvedValue({ data: data });
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getNotesForTask(id);
 
       expect(response).toStrictEqual({ body: notes });
@@ -112,7 +108,6 @@ describe('CrmGateway', () => {
       const error = faker.lorem.words();
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getNotesForTask(id);
 
       expect(response).toStrictEqual({ error: error });
@@ -140,7 +135,7 @@ describe('CrmGateway', () => {
       const uprn = '100023006827';
 
       axios.get.mockResolvedValue({ data: data });
-      const crmGateway = new CrmGateway();
+
       const response = await crmGateway.getPropertyPatch(uprn);
       expect(response).toEqual({ body: expectedData });
     });
@@ -150,7 +145,6 @@ describe('CrmGateway', () => {
       const error = faker.lorem.words();
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getPropertyPatch(uprn);
 
       expect(response).toEqual({ error: error });
@@ -164,7 +158,6 @@ describe('CrmGateway', () => {
 
       axios.get.mockResolvedValue({ data: data });
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksForTagRef(tagRef);
 
       const tasks = crmResponseToTasks(data);
@@ -181,7 +174,6 @@ describe('CrmGateway', () => {
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getTasksForTagRef(tagRef);
 
       expect(response).toEqual(errorResponse);
@@ -195,7 +187,6 @@ describe('CrmGateway', () => {
 
       axios.get.mockResolvedValue({ data: data });
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getOfficersByAreaId(areaId);
 
       expect(response).toEqual({
@@ -208,7 +199,6 @@ describe('CrmGateway', () => {
       const error = faker.lorem.words();
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 
-      const crmGateway = new CrmGateway();
       const response = await crmGateway.getOfficersByAreaId(areaId);
 
       expect(response).toEqual({ error: error });

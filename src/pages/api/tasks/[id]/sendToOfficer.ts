@@ -5,6 +5,7 @@ import CrmGateway from '../../../../gateways/crmGateway';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
+import CrmTokenGateway from '../../../../gateways/crmTokenGateway';
 
 export default async (
   req: NextApiRequest,
@@ -30,7 +31,11 @@ export default async (
     v1MatApiUrl: process.env.V1_MAT_API_URL,
     v1MatApiToken: process.env.V1_MAT_API_TOKEN,
   });
-  const crmGateway = new CrmGateway();
+  const crmTokenGateway = new CrmTokenGateway();
+  const crmGateway = new CrmGateway(
+    `${process.env.CRM_API_URL}`,
+    crmTokenGateway
+  );
   const matPostgresGateway = new MatPostgresGateway();
 
   const sendTaskToOfficer = new SendTaskToOfficerUseCase({

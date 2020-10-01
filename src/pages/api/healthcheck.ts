@@ -121,7 +121,11 @@ const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
 };
 
 const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
-  const crmGateway = new CrmGateway();
+  const crmTokenGateway = new CrmTokenGateway();
+  const crmGateway = new CrmGateway(
+    `${process.env.CRM_API_URL}`,
+    crmTokenGateway
+  );
   return crmGateway.healthCheck();
 };
 

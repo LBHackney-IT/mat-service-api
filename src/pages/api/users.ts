@@ -4,6 +4,7 @@ import GetOfficersPerArea from '../../usecases/api/getOfficersPerArea';
 import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import CrmTokenGateway from '../../gateways/crmTokenGateway';
 
 interface Data {
   users?: any;
@@ -40,7 +41,11 @@ const doGet = async (
   }
 
   if (managerEmail !== undefined) {
-    const crmGateway = new CrmGateway();
+    const crmTokenGateway = new CrmTokenGateway();
+    const crmGateway = new CrmGateway(
+      `${process.env.CRM_API_URL}`,
+      crmTokenGateway
+    );
     const matPostgresGateway = new MatPostgresGateway();
     const getOfficerPatch = new GetOfficerPatch({
       emailAddress: managerEmail,

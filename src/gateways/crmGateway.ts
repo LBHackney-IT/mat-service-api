@@ -80,11 +80,13 @@ type Headers = {
 };
 
 class CrmGateway implements CrmGatewayInterface {
+  baseUrl: string;
   crmTokenGateway: CrmTokenGatewayInterface;
   crmApiToken: string | undefined;
 
-  constructor() {
-    this.crmTokenGateway = new CrmTokenGateway();
+  constructor(baseUrl: string, crmTokenGateway: CrmTokenGatewayInterface) {
+    this.baseUrl = baseUrl;
+    this.crmTokenGateway = crmTokenGateway;
     this.crmApiToken = undefined;
   }
 
@@ -121,7 +123,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -148,7 +150,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -172,7 +174,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -200,7 +202,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -228,7 +230,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -268,7 +270,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .post(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers`,
+        `${this.baseUrl}/api/data/v8.2/hackney_estateofficers`,
         crmUser,
         this.headers()
       )
@@ -295,7 +297,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -323,7 +325,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get<CrmResponseInterface>(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -348,7 +350,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -376,7 +378,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get(
-        `${process.env.CRM_API_URL}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -404,7 +406,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get<GenericCrmResponse<CrmTenancy[]>>(
-        `${process.env.CRM_API_URL}/api/data/v8.2/accounts?fetchXml=${crmQuery}`,
+        `${this.baseUrl}/api/data/v8.2/accounts?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
@@ -428,7 +430,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     return await axios
       .get<CrmResponse>(
-        `${process.env.CRM_API_URL}/api/data/v8.2/contacts?$select=createdon&$top=1`,
+        `${this.baseUrl}/api/data/v8.2/contacts?$select=createdon&$top=1`,
         this.headers()
       )
       .then((response) => {

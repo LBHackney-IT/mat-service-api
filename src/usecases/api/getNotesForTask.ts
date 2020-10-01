@@ -1,4 +1,5 @@
 import CrmGateway from '../../gateways/crmGateway';
+import CrmTokenGateway from '../../gateways/crmTokenGateway';
 import Note from '../../interfaces/note';
 
 interface GetNotesForTaskResponse {
@@ -9,7 +10,11 @@ interface GetNotesForTaskResponse {
 const getNotesForTask = async (
   taskId: string
 ): Promise<GetNotesForTaskResponse> => {
-  const crmGateway = new CrmGateway();
+  const crmTokenGateway = new CrmTokenGateway();
+  const crmGateway = new CrmGateway(
+    `${process.env.CRM_API_URL}`,
+    crmTokenGateway
+  );
 
   const response = await crmGateway.getNotesForTask(taskId);
 

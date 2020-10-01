@@ -11,6 +11,7 @@ import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
+import CrmTokenGateway from '../../../gateways/crmTokenGateway';
 
 const postHandler = async (
   req: NextApiRequest,
@@ -25,7 +26,11 @@ const postHandler = async (
     v1MatApiToken: process.env.V1_MAT_API_TOKEN,
   });
 
-  const crmGateway = new CrmGateway();
+  const crmTokenGateway = new CrmTokenGateway();
+  const crmGateway = new CrmGateway(
+    `${process.env.CRM_API_URL}`,
+    crmTokenGateway
+  );
   const matPostgresGateway = new MatPostgresGateway();
 
   const createTask = new CreateManualTaskUseCase({
@@ -64,7 +69,11 @@ const getHandler = async (
   req: NextApiRequest,
   res: ApiResponse<TaskList>
 ): Promise<void> => {
-  const crmGateway = new CrmGateway();
+  const crmTokenGateway = new CrmTokenGateway();
+  const crmGateway = new CrmGateway(
+    `${process.env.CRM_API_URL}`,
+    crmTokenGateway
+  );
   const tag_ref = Array.isArray(req.query.tag_ref)
     ? req.query.tag_ref[0]
     : req.query.tag_ref;

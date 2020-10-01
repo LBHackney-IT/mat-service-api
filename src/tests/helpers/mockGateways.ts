@@ -1,7 +1,12 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { CrmTokenGatewayInterface } from '../../gateways/crmTokenGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import MockTenancy from './generateTenancy';
+
+export const mockCrmTokenGateway = (): CrmTokenGatewayInterface => ({
+  getToken: jest.fn(() => Promise.resolve('fakeToken')),
+});
 
 export const mockCrmGateway = (): CrmGatewayInterface => ({
   getTasksForAPatch: jest.fn(() => Promise.resolve({})),

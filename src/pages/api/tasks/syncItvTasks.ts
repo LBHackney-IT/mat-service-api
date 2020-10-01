@@ -4,6 +4,7 @@ import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
 import CrmGateway from '../../../gateways/crmGateway';
 import MatPostgresGateway from '../../../gateways/matPostgresGateway';
 import { isSuccess } from '../../../lib/utils';
+import CrmTokenGateway from '../../../gateways/crmTokenGateway';
 
 type Data = {
   result: string;
@@ -24,7 +25,11 @@ export default async (
       v1MatApiUrl: process.env.V1_MAT_API_URL,
       v1MatApiToken: process.env.V1_MAT_API_TOKEN,
     });
-    const crmGateway = new CrmGateway();
+    const crmTokenGateway = new CrmTokenGateway();
+    const crmGateway = new CrmGateway(
+      `${process.env.CRM_API_URL}`,
+      crmTokenGateway
+    );
     const matPostgresGateway = new MatPostgresGateway();
     const usecase = new CreateITVTasks({
       v1MatAPIGateway,

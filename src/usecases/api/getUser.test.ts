@@ -1,8 +1,17 @@
-import { crmGateway } from '../../gateways';
 import faker from 'faker';
-import GetUser from './getUser';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { mockCrmGateway } from '../../tests/helpers/mockGateways';
+import GetUser, { GetUserInterface } from './getUser';
 
 describe('GetUser', () => {
+  let crmGateway: CrmGatewayInterface;
+  let getUser: GetUserInterface;
+
+  beforeEach(() => {
+    crmGateway = mockCrmGateway();
+    getUser = new GetUser(crmGateway);
+  });
+
   it('returns 404 when no user exists', async () => {
     crmGateway.getUserId = () =>
       Promise.resolve({
@@ -12,8 +21,7 @@ describe('GetUser', () => {
 
     const emailAddress = faker.internet.email();
 
-    const getUser = new GetUser(emailAddress);
-    const response = await getUser.execute();
+    const response = await getUser.execute(emailAddress);
 
     expect(response).toEqual({ body: undefined, error: 404 });
   });
@@ -27,8 +35,7 @@ describe('GetUser', () => {
 
     const emailAddress = faker.internet.email();
 
-    const getUser = new GetUser(emailAddress);
-    const response = await getUser.execute();
+    const response = await getUser.execute(emailAddress);
 
     expect(response).toEqual({ body: undefined, error: 401 });
   });
@@ -42,8 +49,7 @@ describe('GetUser', () => {
 
     const emailAddress = faker.internet.email();
 
-    const getUser = new GetUser(emailAddress);
-    const response = await getUser.execute();
+    const response = await getUser.execute(emailAddress);
 
     expect(response).toEqual({ body: undefined, error: 500 });
   });
@@ -58,8 +64,7 @@ describe('GetUser', () => {
 
     const emailAddress = faker.internet.email();
 
-    const getUser = new GetUser(emailAddress);
-    const response = await getUser.execute();
+    const response = await getUser.execute(emailAddress);
 
     expect(response).toEqual({ body: crmUserGuid, error: undefined });
   });

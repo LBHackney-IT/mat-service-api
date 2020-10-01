@@ -1,5 +1,6 @@
 import CrmTokenGateway from './crmTokenGateway';
 import CrmGateway from './crmGateway';
+import MatPostgresGateway from './matPostgresGateway';
 
 // if (!process.env.CRM_TOKEN_API_URL) {
 //   throw new Error('Error: CRM_TOKEN_API_URL environment variable missing');
@@ -22,3 +23,5 @@ export const crmGateway = new CrmGateway(
   `${process.env.CRM_API_URL}`,
   crmTokenGateway
 );
+
+export const matPostgresGateway = new MatPostgresGateway();

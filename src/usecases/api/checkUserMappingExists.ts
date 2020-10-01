@@ -1,24 +1,25 @@
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 
 export interface CheckUserMappingExistsResponse {
   body: boolean;
   error: number | undefined;
 }
 
-interface CheckUserMappingExistsInterface {
-  execute(): Promise<CheckUserMappingExistsResponse>;
+export interface CheckUserMappingExistsInterface {
+  execute(emailAddress: string): Promise<CheckUserMappingExistsResponse>;
 }
 
 class CheckUserMappingExists implements CheckUserMappingExistsInterface {
-  emailAddress: string;
+  matPostgresGateway: MatPostgresGatewayInterface;
 
-  constructor(emailAddress: string) {
-    this.emailAddress = emailAddress;
+  constructor(matPostgresGateway: MatPostgresGatewayInterface) {
+    this.matPostgresGateway = matPostgresGateway;
   }
-  public async execute(): Promise<CheckUserMappingExistsResponse> {
-    const gateway = new MatPostgresGateway();
 
-    const result = await gateway.getUserMapping(this.emailAddress);
+  public async execute(
+    emailAddress: string
+  ): Promise<CheckUserMappingExistsResponse> {
+    const result = await this.matPostgresGateway.getUserMapping(emailAddress);
 
     if (result.error !== undefined) {
       return Promise.resolve({

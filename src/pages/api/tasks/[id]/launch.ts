@@ -1,5 +1,4 @@
 import GetExternalProcessUrlUseCase from '../../../../usecases/api/getExternalProcessUrl';
-import CrmGateway from '../../../../gateways/crmGateway';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import HackneyToken from '../../../../interfaces/hackneyToken';
 import MatPostgresGateway from '../../../../gateways/matPostgresGateway';

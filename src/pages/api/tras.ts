@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { crmGateway } from '../../gateways';
-import CrmTokenGateway from '../../gateways/crmTokenGateway';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import GetTRAs from '../../usecases/api/getTRAs';
 import { officerPatchAssociationInterface } from '../../usecases/api/getTRAs';

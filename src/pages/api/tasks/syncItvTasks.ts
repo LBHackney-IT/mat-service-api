@@ -1,11 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import CreateITVTasks from '../../../usecases/api/createITVTasks';
 import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
-import CrmGateway from '../../../gateways/crmGateway';
 import MatPostgresGateway from '../../../gateways/matPostgresGateway';
 import { isSuccess } from '../../../lib/utils';
-import CrmTokenGateway from '../../../gateways/crmTokenGateway';
-import { crmGateway } from '../../gateways';
+import { crmGateway } from '../../../gateways';
 
 type Data = {
   result: string;

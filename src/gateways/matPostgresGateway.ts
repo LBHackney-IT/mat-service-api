@@ -15,7 +15,7 @@ export interface MatPostgresGatewayInterface {
   healthCheck(): Promise<CheckResult>;
 }
 
-interface GetUserMappingResponse {
+export interface GetUserMappingResponse {
   body?: UserMappingTable;
   error?: number;
 }

@@ -1,26 +1,23 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { crmGateway } from '../../gateways';
 
 interface GetUserResponse {
   body?: string;
   error?: number;
 }
 
-interface GetUserInterface {
-  execute(): Promise<GetUserResponse>;
+export interface GetUserInterface {
+  execute(emailAddress: string): Promise<GetUserResponse>;
 }
 
 class GetUser implements GetUserInterface {
-  tasksGateway: CrmGatewayInterface;
-  emailAddress: string;
+  crmGateway: CrmGatewayInterface;
 
-  constructor(emailAddress: string) {
-    this.tasksGateway = crmGateway;
-    this.emailAddress = emailAddress;
+  constructor(crmGateway: CrmGatewayInterface) {
+    this.crmGateway = crmGateway;
   }
 
-  public async execute(): Promise<GetUserResponse> {
-    const response = await this.tasksGateway.getUserId(this.emailAddress);
+  public async execute(emailAddress: string): Promise<GetUserResponse> {
+    const response = await this.crmGateway.getUserId(emailAddress);
 
     switch (response.error) {
       case undefined:

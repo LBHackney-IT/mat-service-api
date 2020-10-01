@@ -3,7 +3,7 @@ import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
 import GetTasksForTagRef from '../../../usecases/api/getTasksForTagRef';
 import MatPostgresGateway from '../../../gateways/matPostgresGateway';
 import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
-import setupUser from '../../../usecases/api/setupUser';
+import { setupUser } from '../../../usecases/api';
 import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
 import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
@@ -79,7 +79,9 @@ const getHandler = async (
     }
   } else {
     // Ensure the user is correctly set up
-    const setupUserResult = await setupUser(<string>req.cookies.hackneyToken);
+    const setupUserResult = await setupUser.execute(
+      <string>req.cookies.hackneyToken
+    );
     if (setupUserResult.error) {
       return res.status(400).end();
     }

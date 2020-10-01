@@ -1,25 +1,25 @@
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import UserMapping from '../../interfaces/userMapping';
 
 interface CreateUserMappingResponse {
   error: number | undefined;
 }
 
-interface CreateUserMappingInterface {
-  execute(): Promise<CreateUserMappingResponse>;
+export interface CreateUserMappingInterface {
+  execute(userMapping: UserMapping): Promise<CreateUserMappingResponse>;
 }
 
 class CreateUserMapping implements CreateUserMappingInterface {
-  userMapping: UserMapping;
+  gateway: MatPostgresGatewayInterface;
 
-  constructor(userMapping: UserMapping) {
-    this.userMapping = userMapping;
+  constructor(gateway: MatPostgresGatewayInterface) {
+    this.gateway = gateway;
   }
 
-  public async execute(): Promise<CreateUserMappingResponse> {
-    const gateway = new MatPostgresGateway();
-
-    const result = await gateway.createUserMapping(this.userMapping);
+  public async execute(
+    userMapping: UserMapping
+  ): Promise<CreateUserMappingResponse> {
+    const result = await this.gateway.createUserMapping(userMapping);
 
     if (result.error === undefined) {
       return Promise.resolve({

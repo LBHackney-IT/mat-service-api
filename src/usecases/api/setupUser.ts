@@ -1,9 +1,10 @@
-import GetUser from './getUser';
-import CreateUserMapping from './createUserMapping';
+import { GetUserInterface } from './getUser';
+import { CreateUserMappingInterface } from './createUserMapping';
 import UserMapping from '../../interfaces/userMapping';
-import CheckUserMappingExists from './checkUserMappingExists';
-import CreateUser from './createUser';
+import { CheckUserMappingExistsInterface } from './checkUserMappingExists';
+import { createUser } from './';
 import jwt from 'jsonwebtoken';
+import { CreateUserInterface } from './createUser';
 
 interface SetupUserResponse {
   body?: boolean;
@@ -19,57 +20,79 @@ interface HackneyToken {
   iat: number;
 }
 
-export default async (
-  hackneyTokenString: string
-): Promise<SetupUserResponse> => {
-  try {
-    // Extract the user details
-    const hackneyToken = jwt.decode(hackneyTokenString) as HackneyToken;
-    if (!hackneyToken || !hackneyToken.email) return { error: 'Invalid token' };
+// TODO: Add test for this file
 
-    // Check if we already have a mapping for this user
-    const checkUserMappingExists = new CheckUserMappingExists(
-      hackneyToken.email
-    );
-    const existingUserMapping = await checkUserMappingExists.execute();
+interface SetupUserInterface {
+  execute(hackneyTokenString: string): Promise<SetupUserResponse>;
+}
 
-    if (existingUserMapping.body) {
-      return { body: undefined, error: undefined };
-    } else {
-      // Fetch the CRM user
-      const getUser = new GetUser(hackneyToken.email);
-      const response = await getUser.execute();
-      let crmUserGuid = response.body;
+export default class SetupUser implements SetupUserInterface {
+  createUserMappingUsecase: CreateUserMappingInterface;
+  checkUserMappingExistsUsecase: CheckUserMappingExistsInterface;
+  createUserUsecase: CreateUserInterface;
+  getUserUsecase: GetUserInterface;
 
-      // Create a new CRM user if they don't exist
-      if (!crmUserGuid) {
-        const splitName = hackneyToken.name.split(' ');
-        const user = {
-          fullName: hackneyToken.name,
-          firstName: splitName[0],
-          familyName: splitName[splitName.length - 1],
-          emailAddress: hackneyToken.email,
-        };
-        const createUser = new CreateUser(user);
-        const crmCreateResponse = await createUser.execute();
-        crmUserGuid = crmCreateResponse.body;
-        if (!crmUserGuid) return { error: 'Error creating CRM user' };
-      }
-
-      // Create the mapping in postgres
-      const userMapping: UserMapping = {
-        username: hackneyToken.name,
-        emailAddress: hackneyToken.email,
-        googleId: hackneyToken.sub.toString(),
-        usercrmid: crmUserGuid,
-      };
-      const createUserMapping = new CreateUserMapping(userMapping);
-      const createResponse = await createUserMapping.execute();
-      if (createResponse.error) return { error: 'Error creating user mapping' };
-
-      return { error: undefined };
-    }
-  } catch (e) {
-    return { error: e.message };
+  constructor(
+    createUserMappingUsecase: CreateUserMappingInterface,
+    checkUserMappingExistsUsecase: CheckUserMappingExistsInterface,
+    createUserUsecase: CreateUserInterface,
+    getUserUsecase: GetUserInterface
+  ) {
+    this.createUserMappingUsecase = createUserMappingUsecase;
+    this.checkUserMappingExistsUsecase = checkUserMappingExistsUsecase;
+    this.createUserUsecase = createUserUsecase;
+    this.getUserUsecase = getUserUsecase;
   }
-};
+
+  async execute(hackneyTokenString: string): Promise<SetupUserResponse> {
+    try {
+      // Extract the user details
+      const hackneyToken = jwt.decode(hackneyTokenString) as HackneyToken;
+      if (!hackneyToken || !hackneyToken.email)
+        return { error: 'Invalid token' };
+
+      // Check if we already have a mapping for this user
+      const existingUserMapping = await this.checkUserMappingExistsUsecase.execute(
+        hackneyToken.email
+      );
+
+      if (existingUserMapping.body) {
+        return { body: undefined, error: undefined };
+      } else {
+        // Fetch the CRM user
+        const response = await this.getUserUsecase.execute(hackneyToken.email);
+        let crmUserGuid = response.body;
+
+        // Create a new CRM user if they don't exist
+        if (!crmUserGuid) {
+          const splitName = hackneyToken.name.split(' ');
+          const crmCreateResponse = await createUser.execute(
+            hackneyToken.email,
+            hackneyToken.name,
+            splitName[0],
+            splitName[splitName.length - 1]
+          );
+          crmUserGuid = crmCreateResponse.body;
+          if (!crmUserGuid) return { error: 'Error creating CRM user' };
+        }
+
+        // Create the mapping in postgres
+        const userMapping: UserMapping = {
+          username: hackneyToken.name,
+          emailAddress: hackneyToken.email,
+          googleId: hackneyToken.sub.toString(),
+          usercrmid: crmUserGuid,
+        };
+        const createResponse = await this.createUserMappingUsecase.execute(
+          userMapping
+        );
+        if (createResponse.error)
+          return { error: 'Error creating user mapping' };
+
+        return { error: undefined };
+      }
+    } catch (e) {
+      return { error: e.message };
+    }
+  }
+}

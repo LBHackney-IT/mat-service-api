@@ -1,10 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import GetUser from '../../usecases/api/getUser';
+import { getUser } from '../../usecases/api';
 import GetOfficersPerArea from '../../usecases/api/getOfficersPerArea';
-import CrmGateway from '../../gateways/crmGateway';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
 import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import CrmTokenGateway from '../../gateways/crmTokenGateway';
 import { crmGateway } from '../../gateways';
 
 interface Data {
@@ -29,9 +27,7 @@ const doGet = async (
     : undefined;
 
   if (emailAddress !== undefined) {
-    const getUser = new GetUser(emailAddress);
-
-    const response = await getUser.execute();
+    const response = await getUser.execute(emailAddress);
 
     if (response.error === undefined) {
       res.status(200).json({ users: response.body });

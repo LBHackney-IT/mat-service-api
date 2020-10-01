@@ -4,6 +4,7 @@ import CreateUserMapping from './createUserMapping';
 import CheckUserMappingExists from './checkUserMappingExists';
 import GetUser from './getUser';
 import SetupUser from './setupUser';
+import GetExternalProcessUrl from './getExternalProcessUrl';
 
 export const createUser = new CreateUser(crmGateway);
 export const creatUserMapping = new CreateUserMapping(matPostgresGateway);
@@ -16,4 +17,9 @@ export const setupUser = new SetupUser(
   checkUserMappingExists,
   createUser,
   getUser
+);
+export const getExternalProcessUrl = new GetExternalProcessUrl(
+  `${process.env.PROCESS_TOKEN_ENCRYPTION_KEY}`,
+  crmGateway,
+  matPostgresGateway
 );

@@ -1,16 +1,18 @@
 import { NextApiRequest } from 'next';
 import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
 import GetTasksForTagRef from '../../../usecases/api/getTasksForTagRef';
-import MatPostgresGateway from '../../../gateways/matPostgresGateway';
 import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
 import { setupUser } from '../../../usecases/api';
-import { v1MatAPIGateway } from '../../../gateways';
 import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
-import { crmGateway, matPostgresGateway } from '../../../gateways';
+import {
+  crmGateway,
+  matPostgresGateway,
+  v1MatAPIGateway,
+} from '../../../gateways';
 
 const postHandler = async (
   req: NextApiRequest,

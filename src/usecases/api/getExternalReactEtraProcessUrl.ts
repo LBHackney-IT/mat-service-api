@@ -3,7 +3,6 @@ import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { Task } from '../../interfaces/task';
 import {
   GetExternalProcessUrlInterface,
-  GetExternalProcessUrlOptions,
   GetExternalProcessUrlResponse,
 } from './getExternalProcessUrl';
 
@@ -13,11 +12,14 @@ export default class GetExternalReactEtraProcessUrl
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  //TODO: use args not options
-  constructor(options: GetExternalProcessUrlOptions) {
-    this.encryptionKey = options.encryptionKey;
-    this.crmGateway = options.crmGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    encryptionKey: string,
+    crmGateway: CrmGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.encryptionKey = encryptionKey;
+    this.crmGateway = crmGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(

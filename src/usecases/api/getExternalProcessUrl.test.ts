@@ -18,11 +18,11 @@ describe('GetExternalProcessUrl', () => {
   beforeEach(() => {
     crmGateway = mockCrmGateway();
     matPostgresGateway = mockMatPostgresGateway();
-    useCase = new GetExternalProcessUrl({
+    useCase = new GetExternalProcessUrl(
       encryptionKey,
       crmGateway,
-      matPostgresGateway,
-    });
+      matPostgresGateway
+    );
   });
 
   it('should call the correct usecase for an angular task', async () => {

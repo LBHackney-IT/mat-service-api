@@ -33,13 +33,7 @@ interface CreateManualTaskResponse {
   error?: string;
 }
 
-interface CreateManualTaskOptions {
-  v1MatAPIGateway: V1MatAPIGatewayInterface;
-  crmGateway: CrmGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
-}
-
-interface CreateManualTaskInterface {
+export interface CreateManualTaskInterface {
   execute(processData: CreateManualTaskData): Promise<CreateManualTaskResponse>;
 }
 
@@ -56,11 +50,14 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  //TODO: use args not options
-  constructor(options: CreateManualTaskOptions) {
-    this.v1MatAPIGateway = options.v1MatAPIGateway;
-    this.crmGateway = options.crmGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    v1MatAPIGateway: V1MatAPIGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.v1MatAPIGateway = v1MatAPIGateway;
+    this.crmGateway = crmGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(
@@ -89,13 +86,14 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     }
     const contact = responsibleContacts[0];
 
-    const getOfficerPatchId = new GetOfficerPatch({
-      emailAddress: processData.officerEmail,
-      crmGateway: this.crmGateway,
-      matPostgresGateway: this.matPostgresGateway,
-    });
+    const getOfficerPatch = new GetOfficerPatch(
+      this.crmGateway,
+      this.matPostgresGateway
+    );
 
-    const officerDetails = await getOfficerPatchId.execute();
+    const officerDetails = await getOfficerPatch.execute(
+      processData.officerEmail
+    );
     if (
       !officerDetails.body ||
       officerDetails.error ||

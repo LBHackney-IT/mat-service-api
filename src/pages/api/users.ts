@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getOfficerPatch } from '../../usecases/api';
 import { getOfficersPerArea, getUser } from '../../usecases/api';
-import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
-import { crmGateway, matPostgresGateway } from '../../gateways';
 
 interface Data {
   users?: any;
@@ -36,12 +35,7 @@ const doGet = async (
   }
 
   if (managerEmail !== undefined) {
-    const getOfficerPatch = new GetOfficerPatch({
-      emailAddress: managerEmail,
-      crmGateway,
-      matPostgresGateway,
-    });
-    const officerPatch = await getOfficerPatch.execute();
+    const officerPatch = await getOfficerPatch.execute(managerEmail);
     if (
       !officerPatch ||
       !officerPatch.body ||

@@ -1,12 +1,7 @@
 import { NextApiRequest } from 'next';
-import SendTaskToOfficerUseCase from '../../../../usecases/api/sendTaskToOfficer';
+import { sendTaskToOfficer } from '../../../../usecases/api';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
-import {
-  crmGateway,
-  matPostgresGateway,
-  v1MatAPIGateway,
-} from '../../../../gateways';
 
 export default async (
   req: NextApiRequest,
@@ -28,11 +23,6 @@ export default async (
     return res.status(500).end();
   }
 
-  const sendTaskToOfficer = new SendTaskToOfficerUseCase(
-    crmGateway,
-    v1MatAPIGateway,
-    matPostgresGateway
-  );
   const response = await sendTaskToOfficer.execute(
     taskId,
     loggedInUser,

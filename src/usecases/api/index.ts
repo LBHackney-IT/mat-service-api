@@ -37,7 +37,7 @@ export const sendTaskToOfficer = new SendTaskToOfficerUseCase(
   v1MatAPIGateway,
   matPostgresGateway
 );
-export const SendTaskToManager = new SendTaskToManagerUseCase(
+export const sendTaskToManager = new SendTaskToManagerUseCase(
   crmGateway,
   v1MatAPIGateway,
   matPostgresGateway

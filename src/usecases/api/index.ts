@@ -20,6 +20,8 @@ import GetTasksForAPatch from './getTasksForAPatch';
 import GetTask from './getTask';
 import GetTRAs from './getTRAs';
 import CreateManualTaskUseCase from './createManualTask';
+import GetNotesForTask from './getNotesForTask';
+import GetOfficerPatch from './getOfficerPatch';
 
 export const createUser = new CreateUser(crmGateway);
 export const creatUserMapping = new CreateUserMapping(matPostgresGateway);
@@ -67,5 +69,10 @@ export const getTRAs = new GetTRAs(matPostgresGateway, crmGateway);
 export const createManualTask = new CreateManualTaskUseCase(
   crmGateway,
   v1MatAPIGateway,
+  matPostgresGateway
+);
+export const getNotesForTask = new GetNotesForTask(crmGateway);
+export const getOfficerPatch = new GetOfficerPatch(
+  crmGateway,
   matPostgresGateway
 );

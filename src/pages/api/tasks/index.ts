@@ -1,18 +1,12 @@
 import { NextApiRequest } from 'next';
 import { getTasksForAPatch } from '../../../usecases/api';
 import { getTasksForTagRef } from '../../../usecases/api';
-import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
-import { setupUser } from '../../../usecases/api';
 import { createManualTask } from '../../../usecases/api';
+import { getOfficerPatch, setupUser } from '../../../usecases/api';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
-import {
-  crmGateway,
-  matPostgresGateway,
-  v1MatAPIGateway,
-} from '../../../gateways';
 
 const postHandler = async (
   req: NextApiRequest,
@@ -77,13 +71,7 @@ const getHandler = async (
 
     const emailAddress = tokenPayload.email;
 
-    const getOfficerPatch = new GetOfficerPatch({
-      emailAddress,
-      crmGateway,
-      matPostgresGateway,
-    });
-
-    const officerPatch = await getOfficerPatch.execute();
+    const officerPatch = await getOfficerPatch.execute(emailAddress);
 
     if (!officerPatch || !officerPatch.body) return res.status(400).end();
 

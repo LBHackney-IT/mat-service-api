@@ -86,13 +86,14 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     }
     const contact = responsibleContacts[0];
 
-    const getOfficerPatchId = new GetOfficerPatch({
-      emailAddress: processData.officerEmail,
-      crmGateway: this.crmGateway,
-      matPostgresGateway: this.matPostgresGateway,
-    });
+    const getOfficerPatch = new GetOfficerPatch(
+      this.crmGateway,
+      this.matPostgresGateway
+    );
 
-    const officerDetails = await getOfficerPatchId.execute();
+    const officerDetails = await getOfficerPatch.execute(
+      processData.officerEmail
+    );
     if (
       !officerDetails.body ||
       officerDetails.error ||

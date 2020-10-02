@@ -1,6 +1,7 @@
 import { NextApiRequest } from 'next';
 import { ApiResponse, NoteList } from '../../../../interfaces/apiResponses';
 import { NewNote } from '../../../../interfaces/note';
+import { isSuccess } from '../../../../lib/utils';
 import { createNote } from '../../../../usecases/api';
 import { getNotesForTask } from '../../../../usecases/api';
 
@@ -42,10 +43,10 @@ export default async (
 
     const response = await createNote.execute(note);
 
-    if (response) {
+    if (isSuccess(response)) {
       res.status(204).end();
     } else {
-      res.status(500).end();
+      res.status(500).end({ error: response.message });
     }
   };
 

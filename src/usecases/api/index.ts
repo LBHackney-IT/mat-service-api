@@ -14,6 +14,7 @@ import GetExternalProcessUrl from './getExternalProcessUrl';
 import CloseTask from './closeTask';
 import CreateITVTasks from './createITVTasks';
 import CreateNote from './createNote';
+import GetTasksForTagRef from './getTasksForTagRef';
 
 export const createUser = new CreateUser(crmGateway);
 export const creatUserMapping = new CreateUserMapping(matPostgresGateway);
@@ -53,3 +54,5 @@ export const createITVTasks = new CreateITVTasks(
   crmGateway
 );
 export const createNote = new CreateNote(v1MatAPIGateway);
+
+export const getTasksForTagRef = new GetTasksForTagRef(crmGateway);

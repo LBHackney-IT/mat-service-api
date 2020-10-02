@@ -1,6 +1,6 @@
 import { NextApiRequest } from 'next';
 import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
-import GetTasksForTagRef from '../../../usecases/api/getTasksForTagRef';
+import { getTasksForTagRef } from '../../../usecases/api';
 import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
 import { setupUser } from '../../../usecases/api';
 import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
@@ -63,11 +63,7 @@ const getHandler = async (
     : req.query.tag_ref;
 
   if (req.query.tag_ref) {
-    const getTasks = new GetTasksForTagRef({
-      crmGateway,
-    });
-
-    const response = await getTasks.execute(tag_ref.replace('-', '/'));
+    const response = await getTasksForTagRef.execute(tag_ref.replace('-', '/'));
     if (response && response.body) {
       res.status(200).json({ tasks: response.body });
     } else if (response && response.error) {

@@ -6,37 +6,19 @@ interface GetOfficersPerAreaResponse {
   error?: number;
 }
 
-interface GetOfficersPerAreaOptions {
-  areaId: number;
-  crmGateway: CrmGatewayInterface;
-}
-
 interface GetOfficersPerAreaInterface {
-  execute(): Promise<GetOfficersPerAreaResponse>;
+  execute(areaId: number): Promise<GetOfficersPerAreaResponse>;
 }
 
-class GetOfficersPerArea implements GetOfficersPerAreaInterface {
-  areaId?: number;
+export default class GetOfficersPerArea implements GetOfficersPerAreaInterface {
   crmGateway: CrmGatewayInterface;
 
-  //TODO: use args not options
-  //TODO: pass arg to execute
-  constructor(options: GetOfficersPerAreaOptions) {
-    this.areaId = options.areaId;
-    this.crmGateway = options.crmGateway;
+  constructor(crmGateway: CrmGatewayInterface) {
+    this.crmGateway = crmGateway;
   }
 
-  public async execute(): Promise<GetOfficersPerAreaResponse> {
-    let officersResponse;
-
-    if (this.areaId !== undefined) {
-      officersResponse = await this.crmGateway.getOfficersByAreaId(this.areaId);
-    } else {
-      return {
-        body: undefined,
-        error: 404,
-      };
-    }
+  public async execute(areaId: number): Promise<GetOfficersPerAreaResponse> {
+    const officersResponse = await this.crmGateway.getOfficersByAreaId(areaId);
 
     switch (officersResponse.error) {
       case undefined:
@@ -57,5 +39,3 @@ class GetOfficersPerArea implements GetOfficersPerAreaInterface {
     }
   }
 }
-
-export default GetOfficersPerArea;

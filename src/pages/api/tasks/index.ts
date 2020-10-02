@@ -1,6 +1,6 @@
 import { NextApiRequest } from 'next';
-import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
-import GetTasksForTagRef from '../../../usecases/api/getTasksForTagRef';
+import { getTasksForAPatch } from '../../../usecases/api';
+import { getTasksForTagRef } from '../../../usecases/api';
 import { getOfficerPatch, setupUser } from '../../../usecases/api';
 import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
@@ -62,11 +62,7 @@ const getHandler = async (
     : req.query.tag_ref;
 
   if (req.query.tag_ref) {
-    const getTasks = new GetTasksForTagRef({
-      crmGateway,
-    });
-
-    const response = await getTasks.execute(tag_ref.replace('-', '/'));
+    const response = await getTasksForTagRef.execute(tag_ref.replace('-', '/'));
     if (response && response.body) {
       res.status(200).json({ tasks: response.body });
     } else if (response && response.error) {
@@ -100,10 +96,7 @@ const getHandler = async (
       const isManager = officerPatchDetails.isManager;
       const areaManagerId = officerPatchDetails.areaManagerId || ''; //crm query will handle officer/manager queries
 
-      const getTasks = new GetTasksForAPatch({
-        crmGateway,
-      });
-      const response = await getTasks.execute(
+      const response = await getTasksForAPatch.execute(
         isManager,
         areaManagerId,
         patchId

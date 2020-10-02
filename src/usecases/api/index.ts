@@ -14,6 +14,12 @@ import GetExternalProcessUrl from './getExternalProcessUrl';
 import CloseTask from './closeTask';
 import CreateITVTasks from './createITVTasks';
 import CreateNote from './createNote';
+import GetTasksForTagRef from './getTasksForTagRef';
+import GetOfficersPerArea from './getOfficersPerArea';
+import GetTasksForAPatch from './getTasksForAPatch';
+import GetTask from './getTask';
+import GetTRAs from './getTRAs';
+import GetNotesForTask from './getNotesForTask';
 import GetOfficerPatch from './getOfficerPatch';
 
 export const createUser = new CreateUser(crmGateway);
@@ -54,6 +60,12 @@ export const createITVTasks = new CreateITVTasks(
   crmGateway
 );
 export const createNote = new CreateNote(v1MatAPIGateway);
+export const getTasksForTagRef = new GetTasksForTagRef(crmGateway);
+export const getOfficersPerArea = new GetOfficersPerArea(crmGateway);
+export const getTasksForAPatch = new GetTasksForAPatch(crmGateway);
+export const getTask = new GetTask(crmGateway);
+export const getTRAs = new GetTRAs(matPostgresGateway, crmGateway);
+export const getNotesForTask = new GetNotesForTask(crmGateway);
 export const getOfficerPatch = new GetOfficerPatch(
   crmGateway,
   matPostgresGateway

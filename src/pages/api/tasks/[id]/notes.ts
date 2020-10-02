@@ -2,7 +2,7 @@ import { NextApiRequest } from 'next';
 import { ApiResponse, NoteList } from '../../../../interfaces/apiResponses';
 import { NewNote } from '../../../../interfaces/note';
 import { createNote } from '../../../../usecases/api';
-import getNotesForTask from '../../../../usecases/api/getNotesForTask';
+import { getNotesForTask } from '../../../../usecases/api';
 
 export default async (
   req: NextApiRequest,
@@ -19,7 +19,7 @@ export default async (
       : undefined;
 
     if (id !== undefined) {
-      const response = await getNotesForTask(id);
+      const response = await getNotesForTask.execute(id);
 
       if (response.body) {
         res.status(200).json({ notes: response.body });

@@ -6,20 +6,15 @@ interface GetTasksResponse {
   error?: number;
 }
 
-interface GetTasksForTagRefOptions {
-  crmGateway: CrmGatewayInterface;
-}
-
-interface GetTasksInterface {
+export interface GetTasksInterface {
   execute(tagRef: string): Promise<GetTasksResponse>;
 }
 
 class GetTasksForTagRef implements GetTasksInterface {
   crmGateway: CrmGatewayInterface;
 
-  //TODO: use args not options
-  constructor(options: GetTasksForTagRefOptions) {
-    this.crmGateway = options.crmGateway;
+  constructor(crmGateway: CrmGatewayInterface) {
+    this.crmGateway = crmGateway;
   }
   public async execute(tagRef: string): Promise<GetTasksResponse> {
     const response = await this.crmGateway.getTasksForTagRef(tagRef);

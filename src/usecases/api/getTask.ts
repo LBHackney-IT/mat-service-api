@@ -1,46 +1,32 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { Task } from '../../interfaces/task';
-import { crmGateway } from '../../gateways';
 
 interface GetTaskResponse {
-  body: Task | undefined;
-  error: number | undefined;
+  body?: Task;
+  error?: number;
 }
 
-interface GetTaskInterface {
-  execute(): Promise<GetTaskResponse>;
+export interface GetTaskInterface {
+  execute(taskId: string): Promise<GetTaskResponse>;
 }
 
 class GetTask implements GetTaskInterface {
   crmGateway: CrmGatewayInterface;
-  taskId: string;
 
-  //TODO: use args not options
-  //TODO: pass arg to execute
-  constructor(taskId: string) {
+  constructor(crmGateway: CrmGatewayInterface) {
     this.crmGateway = crmGateway;
-    this.taskId = taskId;
   }
 
-  public async execute(): Promise<GetTaskResponse> {
-    const response = await this.crmGateway.getTask(this.taskId);
+  public async execute(taskId: string): Promise<GetTaskResponse> {
+    const response = await this.crmGateway.getTask(taskId);
 
     switch (response.error) {
       case undefined:
-        return {
-          body: response.body,
-          error: undefined,
-        };
+        return { body: response.body };
       case 'NotAuthorised':
-        return {
-          body: undefined,
-          error: 401,
-        };
+        return { error: 401 };
       default:
-        return {
-          body: undefined,
-          error: 500,
-        };
+        return { error: 500 };
     }
   }
 }

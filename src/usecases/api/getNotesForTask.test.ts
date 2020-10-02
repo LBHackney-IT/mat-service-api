@@ -1,21 +1,29 @@
-import { crmGateway } from '../../gateways';
 import { crmToNotes } from '../../mappings/crmToNotes';
 import MockCrmNoteResponse from '../../tests/helpers/generateCrmNoteResponse';
 import faker from 'faker';
-import getNotesForTask from './getNotesForTask';
+import GetNotesForTask, { GetNotesForTaskInterface } from './getNotesForTask';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { mockCrmGateway } from '../../tests/helpers/mockGateways';
 
 describe('GetNotesForTask', () => {
+  let crmGateway: CrmGatewayInterface;
+  let getNotesForTask: GetNotesForTaskInterface;
+
+  beforeEach(() => {
+    crmGateway = mockCrmGateway();
+    getNotesForTask = new GetNotesForTask(crmGateway);
+  });
+
   it('Returns a response when no errors are found', async () => {
     const mockResponse = crmToNotes(MockCrmNoteResponse());
 
     crmGateway.getNotesForTask = () =>
       Promise.resolve({
         body: mockResponse,
-        error: undefined,
       });
 
     const taskId = faker.lorem.word();
-    const response = await getNotesForTask(taskId);
+    const response = await getNotesForTask.execute(taskId);
 
     expect(response).toEqual({ body: mockResponse, error: undefined });
   });
@@ -29,9 +37,9 @@ describe('GetNotesForTask', () => {
 
     const taskId = faker.lorem.word();
 
-    const response = await getNotesForTask(taskId);
+    const response = await getNotesForTask.execute(taskId);
 
-    expect(response).toEqual({ body: undefined, error: 500 });
+    expect(response).toEqual({ error: 500 });
   });
 
   it('Returns a 401 error when errors is NotAuthorised', async () => {
@@ -43,8 +51,8 @@ describe('GetNotesForTask', () => {
 
     const taskId = faker.lorem.word();
 
-    const response = await getNotesForTask(taskId);
+    const response = await getNotesForTask.execute(taskId);
 
-    expect(response).toEqual({ body: undefined, error: 401 });
+    expect(response).toEqual({ error: 401 });
   });
 });

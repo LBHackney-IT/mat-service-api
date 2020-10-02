@@ -35,7 +35,7 @@ describe('GetTRAs', () => {
     crmGateway = mockCrmGateway();
     matPostgresGateway = mockMatPostgresGateway();
 
-    getTRAs = new GetTRAs({ crmGateway, matPostgresGateway });
+    getTRAs = new GetTRAs(matPostgresGateway, crmGateway);
   });
 
   it('Returns a response when no errors are found', async () => {

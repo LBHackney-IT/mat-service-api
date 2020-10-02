@@ -5,6 +5,7 @@ import { CheckUserMappingExistsInterface } from './checkUserMappingExists';
 import { createUser } from './';
 import jwt from 'jsonwebtoken';
 import { CreateUserInterface } from './createUser';
+import { isSuccess } from '../../lib/utils';
 
 interface SetupUserResponse {
   body?: boolean;
@@ -56,7 +57,7 @@ export default class SetupUser implements SetupUserInterface {
         hackneyToken.email
       );
 
-      if (existingUserMapping.body) {
+      if (isSuccess(existingUserMapping)) {
         return { body: undefined, error: undefined };
       } else {
         // Fetch the CRM user

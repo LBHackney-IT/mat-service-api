@@ -13,7 +13,6 @@ export interface GetTasksInterface {
 class GetTasksForTagRef implements GetTasksInterface {
   crmGateway: CrmGatewayInterface;
 
-  //TODO: use args not options
   constructor(crmGateway: CrmGatewayInterface) {
     this.crmGateway = crmGateway;
   }

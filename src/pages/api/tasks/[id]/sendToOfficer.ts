@@ -28,11 +28,11 @@ export default async (
     return res.status(500).end();
   }
 
-  const sendTaskToOfficer = new SendTaskToOfficerUseCase({
-    v1ApiGateway: v1MatAPIGateway,
+  const sendTaskToOfficer = new SendTaskToOfficerUseCase(
     crmGateway,
-    matPostgresGateway,
-  });
+    v1MatAPIGateway,
+    matPostgresGateway
+  );
   const response = await sendTaskToOfficer.execute(
     taskId,
     loggedInUser,

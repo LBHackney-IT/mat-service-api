@@ -1,7 +1,11 @@
 import { Task } from '../../interfaces/task';
 import MockTask from '../../tests/helpers/generateTask';
-import GetTasksForAPatch from './getTasksForAPatch';
+import GetTasksForAPatch, {
+  GetTasksForAPatchInterface,
+} from './getTasksForAPatch';
 import faker from 'faker';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { mockCrmGateway } from '../../tests/helpers/mockGateways';
 
 jest.mock('../../gateways/crmGateway');
 
@@ -13,8 +17,8 @@ describe('GetTasks', () => {
   let isManager: boolean;
   let getTasksForAPatch: any;
   let mockTasks: Task[];
-  let crmGateway: object;
-  let getTasks: GetTasksForAPatch;
+  let crmGateway: CrmGatewayInterface;
+  let getTasks: GetTasksForAPatchInterface;
 
   beforeEach(() => {
     mockTasks = [MockTask(), MockTask()];
@@ -26,45 +30,42 @@ describe('GetTasks', () => {
       error: undefined,
     }));
 
-    crmGateway = {
-      getPatchByOfficerId: <jest.Mock>dummyMock,
-      getTasksForAPatch: <jest.Mock>getTasksForAPatch,
-      getTask: <jest.Mock>dummyMock,
-      getUser: <jest.Mock>dummyMock,
-      createUser: <jest.Mock>dummyMock,
-    };
-    getTasks = new GetTasksForAPatch({
-      crmGateway,
-    });
+    crmGateway = mockCrmGateway();
+    getTasks = new GetTasksForAPatch(crmGateway);
   });
 
   it('Returns a list of tasks when no errors are found', async () => {
+    crmGateway.getTasksForAPatch = () =>
+      Promise.resolve({
+        body: mockTasks,
+        error: undefined,
+      });
+
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
-    expect(getTasksForAPatch).toHaveBeenCalledTimes(1);
-    expect(getTasksForAPatch).toHaveBeenCalledWith(
-      isManager,
-      areaManagerId,
-      patchId
-    );
     expect(response.body).toEqual(mockTasks);
   });
 
   it('Returns a empty list when tasks are not found', async () => {
     mockTasks = [];
 
+    crmGateway.getTasksForAPatch = () =>
+      Promise.resolve({
+        body: [],
+        error: undefined,
+      });
+
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
-    expect(getTasksForAPatch).toHaveBeenCalledTimes(1);
     expect(response.body).toEqual(mockTasks);
   });
 
   it('Returns the error when errors are found', async () => {
-    crmGateway.getTasksForAPatch = jest.fn((async) => ({
-      body: undefined,
-      error: 'NotAuthorised',
-    }));
+    crmGateway.getTasksForAPatch = () =>
+      Promise.resolve({
+        body: undefined,
+        error: 'NotAuthorised',
+      });
 
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
-    expect(crmGateway.getTasksForAPatch).toHaveBeenCalledTimes(1);
     expect(response.error).toEqual('NotAuthorised');
   });
 });

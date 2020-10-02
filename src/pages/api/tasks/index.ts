@@ -1,5 +1,5 @@
 import { NextApiRequest } from 'next';
-import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
+import { getTasksForAPatch } from '../../../usecases/api';
 import { getTasksForTagRef } from '../../../usecases/api';
 import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
 import { setupUser } from '../../../usecases/api';
@@ -103,10 +103,7 @@ const getHandler = async (
       const isManager = officerPatchDetails.isManager;
       const areaManagerId = officerPatchDetails.areaManagerId || ''; //crm query will handle officer/manager queries
 
-      const getTasks = new GetTasksForAPatch({
-        crmGateway,
-      });
-      const response = await getTasks.execute(
+      const response = await getTasksForAPatch.execute(
         isManager,
         areaManagerId,
         patchId

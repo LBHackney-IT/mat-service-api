@@ -19,6 +19,7 @@ import GetOfficersPerArea from './getOfficersPerArea';
 import GetTasksForAPatch from './getTasksForAPatch';
 import GetTask from './getTask';
 import GetTRAs from './getTRAs';
+import CreateManualTaskUseCase from './createManualTask';
 
 export const createUser = new CreateUser(crmGateway);
 export const creatUserMapping = new CreateUserMapping(matPostgresGateway);
@@ -63,3 +64,8 @@ export const getOfficersPerArea = new GetOfficersPerArea(crmGateway);
 export const getTasksForAPatch = new GetTasksForAPatch(crmGateway);
 export const getTask = new GetTask(crmGateway);
 export const getTRAs = new GetTRAs(matPostgresGateway, crmGateway);
+export const createManualTask = new CreateManualTaskUseCase(
+  crmGateway,
+  v1MatAPIGateway,
+  matPostgresGateway
+);

@@ -3,7 +3,7 @@ import { getTasksForAPatch } from '../../../usecases/api';
 import { getTasksForTagRef } from '../../../usecases/api';
 import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
 import { setupUser } from '../../../usecases/api';
-import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
+import { createManualTask } from '../../../usecases/api';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
@@ -22,12 +22,6 @@ const postHandler = async (
     return res.status(500).end();
   }
 
-  const createTask = new CreateManualTaskUseCase({
-    v1MatAPIGateway,
-    crmGateway,
-    matPostgresGateway,
-  });
-
   const userToken = getTokenPayloadFromRequest(req);
   if (!userToken) {
     return res.status(500).json({ error: 'could not find user token' });
@@ -36,7 +30,7 @@ const postHandler = async (
   if (!body.processType || !body.tagRef) {
     return res.status(400).json({ error: 'invalid request' });
   }
-  const result = await createTask.execute({
+  const result = await createManualTask.execute({
     process: body.processType,
     subProcess: body.subProcess,
     tagRef: body.tagRef,

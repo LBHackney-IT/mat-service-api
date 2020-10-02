@@ -33,13 +33,7 @@ interface CreateManualTaskResponse {
   error?: string;
 }
 
-interface CreateManualTaskOptions {
-  v1MatAPIGateway: V1MatAPIGatewayInterface;
-  crmGateway: CrmGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
-}
-
-interface CreateManualTaskInterface {
+export interface CreateManualTaskInterface {
   execute(processData: CreateManualTaskData): Promise<CreateManualTaskResponse>;
 }
 
@@ -56,11 +50,14 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  //TODO: use args not options
-  constructor(options: CreateManualTaskOptions) {
-    this.v1MatAPIGateway = options.v1MatAPIGateway;
-    this.crmGateway = options.crmGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    v1MatAPIGateway: V1MatAPIGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.v1MatAPIGateway = v1MatAPIGateway;
+    this.crmGateway = crmGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(

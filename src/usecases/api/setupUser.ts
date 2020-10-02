@@ -5,7 +5,7 @@ import { CheckUserMappingExistsInterface } from './checkUserMappingExists';
 import { createUser } from './';
 import jwt from 'jsonwebtoken';
 import { CreateUserInterface } from './createUser';
-import { isSuccess } from '../../lib/utils';
+import { isError, isSuccess } from '../../lib/utils';
 
 interface SetupUserResponse {
   body?: boolean;
@@ -73,8 +73,10 @@ export default class SetupUser implements SetupUserInterface {
             splitName[0],
             splitName[splitName.length - 1]
           );
-          crmUserGuid = crmCreateResponse.body;
-          if (!crmUserGuid) return { error: 'Error creating CRM user' };
+          if (isError(crmCreateResponse)) {
+            return { error: 'Error creating CRM user' };
+          }
+          crmUserGuid = crmCreateResponse;
         }
 
         // Create the mapping in postgres

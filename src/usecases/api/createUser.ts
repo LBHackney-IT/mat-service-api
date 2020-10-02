@@ -1,9 +1,5 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-
-interface CreateUserResponse {
-  body?: string;
-  error?: number;
-}
+import { Result } from '../../lib/utils';
 
 export interface CreateUserInterface {
   execute(
@@ -11,7 +7,7 @@ export interface CreateUserInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<CreateUserResponse>;
+  ): Promise<Result<string>>;
 }
 
 class CreateUser implements CreateUserInterface {
@@ -26,7 +22,7 @@ class CreateUser implements CreateUserInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<CreateUserResponse> {
+  ): Promise<Result<string>> {
     const response = await this.crmGateway.createUser(
       emailAddress,
       fullName,
@@ -34,20 +30,8 @@ class CreateUser implements CreateUserInterface {
       familyName
     );
 
-    switch (response.error) {
-      case undefined:
-        return {
-          body: response.body,
-        };
-      case 'NotAuthorised':
-        return {
-          error: 401,
-        };
-      default:
-        return {
-          error: 500,
-        };
-    }
+    if (response.body) return response.body;
+    return new Error(response.error);
   }
 }
 

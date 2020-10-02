@@ -2,6 +2,7 @@ import { mockCrmGateway } from '../../tests/helpers/mockGateways';
 import faker from 'faker';
 import CreateUser from './createUser';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { isError } from '../../lib/utils';
 
 describe('createUser', () => {
   let crmGateway: CrmGatewayInterface;
@@ -29,6 +30,28 @@ describe('createUser', () => {
       familyName
     );
 
-    expect(response).toEqual({ body: crmId, error: undefined });
+    expect(response).toEqual(crmId);
+  });
+
+  it('Returns an error if the creation was unsuccessful', async () => {
+    const crmId = faker.lorem.word();
+    crmGateway.createUser = () =>
+      Promise.resolve({
+        error: 'ERROR',
+      });
+
+    const firstName = faker.name.firstName();
+    const familyName = faker.name.lastName();
+
+    const createUser = new CreateUser(crmGateway);
+    const response = await createUser.execute(
+      faker.internet.email(),
+      `${firstName} ${familyName}`,
+      firstName,
+      familyName
+    );
+
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('ERROR');
   });
 });

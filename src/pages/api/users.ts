@@ -1,9 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import GetUser from '../../usecases/api/getUser';
-import GetOfficersPerArea from '../../usecases/api/getOfficersPerArea';
-import CrmGateway from '../../gateways/crmGateway';
-import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
+import { getOfficerPatch } from '../../usecases/api';
+import { getOfficersPerArea, getUser } from '../../usecases/api';
 
 interface Data {
   users?: any;
@@ -27,9 +24,7 @@ const doGet = async (
     : undefined;
 
   if (emailAddress !== undefined) {
-    const getUser = new GetUser(emailAddress);
-
-    const response = await getUser.execute();
+    const response = await getUser.execute(emailAddress);
 
     if (response.error === undefined) {
       res.status(200).json({ users: response.body });
@@ -40,14 +35,7 @@ const doGet = async (
   }
 
   if (managerEmail !== undefined) {
-    const crmGateway = new CrmGateway();
-    const matPostgresGateway = new MatPostgresGateway();
-    const getOfficerPatch = new GetOfficerPatch({
-      emailAddress: managerEmail,
-      crmGateway,
-      matPostgresGateway,
-    });
-    const officerPatch = await getOfficerPatch.execute();
+    const officerPatch = await getOfficerPatch.execute(managerEmail);
     if (
       !officerPatch ||
       !officerPatch.body ||
@@ -56,11 +44,7 @@ const doGet = async (
       return res.status(500).json({ error: 'Error fetching officer patch id' });
     }
 
-    const allOfficers = new GetOfficersPerArea({
-      areaId: officerPatch.body.areaId,
-      crmGateway,
-    });
-    const response = await allOfficers.execute();
+    const response = await getOfficersPerArea.execute(officerPatch.body.areaId);
 
     if (response.error === undefined) {
       return res.status(200).json({ users: response.body });

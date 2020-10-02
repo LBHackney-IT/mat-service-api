@@ -1,5 +1,5 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 
@@ -7,25 +7,24 @@ interface CloseTaskResponse {
   body?: boolean;
   error?: string;
 }
-interface CloseTaskOptions {
-  crmGateway: CrmGatewayInterface;
-  v1ApiGateway: v1MatAPIGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
-}
 
-interface CloseTaskInterface {
+export interface CloseTaskInterface {
   execute(taskId: string, userEmail: string): Promise<CloseTaskResponse>;
 }
 
 class CloseTaskUseCase implements CloseTaskInterface {
   crmGateway: CrmGatewayInterface;
-  v1ApiGateway: v1MatAPIGatewayInterface;
+  v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  constructor(options: CloseTaskOptions) {
-    this.crmGateway = options.crmGateway;
-    this.v1ApiGateway = options.v1ApiGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    v1ApiGateway: V1MatAPIGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.crmGateway = crmGateway;
+    this.v1ApiGateway = v1ApiGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(
@@ -70,7 +69,7 @@ class CloseTaskUseCase implements CloseTaskInterface {
       };
     } else {
       return {
-        error: 'Problem assigning task to manager',
+        error: 'Unknown error closing task',
       };
     }
   }

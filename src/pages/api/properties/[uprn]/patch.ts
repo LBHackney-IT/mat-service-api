@@ -1,5 +1,5 @@
 import { NextApiRequest } from 'next';
-import CrmGateway from '../../../../gateways/crmGateway';
+import { crmGateway } from '../../../../gateways';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
 import { PropertyPatchDetails } from '../../../../interfaces/propertyPatchDetails';
 
@@ -18,9 +18,7 @@ export default async (
     return res.status(500).end();
   }
 
-  const crm = new CrmGateway();
-
-  const response = await crm.getPropertyPatch(uprn);
+  const response = await crmGateway.getPropertyPatch(uprn);
 
   if (response.body) {
     res.status(200).json(response.body);

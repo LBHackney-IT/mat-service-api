@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import CrmTokenGateway from '../../gateways/crmTokenGateway';
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
-import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
-import CrmGateway from '../../gateways/crmGateway';
 import { isSuccess } from '../../lib/utils';
+import {
+  crmTokenGateway,
+  crmGateway,
+  v1MatAPIGateway,
+  matPostgresGateway,
+} from '../../gateways';
 
 type Data = {
   result: string;
@@ -104,7 +106,6 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
 
 const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
   const checkPromise = new Promise((resolve, reject) => {
-    const crmTokenGateway = new CrmTokenGateway();
     const response = crmTokenGateway.getToken();
     isSuccess(response) ? resolve() : reject();
   });
@@ -121,13 +122,11 @@ const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
 };
 
 const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
-  const crmGateway = new CrmGateway();
   return crmGateway.healthCheck();
 };
 
 const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {
-  const gateway = new MatPostgresGateway();
-  return gateway.healthCheck();
+  return matPostgresGateway.healthCheck();
 };
 
 const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
@@ -137,11 +136,8 @@ const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
       message: `MaT API env vars not configured`,
     };
   }
-  const gateway = new v1MatAPIGateway({
-    v1MatApiUrl: process.env.V1_MAT_API_URL,
-    v1MatApiToken: process.env.V1_MAT_API_TOKEN,
-  });
-  return gateway.healthCheck();
+
+  return v1MatAPIGateway.healthCheck();
 };
 
 const checks = [

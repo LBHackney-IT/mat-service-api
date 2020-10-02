@@ -1,9 +1,8 @@
 import { NextApiRequest } from 'next';
-import v1MatAPIGateway from '../../../../gateways/v1MatAPIGateway';
 import { ApiResponse, NoteList } from '../../../../interfaces/apiResponses';
 import { NewNote } from '../../../../interfaces/note';
-import CreateTaskNote from '../../../../usecases/api/createNote';
-import getNotesForTask from '../../../../usecases/api/getNotesForTask';
+import { createNote } from '../../../../usecases/api';
+import { getNotesForTask } from '../../../../usecases/api';
 
 export default async (
   req: NextApiRequest,
@@ -20,7 +19,7 @@ export default async (
       : undefined;
 
     if (id !== undefined) {
-      const response = await getNotesForTask(id);
+      const response = await getNotesForTask.execute(id);
 
       if (response.body) {
         res.status(200).json({ notes: response.body });
@@ -39,15 +38,9 @@ export default async (
       return res.status(500).end();
     }
 
-    const gateway: v1MatAPIGateway = new v1MatAPIGateway({
-      v1MatApiUrl: process.env.V1_MAT_API_URL,
-      v1MatApiToken: process.env.V1_MAT_API_TOKEN,
-    });
-
     const note = req.body as NewNote;
-    const createTaskNote = new CreateTaskNote({ gateway: gateway });
 
-    const response = await createTaskNote.execute(note);
+    const response = await createNote.execute(note);
 
     if (response) {
       res.status(204).end();

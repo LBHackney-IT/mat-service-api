@@ -11,17 +11,22 @@ export interface CrmTokenGatewayInterface {
 }
 
 export default class CrmTokenGateway implements CrmTokenGatewayInterface {
+  crmTokenApiUrl: string;
+  crmTokenApiKey: string;
+
+  constructor(crmTokenApiUrl: string, crmTokenApiKey: string) {
+    this.crmTokenApiKey = crmTokenApiKey;
+    this.crmTokenApiUrl = crmTokenApiUrl;
+  }
+
   public async getToken(): Promise<Result<string>> {
-    if (!process.env.CRM_TOKEN_API_URL || !process.env.CRM_TOKEN_API_KEY) {
-      return new Error('CRM token gateway configuration not set');
-    }
     return axios
       .post<GetTokenResponse>(
-        process.env.CRM_TOKEN_API_URL,
+        this.crmTokenApiUrl,
         {},
         {
           headers: {
-            'x-api-key': process.env.CRM_TOKEN_API_KEY,
+            'x-api-key': this.crmTokenApiKey,
           },
         }
       )

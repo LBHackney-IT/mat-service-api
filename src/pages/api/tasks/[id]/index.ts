@@ -1,7 +1,7 @@
 import { NextApiRequest } from 'next';
-import GetTask from '../../../../usecases/api/getTask';
 import { Task } from '../../../../interfaces/task';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
+import { getTask } from '../../../../usecases/api';
 
 export default async (
   req: NextApiRequest,
@@ -14,8 +14,7 @@ export default async (
     : undefined;
 
   if (id !== undefined) {
-    const getTask = new GetTask(id);
-    const response = await getTask.execute();
+    const response = await getTask.execute(id);
 
     if (response.body) {
       res.status(200).json(response.body);

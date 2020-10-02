@@ -1,39 +1,37 @@
-import CrmGateway, { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 
 interface CreateUserResponse {
   body?: string;
   error?: number;
 }
 
-interface CreateUserInterface {
-  execute(): Promise<CreateUserResponse>;
+export interface CreateUserInterface {
+  execute(
+    emailAddress: string,
+    fullName: string,
+    firstName: string,
+    familyName: string
+  ): Promise<CreateUserResponse>;
 }
 
 class CreateUser implements CreateUserInterface {
-  tasksGateway: CrmGatewayInterface;
-  user: {
-    emailAddress: string;
-    fullName: string;
-    firstName: string;
-    familyName: string;
-  };
+  crmGateway: CrmGatewayInterface;
 
-  constructor(user: {
-    emailAddress: string;
-    fullName: string;
-    firstName: string;
-    familyName: string;
-  }) {
-    this.tasksGateway = new CrmGateway();
-    this.user = user;
+  constructor(crmGateway: CrmGatewayInterface) {
+    this.crmGateway = crmGateway;
   }
 
-  public async execute(): Promise<CreateUserResponse> {
-    const response = await this.tasksGateway.createUser(
-      this.user.emailAddress,
-      this.user.fullName,
-      this.user.firstName,
-      this.user.familyName
+  public async execute(
+    emailAddress: string,
+    fullName: string,
+    firstName: string,
+    familyName: string
+  ): Promise<CreateUserResponse> {
+    const response = await this.crmGateway.createUser(
+      emailAddress,
+      fullName,
+      firstName,
+      familyName
     );
 
     switch (response.error) {

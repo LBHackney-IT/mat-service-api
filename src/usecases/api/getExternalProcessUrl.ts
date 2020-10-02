@@ -31,27 +31,27 @@ export interface GetExternalProcessUrlInterface {
   ): Promise<GetExternalProcessUrlResponse>;
 }
 
-export interface GetExternalProcessUrlOptions {
+export default class GetExternalProcessUrlUseCase
+  implements GetExternalProcessUrlInterface {
   encryptionKey: string;
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
-}
 
-export default class GetExternalProcessUrlUseCase
-  implements GetExternalProcessUrlInterface {
-  options: GetExternalProcessUrlOptions;
-
-  constructor(options: GetExternalProcessUrlOptions) {
-    this.options = options;
+  constructor(
+    encryptionKey: string,
+    crmGateway: CrmGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.encryptionKey = encryptionKey;
+    this.crmGateway = crmGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   async execute(
     taskId: string,
     officerEmail: string
   ): Promise<GetExternalProcessUrlResponse> {
-    const task: Task | undefined = (
-      await this.options.crmGateway.getTask(taskId)
-    ).body;
+    const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
     if (!task) return { error: 'Could not load task from crm' };
     if (!task.processType) {
       return { error: 'Task does not have a process type' };
@@ -61,11 +61,23 @@ export default class GetExternalProcessUrlUseCase
 
     let useCase;
     if (type === ProcessAppType.angular) {
-      useCase = new GetExternalAngularProcessUrl(this.options);
+      useCase = new GetExternalAngularProcessUrl(
+        this.encryptionKey,
+        this.crmGateway,
+        this.matPostgresGateway
+      );
     } else if (type === ProcessAppType.reactProcess) {
-      useCase = new GetExternalReactProcessUrl(this.options);
+      useCase = new GetExternalReactProcessUrl(
+        this.encryptionKey,
+        this.crmGateway,
+        this.matPostgresGateway
+      );
     } else if (type === ProcessAppType.reactEtra) {
-      useCase = new GetExternalReactEtraProcessUrl(this.options);
+      useCase = new GetExternalReactEtraProcessUrl(
+        this.encryptionKey,
+        this.crmGateway,
+        this.matPostgresGateway
+      );
     } else {
       return { error: 'Unknown external process type' };
     }

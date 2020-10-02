@@ -6,11 +6,7 @@ interface GetTasksResponse {
   error?: string;
 }
 
-interface GetTasksForAPatchOptions {
-  crmGateway: CrmGatewayInterface;
-}
-
-interface GetTasksInterface {
+export interface GetTasksForAPatchInterface {
   execute(
     isManager: boolean,
     areaManagerId: string,
@@ -18,12 +14,13 @@ interface GetTasksInterface {
   ): Promise<GetTasksResponse>;
 }
 
-class GetTasksForAPatch implements GetTasksInterface {
+class GetTasksForAPatch implements GetTasksForAPatchInterface {
   crmGateway: CrmGatewayInterface;
 
-  constructor(options: GetTasksForAPatchOptions) {
-    this.crmGateway = options.crmGateway;
+  constructor(crmGateway: CrmGatewayInterface) {
+    this.crmGateway = crmGateway;
   }
+
   public async execute(
     isManager: boolean,
     areaManagerId: string,

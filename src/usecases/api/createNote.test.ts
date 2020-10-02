@@ -1,19 +1,19 @@
 import { use } from 'chai';
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { NewNote } from '../../interfaces/note';
 import MockCreateNote from '../../tests/helpers/generateCreateNote';
 import { mockV1MatApiGateway } from '../../tests/helpers/mockGateways';
-import CreateTaskNote from './createNote';
+import CreateNote from './createNote';
 
 describe('CreateNote', () => {
-  let usecase: CreateTaskNote;
-  let dummyGateway: v1MatAPIGatewayInterface;
+  let usecase: CreateNote;
+  let dummyGateway: V1MatAPIGatewayInterface;
   let dummyCallData: NewNote;
 
   beforeEach(() => {
     dummyCallData = MockCreateNote();
     dummyGateway = mockV1MatApiGateway();
-    usecase = new CreateTaskNote({ gateway: dummyGateway });
+    usecase = new CreateNote(dummyGateway);
   });
 
   it('Returns true when a success response is received from the gateway', async () => {

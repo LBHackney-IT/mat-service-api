@@ -7,30 +7,25 @@ interface GetOfficerPatchResponse {
   error?: number;
 }
 
-interface GetOfficerPatchOptions {
-  emailAddress: string;
-  crmGateway: CrmGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
-}
-
 interface GetOfficerPatchInterface {
-  execute(): Promise<GetOfficerPatchResponse>;
+  execute(emailAddress: string): Promise<GetOfficerPatchResponse>;
 }
 
 class GetOfficerPatch implements GetOfficerPatchInterface {
-  emailAddress: string;
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  constructor(options: GetOfficerPatchOptions) {
-    this.emailAddress = options.emailAddress;
-    this.crmGateway = options.crmGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.crmGateway = crmGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
-  public async execute(): Promise<GetOfficerPatchResponse> {
+  public async execute(emailAddress: string): Promise<GetOfficerPatchResponse> {
     const userDetails = await this.matPostgresGateway.getUserMapping(
-      this.emailAddress
+      emailAddress
     );
     if (!userDetails.body || !userDetails.body.usercrmid) return { error: 404 };
 

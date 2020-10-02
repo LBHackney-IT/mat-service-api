@@ -1,4 +1,4 @@
-import CrmGateway from '../../gateways/crmGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import Note from '../../interfaces/note';
 
 interface GetNotesForTaskResponse {
@@ -6,30 +6,26 @@ interface GetNotesForTaskResponse {
   error?: number;
 }
 
-const getNotesForTask = async (
-  taskId: string
-): Promise<GetNotesForTaskResponse> => {
-  const crmGateway = new CrmGateway();
+export interface GetNotesForTaskInterface {
+  execute(taskId: string): Promise<GetNotesForTaskResponse>;
+}
 
-  const response = await crmGateway.getNotesForTask(taskId);
+export default class GetNotesForTask implements GetNotesForTaskInterface {
+  crmGateway: CrmGatewayInterface;
 
-  switch (response.error) {
-    case undefined:
-      return {
-        body: response.body,
-        error: undefined,
-      };
-    case 'NotAuthorised':
-      return {
-        body: undefined,
-        error: 401,
-      };
-    default:
-      return {
-        body: undefined,
-        error: 500,
-      };
+  constructor(crmGateway: CrmGatewayInterface) {
+    this.crmGateway = crmGateway;
   }
-};
+  async execute(taskId: string): Promise<GetNotesForTaskResponse> {
+    const response = await this.crmGateway.getNotesForTask(taskId);
 
-export default getNotesForTask;
+    switch (response.error) {
+      case undefined:
+        return { body: response.body };
+      case 'NotAuthorised':
+        return { error: 401 };
+      default:
+        return { error: 500 };
+    }
+  }
+}

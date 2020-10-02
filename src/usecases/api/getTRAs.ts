@@ -17,18 +17,16 @@ interface GetTRAsInterface {
   execute(emailAddress: string): Promise<GetTRAsResponseInterface>;
 }
 
-interface GetTRAsOptions {
-  matPostgresGateway: MatPostgresGatewayInterface;
-  crmGateway: CrmGatewayInterface;
-}
-
 class GetTRAs implements GetTRAsInterface {
   matPostgresGateway: MatPostgresGatewayInterface;
   crmGateway: CrmGatewayInterface;
 
-  constructor(options: GetTRAsOptions) {
-    this.matPostgresGateway = options.matPostgresGateway;
-    this.crmGateway = options.crmGateway;
+  constructor(
+    matPostgresGateway: MatPostgresGatewayInterface,
+    crmGateway: CrmGatewayInterface
+  ) {
+    this.matPostgresGateway = matPostgresGateway;
+    this.crmGateway = crmGateway;
   }
 
   public async execute(

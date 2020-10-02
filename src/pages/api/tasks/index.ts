@@ -1,12 +1,8 @@
 import { NextApiRequest } from 'next';
-import GetTasksForAPatch from '../../../usecases/api/getTasksForAPatch';
-import GetTasksForTagRef from '../../../usecases/api/getTasksForTagRef';
-import MatPostgresGateway from '../../../gateways/matPostgresGateway';
-import CrmGateway from '../../../gateways/crmGateway';
-import GetOfficerPatch from '../../../usecases/api/getOfficerPatch';
-import setupUser from '../../../usecases/api/setupUser';
-import V1MatAPIGateway from '../../../gateways/v1MatAPIGateway';
-import CreateManualTaskUseCase from '../../../usecases/api/createManualTask';
+import { getTasksForAPatch } from '../../../usecases/api';
+import { getTasksForTagRef } from '../../../usecases/api';
+import { createManualTask } from '../../../usecases/api';
+import { getOfficerPatch, setupUser } from '../../../usecases/api';
 import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
@@ -20,20 +16,6 @@ const postHandler = async (
     return res.status(500).end();
   }
 
-  const v1MatAPIGateway = new V1MatAPIGateway({
-    v1MatApiUrl: process.env.V1_MAT_API_URL,
-    v1MatApiToken: process.env.V1_MAT_API_TOKEN,
-  });
-
-  const crmGateway = new CrmGateway();
-  const matPostgresGateway = new MatPostgresGateway();
-
-  const createTask = new CreateManualTaskUseCase({
-    v1MatAPIGateway,
-    crmGateway,
-    matPostgresGateway,
-  });
-
   const userToken = getTokenPayloadFromRequest(req);
   if (!userToken) {
     return res.status(500).json({ error: 'could not find user token' });
@@ -42,7 +24,7 @@ const postHandler = async (
   if (!body.processType || !body.tagRef) {
     return res.status(400).json({ error: 'invalid request' });
   }
-  const result = await createTask.execute({
+  const result = await createManualTask.execute({
     process: body.processType,
     subProcess: body.subProcess,
     tagRef: body.tagRef,
@@ -64,17 +46,12 @@ const getHandler = async (
   req: NextApiRequest,
   res: ApiResponse<TaskList>
 ): Promise<void> => {
-  const crmGateway = new CrmGateway();
   const tag_ref = Array.isArray(req.query.tag_ref)
     ? req.query.tag_ref[0]
     : req.query.tag_ref;
 
   if (req.query.tag_ref) {
-    const getTasks = new GetTasksForTagRef({
-      crmGateway,
-    });
-
-    const response = await getTasks.execute(tag_ref.replace('-', '/'));
+    const response = await getTasksForTagRef.execute(tag_ref.replace('-', '/'));
     if (response && response.body) {
       res.status(200).json({ tasks: response.body });
     } else if (response && response.error) {
@@ -82,7 +59,9 @@ const getHandler = async (
     }
   } else {
     // Ensure the user is correctly set up
-    const setupUserResult = await setupUser(<string>req.cookies.hackneyToken);
+    const setupUserResult = await setupUser.execute(
+      <string>req.cookies.hackneyToken
+    );
     if (setupUserResult.error) {
       return res.status(400).end();
     }
@@ -92,15 +71,7 @@ const getHandler = async (
 
     const emailAddress = tokenPayload.email;
 
-    const matPostgresGateway = new MatPostgresGateway();
-
-    const getOfficerPatch = new GetOfficerPatch({
-      emailAddress,
-      crmGateway,
-      matPostgresGateway,
-    });
-
-    const officerPatch = await getOfficerPatch.execute();
+    const officerPatch = await getOfficerPatch.execute(emailAddress);
 
     if (!officerPatch || !officerPatch.body) return res.status(400).end();
 
@@ -114,10 +85,7 @@ const getHandler = async (
       const isManager = officerPatchDetails.isManager;
       const areaManagerId = officerPatchDetails.areaManagerId || ''; //crm query will handle officer/manager queries
 
-      const getTasks = new GetTasksForAPatch({
-        crmGateway,
-      });
-      const response = await getTasks.execute(
+      const response = await getTasksForAPatch.execute(
         isManager,
         areaManagerId,
         patchId

@@ -1,4 +1,4 @@
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
@@ -7,12 +7,6 @@ import HackneyToken from '../../interfaces/hackneyToken';
 interface SendTaskToOfficerResponse {
   body?: true;
   error?: string;
-}
-
-interface SendTaskToOfficerOptions {
-  crmGateway: CrmGatewayInterface;
-  v1ApiGateway: v1MatAPIGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
 }
 
 interface SendTaskToOfficerInterface {
@@ -25,13 +19,17 @@ interface SendTaskToOfficerInterface {
 
 class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
   crmGateway: CrmGatewayInterface;
-  v1ApiGateway: v1MatAPIGatewayInterface;
+  v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  constructor(options: SendTaskToOfficerOptions) {
-    this.crmGateway = options.crmGateway;
-    this.v1ApiGateway = options.v1ApiGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    v1ApiGateway: V1MatAPIGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.crmGateway = crmGateway;
+    this.v1ApiGateway = v1ApiGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(

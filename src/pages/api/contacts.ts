@@ -1,5 +1,5 @@
 import { NextApiRequest } from 'next';
-import v1MatAPIGateway from '../../gateways/v1MatAPIGateway';
+import { v1MatAPIGateway } from '../../gateways';
 import { ApiResponse, ContactList } from '../../interfaces/apiResponses';
 import v1ApiContactToContact from '../../mappings/v1ApiContactToContact';
 
@@ -18,12 +18,7 @@ export default async (
     return res.status(500).json({ error: 'Missing v1 api configuration' });
   }
 
-  const gateway: v1MatAPIGateway = new v1MatAPIGateway({
-    v1MatApiUrl: process.env.V1_MAT_API_URL,
-    v1MatApiToken: process.env.V1_MAT_API_TOKEN,
-  });
-
-  const response = await gateway.getContactsByUprn(uprn);
+  const response = await v1MatAPIGateway.getContactsByUprn(uprn);
 
   if (response.body) {
     res

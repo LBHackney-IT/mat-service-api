@@ -1,71 +1,67 @@
-import MatPostgresGateway from '../../gateways/matPostgresGateway';
 import faker from 'faker';
-import CheckUserMappingExists from './checkUserMappingExists';
+import {
+  GetUserMappingResponse,
+  MatPostgresGatewayInterface,
+} from '../../gateways/matPostgresGateway';
+import { mockMatPostgresGateway } from '../../tests/helpers/mockGateways';
+import CheckUserMappingExists, {
+  CheckUserMappingExistsInterface,
+} from './checkUserMappingExists';
+
 jest.mock('../../gateways/matPostgresGateway');
 
 describe('checkUserMappingExists', () => {
+  let matPostgresGateway: MatPostgresGatewayInterface;
+  let checkUserMappingExists: CheckUserMappingExistsInterface;
+
   beforeEach(() => {
-    MatPostgresGateway.mockClear();
+    matPostgresGateway = mockMatPostgresGateway();
+    checkUserMappingExists = new CheckUserMappingExists(matPostgresGateway);
   });
 
   it('Returns a false response when no errors are found and there are no results', async () => {
-    MatPostgresGateway.mockImplementationOnce(() => {
-      return {
-        getUserMapping: () => ({
-          body: undefined,
-          error: undefined,
-        }),
-      };
-    });
+    matPostgresGateway.getUserMapping = () =>
+      Promise.resolve({
+        body: undefined,
+        error: undefined,
+      });
 
     const emailAddress = faker.internet.email();
-    const checkUserMappingExists = new CheckUserMappingExists(emailAddress);
-    const response = await checkUserMappingExists.execute();
+    const response = await checkUserMappingExists.execute(emailAddress);
 
-    expect(MatPostgresGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: false, error: undefined });
   });
 
   it('Returns a true response when no errors are found and there is a result', async () => {
     const emailAddress = faker.internet.email();
     const randomUserMapping = {
-      name: faker.lorem.word(),
+      username: faker.lorem.word(),
       emailAddress,
       usercrmid: faker.lorem.word(),
       googleId: faker.lorem.word(),
     };
 
-    MatPostgresGateway.mockImplementationOnce(() => {
-      return {
-        getUserMapping: () => ({
-          body: randomUserMapping,
-          error: undefined,
-        }),
-      };
-    });
+    matPostgresGateway.getUserMapping = () =>
+      Promise.resolve({
+        body: randomUserMapping,
+        error: undefined,
+      });
 
-    const checkUserMappingExists = new CheckUserMappingExists(emailAddress);
-    const response = await checkUserMappingExists.execute();
+    const response = await checkUserMappingExists.execute(emailAddress);
 
-    expect(MatPostgresGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: true, error: undefined });
   });
 
   it('Returns a false response and an error when an error is returned', async () => {
-    MatPostgresGateway.mockImplementationOnce(() => {
-      return {
-        getUserMapping: () => ({
-          body: [],
-          error: 500,
-        }),
-      };
-    });
+    matPostgresGateway.getUserMapping = () =>
+      Promise.resolve({
+        body: [],
+        error: 500,
+      });
 
     const emailAddress = faker.internet.email();
-    const checkUserMappingExists = new CheckUserMappingExists(emailAddress);
-    const response = await checkUserMappingExists.execute();
+    const response = await checkUserMappingExists.execute(emailAddress);
 
-    expect(MatPostgresGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: false, error: 500 });
   });
 });

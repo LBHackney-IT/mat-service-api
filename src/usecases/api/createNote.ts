@@ -1,19 +1,15 @@
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { NewNote } from '../../interfaces/note';
 
-interface CreateTaskNoteOptions {
-  gateway: v1MatAPIGatewayInterface;
-}
-
-interface CreateTaskNote {
+export interface CreateNoteInterface {
   execute(note: NewNote): Promise<boolean>;
 }
 
-class CreateTaskNote implements CreateTaskNote {
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+export default class CreateNote implements CreateNoteInterface {
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
 
-  constructor(options: CreateTaskNoteOptions) {
-    this.v1MatAPIGateway = options.gateway;
+  constructor(v1MatAPIGateway: V1MatAPIGatewayInterface) {
+    this.v1MatAPIGateway = v1MatAPIGateway;
   }
 
   public async execute(note: NewNote): Promise<boolean> {
@@ -23,5 +19,3 @@ class CreateTaskNote implements CreateTaskNote {
       .catch(() => false);
   }
 }
-
-export default CreateTaskNote;

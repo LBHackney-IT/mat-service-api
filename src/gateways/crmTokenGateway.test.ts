@@ -5,24 +5,28 @@ import { isError } from '../lib/utils';
 jest.mock('axios');
 
 describe('TasksGateway', () => {
+  let crmTokenApiUrl = faker.internet.domainName();
+  let crmTokenApiKey = faker.lorem.word();
+
   beforeEach(() => {
     axios.mockClear();
-    process.env.CRM_TOKEN_API_URL = 'fakeUrl';
-    process.env.CRM_TOKEN_API_KEY = 'secret';
   });
 
-  describe('Get Tasks', () => {
+  describe('Get Token', () => {
     it('successfully fetches data from an API', async () => {
       const token = faker.lorem.word();
-      const crmResponse = {
+      const crmTokenResponse = {
         data: {
           accessToken: token,
         },
       };
 
-      axios.post.mockReturnValue(Promise.resolve(crmResponse));
+      axios.post.mockReturnValue(Promise.resolve(crmTokenResponse));
 
-      const crmTokenGateway = new CrmTokenGateway();
+      const crmTokenGateway = new CrmTokenGateway(
+        crmTokenApiUrl,
+        crmTokenApiKey
+      );
       const response = await crmTokenGateway.getToken();
 
       expect(response).toEqual(token);
@@ -32,7 +36,10 @@ describe('TasksGateway', () => {
       const errorMessage = 'Network Error';
       axios.post.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
-      const crmTokenGateway = new CrmTokenGateway();
+      const crmTokenGateway = new CrmTokenGateway(
+        crmTokenApiUrl,
+        crmTokenApiKey
+      );
       const response = await crmTokenGateway.getToken();
       expect(isError(response)).toBe(true);
       expect(response.message).toEqual(errorMessage);

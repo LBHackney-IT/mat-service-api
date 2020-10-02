@@ -1,38 +1,34 @@
-import CrmGateway from '../../gateways/crmGateway';
+import { mockCrmGateway } from '../../tests/helpers/mockGateways';
 import faker from 'faker';
 import CreateUser from './createUser';
-
-jest.mock('../../gateways/crmGateway');
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
 
 describe('createUser', () => {
+  let crmGateway: CrmGatewayInterface;
+
   beforeEach(() => {
-    CrmGateway.mockClear();
+    crmGateway = mockCrmGateway();
   });
 
   it('Returns a guid and error undefined if the creation was successful', async () => {
     const crmId = faker.lorem.word();
-    CrmGateway.mockImplementationOnce(() => {
-      return {
-        createUser: () => ({
-          body: crmId,
-          error: undefined,
-        }),
-      };
-    });
+    crmGateway.createUser = () =>
+      Promise.resolve({
+        body: crmId,
+        error: undefined,
+      });
 
     const firstName = faker.name.firstName();
     const familyName = faker.name.lastName();
-    const user = {
-      firstName: firstName,
-      familyName: familyName,
-      fullName: `${firstName} ${familyName}`,
-      emailAddress: faker.internet.email(),
-    };
 
-    const createUser = new CreateUser(user);
-    const response = await createUser.execute();
+    const createUser = new CreateUser(crmGateway);
+    const response = await createUser.execute(
+      faker.internet.email(),
+      `${firstName} ${familyName}`,
+      firstName,
+      familyName
+    );
 
-    expect(CrmGateway).toHaveBeenCalledTimes(1);
     expect(response).toEqual({ body: crmId, error: undefined });
   });
 });

@@ -1,4 +1,4 @@
-import { v1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import GetOfficerPatch from './getOfficerPatch';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
@@ -33,13 +33,7 @@ interface CreateManualTaskResponse {
   error?: string;
 }
 
-interface CreateManualTaskOptions {
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
-  crmGateway: CrmGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
-}
-
-interface CreateManualTaskInterface {
+export interface CreateManualTaskInterface {
   execute(processData: CreateManualTaskData): Promise<CreateManualTaskResponse>;
 }
 
@@ -52,14 +46,18 @@ interface CreateManualTaskData {
 }
 
 class CreateManualTaskUseCase implements CreateManualTaskInterface {
-  v1MatAPIGateway: v1MatAPIGatewayInterface;
+  v1MatAPIGateway: V1MatAPIGatewayInterface;
   crmGateway: CrmGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
 
-  constructor(options: CreateManualTaskOptions) {
-    this.v1MatAPIGateway = options.v1MatAPIGateway;
-    this.crmGateway = options.crmGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    v1MatAPIGateway: V1MatAPIGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.v1MatAPIGateway = v1MatAPIGateway;
+    this.crmGateway = crmGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(
@@ -88,13 +86,14 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     }
     const contact = responsibleContacts[0];
 
-    const getOfficerPatchId = new GetOfficerPatch({
-      emailAddress: processData.officerEmail,
-      crmGateway: this.crmGateway,
-      matPostgresGateway: this.matPostgresGateway,
-    });
+    const getOfficerPatch = new GetOfficerPatch(
+      this.crmGateway,
+      this.matPostgresGateway
+    );
 
-    const officerDetails = await getOfficerPatchId.execute();
+    const officerDetails = await getOfficerPatch.execute(
+      processData.officerEmail
+    );
     if (
       !officerDetails.body ||
       officerDetails.error ||

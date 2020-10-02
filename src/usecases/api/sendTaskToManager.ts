@@ -27,10 +27,14 @@ class SendTaskToManagerUseCase implements SendTaskToManagerInterface {
   matPostgresGateway: MatPostgresGatewayInterface;
 
   //TODO: use args not options
-  constructor(options: SendTaskToManagerOptions) {
-    this.crmGateway = options.crmGateway;
-    this.v1ApiGateway = options.v1ApiGateway;
-    this.matPostgresGateway = options.matPostgresGateway;
+  constructor(
+    crmGateway: CrmGatewayInterface,
+    v1ApiGateway: V1MatAPIGatewayInterface,
+    matPostgresGateway: MatPostgresGatewayInterface
+  ) {
+    this.crmGateway = crmGateway;
+    this.v1ApiGateway = v1ApiGateway;
+    this.matPostgresGateway = matPostgresGateway;
   }
 
   public async execute(

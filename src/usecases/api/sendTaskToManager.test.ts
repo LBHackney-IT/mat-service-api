@@ -1,10 +1,14 @@
 import SendTaskToManagerUseCase from './sendTaskToManager';
+import { mockCrmGateway } from '../../tests/helpers/mockGateways';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 
 describe('sendTaskToManager', () => {
-  let crmGateway;
-  let matPostgresGateway;
-  let v1ApiGateway;
-  let useCase;
+  let crmGateway: CrmGatewayInterface;
+  let matPostgresGateway: MatPostgresGatewayInterface;
+  let v1ApiGateway: V1MatAPIGatewayInterface;
+  let useCase: SendTaskToManagerUseCase;
   let dummyTaskId = 'abc-123-def';
 
   const fakeTaskResponse = {
@@ -25,6 +29,7 @@ describe('sendTaskToManager', () => {
   };
 
   beforeEach(() => {
+    crmGateway = mockCrmGateway();
     crmGateway = {
       getTask: () => fakeTaskResponse,
       getPatchByOfficerId: () => fakePatchResponse,
@@ -35,11 +40,11 @@ describe('sendTaskToManager', () => {
     v1ApiGateway = {
       transferCall: jest.fn(() => ({ body: true })),
     };
-    useCase = new SendTaskToManagerUseCase({
+    useCase = new SendTaskToManagerUseCase(
       crmGateway,
-      matPostgresGateway,
       v1ApiGateway,
-    });
+      matPostgresGateway
+    );
   });
 
   it('Should assemble the correct TMI data to send to the API', async () => {

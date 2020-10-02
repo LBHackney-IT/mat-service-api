@@ -9,6 +9,7 @@ import CheckUserMappingExists from './checkUserMappingExists';
 import GetUser from './getUser';
 import SetupUser from './setupUser';
 import SendTaskToOfficerUseCase from './sendTaskToOfficer';
+import SendTaskToManagerUseCase from './sendTaskToManager';
 import GetExternalProcessUrl from './getExternalProcessUrl';
 import CloseTask from './closeTask';
 import CreateITVTasks from './createITVTasks';
@@ -27,6 +28,11 @@ export const setupUser = new SetupUser(
   getUser
 );
 export const sendTaskToOfficer = new SendTaskToOfficerUseCase(
+  crmGateway,
+  v1MatAPIGateway,
+  matPostgresGateway
+);
+export const SendTaskToManager = new SendTaskToManagerUseCase(
   crmGateway,
   v1MatAPIGateway,
   matPostgresGateway

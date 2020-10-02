@@ -3,6 +3,7 @@ import { TenancyManagementInteraction } from '../../interfaces/tenancyManagement
 import GetOfficerPatch from './getOfficerPatch';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { Result } from '../../lib/utils';
 
 interface TmiData {
   title: string;
@@ -28,13 +29,10 @@ const tmiLookup: { [key: string]: TmiData } = {
   },
 };
 
-interface CreateManualTaskResponse {
-  body?: TenancyManagementInteraction;
-  error?: string;
-}
-
 export interface CreateManualTaskInterface {
-  execute(processData: CreateManualTaskData): Promise<CreateManualTaskResponse>;
+  execute(
+    processData: CreateManualTaskData
+  ): Promise<Result<TenancyManagementInteraction>>;
 }
 
 interface CreateManualTaskData {
@@ -62,7 +60,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
 
   public async execute(
     processData: CreateManualTaskData
-  ): Promise<CreateManualTaskResponse> {
+  ): Promise<Result<TenancyManagementInteraction>> {
     const contacts = await this.crmGateway.getContactsByTagRef(
       processData.tagRef.replace('-', '/')
     );
@@ -73,7 +71,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       !contacts ||
       !contacts.body
     ) {
-      return { error: 'Error fetching contacts' };
+      return new Error('Error fetching contacts');
     }
 
     const responsibleContacts = contacts.body
@@ -82,7 +80,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       )
       .sort((a, b) => <number>a.uhPersonNo - <number>b.uhPersonNo);
     if (responsibleContacts.length === 0) {
-      return { error: 'Error - no responsible contacts found for tenancy' };
+      return new Error('Error - no responsible contacts found for tenancy');
     }
     const contact = responsibleContacts[0];
 
@@ -100,7 +98,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       !officerDetails.body.areaId ||
       !officerDetails.body.patchId
     ) {
-      return { error: 'Error fetching officer patch details' };
+      return new Error('Error fetching officer patch details');
     }
 
     const tmi: TenancyManagementInteraction = {
@@ -126,7 +124,12 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       },
     };
     // Send to the api endpoint to create a tmi
-    return await this.v1MatAPIGateway.createTenancyManagementInteraction(tmi);
+    const result = await this.v1MatAPIGateway.createTenancyManagementInteraction(
+      tmi
+    );
+    if (result.body) return result.body;
+
+    return new Error('Error creating task');
   }
 }
 

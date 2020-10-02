@@ -7,6 +7,7 @@ import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
+import { isSuccess } from '../../../lib/utils';
 
 const postHandler = async (
   req: NextApiRequest,
@@ -32,13 +33,11 @@ const postHandler = async (
     officerName: userToken.name,
   });
 
-  if (result.body) {
-    res
-      .status(303)
-      .setHeader('Location', `/api/tasks/${result.body.interactionId}`);
+  if (isSuccess(result)) {
+    res.status(303).setHeader('Location', `/api/tasks/${result.interactionId}`);
     res.end();
   } else {
-    res.status(500).json({ error: result.error || 'unknown' });
+    res.status(500).json({ error: result.message });
   }
 };
 

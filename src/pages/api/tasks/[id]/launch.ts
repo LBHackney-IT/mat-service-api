@@ -3,6 +3,7 @@ import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPay
 import HackneyToken from '../../../../interfaces/hackneyToken';
 import { NextApiRequest } from 'next';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
+import { isError } from '../../../../lib/utils';
 
 export default async (
   req: NextApiRequest,
@@ -21,8 +22,8 @@ export default async (
   if (!tokenPayload) return res.status(500).end();
 
   const url = await getExternalProcessUrl.execute(id, tokenPayload.email);
-  if (url.error) return res.status(500).end();
+  if (isError(url)) return res.status(500).end();
 
-  res.writeHead(302, { Location: url.body });
+  res.writeHead(302, { Location: url });
   res.end();
 };

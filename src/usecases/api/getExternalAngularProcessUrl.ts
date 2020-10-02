@@ -46,20 +46,20 @@ export default class GetExternalAngularProcessUrl
     officerEmail: string
   ): Promise<GetExternalProcessUrlResponse> {
     const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
-    if (!task) return { error: 'Could not load task from crm' };
+    if (!task) return new Error('Could not load task from crm');
     if (!task.processType) {
-      return { error: 'Task does not have a process type' };
+      return new Error('Task does not have a process type');
     }
 
     const userMapping: UserMapping | undefined = (
       await this.matPostgresGateway.getUserMapping(officerEmail)
     ).body;
-    if (!userMapping) return { error: 'Could not load user mapping' };
+    if (!userMapping) return new Error('Could not load user mapping');
 
     const patchData: PatchDetailsInterface | undefined = (
       await this.crmGateway.getPatchByOfficerId(userMapping.usercrmid)
     ).body;
-    if (!patchData) return { error: 'Could not load officer patch data' };
+    if (!patchData) return new Error('Could not load officer patch data');
 
     const tokenData: AngularProcessToken = {
       contactId: task.resident.contactCrmId,
@@ -89,9 +89,9 @@ export default class GetExternalAngularProcessUrl
       string,
       Record<string, unknown>
     >)[process.env.NODE_ENV][task.processType];
-    if (!url) return { error: 'Could not load external URL' };
+    if (!url) return new Error('Could not load external URL');
 
     const token = encrypt(JSON.stringify(tokenData), this.encryptionKey);
-    return { body: `${url}?data=${encodeURIComponent(token)}` };
+    return `${url}?data=${encodeURIComponent(token)}`;
   }
 }

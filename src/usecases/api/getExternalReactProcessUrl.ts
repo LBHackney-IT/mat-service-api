@@ -27,12 +27,12 @@ export default class GetExternalReactEtraProcessUrl
     officerEmail: string
   ): Promise<GetExternalProcessUrlResponse> {
     const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
-    if (!officerEmail) return { error: 'Officer email required' };
-    if (!task) return { error: 'Could not load task from crm' };
+    if (!officerEmail) return new Error('Officer email required');
+    if (!task) return new Error('Could not load task from crm');
     if (!task.processType) {
-      return { error: 'Task does not have a process type' };
+      return new Error('Task does not have a process type');
     }
 
-    return { error: `New react processes not yet supported` };
+    return new Error(`New react processes not yet supported`);
   }
 }

@@ -3,6 +3,7 @@ import {
   mockCrmGateway,
   mockMatPostgresGateway,
 } from '../../tests/helpers/mockGateways';
+import { isError } from '../../lib/utils';
 
 describe('GetExternalReactProcessUrl', () => {
   let useCase;
@@ -30,7 +31,8 @@ describe('GetExternalReactProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'ETRA not yet supported' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('ETRA not yet supported');
   });
 
   it('should return an error if it could not load a task', async () => {
@@ -38,7 +40,8 @@ describe('GetExternalReactProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Could not load task from crm' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Could not load task from crm');
   });
 
   it('should return an error if the task does not have a process type', async () => {
@@ -47,6 +50,7 @@ describe('GetExternalReactProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Task does not have a process type' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Task does not have a process type');
   });
 });

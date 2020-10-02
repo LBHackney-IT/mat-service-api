@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { crmGateway, matPostgresGateway } from '../../gateways';
-import GetTRAs, {
-  officerPatchAssociationInterface,
-} from '../../usecases/api/getTRAs';
+import { getTRAs } from '../../usecases/api';
+import { officerPatchAssociationInterface } from '../../usecases/api/getTRAs';
 
 type Data = officerPatchAssociationInterface | undefined;
 
@@ -18,8 +16,6 @@ export default async (
       : undefined;
 
     if (emailAddress != undefined) {
-      const getTRAs = new GetTRAs({ crmGateway, matPostgresGateway });
-
       const response = await getTRAs.execute(emailAddress);
       if (response.error === undefined) {
         res.status(200).json(response.body);

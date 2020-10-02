@@ -17,6 +17,7 @@ import CreateNote from './createNote';
 import GetTasksForTagRef from './getTasksForTagRef';
 import GetOfficersPerArea from './getOfficersPerArea';
 import GetTask from './getTask';
+import GetTRAs from './getTRAs';
 
 export const createUser = new CreateUser(crmGateway);
 export const creatUserMapping = new CreateUserMapping(matPostgresGateway);
@@ -59,3 +60,4 @@ export const createNote = new CreateNote(v1MatAPIGateway);
 export const getTasksForTagRef = new GetTasksForTagRef(crmGateway);
 export const getOfficersPerArea = new GetOfficersPerArea(crmGateway);
 export const getTask = new GetTask(crmGateway);
+export const getTRAs = new GetTRAs(matPostgresGateway, crmGateway);

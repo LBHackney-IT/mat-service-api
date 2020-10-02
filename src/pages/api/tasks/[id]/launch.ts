@@ -23,5 +23,6 @@ export default async (
   const url = await getExternalProcessUrl.execute(id, tokenPayload.email);
   if (url.error) return res.status(500).end();
 
-  res.writeHead(302, { Location: url.body }).end();
+  res.writeHead(302, { Location: url.body });
+  res.end();
 };

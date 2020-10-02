@@ -7,7 +7,7 @@ import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
-import { isSuccess } from '../../../lib/utils';
+import { isSuccess, isError } from '../../../lib/utils';
 
 const postHandler = async (
   req: NextApiRequest,
@@ -61,7 +61,7 @@ const getHandler = async (
     const setupUserResult = await setupUser.execute(
       <string>req.cookies.hackneyToken
     );
-    if (setupUserResult.error) {
+    if (isError(setupUserResult)) {
       return res.status(400).end();
     }
 

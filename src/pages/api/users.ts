@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getUser } from '../../usecases/api';
-import GetOfficersPerArea from '../../usecases/api/getOfficersPerArea';
+import { getOfficersPerArea, getUser } from '../../usecases/api';
 import GetOfficerPatch from '../../usecases/api/getOfficerPatch';
 import { crmGateway, matPostgresGateway } from '../../gateways';
 
@@ -51,11 +50,7 @@ const doGet = async (
       return res.status(500).json({ error: 'Error fetching officer patch id' });
     }
 
-    const allOfficers = new GetOfficersPerArea({
-      areaId: officerPatch.body.areaId,
-      crmGateway,
-    });
-    const response = await allOfficers.execute();
+    const response = await getOfficersPerArea.execute(officerPatch.body.areaId);
 
     if (response.error === undefined) {
       return res.status(200).json({ users: response.body });

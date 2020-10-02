@@ -1,5 +1,13 @@
 import GetOfficerPatch from './getOfficerPatch';
 import faker from 'faker';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import MatPostgresGateway, {
+  MatPostgresGatewayInterface,
+} from '../../gateways/matPostgresGateway';
+import {
+  mockCrmGateway,
+  mockMatPostgresGateway,
+} from '../../tests/helpers/mockGateways';
 
 const mockEmailAddress = faker.internet.email();
 const mockName = `${faker.name.firstName()} ${faker.name.lastName()}`;
@@ -11,169 +19,120 @@ const mockPatchId = faker.random.uuid();
 const dummyMock = jest.fn(async () => ({}));
 
 describe('GetOfficerPatch', () => {
+  let crmGateway: CrmGatewayInterface;
+  let matPostgresGateway: MatPostgresGatewayInterface;
+  beforeEach(() => {
+    crmGateway = mockCrmGateway();
+    matPostgresGateway = mockMatPostgresGateway();
+  });
+
   it('Should retrieve user mapping details and get the id for the associated patch', async () => {
-    const getUserMapping = jest.fn(async () => ({
-      body: {
-        name: mockName,
-        emailAddress: mockEmailAddress,
-        usercrmid: mockOfficerCrmId,
-        googleId: mockOfficerGoogleId,
-      },
-      error: undefined,
-    }));
+    matPostgresGateway.getUserMapping = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          name: mockName,
+          emailAddress: mockEmailAddress,
+          usercrmid: mockOfficerCrmId,
+          googleId: mockOfficerGoogleId,
+        },
+        error: undefined,
+      })
+    );
 
-    const matPostgresGateway = {
-      getTrasByPatchId: <jest.Mock>dummyMock,
-      getUserMapping: <jest.Mock>getUserMapping,
-      createUserMapping: <jest.Mock>dummyMock,
-    };
+    crmGateway.getPatchByOfficerId = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          patchId: mockPatchId,
+          patchName: undefined,
+          officerName: undefined,
+          officerId: mockOfficerCrmId,
+          isManager: undefined,
+          areaManagerId: undefined,
+          areaId: undefined,
+        },
+        error: undefined,
+      })
+    );
 
-    const getPatchByOfficerId = jest.fn(async () => ({
-      body: {
-        patchId: mockPatchId,
-        patchName: undefined,
-        officerName: undefined,
-        officerId: mockOfficerCrmId,
-        isManager: undefined,
-        areaManagerId: undefined,
-        areaId: undefined,
-      },
-      error: undefined,
-    }));
-
-    const crmGateway = {
-      getPatchByOfficerId: <jest.Mock>getPatchByOfficerId,
-      getTasksForAPatch: <jest.Mock>dummyMock,
-      getTask: <jest.Mock>dummyMock,
-      getUser: <jest.Mock>dummyMock,
-      createUser: <jest.Mock>dummyMock,
-    };
-    const emailAddress = mockEmailAddress;
-
-    const getOfficerPatchUseCase = new GetOfficerPatch({
-      emailAddress,
+    const getOfficerPatchUseCase = new GetOfficerPatch(
       crmGateway,
-      matPostgresGateway,
-    });
+      matPostgresGateway
+    );
 
-    const response = await getOfficerPatchUseCase.execute();
+    const response = await getOfficerPatchUseCase.execute(mockEmailAddress);
 
-    expect(getUserMapping).toHaveBeenCalledTimes(1);
-    expect(getPatchByOfficerId).toHaveBeenCalledTimes(1);
+    expect(matPostgresGateway.getUserMapping).toHaveBeenCalledTimes(1);
+    expect(crmGateway.getPatchByOfficerId).toHaveBeenCalledTimes(1);
 
-    expect(response.body?.officerId).toEqual(mockOfficerCrmId);
-    expect(response.body?.patchId).toEqual(mockPatchId);
+    expect(response.body.officerId).toEqual(mockOfficerCrmId);
+    expect(response.body.patchId).toEqual(mockPatchId);
   });
 
-  it("Should return undefined when user doesn't have a crmid", async () => {
+  it("Should return 404 when user doesn't have a crmid", async () => {
     //mock responce form mat gw
-    const getUserMapping = jest.fn(async () => ({
-      body: {
-        name: mockName,
-        emailAddress: mockEmailAddress,
-        usercrmid: undefined,
-        googleId: mockOfficerGoogleId,
-      },
-      error: undefined,
-    }));
+    matPostgresGateway.getUserMapping = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          name: mockName,
+          emailAddress: mockEmailAddress,
+          usercrmid: undefined,
+          googleId: mockOfficerGoogleId,
+        },
+        error: undefined,
+      })
+    );
 
-    const matPostgresGateway = {
-      getTrasByPatchId: <jest.Mock>dummyMock,
-      getUserMapping: <jest.Mock>getUserMapping,
-      createUserMapping: <jest.Mock>dummyMock,
-    };
-
-    //mock response from crm gw method
-    const getPatchByOfficerId = jest.fn(async () => ({
-      body: {
-        patchId: undefined,
-        patchName: undefined,
-        officerName: undefined,
-        officerId: undefined,
-        isManager: undefined,
-        areaManagerId: undefined,
-        areaId: undefined,
-      },
-      error: undefined,
-    }));
-
-    const crmGateway = {
-      getPatchByOfficerId: <jest.Mock>getPatchByOfficerId,
-      getTasksForAPatch: <jest.Mock>dummyMock,
-      getTask: <jest.Mock>dummyMock,
-      getUser: <jest.Mock>dummyMock,
-      createUser: <jest.Mock>dummyMock,
-    };
-    const emailAddress = mockEmailAddress;
-
-    const getOfficerPatchUseCase = new GetOfficerPatch({
-      emailAddress,
+    const getOfficerPatchUseCase = new GetOfficerPatch(
       crmGateway,
-      matPostgresGateway,
-    });
+      matPostgresGateway
+    );
 
-    const response = await getOfficerPatchUseCase.execute();
+    const response = await getOfficerPatchUseCase.execute(mockEmailAddress);
 
-    expect(getUserMapping).toHaveBeenCalledTimes(1);
-    expect(getPatchByOfficerId).toHaveBeenCalledTimes(0);
-
-    expect(response.body?.officerId).toEqual(undefined);
-    expect(response.body?.patchId).toEqual(undefined);
+    expect(matPostgresGateway.getUserMapping).toHaveBeenCalledTimes(1);
+    expect(crmGateway.getPatchByOfficerId).toHaveBeenCalledTimes(0);
+    expect(response.error).toEqual(404);
   });
 
-  it('Should return undefined patch id when officer is not associated with a patch in CRM', async () => {
+  it('Should return undefined when officer is not associated with a patch in CRM', async () => {
     //mock responce form mat gw
-    const getUserMapping = jest.fn(async () => ({
-      body: {
-        name: mockName,
-        emailAddress: mockEmailAddress,
-        usercrmid: mockOfficerCrmId,
-        googleId: mockOfficerGoogleId,
-      },
-      error: undefined,
-    }));
-
-    const matPostgresGateway = {
-      getTrasByPatchId: <jest.Mock>dummyMock,
-      getUserMapping: <jest.Mock>getUserMapping,
-      createUserMapping: <jest.Mock>dummyMock,
-    };
+    matPostgresGateway.getUserMapping = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          name: mockName,
+          emailAddress: mockEmailAddress,
+          usercrmid: mockOfficerCrmId,
+          googleId: mockOfficerGoogleId,
+        },
+        error: undefined,
+      })
+    );
 
     //mock response from crm gw method
-    const getPatchByOfficerId = jest.fn(async () => ({
-      body: {
-        patchId: undefined,
-        patchName: undefined,
-        officerName: undefined,
-        officerId: mockOfficerCrmId,
-        isManager: undefined,
-        areaManagerId: undefined,
-        areaId: undefined,
-      },
-      error: undefined,
-    }));
+    crmGateway.getPatchByOfficerId = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          patchId: undefined,
+          patchName: undefined,
+          officerName: undefined,
+          officerId: mockOfficerCrmId,
+          isManager: undefined,
+          areaManagerId: undefined,
+          areaId: undefined,
+        },
+        error: undefined,
+      })
+    );
 
-    const crmGateway = {
-      getPatchByOfficerId: <jest.Mock>getPatchByOfficerId,
-      getTasksForAPatch: <jest.Mock>dummyMock,
-      getTask: <jest.Mock>dummyMock,
-      getUser: <jest.Mock>dummyMock,
-      createUser: <jest.Mock>dummyMock,
-    };
-    const emailAddress = mockEmailAddress;
-
-    const getOfficerPatchUseCase = new GetOfficerPatch({
-      emailAddress,
+    const getOfficerPatchUseCase = new GetOfficerPatch(
       crmGateway,
-      matPostgresGateway,
-    });
+      matPostgresGateway
+    );
 
-    const response = await getOfficerPatchUseCase.execute();
+    const response = await getOfficerPatchUseCase.execute(mockEmailAddress);
 
-    expect(getUserMapping).toHaveBeenCalledTimes(1);
-    expect(getPatchByOfficerId).toHaveBeenCalledTimes(1);
-
-    expect(response.body?.officerId).toEqual(mockOfficerCrmId);
-    expect(response.body?.patchId).toEqual(undefined);
+    expect(matPostgresGateway.getUserMapping).toHaveBeenCalledTimes(1);
+    expect(crmGateway.getPatchByOfficerId).toHaveBeenCalledTimes(1);
+    expect(response.error).toEqual(undefined);
   });
 });

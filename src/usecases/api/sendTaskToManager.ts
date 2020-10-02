@@ -8,12 +8,6 @@ interface SendTaskToManagerResponse {
   error?: string;
 }
 
-interface SendTaskToManagerOptions {
-  crmGateway: CrmGatewayInterface;
-  v1ApiGateway: V1MatAPIGatewayInterface;
-  matPostgresGateway: MatPostgresGatewayInterface;
-}
-
 interface SendTaskToManagerInterface {
   execute(
     taskId: string,

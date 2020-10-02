@@ -7,6 +7,7 @@ import {
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
+import { isError } from '../../lib/utils';
 
 describe('sendTaskToManager', () => {
   let crmGateway: CrmGatewayInterface;
@@ -55,7 +56,7 @@ describe('sendTaskToManager', () => {
       dummyTaskId,
       fakeUserMappingResponse.body.emailAddress
     );
-    expect(result).toEqual({ body: true });
+    expect(result).toEqual(true);
     expect(v1ApiGateway.patchTenancyManagementInteraction).toHaveBeenCalledWith(
       {
         estateOfficerId: 'fakeCrmId',
@@ -77,7 +78,8 @@ describe('sendTaskToManager', () => {
       dummyTaskId,
       fakeUserMappingResponse.body.emailAddress
     );
-    expect(result).toEqual({ error: 'Error fetching task from crm' });
+    expect(isError(result)).toEqual(true);
+    expect(result.message).toEqual('Error fetching task from crm');
   });
 
   it("Should return an error if it can't fetch the mapped user from postgres", async () => {
@@ -86,7 +88,8 @@ describe('sendTaskToManager', () => {
       dummyTaskId,
       fakeUserMappingResponse.body.emailAddress
     );
-    expect(result).toEqual({ error: 'Error fetching mapped user' });
+    expect(isError(result)).toEqual(true);
+    expect(result.message).toEqual('Error fetching mapped user');
   });
 
   it("Should return an error if it can't fetch the patch from crm", async () => {
@@ -95,7 +98,8 @@ describe('sendTaskToManager', () => {
       dummyTaskId,
       fakeUserMappingResponse.body.emailAddress
     );
-    expect(result).toEqual({ error: 'Error fetching patch' });
+    expect(isError(result)).toEqual(true);
+    expect(result.message).toEqual('Error fetching patch');
   });
 
   it("Should return an error if it can't update the task via v1 api", async () => {
@@ -106,6 +110,7 @@ describe('sendTaskToManager', () => {
       dummyTaskId,
       fakeUserMappingResponse.body.emailAddress
     );
-    expect(result).toEqual({ error: 'Unknown error closing task' });
+    expect(isError(result)).toEqual(true);
+    expect(result.message).toEqual('Unknown error closing task');
   });
 });

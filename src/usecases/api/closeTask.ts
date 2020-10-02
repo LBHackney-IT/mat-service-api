@@ -2,14 +2,10 @@ import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
-
-interface CloseTaskResponse {
-  body?: boolean;
-  error?: string;
-}
+import { Result } from '../../lib/utils';
 
 export interface CloseTaskInterface {
-  execute(taskId: string, userEmail: string): Promise<CloseTaskResponse>;
+  execute(taskId: string, userEmail: string): Promise<Result<boolean>>;
 }
 
 class CloseTaskUseCase implements CloseTaskInterface {
@@ -30,22 +26,22 @@ class CloseTaskUseCase implements CloseTaskInterface {
   public async execute(
     taskId: string,
     userEmail: string
-  ): Promise<CloseTaskResponse> {
+  ): Promise<Result<boolean>> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
     if (!existingTask || !existingTask.body)
-      return { error: 'Error fetching task from crm' };
+      return new Error('Error fetching task from crm');
 
     // fetch current user from crm
     const officer = await this.matPostgresGateway.getUserMapping(userEmail);
     if (!officer || !officer.body)
-      return { error: 'Error fetching mapped user' };
+      return new Error('Error fetching mapped user');
 
     // fetch patch data from crm
     const patch = await this.crmGateway.getPatchByOfficerId(
       officer.body.usercrmid
     );
-    if (!patch || !patch.body) return { error: 'Error fetching patch' };
+    if (!patch || !patch.body) return new Error('Error fetching patch');
 
     const updateObject: TenancyManagementInteraction = {
       interactionId: taskId,
@@ -64,13 +60,9 @@ class CloseTaskUseCase implements CloseTaskInterface {
     );
 
     if (result.body) {
-      return {
-        body: true,
-      };
+      return true;
     } else {
-      return {
-        error: 'Unknown error closing task',
-      };
+      return new Error('Unknown error closing task');
     }
   }
 }

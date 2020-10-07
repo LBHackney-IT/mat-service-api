@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { isError } from '../../lib/utils';
+import { isError, isSuccess } from '../../lib/utils';
 import { getOfficerPatch } from '../../usecases/api';
 import { getOfficersPerArea, getUser } from '../../usecases/api';
 
@@ -43,10 +43,10 @@ const doGet = async (
 
     const response = await getOfficersPerArea.execute(officerPatch.areaId);
 
-    if (response.error === undefined) {
-      return res.status(200).json({ users: response.body });
+    if (isSuccess(response)) {
+      return res.status(200).json({ users: response });
     } else {
-      return res.status(response.error).end();
+      return res.status(500).end();
     }
   }
 

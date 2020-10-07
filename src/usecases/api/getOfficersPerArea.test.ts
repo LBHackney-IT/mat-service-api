@@ -1,5 +1,6 @@
 import faker from 'faker';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { isError, isSuccess } from '../../lib/utils';
 import { Officer } from '../../mappings/crmToOfficersDetails';
 import { mockCrmGateway } from '../../tests/helpers/mockGateways';
 import GetOfficersPerArea from '../../usecases/api/getOfficersPerArea';
@@ -33,7 +34,8 @@ describe('GetOfficersPerArea', () => {
     const getOfficers = new GetOfficersPerArea(crmGateway);
     const response = await getOfficers.execute(areaId);
     expect(crmGateway.getOfficersByAreaId).toHaveBeenCalledTimes(1);
-    expect(response.body).toEqual(mockOfficers);
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(mockOfficers);
   });
 
   it('Returns a empty list when officers are not found', async () => {
@@ -50,11 +52,11 @@ describe('GetOfficersPerArea', () => {
 
     const response = await getOfficers.execute(areaId);
     expect(crmGateway.getOfficersByAreaId).toHaveBeenCalledTimes(1);
-    expect(response.body).toEqual(mockOfficers);
-    expect(response.error).toEqual(undefined);
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(mockOfficers);
   });
 
-  it('Returns a 500 when errors are found', async () => {
+  it('Returns an error when errors are found', async () => {
     crmGateway.getOfficersByAreaId = jest.fn(() =>
       Promise.resolve({
         body: undefined,
@@ -66,11 +68,11 @@ describe('GetOfficersPerArea', () => {
 
     const response = await getOfficers.execute(areaId);
     expect(crmGateway.getOfficersByAreaId).toHaveBeenCalledTimes(1);
-    expect(response.body).toEqual(undefined);
-    expect(response.error).toEqual(500);
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('Unknown error in getOfficersPerArea');
   });
 
-  it('Returns a 401 error when error is NotAuthorised', async () => {
+  it('Returns an error when error is NotAuthorised', async () => {
     crmGateway.getOfficersByAreaId = jest.fn(() =>
       Promise.resolve({
         body: undefined,
@@ -82,7 +84,7 @@ describe('GetOfficersPerArea', () => {
 
     const response = await getOfficers.execute(areaId);
     expect(crmGateway.getOfficersByAreaId).toHaveBeenCalledTimes(1);
-    expect(response.body).toEqual(undefined);
-    expect(response.error).toEqual(401);
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('Not Authorised');
   });
 });

@@ -2,20 +2,14 @@ import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
+import { Result } from '../../lib/utils';
 
-interface SendTaskToManagerResponse {
-  body?: boolean;
-  error?: string;
+export interface SendTaskToManagerInterface {
+  execute(taskId: string, userEmail: string): Promise<Result<void>>;
 }
 
-interface SendTaskToManagerInterface {
-  execute(
-    taskId: string,
-    userEmail: string
-  ): Promise<SendTaskToManagerResponse>;
-}
-
-class SendTaskToManagerUseCase implements SendTaskToManagerInterface {
+export default class SendTaskToManagerUseCase
+  implements SendTaskToManagerInterface {
   crmGateway: CrmGatewayInterface;
   v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
@@ -33,22 +27,22 @@ class SendTaskToManagerUseCase implements SendTaskToManagerInterface {
   public async execute(
     taskId: string,
     userEmail: string
-  ): Promise<SendTaskToManagerResponse> {
+  ): Promise<Result<void>> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
     if (!existingTask || !existingTask.body)
-      return { error: 'Error fetching task from crm' };
+      return new Error('Error fetching task from crm');
 
     // fetch current user from crm
     const officer = await this.matPostgresGateway.getUserMapping(userEmail);
     if (!officer || !officer.body)
-      return { error: 'Error fetching mapped user' };
+      return new Error('Error fetching mapped user');
 
     // fetch patch data from crm
     const patch = await this.crmGateway.getPatchByOfficerId(
       officer.body.usercrmid
     );
-    if (!patch || !patch.body) return { error: 'Error fetching patch' };
+    if (!patch || !patch.body) return new Error('Error fetching patch');
 
     const updateObject: TenancyManagementInteraction = {
       estateOfficerId: officer.body.usercrmid,
@@ -67,16 +61,8 @@ class SendTaskToManagerUseCase implements SendTaskToManagerInterface {
 
     const result = await this.v1ApiGateway.transferCall(updateObject);
 
-    if (result.body) {
-      return {
-        body: true,
-      };
-    } else {
-      return {
-        error: 'Problem assigning task to manager',
-      };
+    if (!result.body) {
+      return new Error('Problem assigning task to manager');
     }
   }
 }
-
-export default SendTaskToManagerUseCase;

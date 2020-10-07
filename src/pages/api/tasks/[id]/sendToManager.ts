@@ -2,6 +2,7 @@ import { NextApiRequest } from 'next';
 import { sendTaskToManager } from '../../../../usecases/api';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
+import { isSuccess } from '../../../../lib/utils';
 
 export default async (
   req: NextApiRequest,
@@ -24,9 +25,9 @@ export default async (
 
   const response = await sendTaskToManager.execute(id, loggedInUser.email);
 
-  if (response.body) {
+  if (isSuccess(response)) {
     res.status(204).end();
   } else {
-    res.status(500).json({ error: 'Could not send task to manager' });
+    res.status(500).json({ error: response.message });
   }
 };

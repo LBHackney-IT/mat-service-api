@@ -33,9 +33,9 @@ describe('Work Tray Page', () => {
     cy.contains('Name');
     cy.contains('Address');
 
-    cy.contains('In Progress');
-    cy.contains('Completed');
-    cy.contains('All Items');
+    cy.contains('In progress');
+    cy.contains('Due / Completed');
+    cy.contains('All items');
 
     // Completed Tab
     cy.get('.worktray-container ul li:nth-child(2)').click();

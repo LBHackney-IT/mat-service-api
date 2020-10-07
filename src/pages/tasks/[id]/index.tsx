@@ -377,6 +377,16 @@ export default function TaskPage(): React.ReactNode {
         .tile-container {
           display: flex;
         }
+        #reference {
+          font-size: 1rem;
+        }
+        .tile a {
+          font-size: 2.25rem;
+        }
+
+        .tile a.tenancy {
+          font-size: 1.25rem;
+        }
         .sendToManager,
         sendToManagerError {
           display: inline;

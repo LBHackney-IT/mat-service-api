@@ -3,7 +3,7 @@ import { TenancyManagementInteraction } from '../../interfaces/tenancyManagement
 import GetOfficerPatch from './getOfficerPatch';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { Result } from '../../lib/utils';
+import { Result, isError } from '../../lib/utils';
 
 interface TmiData {
   title: string;
@@ -89,14 +89,13 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       this.matPostgresGateway
     );
 
-    const officerDetails = await getOfficerPatch.execute(
+    const officerPatch = await getOfficerPatch.execute(
       processData.officerEmail
     );
     if (
-      !officerDetails.body ||
-      officerDetails.error ||
-      !officerDetails.body.areaId ||
-      !officerDetails.body.patchId
+      isError(officerPatch) ||
+      !officerPatch.areaId ||
+      !officerPatch.patchId
     ) {
       return new Error('Error fetching officer patch details');
     }
@@ -108,10 +107,10 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       natureofEnquiry: '15',
       source: '1',
       contactId: contact.crmContactId,
-      estateOfficerId: officerDetails.body.officerId,
+      estateOfficerId: officerPatch.officerId,
       estateOfficerName: processData.officerName,
-      officerPatchId: officerDetails.body.patchId,
-      areaName: officerDetails.body.areaId,
+      officerPatchId: officerPatch.patchId,
+      areaName: officerPatch.areaId,
       householdId: contact.crmHouseholdId,
       processType: 1,
       serviceRequest: {
@@ -119,7 +118,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
         description: tmiLookup[processData.process].description,
         contactId: contact.crmContactId,
         subject: 'c1f72d01-28dc-e711-8115-70106faa6a11',
-        createdBy: officerDetails.body.officerId,
+        createdBy: officerPatch.officerId,
         childRequests: [],
       },
     };

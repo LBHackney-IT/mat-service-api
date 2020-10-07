@@ -1,14 +1,10 @@
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
-
-interface GetOfficerPatchResponse {
-  body?: PatchDetailsInterface;
-  error?: number;
-}
+import { Result } from '../../lib/utils';
 
 interface GetOfficerPatchInterface {
-  execute(emailAddress: string): Promise<GetOfficerPatchResponse>;
+  execute(emailAddress: string): Promise<Result<PatchDetailsInterface>>;
 }
 
 class GetOfficerPatch implements GetOfficerPatchInterface {
@@ -23,21 +19,22 @@ class GetOfficerPatch implements GetOfficerPatchInterface {
     this.matPostgresGateway = matPostgresGateway;
   }
 
-  public async execute(emailAddress: string): Promise<GetOfficerPatchResponse> {
+  public async execute(
+    emailAddress: string
+  ): Promise<Result<PatchDetailsInterface>> {
     const userDetails = await this.matPostgresGateway.getUserMapping(
       emailAddress
     );
-    if (!userDetails.body || !userDetails.body.usercrmid) return { error: 404 };
+    if (!userDetails.body || !userDetails.body.usercrmid) {
+      return new Error('Could not find officer');
+    }
 
     const officerPatch = await this.crmGateway.getPatchByOfficerId(
       userDetails.body.usercrmid
     );
-    if (!officerPatch.body) return { error: 404 };
+    if (!officerPatch.body) return new Error('Could not find officer');
 
-    return {
-      body: officerPatch.body,
-      error: undefined,
-    };
+    return officerPatch.body;
   }
 }
 

@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { isError } from '../../lib/utils';
 import { getOfficerPatch } from '../../usecases/api';
 import { getOfficersPerArea, getUser } from '../../usecases/api';
 
@@ -36,15 +37,11 @@ const doGet = async (
 
   if (managerEmail !== undefined) {
     const officerPatch = await getOfficerPatch.execute(managerEmail);
-    if (
-      !officerPatch ||
-      !officerPatch.body ||
-      officerPatch.body.areaId === undefined
-    ) {
+    if (isError(officerPatch) || !officerPatch.areaId) {
       return res.status(500).json({ error: 'Error fetching officer patch id' });
     }
 
-    const response = await getOfficersPerArea.execute(officerPatch.body.areaId);
+    const response = await getOfficersPerArea.execute(officerPatch.areaId);
 
     if (response.error === undefined) {
       return res.status(200).json({ users: response.body });

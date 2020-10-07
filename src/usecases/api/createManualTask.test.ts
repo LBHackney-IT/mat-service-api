@@ -63,9 +63,7 @@ describe('createManualTasks', () => {
 
     crmGateway.getContactsByTagRef = () =>
       Promise.resolve(getContactsByTagRefResponse);
-    dummyGetOfficerPatch.execute.mockResolvedValue({
-      body: dummyOfficerPatchData,
-    });
+    dummyGetOfficerPatch.execute.mockResolvedValue(dummyOfficerPatchData);
     const result = await usecase.execute(dummyCallData);
     expect(isSuccess(result)).toBe(true);
 

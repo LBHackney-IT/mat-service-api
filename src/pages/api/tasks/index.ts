@@ -3,7 +3,6 @@ import { getTasksForAPatch } from '../../../usecases/api';
 import { getTasksForTagRef } from '../../../usecases/api';
 import { createManualTask } from '../../../usecases/api';
 import { getOfficerPatch, setupUser } from '../../../usecases/api';
-import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
@@ -72,17 +71,15 @@ const getHandler = async (
 
     const officerPatch = await getOfficerPatch.execute(emailAddress);
 
-    if (!officerPatch || !officerPatch.body) return res.status(400).end();
-
-    const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
+    if (isError(officerPatch)) return res.status(400).end();
 
     if (
-      (officerPatchDetails.patchId && !officerPatchDetails.isManager) ||
-      (officerPatchDetails.isManager && officerPatchDetails.areaManagerId)
+      (officerPatch.patchId && !officerPatch.isManager) ||
+      (officerPatch.isManager && officerPatch.areaManagerId)
     ) {
-      const patchId = officerPatchDetails.patchId;
-      const isManager = officerPatchDetails.isManager;
-      const areaManagerId = officerPatchDetails.areaManagerId || ''; //crm query will handle officer/manager queries
+      const patchId = officerPatch.patchId;
+      const isManager = officerPatch.isManager;
+      const areaManagerId = officerPatch.areaManagerId || ''; //crm query will handle officer/manager queries
 
       const response = await getTasksForAPatch.execute(
         isManager,

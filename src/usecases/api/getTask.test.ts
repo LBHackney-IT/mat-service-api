@@ -4,6 +4,7 @@ import MockTask from '../../tests/helpers/generateTask';
 import faker from 'faker';
 import { mockCrmGateway } from '../../tests/helpers/mockGateways';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { isError, isSuccess } from '../../lib/utils';
 
 describe('GetTask', () => {
   let crmGateway: CrmGatewayInterface;
@@ -22,20 +23,23 @@ describe('GetTask', () => {
     crmGateway.getTask = () => Promise.resolve({ body: mockResponse });
 
     const response = await getTask.execute(taskId);
-    expect(response).toEqual({ body: mockResponse, error: undefined });
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(mockResponse);
   });
 
   it('Returns a 500 error when errors are found', async () => {
     crmGateway.getTask = () => Promise.resolve({ error: 'Anything' });
 
     const response = await getTask.execute(taskId);
-    expect(response).toEqual({ body: undefined, error: 500 });
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('Unknown error in getTask');
   });
 
   it('Returns a 401 error when errors is NotAuthorised', async () => {
     crmGateway.getTask = () => Promise.resolve({ error: 'NotAuthorised' });
 
     const response = await getTask.execute(taskId);
-    expect(response).toEqual({ body: undefined, error: 401 });
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('Not Authorised');
   });
 });

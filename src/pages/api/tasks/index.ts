@@ -87,15 +87,13 @@ const getHandler = async (
         patchId
       );
 
-      if (response.body) {
-        res.status(200).json({ tasks: response.body });
-      } else if (response.error) {
-        if (response.error === 'NotAuthorised') {
+      if (isSuccess(response)) {
+        res.status(200).json({ tasks: response });
+      } else {
+        if (response.message === 'NotAuthorised') {
           return res.status(401).json({ error: 'Not authorised' });
         }
-        return res
-          .status(500)
-          .json({ error: `Unknown error: ${response.error}` });
+        return res.status(500).json({ error: response.message });
       }
     } else {
       res.status(400).json({ error: 'No user patch or area found' });

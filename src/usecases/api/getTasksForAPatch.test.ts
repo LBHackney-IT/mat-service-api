@@ -6,6 +6,7 @@ import GetTasksForAPatch, {
 import faker from 'faker';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { mockCrmGateway } from '../../tests/helpers/mockGateways';
+import { isError, isSuccess } from '../../lib/utils';
 
 jest.mock('../../gateways/crmGateway');
 
@@ -42,7 +43,8 @@ describe('GetTasks', () => {
       });
 
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
-    expect(response.body).toEqual(mockTasks);
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(mockTasks);
   });
 
   it('Returns a empty list when tasks are not found', async () => {
@@ -50,12 +52,13 @@ describe('GetTasks', () => {
 
     crmGateway.getTasksForAPatch = () =>
       Promise.resolve({
-        body: [],
+        body: mockTasks,
         error: undefined,
       });
 
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
-    expect(response.body).toEqual(mockTasks);
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(mockTasks);
   });
 
   it('Returns the error when errors are found', async () => {
@@ -66,6 +69,7 @@ describe('GetTasks', () => {
       });
 
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
-    expect(response.error).toEqual('NotAuthorised');
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('NotAuthorised');
   });
 });

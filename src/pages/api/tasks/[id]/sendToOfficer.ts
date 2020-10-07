@@ -2,6 +2,7 @@ import { NextApiRequest } from 'next';
 import { sendTaskToOfficer } from '../../../../usecases/api';
 import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
+import { isSuccess } from '../../../../lib/utils';
 
 export default async (
   req: NextApiRequest,
@@ -29,7 +30,7 @@ export default async (
     newOfficerId
   );
 
-  if (response.body) {
+  if (isSuccess(response)) {
     res.status(204).end();
   } else {
     res.status(500).json({ error: 'Could not send task to officer' });

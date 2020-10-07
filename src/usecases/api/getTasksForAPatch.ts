@@ -2,11 +2,6 @@ import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { Task } from '../../interfaces/task';
 import { Result } from '../../lib/utils';
 
-interface GetTasksResponse {
-  body?: Task[];
-  error?: string;
-}
-
 export interface GetTasksForAPatchInterface {
   execute(
     isManager: boolean,

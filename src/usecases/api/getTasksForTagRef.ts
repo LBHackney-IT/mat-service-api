@@ -1,13 +1,9 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { Task } from '../../interfaces/task';
-
-interface GetTasksResponse {
-  body?: Task[];
-  error?: number;
-}
+import { Result } from '../../lib/utils';
 
 export interface GetTasksInterface {
-  execute(tagRef: string): Promise<GetTasksResponse>;
+  execute(tagRef: string): Promise<Result<Task[]>>;
 }
 
 class GetTasksForTagRef implements GetTasksInterface {
@@ -16,24 +12,14 @@ class GetTasksForTagRef implements GetTasksInterface {
   constructor(crmGateway: CrmGatewayInterface) {
     this.crmGateway = crmGateway;
   }
-  public async execute(tagRef: string): Promise<GetTasksResponse> {
+  public async execute(tagRef: string): Promise<Result<Task[]>> {
     const response = await this.crmGateway.getTasksForTagRef(tagRef);
+    if (response.body && !response.error) return response.body;
     switch (response.error) {
-      case undefined:
-        return {
-          body: response.body,
-          error: undefined,
-        };
       case 'NotAuthorised':
-        return {
-          body: undefined,
-          error: 401,
-        };
+        return new Error('NotAuthorised');
       default:
-        return {
-          body: undefined,
-          error: 500,
-        };
+        return new Error('Unknown error in getTasksFroTagRef');
     }
   }
 }

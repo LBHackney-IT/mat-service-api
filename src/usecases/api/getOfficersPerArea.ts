@@ -1,13 +1,9 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { Result } from '../../lib/utils';
 import { Officer } from '../../mappings/crmToOfficersDetails';
 
-interface GetOfficersPerAreaResponse {
-  body?: Officer[];
-  error?: number;
-}
-
 interface GetOfficersPerAreaInterface {
-  execute(areaId: number): Promise<GetOfficersPerAreaResponse>;
+  execute(areaId: number): Promise<Result<Officer[]>>;
 }
 
 export default class GetOfficersPerArea implements GetOfficersPerAreaInterface {
@@ -17,25 +13,17 @@ export default class GetOfficersPerArea implements GetOfficersPerAreaInterface {
     this.crmGateway = crmGateway;
   }
 
-  public async execute(areaId: number): Promise<GetOfficersPerAreaResponse> {
+  public async execute(areaId: number): Promise<Result<Officer[]>> {
     const officersResponse = await this.crmGateway.getOfficersByAreaId(areaId);
 
+    if (officersResponse.body && !officersResponse.error) {
+      return officersResponse.body;
+    }
     switch (officersResponse.error) {
-      case undefined:
-        return {
-          body: officersResponse.body,
-          error: undefined,
-        };
       case 'NotAuthorised':
-        return {
-          body: undefined,
-          error: 401,
-        };
+        return new Error('Not Authorised');
       default:
-        return {
-          body: undefined,
-          error: 500,
-        };
+        return new Error('Unknown error in getOfficersPerArea');
     }
   }
 }

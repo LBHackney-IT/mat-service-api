@@ -1,6 +1,7 @@
 import { NextApiRequest } from 'next';
 import { ApiResponse, NoteList } from '../../../../interfaces/apiResponses';
 import { NewNote } from '../../../../interfaces/note';
+import { isSuccess } from '../../../../lib/utils';
 import { createNote } from '../../../../usecases/api';
 import { getNotesForTask } from '../../../../usecases/api';
 
@@ -21,12 +22,10 @@ export default async (
     if (id !== undefined) {
       const response = await getNotesForTask.execute(id);
 
-      if (response.body) {
-        res.status(200).json({ notes: response.body });
+      if (isSuccess(response)) {
+        res.status(200).json({ notes: response });
       } else {
-        res
-          .status(response.error || 500)
-          .json({ error: 'could not retrieve notes' });
+        res.status(500).json({ error: response.message });
       }
     } else {
       res.status(400).json({ error: 'task id missing' });
@@ -42,10 +41,10 @@ export default async (
 
     const response = await createNote.execute(note);
 
-    if (response) {
+    if (isSuccess(response)) {
       res.status(204).end();
     } else {
-      res.status(500).end();
+      res.status(500).end({ error: response.message });
     }
   };
 

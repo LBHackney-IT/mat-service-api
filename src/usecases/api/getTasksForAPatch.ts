@@ -1,17 +1,13 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { Task } from '../../interfaces/task';
-
-interface GetTasksResponse {
-  body?: Task[];
-  error?: string;
-}
+import { Result } from '../../lib/utils';
 
 export interface GetTasksForAPatchInterface {
   execute(
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
-  ): Promise<GetTasksResponse>;
+  ): Promise<Result<Task[]>>;
 }
 
 class GetTasksForAPatch implements GetTasksForAPatchInterface {
@@ -25,12 +21,14 @@ class GetTasksForAPatch implements GetTasksForAPatchInterface {
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
-  ): Promise<GetTasksResponse> {
-    return await this.crmGateway.getTasksForAPatch(
+  ): Promise<Result<Task[]>> {
+    const result = await this.crmGateway.getTasksForAPatch(
       isManager,
       areaManagerId,
       patchId
     );
+    if (result.body) return result.body;
+    return new Error(result.error);
   }
 }
 

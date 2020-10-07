@@ -5,6 +5,7 @@ import {
   mockCrmGateway,
   mockMatPostgresGateway,
 } from '../../tests/helpers/mockGateways';
+import { isError } from '../../lib/utils';
 
 jest.mock('./getExternalAngularProcessUrl');
 jest.mock('./getExternalReactEtraProcessUrl');
@@ -56,7 +57,8 @@ describe('GetExternalProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Could not load task from crm' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Could not load task from crm');
   });
 
   it('should return an error if the task does not have a process type', async () => {
@@ -65,7 +67,8 @@ describe('GetExternalProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Task does not have a process type' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Task does not have a process type');
   });
 
   it('should return an error if it has an incorrect process type', async () => {
@@ -76,6 +79,7 @@ describe('GetExternalProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Unknown external process type' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Unknown external process type');
   });
 });

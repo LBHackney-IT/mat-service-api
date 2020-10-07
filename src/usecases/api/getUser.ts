@@ -1,12 +1,8 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-
-interface GetUserResponse {
-  body?: string;
-  error?: number;
-}
+import { Result } from '../../lib/utils';
 
 export interface GetUserInterface {
-  execute(emailAddress: string): Promise<GetUserResponse>;
+  execute(emailAddress: string): Promise<Result<string>>;
 }
 
 class GetUser implements GetUserInterface {
@@ -16,24 +12,12 @@ class GetUser implements GetUserInterface {
     this.crmGateway = crmGateway;
   }
 
-  public async execute(emailAddress: string): Promise<GetUserResponse> {
+  public async execute(emailAddress: string): Promise<Result<string>> {
     const response = await this.crmGateway.getUserId(emailAddress);
 
-    switch (response.error) {
-      case undefined:
-        if (!response.body) return { body: undefined, error: 404 };
-        return response as GetUserResponse;
-      case 'NotAuthorised':
-        return {
-          body: undefined,
-          error: 401,
-        };
-      default:
-        return {
-          body: undefined,
-          error: 500,
-        };
-    }
+    if (!response.body && !response.error) return new Error('User not found');
+    if (response.body) return response.body;
+    return new Error(response.error);
   }
 }
 

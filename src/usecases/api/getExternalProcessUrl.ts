@@ -1,10 +1,10 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { Task } from '../../interfaces/task';
 import { ProcessType } from '../../interfaces/task';
 import GetExternalAngularProcessUrl from './getExternalAngularProcessUrl';
 import GetExternalReactEtraProcessUrl from './getExternalReactEtraProcessUrl';
 import GetExternalReactProcessUrl from './getExternalReactProcessUrl';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
+import { Result } from '../../lib/utils';
 
 enum ProcessAppType {
   angular,
@@ -12,17 +12,14 @@ enum ProcessAppType {
   reactEtra,
 }
 
+export type GetExternalProcessUrlResponse = Result<string>;
+
 const ProcessTypeMapping: { [key: string]: ProcessAppType } = {
   [ProcessType.itv]: ProcessAppType.angular,
   [ProcessType.thc]: ProcessAppType.angular,
   [ProcessType.homecheck]: ProcessAppType.angular,
   [ProcessType.etra]: ProcessAppType.reactEtra,
 };
-
-export interface GetExternalProcessUrlResponse {
-  body?: string;
-  error?: string;
-}
 
 export interface GetExternalProcessUrlInterface {
   execute(
@@ -51,10 +48,10 @@ export default class GetExternalProcessUrlUseCase
     taskId: string,
     officerEmail: string
   ): Promise<GetExternalProcessUrlResponse> {
-    const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
-    if (!task) return { error: 'Could not load task from crm' };
+    const task = (await this.crmGateway.getTask(taskId)).body;
+    if (!task) return new Error('Could not load task from crm');
     if (!task.processType) {
-      return { error: 'Task does not have a process type' };
+      return new Error('Task does not have a process type');
     }
 
     const type = ProcessTypeMapping[task.processType];
@@ -79,7 +76,7 @@ export default class GetExternalProcessUrlUseCase
         this.matPostgresGateway
       );
     } else {
-      return { error: 'Unknown external process type' };
+      return new Error('Unknown external process type');
     }
 
     return await useCase.execute(taskId, officerEmail);

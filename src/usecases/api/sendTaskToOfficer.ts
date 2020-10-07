@@ -3,18 +3,14 @@ import { TenancyManagementInteraction } from '../../interfaces/tenancyManagement
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import HackneyToken from '../../interfaces/hackneyToken';
-
-interface SendTaskToOfficerResponse {
-  body?: true;
-  error?: string;
-}
+import { Result } from '../../lib/utils';
 
 interface SendTaskToOfficerInterface {
   execute(
     taskId: string,
     userDetails: HackneyToken,
     newOfficerId: string
-  ): Promise<SendTaskToOfficerResponse>;
+  ): Promise<Result<void>>;
 }
 
 class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
@@ -36,18 +32,18 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
     taskId: string,
     userDetails: HackneyToken,
     newOfficerId: string
-  ): Promise<SendTaskToOfficerResponse> {
+  ): Promise<Result<void>> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
     if (!existingTask || !existingTask.body)
-      return { error: 'Error fetching task from crm' };
+      return new Error('Error fetching task from crm');
 
     // fetch current user from crm
     const officer = await this.matPostgresGateway.getUserMapping(
       userDetails.email
     );
     if (!officer || !officer.body)
-      return { error: 'Error fetching mapped user' };
+      return new Error('Error fetching mapped user');
 
     // fetch patch data from crm
     const housingOfficerPatch = await this.crmGateway.getPatchByOfficerId(
@@ -59,7 +55,7 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       !housingOfficerPatch.body.patchId ||
       !housingOfficerPatch.body.areaId
     )
-      return { error: 'Error fetching patch' };
+      return new Error('Error fetching patch');
 
     const updateObject: TenancyManagementInteraction = {
       interactionId: taskId, //TMI id
@@ -76,14 +72,8 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
 
     const result = await this.v1ApiGateway.transferCall(updateObject);
 
-    if (result.body) {
-      return {
-        body: true,
-      };
-    } else {
-      return {
-        error: 'Problem assigning task to officer',
-      };
+    if (!result.body) {
+      return new Error('Problem assigning task to officer');
     }
   }
 }

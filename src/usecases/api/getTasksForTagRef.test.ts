@@ -3,6 +3,7 @@ import MockTask from '../../tests/helpers/generateTask';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import GetTasksForTagRef, { GetTasksInterface } from './getTasksForTagRef';
 import { mockCrmGateway } from '../../tests/helpers/mockGateways';
+import { isError, isSuccess } from '../../lib/utils';
 
 describe('GetTasks', () => {
   let crmGateway: CrmGatewayInterface;
@@ -26,7 +27,8 @@ describe('GetTasks', () => {
     const getTasks = new GetTasksForTagRef(crmGateway);
     const response = await getTasks.execute(tagRef);
 
-    expect(response.body).toEqual(mockTasks);
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(mockTasks);
   });
 
   it('Returns an empty list when tasks are not found', async () => {
@@ -42,7 +44,8 @@ describe('GetTasks', () => {
     const getTasks = new GetTasksForTagRef(crmGateway);
     const response = await getTasks.execute(tagRef);
 
-    expect(response.body).toEqual(mockTasks);
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(mockTasks);
   });
 
   it('Returns a 500 error when errors are found', async () => {
@@ -56,7 +59,8 @@ describe('GetTasks', () => {
     const getTasks = new GetTasksForTagRef(crmGateway);
     const response = await getTasks.execute(tagRef);
 
-    expect(response.error).toEqual(500);
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('Unknown error in getTasksFroTagRef');
   });
 
   it('Returns a 401 error when errors is NotAuthorised', async () => {
@@ -70,6 +74,7 @@ describe('GetTasks', () => {
     const getTasks = new GetTasksForTagRef(crmGateway);
     const response = await getTasks.execute(tagRef);
 
-    expect(response.error).toEqual(401);
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('NotAuthorised');
   });
 });

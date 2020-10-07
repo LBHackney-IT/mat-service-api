@@ -8,6 +8,7 @@ import {
   mockCrmGateway,
   mockMatPostgresGateway,
 } from '../../tests/helpers/mockGateways';
+import { isError, isSuccess } from '../../lib/utils';
 
 const mockEmailAddress = faker.internet.email();
 const mockName = `${faker.name.firstName()} ${faker.name.lastName()}`;
@@ -64,12 +65,12 @@ describe('GetOfficerPatch', () => {
     expect(matPostgresGateway.getUserMapping).toHaveBeenCalledTimes(1);
     expect(crmGateway.getPatchByOfficerId).toHaveBeenCalledTimes(1);
 
-    expect(response.body.officerId).toEqual(mockOfficerCrmId);
-    expect(response.body.patchId).toEqual(mockPatchId);
+    expect(isSuccess(response)).toEqual(true);
+    expect(response.officerId).toEqual(mockOfficerCrmId);
+    expect(response.patchId).toEqual(mockPatchId);
   });
 
   it("Should return 404 when user doesn't have a crmid", async () => {
-    //mock responce form mat gw
     matPostgresGateway.getUserMapping = jest.fn(() =>
       Promise.resolve({
         body: {
@@ -91,48 +92,7 @@ describe('GetOfficerPatch', () => {
 
     expect(matPostgresGateway.getUserMapping).toHaveBeenCalledTimes(1);
     expect(crmGateway.getPatchByOfficerId).toHaveBeenCalledTimes(0);
-    expect(response.error).toEqual(404);
-  });
-
-  it('Should return undefined when officer is not associated with a patch in CRM', async () => {
-    //mock responce form mat gw
-    matPostgresGateway.getUserMapping = jest.fn(() =>
-      Promise.resolve({
-        body: {
-          name: mockName,
-          emailAddress: mockEmailAddress,
-          usercrmid: mockOfficerCrmId,
-          googleId: mockOfficerGoogleId,
-        },
-        error: undefined,
-      })
-    );
-
-    //mock response from crm gw method
-    crmGateway.getPatchByOfficerId = jest.fn(() =>
-      Promise.resolve({
-        body: {
-          patchId: undefined,
-          patchName: undefined,
-          officerName: undefined,
-          officerId: mockOfficerCrmId,
-          isManager: undefined,
-          areaManagerId: undefined,
-          areaId: undefined,
-        },
-        error: undefined,
-      })
-    );
-
-    const getOfficerPatchUseCase = new GetOfficerPatch(
-      crmGateway,
-      matPostgresGateway
-    );
-
-    const response = await getOfficerPatchUseCase.execute(mockEmailAddress);
-
-    expect(matPostgresGateway.getUserMapping).toHaveBeenCalledTimes(1);
-    expect(crmGateway.getPatchByOfficerId).toHaveBeenCalledTimes(1);
-    expect(response.error).toEqual(undefined);
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('Could not find officer');
   });
 });

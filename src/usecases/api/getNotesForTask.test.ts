@@ -4,6 +4,7 @@ import faker from 'faker';
 import GetNotesForTask, { GetNotesForTaskInterface } from './getNotesForTask';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { mockCrmGateway } from '../../tests/helpers/mockGateways';
+import { isError, isSuccess } from '../../lib/utils';
 
 describe('GetNotesForTask', () => {
   let crmGateway: CrmGatewayInterface;
@@ -25,7 +26,8 @@ describe('GetNotesForTask', () => {
     const taskId = faker.lorem.word();
     const response = await getNotesForTask.execute(taskId);
 
-    expect(response).toEqual({ body: mockResponse, error: undefined });
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(mockResponse);
   });
 
   it('Returns a 500 error when errors are found', async () => {
@@ -39,7 +41,8 @@ describe('GetNotesForTask', () => {
 
     const response = await getNotesForTask.execute(taskId);
 
-    expect(response).toEqual({ error: 500 });
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('Unknown error getting notes for task');
   });
 
   it('Returns a 401 error when errors is NotAuthorised', async () => {
@@ -53,6 +56,7 @@ describe('GetNotesForTask', () => {
 
     const response = await getNotesForTask.execute(taskId);
 
-    expect(response).toEqual({ error: 401 });
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('Not Authorised');
   });
 });

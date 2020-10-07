@@ -1,15 +1,8 @@
-import { GetUserInterface } from './getUser';
-import { CreateUserMappingInterface } from './createUserMapping';
 import UserMapping from '../../interfaces/userMapping';
-import { CheckUserMappingExistsInterface } from './checkUserMappingExists';
-import { createUser } from './';
 import jwt from 'jsonwebtoken';
-import { CreateUserInterface } from './createUser';
-
-interface SetupUserResponse {
-  body?: boolean;
-  error?: string;
-}
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { Result } from '../../lib/utils';
 
 interface HackneyToken {
   sub: string;
@@ -23,57 +16,53 @@ interface HackneyToken {
 // TODO: Add test for this file
 
 interface SetupUserInterface {
-  execute(hackneyTokenString: string): Promise<SetupUserResponse>;
+  execute(hackneyTokenString: string): Promise<Result<boolean>>;
 }
 
 export default class SetupUser implements SetupUserInterface {
-  createUserMappingUsecase: CreateUserMappingInterface;
-  checkUserMappingExistsUsecase: CheckUserMappingExistsInterface;
-  createUserUsecase: CreateUserInterface;
-  getUserUsecase: GetUserInterface;
+  matPostgresGateway: MatPostgresGatewayInterface;
+  crmGateway: CrmGatewayInterface;
 
   constructor(
-    createUserMappingUsecase: CreateUserMappingInterface,
-    checkUserMappingExistsUsecase: CheckUserMappingExistsInterface,
-    createUserUsecase: CreateUserInterface,
-    getUserUsecase: GetUserInterface
+    matPostgresGateway: MatPostgresGatewayInterface,
+    crmGateway: CrmGatewayInterface
   ) {
-    this.createUserMappingUsecase = createUserMappingUsecase;
-    this.checkUserMappingExistsUsecase = checkUserMappingExistsUsecase;
-    this.createUserUsecase = createUserUsecase;
-    this.getUserUsecase = getUserUsecase;
+    this.matPostgresGateway = matPostgresGateway;
+    this.crmGateway = crmGateway;
   }
 
-  async execute(hackneyTokenString: string): Promise<SetupUserResponse> {
+  async execute(hackneyTokenString: string): Promise<Result<boolean>> {
     try {
       // Extract the user details
       const hackneyToken = jwt.decode(hackneyTokenString) as HackneyToken;
       if (!hackneyToken || !hackneyToken.email)
-        return { error: 'Invalid token' };
+        return new Error('Invalid token');
 
       // Check if we already have a mapping for this user
-      const existingUserMapping = await this.checkUserMappingExistsUsecase.execute(
+      const userMappingExists = await this.matPostgresGateway.getUserMapping(
         hackneyToken.email
       );
 
-      if (existingUserMapping.body) {
-        return { body: undefined, error: undefined };
+      if (userMappingExists.body) {
+        return true;
       } else {
         // Fetch the CRM user
-        const response = await this.getUserUsecase.execute(hackneyToken.email);
+        const response = await this.crmGateway.getUserId(hackneyToken.email);
         let crmUserGuid = response.body;
 
         // Create a new CRM user if they don't exist
         if (!crmUserGuid) {
           const splitName = hackneyToken.name.split(' ');
-          const crmCreateResponse = await createUser.execute(
+          const crmCreateResponse = await this.crmGateway.createUser(
             hackneyToken.email,
             hackneyToken.name,
             splitName[0],
             splitName[splitName.length - 1]
           );
+          if (crmCreateResponse.error || !crmCreateResponse.body) {
+            return new Error('Error creating CRM user');
+          }
           crmUserGuid = crmCreateResponse.body;
-          if (!crmUserGuid) return { error: 'Error creating CRM user' };
         }
 
         // Create the mapping in postgres
@@ -83,16 +72,17 @@ export default class SetupUser implements SetupUserInterface {
           googleId: hackneyToken.sub.toString(),
           usercrmid: crmUserGuid,
         };
-        const createResponse = await this.createUserMappingUsecase.execute(
+        const createResponse = await this.matPostgresGateway.createUserMapping(
           userMapping
         );
-        if (createResponse.error)
-          return { error: 'Error creating user mapping' };
 
-        return { error: undefined };
+        if (createResponse.error)
+          return new Error('Error creating user mapping');
+
+        return true;
       }
     } catch (e) {
-      return { error: e.message };
+      return e;
     }
   }
 }

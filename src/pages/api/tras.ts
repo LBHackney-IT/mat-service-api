@@ -1,12 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
+import { ApiResponse } from '../../interfaces/apiResponses';
+import { isSuccess } from '../../lib/utils';
 import { getTRAs } from '../../usecases/api';
 import { officerPatchAssociationInterface } from '../../usecases/api/getTRAs';
 
-type Data = officerPatchAssociationInterface | undefined;
-
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: ApiResponse<officerPatchAssociationInterface>
 ): Promise<void> => {
   if (req.method === 'GET') {
     const emailAddress = req.query.emailAddress
@@ -17,10 +17,10 @@ export default async (
 
     if (emailAddress != undefined) {
       const response = await getTRAs.execute(emailAddress);
-      if (response.error === undefined) {
-        res.status(200).json(response.body);
+      if (isSuccess(response)) {
+        res.status(200).json(response);
       } else {
-        res.status(response.error).end();
+        res.status(500).json({ error: response.message });
       }
     } else {
       res.status(400).end();

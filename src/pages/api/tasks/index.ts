@@ -3,10 +3,10 @@ import { getTasksForAPatch } from '../../../usecases/api';
 import { getTasksForTagRef } from '../../../usecases/api';
 import { createManualTask } from '../../../usecases/api';
 import { getOfficerPatch, setupUser } from '../../../usecases/api';
-import { PatchDetailsInterface } from '../../../mappings/crmToPatchDetails';
 import { getTokenPayloadFromRequest } from '../../../usecases/api/getTokenPayload';
 import { CreateTaskRequest } from '../../../usecases/ui/createTask';
 import { ApiResponse, TaskList } from '../../../interfaces/apiResponses';
+import { isSuccess, isError } from '../../../lib/utils';
 
 const postHandler = async (
   req: NextApiRequest,
@@ -32,13 +32,11 @@ const postHandler = async (
     officerName: userToken.name,
   });
 
-  if (result.body) {
-    res
-      .status(303)
-      .setHeader('Location', `/api/tasks/${result.body.interactionId}`);
+  if (isSuccess(result)) {
+    res.status(303).setHeader('Location', `/api/tasks/${result.interactionId}`);
     res.end();
   } else {
-    res.status(500).json({ error: result.error || 'unknown' });
+    res.status(500).json({ error: result.message });
   }
 };
 
@@ -52,17 +50,17 @@ const getHandler = async (
 
   if (req.query.tag_ref) {
     const response = await getTasksForTagRef.execute(tag_ref.replace('-', '/'));
-    if (response && response.body) {
-      res.status(200).json({ tasks: response.body });
-    } else if (response && response.error) {
-      res.status(response.error).end();
+    if (isSuccess(response)) {
+      res.status(200).json({ tasks: response });
+    } else {
+      res.status(500).json({ error: response.message });
     }
   } else {
     // Ensure the user is correctly set up
     const setupUserResult = await setupUser.execute(
       <string>req.cookies.hackneyToken
     );
-    if (setupUserResult.error) {
+    if (isError(setupUserResult)) {
       return res.status(400).end();
     }
 
@@ -73,17 +71,15 @@ const getHandler = async (
 
     const officerPatch = await getOfficerPatch.execute(emailAddress);
 
-    if (!officerPatch || !officerPatch.body) return res.status(400).end();
-
-    const officerPatchDetails: PatchDetailsInterface = officerPatch.body;
+    if (isError(officerPatch)) return res.status(400).end();
 
     if (
-      (officerPatchDetails.patchId && !officerPatchDetails.isManager) ||
-      (officerPatchDetails.isManager && officerPatchDetails.areaManagerId)
+      (officerPatch.patchId && !officerPatch.isManager) ||
+      (officerPatch.isManager && officerPatch.areaManagerId)
     ) {
-      const patchId = officerPatchDetails.patchId;
-      const isManager = officerPatchDetails.isManager;
-      const areaManagerId = officerPatchDetails.areaManagerId || ''; //crm query will handle officer/manager queries
+      const patchId = officerPatch.patchId;
+      const isManager = officerPatch.isManager;
+      const areaManagerId = officerPatch.areaManagerId || ''; //crm query will handle officer/manager queries
 
       const response = await getTasksForAPatch.execute(
         isManager,
@@ -91,15 +87,13 @@ const getHandler = async (
         patchId
       );
 
-      if (response.body) {
-        res.status(200).json({ tasks: response.body });
-      } else if (response.error) {
-        if (response.error === 'NotAuthorised') {
+      if (isSuccess(response)) {
+        res.status(200).json({ tasks: response });
+      } else {
+        if (response.message === 'NotAuthorised') {
           return res.status(401).json({ error: 'Not authorised' });
         }
-        return res
-          .status(500)
-          .json({ error: `Unknown error: ${response.error}` });
+        return res.status(500).json({ error: response.message });
       }
     } else {
       res.status(400).json({ error: 'No user patch or area found' });

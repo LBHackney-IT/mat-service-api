@@ -27,6 +27,6 @@ describe('CreateNote', () => {
     dummyGateway.createTaskNote.mockResolvedValue(Promise.reject(new Error()));
     const result = await usecase.execute(dummyCallData);
     expect(dummyGateway.createTaskNote).toHaveBeenCalledWith(dummyCallData);
-    expect(result).toEqual(false);
+    expect(result).toEqual(new Error());
   });
 });

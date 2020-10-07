@@ -11,6 +11,7 @@ import {
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import MockTMI from '../../tests/helpers/generateTMI';
+import { isError, isSuccess } from '../../lib/utils';
 jest.mock('./getOfficerPatch');
 
 describe('createManualTasks', () => {
@@ -58,20 +59,17 @@ describe('createManualTasks', () => {
 
   it('should use the correct data for the TMI', async () => {
     v1MatAPIGateway.createTenancyManagementInteraction = () =>
-      Promise.resolve({ interactionId: 'dummy' });
+      Promise.resolve({ body: { interactionId: 'dummy' } });
 
     crmGateway.getContactsByTagRef = () =>
       Promise.resolve(getContactsByTagRefResponse);
-    dummyGetOfficerPatch.execute.mockResolvedValue({
-      body: dummyOfficerPatchData,
-    });
+    dummyGetOfficerPatch.execute.mockResolvedValue(dummyOfficerPatchData);
     const result = await usecase.execute(dummyCallData);
-    expect(result.error).toBe(undefined);
+    expect(isSuccess(result)).toBe(true);
 
     expect(result).toEqual({
       interactionId: 'dummy',
     });
-    expect(result.error).toBeFalsy();
   });
 
   it('should return an error if there is a problem fetching the contacts', async () => {
@@ -80,7 +78,8 @@ describe('createManualTasks', () => {
         error: '500',
       });
     const result = await usecase.execute(dummyCallData);
-    expect(result.error).toEqual('Error fetching contacts');
+    expect(isError(result)).toEqual(true);
+    expect(result.message).toEqual('Error fetching contacts');
   });
 
   it('should return an error if there are no contacts found', async () => {
@@ -89,7 +88,8 @@ describe('createManualTasks', () => {
         contacts: [],
       });
     const result = await usecase.execute(dummyCallData);
-    expect(result.error).toEqual('Error fetching contacts');
+    expect(isError(result)).toEqual(true);
+    expect(result.message).toEqual('Error fetching contacts');
   });
 
   it('should create the correct TMI for homechecks', async () => {

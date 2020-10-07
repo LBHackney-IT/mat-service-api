@@ -7,11 +7,14 @@ import {
   mockCrmGateway,
   mockMatPostgresGateway,
 } from '../../tests/helpers/mockGateways';
+import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
+import { isError } from '../../lib/utils';
 
 describe('GetExternalAngularProcessUrl', () => {
-  let useCase;
-  let crmGateway;
-  let matPostgresGateway;
+  let useCase: GetExternalAngularProcessUrl;
+  let crmGateway: CrmGatewayInterface;
+  let matPostgresGateway: MatPostgresGatewayInterface;
   const encryptionKey = 'q2zacxLVm4wnpe0YcLwmQA==';
 
   beforeEach(() => {
@@ -55,11 +58,11 @@ describe('GetExternalAngularProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(
-      result.body.startsWith(`${externalProcessUrls.test.itv}?data=`)
-    ).toBe(true);
+    expect(result.startsWith(`${externalProcessUrls.test.itv}?data=`)).toBe(
+      true
+    );
     const token = decodeURIComponent(
-      result.body.replace(`${externalProcessUrls.test.itv}?data=`, '')
+      result.replace(`${externalProcessUrls.test.itv}?data=`, '')
     );
 
     const payload = decrypt(token, encryptionKey);
@@ -93,7 +96,8 @@ describe('GetExternalAngularProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Could not load task from crm' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Could not load task from crm');
   });
 
   it('should return an error if the task does not have a process type', async () => {
@@ -102,7 +106,8 @@ describe('GetExternalAngularProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Task does not have a process type' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Task does not have a process type');
   });
 
   it('should return an error if it could not load a user mapping', async () => {
@@ -113,7 +118,8 @@ describe('GetExternalAngularProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Could not load user mapping' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Could not load user mapping');
   });
 
   it('should return an error if it could not load patch data', async () => {
@@ -127,6 +133,7 @@ describe('GetExternalAngularProcessUrl', () => {
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
     );
-    expect(result).toEqual({ error: 'Could not load officer patch data' });
+    expect(isError(result)).toBe(true);
+    expect(result.message).toEqual('Could not load officer patch data');
   });
 });

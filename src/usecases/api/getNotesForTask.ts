@@ -1,13 +1,9 @@
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import Note from '../../interfaces/note';
-
-interface GetNotesForTaskResponse {
-  body?: Note[];
-  error?: number;
-}
+import { Result } from '../../lib/utils';
 
 export interface GetNotesForTaskInterface {
-  execute(taskId: string): Promise<GetNotesForTaskResponse>;
+  execute(taskId: string): Promise<Result<Note[]>>;
 }
 
 export default class GetNotesForTask implements GetNotesForTaskInterface {
@@ -16,16 +12,15 @@ export default class GetNotesForTask implements GetNotesForTaskInterface {
   constructor(crmGateway: CrmGatewayInterface) {
     this.crmGateway = crmGateway;
   }
-  async execute(taskId: string): Promise<GetNotesForTaskResponse> {
+  async execute(taskId: string): Promise<Result<Note[]>> {
     const response = await this.crmGateway.getNotesForTask(taskId);
 
+    if (response.body && !response.error) return response.body;
     switch (response.error) {
-      case undefined:
-        return { body: response.body };
       case 'NotAuthorised':
-        return { error: 401 };
+        return new Error('Not Authorised');
       default:
-        return { error: 500 };
+        return new Error('Unknown error getting notes for task');
     }
   }
 }

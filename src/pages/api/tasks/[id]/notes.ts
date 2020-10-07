@@ -22,12 +22,10 @@ export default async (
     if (id !== undefined) {
       const response = await getNotesForTask.execute(id);
 
-      if (response.body) {
-        res.status(200).json({ notes: response.body });
+      if (isSuccess(response)) {
+        res.status(200).json({ notes: response });
       } else {
-        res
-          .status(response.error || 500)
-          .json({ error: 'could not retrieve notes' });
+        res.status(500).json({ error: response.message });
       }
     } else {
       res.status(400).json({ error: 'task id missing' });

@@ -27,10 +27,10 @@ const doGet = async (
   if (emailAddress !== undefined) {
     const response = await getUser.execute(emailAddress);
 
-    if (response.error === undefined) {
-      res.status(200).json({ users: response.body });
+    if (isSuccess(response)) {
+      res.status(200).json({ users: response });
     } else {
-      res.status(response.error).end();
+      res.status(500).json({ error: response.message });
     }
     return;
   }

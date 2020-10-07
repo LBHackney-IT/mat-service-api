@@ -1,5 +1,6 @@
 import faker from 'faker';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
+import { isError, isSuccess } from '../../lib/utils';
 import { mockCrmGateway } from '../../tests/helpers/mockGateways';
 import GetUser, { GetUserInterface } from './getUser';
 
@@ -12,7 +13,7 @@ describe('GetUser', () => {
     getUser = new GetUser(crmGateway);
   });
 
-  it('returns 404 when no user exists', async () => {
+  it('returns an error when no user exists', async () => {
     crmGateway.getUserId = () =>
       Promise.resolve({
         body: undefined,
@@ -23,10 +24,11 @@ describe('GetUser', () => {
 
     const response = await getUser.execute(emailAddress);
 
-    expect(response).toEqual({ body: undefined, error: 404 });
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('User not found');
   });
 
-  it('returns a 401 if the error is NotAuthorised', async () => {
+  it('returns the error message from crmGateway if there is one', async () => {
     crmGateway.getUserId = () =>
       Promise.resolve({
         body: undefined,
@@ -37,21 +39,8 @@ describe('GetUser', () => {
 
     const response = await getUser.execute(emailAddress);
 
-    expect(response).toEqual({ body: undefined, error: 401 });
-  });
-
-  it('returns a 500 for any other error', async () => {
-    crmGateway.getUserId = () =>
-      Promise.resolve({
-        body: undefined,
-        error: faker.lorem.word(),
-      });
-
-    const emailAddress = faker.internet.email();
-
-    const response = await getUser.execute(emailAddress);
-
-    expect(response).toEqual({ body: undefined, error: 500 });
+    expect(isError(response)).toEqual(true);
+    expect(response.message).toEqual('NotAuthorised');
   });
 
   it('returns a user guid when the user exists', async () => {
@@ -66,6 +55,7 @@ describe('GetUser', () => {
 
     const response = await getUser.execute(emailAddress);
 
-    expect(response).toEqual({ body: crmUserGuid, error: undefined });
+    expect(isSuccess(response)).toEqual(true);
+    expect(response).toEqual(crmUserGuid);
   });
 });

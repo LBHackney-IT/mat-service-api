@@ -50,10 +50,10 @@ const getHandler = async (
 
   if (req.query.tag_ref) {
     const response = await getTasksForTagRef.execute(tag_ref.replace('-', '/'));
-    if (response && response.body) {
-      res.status(200).json({ tasks: response.body });
-    } else if (response && response.error) {
-      res.status(response.error).end();
+    if (isSuccess(response)) {
+      res.status(200).json({ tasks: response });
+    } else {
+      res.status(500).json({ error: response.message });
     }
   } else {
     // Ensure the user is correctly set up

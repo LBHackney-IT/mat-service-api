@@ -44,10 +44,7 @@ describe('GetTRAs', () => {
       Promise.resolve({
         body: mockValidUserMapping,
       });
-    matPostgresGateway.getTrasByPatchId = () =>
-      Promise.resolve({
-        body: [mockTRA],
-      });
+    matPostgresGateway.getTrasByPatchId = () => Promise.resolve([mockTRA]);
 
     crmGateway.getPatchByOfficerId = () =>
       Promise.resolve({
@@ -86,11 +83,7 @@ describe('GetTRAs', () => {
         body: mockValidUserMapping,
         error: undefined,
       });
-    matPostgresGateway.getTrasByPatchId = () =>
-      Promise.resolve({
-        body: [mockTRA],
-        error: undefined,
-      });
+    matPostgresGateway.getTrasByPatchId = () => Promise.resolve([mockTRA]);
 
     crmGateway.getPatchByOfficerId = () =>
       Promise.resolve({

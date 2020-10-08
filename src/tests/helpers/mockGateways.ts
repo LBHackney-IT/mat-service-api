@@ -26,7 +26,7 @@ export const mockCrmGateway = (): CrmGatewayInterface => ({
 });
 
 export const mockMatPostgresGateway = (): MatPostgresGatewayInterface => ({
-  getTrasByPatchId: jest.fn(() => Promise.resolve({})),
+  getTrasByPatchId: jest.fn(() => Promise.resolve([])),
   getUserMapping: jest.fn(() => Promise.resolve({})),
   createUserMapping: jest.fn(() => Promise.resolve({})),
   getLatestItvTaskSyncDate: jest.fn(() => Promise.resolve(new Date())),

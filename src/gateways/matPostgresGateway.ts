@@ -4,7 +4,7 @@ import { IClient } from 'pg-promise/typescript/pg-subset';
 import { Result } from '../lib/utils';
 
 export interface MatPostgresGatewayInterface {
-  getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>;
+  getTrasByPatchId(patchId: string): Promise<Result<TRAPatchMapping[]>>;
   getUserMapping(emailAddress: string): Promise<GetUserMappingResponse>;
   createUserMapping(
     userMapping: UserMappingTable
@@ -31,11 +31,6 @@ interface UserMappingTable {
   googleId: string;
 }
 
-interface GetTRAPatchMappingResponse {
-  body?: TRAPatchMapping[];
-  error?: number;
-}
-
 interface TRAPatchMapping {
   name: string;
   traid: number;
@@ -59,23 +54,14 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
 
   public async getTrasByPatchId(
     patchId: string
-  ): Promise<GetTRAPatchMappingResponse> {
-    try {
-      const results: TRAPatchMapping[] = await this.connection.many(
+  ): Promise<Result<TRAPatchMapping[]>> {
+    return this.connection
+      .many<TRAPatchMapping>(
         'SELECT  TRA.Name, TRA.TraId, TRAPatchAssociation.PatchCRMId FROM	TRA INNER JOIN TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId WHERE TRAPatchAssociation.PatchCRMId = ${id}',
         { id: patchId }
-      );
-
-      return Promise.resolve({
-        body: results,
-        error: undefined,
-      });
-    } catch (error) {
-      return Promise.resolve({
-        body: [],
-        error: 500,
-      });
-    }
+      )
+      .then((result) => result)
+      .catch((e) => e);
   }
 
   public async getUserMapping(

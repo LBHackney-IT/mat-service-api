@@ -3,7 +3,6 @@ import {
   matPostgresGateway,
   v1MatAPIGateway,
 } from '../../gateways';
-import GetUser from './getUser';
 import SetupUser from './setupUser';
 import SendTaskToOfficerUseCase from './sendTaskToOfficer';
 import SendTaskToManagerUseCase from './sendTaskToManager';
@@ -20,7 +19,6 @@ import CreateManualTaskUseCase from './createManualTask';
 import GetNotesForTask from './getNotesForTask';
 import GetOfficerPatch from './getOfficerPatch';
 
-export const getUser = new GetUser(crmGateway);
 export const setupUser = new SetupUser(matPostgresGateway, crmGateway);
 export const sendTaskToOfficer = new SendTaskToOfficerUseCase(
   crmGateway,
@@ -47,7 +45,7 @@ export const createITVTasks = new CreateITVTasks(
   v1MatAPIGateway,
   crmGateway
 );
-export const createNote = new CreateNote(v1MatAPIGateway);
+export const createNote = new CreateNote(v1MatAPIGateway, crmGateway);
 export const getTasksForTagRef = new GetTasksForTagRef(crmGateway);
 export const getOfficersPerArea = new GetOfficersPerArea(crmGateway);
 export const getTasksForAPatch = new GetTasksForAPatch(crmGateway);

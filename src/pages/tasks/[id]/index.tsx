@@ -24,7 +24,6 @@ import sendTaskToOfficer from '../../../usecases/ui/sendTaskToOfficer';
 import closeTask from '../../../usecases/ui/closeTask';
 import { FaExclamation } from 'react-icons/fa';
 import createNote from '../../../usecases/ui/createNote';
-import getFullName from '../../../usecases/ui/getFullName';
 
 /*
 const mapResidents = (residents: Resident[]): React.ReactElement => {
@@ -55,54 +54,44 @@ export default function TaskPage(): React.ReactNode {
   const [selectedOfficerId, setSelectedOfficerId] = useState<
     string | undefined
   >(undefined);
-  const [officerName, setOfficerName] = useState<string | undefined>(undefined);
-  const [officerEmail, setOfficerEmail] = useState<string | undefined>(
-    undefined
-  );
   const [noteText, setNoteText] = useState<string | undefined>(undefined);
   const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
     boolean | undefined
   >(undefined);
 
   const router = useRouter();
+
+  const getNotes = () => {
+    getNotesById(`${router.query.id}`)
+      .then((notes) => {
+        if (notes) setNotes(notes);
+      })
+      .catch(() => setError('notesError'));
+  };
   useEffect(() => {
-    if (!task) {
-      getTaskById(`${router.query.id}`)
-        .then((task) => {
-          if (task) setTask(task);
+    getTaskById(`${router.query.id}`)
+      .then((task) => {
+        if (task) setTask(task);
+      })
+      .catch(() => setError('loadingError'));
+
+    getNotes();
+
+    // extract the officer email from token
+    const managerEmailAddress = getEmailAddress();
+    if (managerEmailAddress) {
+      getOfficersForManager(managerEmailAddress)
+        .then((officers) => {
+          const officerSelect = officers.map((officer) => [
+            officer.id,
+            officer.name,
+          ]);
+          setOfficers(officerSelect);
+          setSelectedOfficerId(officerSelect[0][0]);
         })
-        .catch(() => setError('loadingError'));
+        .catch((e) => console.log(e));
     }
-    if (!notes) {
-      getNotesById(`${router.query.id}`)
-        .then((notes) => {
-          if (notes) setNotes(notes);
-        })
-        .catch(() => setError('notesError'));
-    }
-    if (!officers) {
-      // extract the officer email from token
-      const managerEmailAddress = getEmailAddress();
-      if (managerEmailAddress) {
-        getOfficersForManager(managerEmailAddress)
-          .then((officers) => {
-            const officerSelect = officers.map((officer) => [
-              officer.id,
-              officer.name,
-            ]);
-            setOfficers(officerSelect);
-            setSelectedOfficerId(officerSelect[0][0]);
-          })
-          .catch((e) => console.log(e));
-      }
-    }
-    if (!officerName) {
-      setOfficerName(getFullName());
-    }
-    if (!officerEmail) {
-      setOfficerEmail(getEmailAddress());
-    }
-  });
+  }, []);
 
   if (!task) {
     return <LoadingPage error={error === 'loadingError'} />;
@@ -148,37 +137,11 @@ export default function TaskPage(): React.ReactNode {
   };
 
   const submitNote = async () => {
-    if (noteText === undefined || noteText === '') {
+    if (noteText === undefined || noteText === '' || !router.query.id) {
       setSubmitNoteSuccess(false);
     } else {
-      const email = officerEmail ? officerEmail : '';
-      const note = {
-        interactionId: router.query.id,
-        estateOfficerName: officerName,
-        ServiceRequest: {
-          description: noteText,
-          requestCallback: false,
-          Id: task.incidentId,
-        },
-        status: 1,
-      };
-      const response = await createNote(note, email);
-
-      if (response) {
-        const notesArray = notes;
-        const newNote: Note = {
-          text: `${note.ServiceRequest.description}`,
-          createdBy: `${note.estateOfficerName}`,
-          createdOn: moment().toString(),
-          incidentId: note.ServiceRequest.Id,
-        };
-        if (notesArray) {
-          notesArray.push(newNote);
-          setSubmitNoteSuccess(response);
-          setNoteText('');
-          setNotes(notesArray);
-        }
-      }
+      const response = await createNote(`${router.query.id}`, noteText);
+      if (response) getNotes();
     }
   };
 

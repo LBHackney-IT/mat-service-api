@@ -5,6 +5,10 @@ export default interface Note {
   incidentId: string;
 }
 
+export interface IncomingNote {
+  text: string;
+}
+
 export interface NewNote {
   interactionId: string; //TMI ID
   estateOfficerName: string; //officer's full name

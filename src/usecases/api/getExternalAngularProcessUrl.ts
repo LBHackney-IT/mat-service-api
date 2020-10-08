@@ -3,7 +3,6 @@ import AngularProcessToken from '../../interfaces/angularProcessToken';
 import { encrypt } from '../../lib/encryption';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { ProcessType } from '../../interfaces/task';
-import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
 import moment from 'moment';
 import {
   GetExternalProcessUrlInterface,
@@ -58,10 +57,12 @@ export default class GetExternalAngularProcessUrl
       return new Error('Could not load user mapping');
     }
 
-    const patchData: PatchDetailsInterface | undefined = (
-      await this.crmGateway.getPatchByOfficerId(userMapping.usercrmid)
-    ).body;
-    if (!patchData) return new Error('Could not load officer patch data');
+    const patchData = await this.crmGateway.getPatchByOfficerId(
+      userMapping.usercrmid
+    );
+    if (isError(patchData)) {
+      return new Error('Could not load officer patch data');
+    }
 
     const tokenData: AngularProcessToken = {
       contactId: task.resident.contactCrmId,

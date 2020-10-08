@@ -37,16 +37,13 @@ describe('GetOfficerPatch', () => {
 
     crmGateway.getPatchByOfficerId = jest.fn(() =>
       Promise.resolve({
-        body: {
-          patchId: mockPatchId,
-          patchName: undefined,
-          officerName: undefined,
-          officerId: mockOfficerCrmId,
-          isManager: undefined,
-          areaManagerId: undefined,
-          areaId: undefined,
-        },
-        error: undefined,
+        patchId: mockPatchId,
+        patchName: undefined,
+        officerName: undefined,
+        officerId: mockOfficerCrmId,
+        isManager: undefined,
+        areaManagerId: undefined,
+        areaId: undefined,
       })
     );
 

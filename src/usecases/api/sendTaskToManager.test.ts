@@ -26,10 +26,8 @@ describe('sendTaskToManager', () => {
     email: 'me@me.com',
   };
   const fakePatchResponse = {
-    body: {
-      areaManagerId: 'fakeAreaManagerId',
-      areaId: 5,
-    },
+    areaManagerId: 'fakeAreaManagerId',
+    areaId: 5,
   };
 
   beforeEach(() => {
@@ -94,7 +92,8 @@ describe('sendTaskToManager', () => {
   });
 
   it("Should return an error if it can't fetch the patch from crm", async () => {
-    crmGateway.getPatchByOfficerId = jest.fn();
+    crmGateway.getPatchByOfficerId = () =>
+      Promise.resolve(new Error('No patch found'));
     const result = await useCase.execute(
       dummyTaskId,
       fakeUserMappingResponse.email

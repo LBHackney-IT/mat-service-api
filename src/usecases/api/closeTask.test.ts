@@ -33,7 +33,6 @@ describe('sendTaskToManager', () => {
   beforeEach(() => {
     crmGateway = mockCrmGateway();
     crmGateway.getTask = () => Promise.resolve(fakeTaskResponse);
-    crmGateway.getPatchByOfficerId = () => Promise.resolve(fakePatchResponse);
 
     matPostgresGateway = mockMatPostgresGateway();
     matPostgresGateway.getUserMapping = () =>
@@ -86,16 +85,6 @@ describe('sendTaskToManager', () => {
     );
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Error fetching mapped user');
-  });
-
-  it("Should return an error if it can't fetch the patch from crm", async () => {
-    crmGateway.getPatchByOfficerId = jest.fn();
-    const result = await useCase.execute(
-      dummyTaskId,
-      fakeUserMappingResponse.emailAddress
-    );
-    expect(isError(result)).toEqual(true);
-    expect(result.message).toEqual('Error fetching patch');
   });
 
   it("Should return an error if it can't update the task via v1 api", async () => {

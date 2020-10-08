@@ -46,16 +46,13 @@ describe('GetTRAs', () => {
 
     crmGateway.getPatchByOfficerId = () =>
       Promise.resolve({
-        body: {
-          patchId: mockCRMPatchId,
-          patchName: mockPatchName,
-          officerName: mockOfficerName,
-          officerId: 'dummyId',
-          isManager: true,
-          areaManagerId: 'dummyAreaManagerId',
-          areaId: 5,
-        },
-        error: undefined,
+        patchId: mockCRMPatchId,
+        patchName: mockPatchName,
+        officerName: mockOfficerName,
+        officerId: 'dummyId',
+        isManager: true,
+        areaManagerId: 'dummyAreaManagerId',
+        areaId: 5,
       });
 
     const response = await getTRAs.execute(mockEmailAddress);
@@ -82,12 +79,9 @@ describe('GetTRAs', () => {
 
     crmGateway.getPatchByOfficerId = () =>
       Promise.resolve({
-        body: {
-          patchid: undefined,
-          patchname: undefined,
-          officername: undefined,
-        },
-        error: undefined,
+        patchid: undefined,
+        patchname: undefined,
+        officername: undefined,
       });
 
     const response = await getTRAs.execute(mockEmailAddress);

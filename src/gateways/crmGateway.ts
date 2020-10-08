@@ -8,6 +8,7 @@ import getUserByEmail from './xmlQueryStrings/getUserByEmail';
 import getPatchByOfficerId from './xmlQueryStrings/getPatchByOfficerId';
 import getContactsByTagRef from './xmlQueryStrings/getContactsByTagRef';
 import crmToPatchDetails, {
+  PatchDetailsCrmValue,
   PatchDetailsInterface,
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
@@ -62,7 +63,7 @@ export interface CrmGatewayInterface {
   ): Promise<Result<string>>;
   getPatchByOfficerId(
     emailAddress: string
-  ): Promise<GatewayResponse<PatchDetailsInterface>>;
+  ): Promise<Result<PatchDetailsInterface>>;
   getPropertyPatch(
     uprn: string
   ): Promise<GatewayResponse<PropertyPatchDetails>>;
@@ -237,30 +238,19 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getPatchByOfficerId(
     officerId: string
-  ): Promise<GatewayResponse<PatchDetailsInterface>> {
+  ): Promise<Result<PatchDetailsInterface>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getPatchByOfficerId(officerId);
 
-    return await axios
-      .get(
+    return axios
+      .get<GenericCrmResponse<PatchDetailsCrmValue[]>>(
         `${this.baseUrl}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         this.headers()
       )
-      .then((response) => {
-        const data = response.data;
-        const patchDetails: PatchDetailsInterface = crmToPatchDetails(data);
-
-        return {
-          body: patchDetails,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+      .then((response) => crmToPatchDetails(response.data))
+      .catch(errorHandler);
   }
 
   public async getPropertyPatch(

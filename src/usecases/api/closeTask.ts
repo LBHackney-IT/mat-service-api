@@ -37,10 +37,6 @@ class CloseTaskUseCase implements CloseTaskInterface {
       return new Error('Error fetching mapped user');
     }
 
-    // fetch patch data from crm
-    const patch = await this.crmGateway.getPatchByOfficerId(officer.usercrmid);
-    if (!patch || !patch.body) return new Error('Error fetching patch');
-
     const updateObject: TenancyManagementInteraction = {
       interactionId: taskId,
       estateOfficerName: officer.username,

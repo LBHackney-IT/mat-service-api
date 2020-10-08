@@ -42,18 +42,17 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       newOfficerId
     );
     if (
-      !housingOfficerPatch ||
-      !housingOfficerPatch.body ||
-      !housingOfficerPatch.body.patchId ||
-      !housingOfficerPatch.body.areaId
+      isError(housingOfficerPatch) ||
+      !housingOfficerPatch.patchId ||
+      !housingOfficerPatch.areaId
     )
       return new Error('Error fetching patch');
 
     const updateObject: TenancyManagementInteraction = {
       interactionId: taskId, //TMI id
       estateOfficerId: newOfficerId, //officer id
-      officerPatchId: housingOfficerPatch.body.patchId, //patch id
-      areaName: housingOfficerPatch.body.areaId, //areaId
+      officerPatchId: housingOfficerPatch.patchId, //patch id
+      areaName: housingOfficerPatch.areaId, //areaId
       serviceRequest: {
         description: `Transferred from: ${userDetails.name}`, //use the same value as below for estateOfficerName
         requestCallback: false, //leave as false for now

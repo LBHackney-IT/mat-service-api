@@ -1,3 +1,5 @@
+import { GenericCrmResponse } from '../gateways/crmGateway';
+
 export interface PatchDetailsInterface {
   patchId?: string;
   patchName?: string;
@@ -8,24 +10,21 @@ export interface PatchDetailsInterface {
   areaId?: number;
 }
 
-interface crmResponseInterface {
-  '@odata.context': string;
-  value: {
-    hackney_name: string;
-    hackney_estateofficerid: string;
-    'officermanagerId@OData.Community.Display.V1.FormattedValue'?: string;
-    officerManagerId?: string;
-    officerPatchId?: string;
-    'officerAreaId@OData.Community.Display.V1.FormattedValue'?: string;
-    officerAreaId?: number; //populated for officers and used for areaId
-    areaId?: number; //populated for managers and used for areaId
-    officerPatchName?: string;
-    managerId?: string;
-  }[];
+export interface PatchDetailsCrmValue {
+  hackney_name: string;
+  hackney_estateofficerid: string;
+  'officermanagerId@OData.Community.Display.V1.FormattedValue'?: string;
+  officerManagerId?: string;
+  officerPatchId?: string;
+  'officerAreaId@OData.Community.Display.V1.FormattedValue'?: string;
+  officerAreaId?: number; //populated for officers and used for areaId
+  areaId?: number; //populated for managers and used for areaId
+  officerPatchName?: string;
+  managerId?: string;
 }
 
 const crmToPatchDetails = (
-  crmResponse: crmResponseInterface
+  crmResponse: GenericCrmResponse<PatchDetailsCrmValue[]>
 ): PatchDetailsInterface => {
   const patchDetails: PatchDetailsInterface = {
     patchId: crmResponse.value[0].officerPatchId,
@@ -40,7 +39,9 @@ const crmToPatchDetails = (
   return patchDetails;
 };
 
-const getAreaManagerId = (crmResponse: crmResponseInterface) => {
+const getAreaManagerId = (
+  crmResponse: GenericCrmResponse<PatchDetailsCrmValue[]>
+) => {
   let areaManagerId = undefined;
 
   if (crmResponse.value[0].managerId != undefined) {
@@ -51,7 +52,7 @@ const getAreaManagerId = (crmResponse: crmResponseInterface) => {
   return areaManagerId;
 };
 
-const getAreaId = (crmResponse: crmResponseInterface) => {
+const getAreaId = (crmResponse: GenericCrmResponse<PatchDetailsCrmValue[]>) => {
   let areaId = undefined;
   if (crmResponse.value[0].officerAreaId != undefined) {
     areaId = crmResponse.value[0].officerAreaId;

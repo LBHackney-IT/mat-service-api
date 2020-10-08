@@ -40,14 +40,14 @@ export default class SendTaskToManagerUseCase
 
     // fetch patch data from crm
     const patch = await this.crmGateway.getPatchByOfficerId(officer.usercrmid);
-    if (!patch || !patch.body) return new Error('Error fetching patch');
+    if (isError(patch)) return new Error('Error fetching patch');
 
     const updateObject: TenancyManagementInteraction = {
       estateOfficerId: officer.usercrmid,
       officerPatchId: officer.usercrmid,
-      managerId: patch.body.areaManagerId,
+      managerId: patch.areaManagerId,
       assignedToPatch: true,
-      areaName: patch.body.areaId,
+      areaName: patch.areaId,
       estateOfficerName: officer.username,
       interactionId: taskId,
       serviceRequest: {

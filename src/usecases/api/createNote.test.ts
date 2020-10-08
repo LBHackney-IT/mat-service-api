@@ -28,7 +28,6 @@ describe('CreateNote', () => {
     dummyTask = MockTask();
     v1MatAPIGateway = mockV1MatApiGateway();
     crmGateway = mockCrmGateway();
-    crmGateway.getUserId = () => Promise.resolve({ body: 'fakeUserId' });
     crmGateway.getTask = () => Promise.resolve(dummyTask);
     usecase = new CreateNote(v1MatAPIGateway, crmGateway);
   });

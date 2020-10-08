@@ -70,9 +70,7 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getUserId(emailAddress);
 
-      expect(response).toStrictEqual({
-        body: data.value[0].hackney_estateofficerid,
-      });
+      expect(response).toStrictEqual(data.value[0].hackney_estateofficerid);
     });
 
     it('returns an error from the API', async () => {
@@ -82,7 +80,8 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getUserId(emailAddress);
 
-      expect(response).toStrictEqual({ error: error });
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toStrictEqual(error);
     });
   });
 

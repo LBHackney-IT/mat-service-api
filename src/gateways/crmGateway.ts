@@ -53,7 +53,7 @@ export interface CrmGatewayInterface {
   getTasksForTagRef(tag_ref: string): Promise<Result<Task[]>>;
   getTask(taskId: string): Promise<Result<Task>>;
   getNotesForTask(taskId: string): Promise<Result<Note[]>>;
-  getUserId(emailAddress: string): Promise<GatewayResponse<string>>;
+  getUserId(emailAddress: string): Promise<Result<string>>;
   createUser(
     emailAddress: string,
     fullName: string,
@@ -183,36 +183,30 @@ class CrmGateway implements CrmGatewayInterface {
       .catch(errorHandler);
   }
 
-  public async getUserId(
-    emailAddress: string
-  ): Promise<GatewayResponse<string>> {
+  public async getUserId(emailAddress: string): Promise<Result<string>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getUserByEmail(emailAddress);
 
-    return await axios
-      .get(
+    return axios
+      .get<CrmResponse>(
         `${this.baseUrl}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
         if (
-          response.data &&
           response.data.value &&
+          response.data.value instanceof Array &&
           response.data.value.length > 0 &&
           response.data.value[0].hackney_estateofficerid
         ) {
-          return { body: response.data.value[0].hackney_estateofficerid };
+          return response.data.value[0].hackney_estateofficerid as string;
         } else {
-          return { error: 'Could not find user in crm' };
+          return new Error('Could not find user in crm');
         }
       })
-      .catch((error) => {
-        return {
-          error: error.message,
-        };
-      });
+      .catch(errorHandler);
   }
 
   public async createUser(

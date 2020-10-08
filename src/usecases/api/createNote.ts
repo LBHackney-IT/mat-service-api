@@ -30,7 +30,7 @@ export default class CreateNote implements CreateNoteInterface {
     note: string
   ): Promise<Result<boolean>> {
     const estateOfficerId = await this.crmGateway.getUserId(officerToken.email);
-    if (!estateOfficerId || !estateOfficerId.body) {
+    if (isError(estateOfficerId)) {
       return new Error('Could not find estate officer ID');
     }
 
@@ -48,7 +48,7 @@ export default class CreateNote implements CreateNoteInterface {
         Id: task.incidentId,
       },
       status: 1,
-      estateOfficerId: estateOfficerId.body,
+      estateOfficerId: estateOfficerId,
     };
 
     return await this.v1MatAPIGateway

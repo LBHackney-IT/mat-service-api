@@ -12,7 +12,7 @@ export const mockCrmTokenGateway = (): CrmTokenGatewayInterface => ({
 export const mockCrmGateway = (): CrmGatewayInterface => ({
   getTasksForAPatch: jest.fn(() => Promise.resolve([])),
   getTask: jest.fn(() => Promise.resolve(mockTask())),
-  getUserId: jest.fn(() => Promise.resolve({})),
+  getUserId: jest.fn(() => Promise.resolve('fakeUserId')),
   createUser: jest.fn(() => Promise.resolve({})),
   getPatchByOfficerId: jest.fn(() => Promise.resolve({})),
   getPropertyPatch: jest.fn(() => Promise.resolve({})),

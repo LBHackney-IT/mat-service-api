@@ -77,8 +77,9 @@ export default class SetupUser implements SetupUserInterface {
           userMapping
         );
 
-        if (createResponse.error)
+        if (isError(createResponse)) {
           return new Error('Error creating user mapping');
+        }
 
         return true;
       }

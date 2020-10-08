@@ -8,17 +8,10 @@ export interface MatPostgresGatewayInterface {
   getUserMapping(
     emailAddress: string
   ): Promise<Result<UserMappingTable | null>>;
-  createUserMapping(
-    userMapping: UserMappingTable
-  ): Promise<CreateUserMappingResponse>;
+  createUserMapping(userMapping: UserMappingTable): Promise<Result<void>>;
   getLatestItvTaskSyncDate(): Promise<Result<Date | null>>;
   createItvTask(task: ITVTaskTable): Promise<Result<boolean>>;
   healthCheck(): Promise<CheckResult>;
-}
-
-export interface CreateUserMappingResponse {
-  body?: boolean;
-  error?: number;
 }
 
 export interface UserMappingTable {
@@ -80,23 +73,13 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
 
   public async createUserMapping(
     userMapping: UserMappingTable
-  ): Promise<CreateUserMappingResponse> {
-    try {
-      await this.connection.none(
+  ): Promise<Result<void>> {
+    return this.connection
+      .none(
         'INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${username})',
         userMapping
-      );
-
-      return {
-        body: true,
-        error: undefined,
-      };
-    } catch (error) {
-      return Promise.resolve({
-        body: error,
-        error: 500,
-      });
-    }
+      )
+      .catch((e) => e);
   }
 
   public async getLatestItvTaskSyncDate(): Promise<Result<Date | null>> {

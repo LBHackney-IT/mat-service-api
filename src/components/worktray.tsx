@@ -1,5 +1,6 @@
 import React from 'react';
-import { WorkTray } from 'lbh-frontend-react';
+import { WorkTray, Heading, HeadingLevels } from 'lbh-frontend-react';
+import Head from 'next/head';
 
 export interface Props {
   columns: Column[];
@@ -34,6 +35,7 @@ enum Status {
 const Worktray = (props: Props): React.ReactElement => {
   return (
     <div data-test="worktray-container">
+      <Heading level={HeadingLevels.H1}>Work tray items</Heading>
       <WorkTray
         columns={props.columns}
         rows={props.rows}

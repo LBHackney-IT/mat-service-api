@@ -30,28 +30,26 @@ export default function Home(): React.ReactNode {
 
   if (fetchState === 'done') {
     return (
-      <html lang="en-gb">
-        <Layout>
-          <div>
-            <div className="container">
-              <Head>
-                <title>Home - Manage a Tenancy</title>
-                <link rel="icon" href="/favicon.ico" />
-              </Head>
-              <main>
-                <Worktray columns={workTrayColumns} rows={tasks} />
-              </main>
-            </div>
+      <Layout>
+        <div>
+          <div className="container">
+            <Head>
+              <title>Home - Manage a Tenancy</title>
+              <link rel="icon" href="/favicon.ico" />
+            </Head>
+            <main>
+              <Worktray columns={workTrayColumns} rows={tasks} />
+            </main>
           </div>
+        </div>
 
-          <style jsx>{`
-            .message {
-              font-weight: 700;
-              font-size: 1.1875rem;
-            }
-          `}</style>
-        </Layout>
-      </html>
+        <style jsx>{`
+          .message {
+            font-weight: 700;
+            font-size: 1.1875rem;
+          }
+        `}</style>
+      </Layout>
     );
   } else {
     return <LoadingPage error={fetchState === 'error'} />;

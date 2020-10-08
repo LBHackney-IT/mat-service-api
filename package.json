@@ -48,7 +48,7 @@
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
     "lbh-frontend": "^3.0.0",
-    "lbh-frontend-react": "^0.5.6",
+    "lbh-frontend-react": "^0.5.7",
     "moment": "^2.27.0",
     "next": "9.4.4",
     "next-absolute-url": "^1.2.2",

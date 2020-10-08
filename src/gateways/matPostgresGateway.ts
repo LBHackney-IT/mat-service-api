@@ -5,7 +5,9 @@ import { Result } from '../lib/utils';
 
 export interface MatPostgresGatewayInterface {
   getTrasByPatchId(patchId: string): Promise<Result<TRAPatchMapping[]>>;
-  getUserMapping(emailAddress: string): Promise<GetUserMappingResponse>;
+  getUserMapping(
+    emailAddress: string
+  ): Promise<Result<UserMappingTable | null>>;
   createUserMapping(
     userMapping: UserMappingTable
   ): Promise<CreateUserMappingResponse>;
@@ -14,17 +16,12 @@ export interface MatPostgresGatewayInterface {
   healthCheck(): Promise<CheckResult>;
 }
 
-export interface GetUserMappingResponse {
-  body?: UserMappingTable;
-  error?: number;
-}
-
 export interface CreateUserMappingResponse {
   body?: boolean;
   error?: number;
 }
 
-interface UserMappingTable {
+export interface UserMappingTable {
   username: string;
   emailAddress: string;
   usercrmid: string;
@@ -66,29 +63,19 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
 
   public async getUserMapping(
     emailAddress: string
-  ): Promise<GetUserMappingResponse> {
-    try {
-      const result: UserMappingTable = await this.connection.one(
+  ): Promise<Result<UserMappingTable | null>> {
+    return this.connection
+      .one<UserMappingTable>(
         'SELECT * FROM usermappings WHERE emailaddress = $1',
         emailAddress
-      );
-
-      return Promise.resolve({
-        body: result,
-        error: undefined,
+      )
+      .then((result) => result)
+      .catch((error) => {
+        if (error.message == 'No data returned from the query.') {
+          return null;
+        }
+        return error;
       });
-    } catch (error) {
-      if (error.message == 'No data returned from the query.') {
-        return Promise.resolve({
-          body: undefined,
-          error: undefined,
-        });
-      }
-      return Promise.resolve({
-        body: undefined,
-        error: 500,
-      });
-    }
   }
 
   public async createUserMapping(

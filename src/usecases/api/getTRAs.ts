@@ -38,10 +38,12 @@ export default class GetTRAs implements GetTRAsInterface {
       emailAddress
     );
 
-    if (!userDetails.body) return new Error('User not found');
+    if (isError(userDetails) || !userDetails) {
+      return new Error('User not found');
+    }
 
     const userPatch = await this.crmGateway.getPatchByOfficerId(
-      userDetails.body.usercrmid
+      userDetails.usercrmid
     );
 
     if (!userPatch || !userPatch.body || !userPatch.body.patchId) {

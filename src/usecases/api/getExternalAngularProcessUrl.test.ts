@@ -45,9 +45,7 @@ describe('GetExternalAngularProcessUrl', () => {
       })
     );
     matPostgresGateway.getUserMapping = jest.fn(() =>
-      Promise.resolve({
-        body: userMapping,
-      })
+      Promise.resolve(userMapping)
     );
     crmGateway.getPatchByOfficerId = jest.fn(() =>
       Promise.resolve({
@@ -114,6 +112,7 @@ describe('GetExternalAngularProcessUrl', () => {
     crmGateway.getTask = jest.fn(() =>
       Promise.resolve({ body: { processType: 'itv' } })
     );
+    matPostgresGateway.getUserMapping = jest.fn(() => Promise.resolve(null));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
@@ -126,9 +125,7 @@ describe('GetExternalAngularProcessUrl', () => {
     crmGateway.getTask = jest.fn(() =>
       Promise.resolve({ body: { processType: 'itv' } })
     );
-    matPostgresGateway.getUserMapping = jest.fn(() =>
-      Promise.resolve({ body: {} })
-    );
+    matPostgresGateway.getUserMapping = jest.fn(() => Promise.resolve({}));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'

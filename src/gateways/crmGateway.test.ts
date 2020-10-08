@@ -80,7 +80,7 @@ describe('CrmGateway', () => {
       const error = faker.lorem.words();
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 
-      const response = await crmGateway.getNotesForTask(emailAddress);
+      const response = await crmGateway.getUserId(emailAddress);
 
       expect(response).toStrictEqual({ error: error });
     });
@@ -96,7 +96,7 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getNotesForTask(id);
 
-      expect(response).toStrictEqual({ body: notes });
+      expect(response).toStrictEqual(notes);
     });
 
     it('returns an error from the API', async () => {
@@ -106,7 +106,8 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getNotesForTask(id);
 
-      expect(response).toStrictEqual({ error: error });
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toStrictEqual(error);
     });
   });
 

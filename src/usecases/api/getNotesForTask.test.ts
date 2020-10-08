@@ -18,10 +18,7 @@ describe('GetNotesForTask', () => {
   it('Returns a response when no errors are found', async () => {
     const mockResponse = crmToNotes(MockCrmNoteResponse());
 
-    crmGateway.getNotesForTask = () =>
-      Promise.resolve({
-        body: mockResponse,
-      });
+    crmGateway.getNotesForTask = () => Promise.resolve(mockResponse);
 
     const taskId = faker.lorem.word();
     const response = await getNotesForTask.execute(taskId);
@@ -30,33 +27,14 @@ describe('GetNotesForTask', () => {
     expect(response).toEqual(mockResponse);
   });
 
-  it('Returns a 500 error when errors are found', async () => {
-    crmGateway.getNotesForTask = () =>
-      Promise.resolve({
-        body: undefined,
-        error: 'Anything',
-      });
+  it('Returns the error when errors are found', async () => {
+    crmGateway.getNotesForTask = () => Promise.resolve(new Error('Anything'));
 
     const taskId = faker.lorem.word();
 
     const response = await getNotesForTask.execute(taskId);
 
     expect(isError(response)).toEqual(true);
-    expect(response.message).toEqual('Unknown error getting notes for task');
-  });
-
-  it('Returns a 401 error when errors is NotAuthorised', async () => {
-    crmGateway.getNotesForTask = () =>
-      Promise.resolve({
-        body: undefined,
-        error: 'NotAuthorised',
-      });
-
-    const taskId = faker.lorem.word();
-
-    const response = await getNotesForTask.execute(taskId);
-
-    expect(isError(response)).toEqual(true);
-    expect(response.message).toEqual('Not Authorised');
+    expect(response.message).toEqual('Anything');
   });
 });

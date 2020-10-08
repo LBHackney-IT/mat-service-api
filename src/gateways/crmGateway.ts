@@ -52,6 +52,7 @@ export interface CrmGatewayInterface {
   ): Promise<Result<Task[]>>;
   getTasksForTagRef(tag_ref: string): Promise<Result<Task[]>>;
   getTask(taskId: string): Promise<Result<Task>>;
+  getNotesForTask(taskId: string): Promise<Result<Note[]>>;
   getUserId(emailAddress: string): Promise<GatewayResponse<string>>;
   createUser(
     emailAddress: string,
@@ -66,7 +67,6 @@ export interface CrmGatewayInterface {
     uprn: string
   ): Promise<GatewayResponse<PropertyPatchDetails>>;
   getOfficersByAreaId(areaId: number): Promise<GatewayResponse<Officer[]>>;
-  getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
   getIntroductoryTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
   healthCheck(): Promise<CheckResult>;
@@ -168,32 +168,19 @@ class CrmGateway implements CrmGatewayInterface {
       .catch(errorHandler);
   }
 
-  public async getNotesForTask(
-    taskId: string
-  ): Promise<GatewayResponse<Note[]>> {
+  public async getNotesForTask(taskId: string): Promise<Result<Note[]>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getNotesForTaskById(taskId);
 
-    return await axios
-      .get(
+    return axios
+      .get<CrmResponse>(
         `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
-      .then((response) => {
-        const data = response.data as CrmResponse;
-        const notes = crmToNotes(data);
-
-        return {
-          body: notes,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+      .then((response) => crmToNotes(response.data))
+      .catch(errorHandler);
   }
 
   public async getUserId(

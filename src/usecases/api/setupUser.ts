@@ -60,10 +60,10 @@ export default class SetupUser implements SetupUserInterface {
               splitName[0],
               splitName[splitName.length - 1]
             );
-            if (crmCreateResponse.error || !crmCreateResponse.body) {
+            if (isError(crmCreateResponse)) {
               return new Error('Error creating CRM user');
             }
-            crmUserGuid = crmCreateResponse.body;
+            crmUserGuid = crmCreateResponse;
           } else {
             return crmUserGuid;
           }

@@ -59,7 +59,7 @@ export interface CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<string>>;
+  ): Promise<Result<string>>;
   getPatchByOfficerId(
     emailAddress: string
   ): Promise<GatewayResponse<PatchDetailsInterface>>;
@@ -214,9 +214,9 @@ class CrmGateway implements CrmGatewayInterface {
     fullName: string,
     firstName: string,
     familyName: string
-  ): Promise<GatewayResponse<string>> {
+  ): Promise<Result<string>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmUser = {
       hackney_name: fullName,
@@ -231,17 +231,8 @@ class CrmGateway implements CrmGatewayInterface {
         crmUser,
         this.headers()
       )
-      .then((response) => {
-        const data = response.headers.location.match(/\((.*?)\)/)[1];
-        return {
-          body: data,
-        };
-      })
-      .catch((error) => {
-        return {
-          error: error.message,
-        };
-      });
+      .then((response) => response.headers.location.match(/\((.*?)\)/)[1])
+      .catch(errorHandler);
   }
 
   public async getPatchByOfficerId(

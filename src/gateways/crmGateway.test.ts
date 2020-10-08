@@ -11,6 +11,7 @@ import MockCrmOfficersPerAreaIdResponse from '../tests/helpers/generateMockCrmOf
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
 import { mockCrmTokenGateway } from '../tests/helpers/mockGateways';
 import { CrmTokenGatewayInterface } from './crmTokenGateway';
+import { isError, isSuccess } from '../lib/utils';
 
 jest.mock('axios');
 
@@ -41,27 +42,22 @@ describe('CrmGateway', () => {
 
       const tasks = crmResponseToTasks(data);
 
-      expect(response).toStrictEqual({ body: tasks });
+      expect(isSuccess(response)).toEqual(true);
+      expect(response).toStrictEqual(tasks);
     });
 
     it('returns an human readable error when unsuccessful', async () => {
       const errorMessage = 'Network Error';
-      const errorResponse = {
-        error: errorMessage,
-      };
-      const isManager = faker.random.boolean();
-      const areaManagerId = faker.lorem.word();
-      const patchId = faker.lorem.word();
-
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
       const response = await crmGateway.getTasksForAPatch(
-        isManager,
-        areaManagerId,
-        patchId
+        faker.random.boolean(),
+        faker.lorem.word(),
+        faker.lorem.word()
       );
 
-      expect(response).toStrictEqual(errorResponse);
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toEqual(errorMessage);
     });
   });
 

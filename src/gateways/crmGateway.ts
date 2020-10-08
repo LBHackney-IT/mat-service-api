@@ -49,7 +49,7 @@ export interface CrmGatewayInterface {
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
-  ): Promise<GatewayResponse<Task[]>>;
+  ): Promise<Result<Task[]>>;
   getTask(taskId: string): Promise<GatewayResponse<Task>>;
   getUserId(emailAddress: string): Promise<GatewayResponse<string>>;
   createUser(
@@ -111,9 +111,9 @@ class CrmGateway implements CrmGatewayInterface {
     isManager: boolean,
     areaManagerId: string,
     patchId?: string
-  ): Promise<GatewayResponse<Task[]>> {
+  ): Promise<Result<Task[]>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getTasksByPatchAndOfficerIdQuery(
       isManager,
@@ -121,22 +121,15 @@ class CrmGateway implements CrmGatewayInterface {
       patchId
     );
 
-    return await axios
-      .get(
+    return axios
+      .get<CrmResponse>(
         `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
-      .then((response) => {
-        const data = response.data as CrmResponse;
-        return {
-          body: crmResponseToTasks(data),
-        };
-      })
+      .then((response) => crmResponseToTasks(response.data))
       .catch((error: AxiosError) => {
         if (error.response) console.log(error.response.data);
-        return {
-          error: error.message,
-        };
+        return error;
       });
   }
 

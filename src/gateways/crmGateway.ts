@@ -65,7 +65,7 @@ export interface CrmGatewayInterface {
     uprn: string
   ): Promise<GatewayResponse<PropertyPatchDetails>>;
   getOfficersByAreaId(areaId: number): Promise<GatewayResponse<Officer[]>>;
-  getTasksForTagRef(tag_ref: string): Promise<GatewayResponse<Task[]>>;
+  getTasksForTagRef(tag_ref: string): Promise<Result<Task[]>>;
   getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
   getIntroductoryTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
@@ -77,6 +77,11 @@ type Headers = {
     Authorization: string;
     Prefer: string;
   };
+};
+
+const errorHandler = (error: AxiosError): Error => {
+  if (error.response) console.log(error.response.data);
+  return error;
 };
 
 class CrmGateway implements CrmGatewayInterface {
@@ -127,36 +132,22 @@ class CrmGateway implements CrmGatewayInterface {
         this.headers()
       )
       .then((response) => crmResponseToTasks(response.data))
-      .catch((error: AxiosError) => {
-        if (error.response) console.log(error.response.data);
-        return error;
-      });
+      .catch(errorHandler);
   }
 
-  public async getTasksForTagRef(
-    tag_ref: string
-  ): Promise<GatewayResponse<Task[]>> {
+  public async getTasksForTagRef(tag_ref: string): Promise<Result<Task[]>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getTasksByTagRef(tag_ref);
 
     return await axios
-      .get(
+      .get<CrmResponse>(
         `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
-      .then((response) => {
-        const data = response.data as CrmResponse;
-        return {
-          body: crmResponseToTasks(data),
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+      .then((response) => crmResponseToTasks(response.data))
+      .catch(errorHandler);
   }
 
   public async getTask(taskId: string): Promise<GatewayResponse<Task>> {

@@ -148,31 +148,29 @@ describe('CrmGateway', () => {
   });
 
   describe('Get Tasks by tag_ref', () => {
+    const tagRef = '123456/01';
+
     it('successfully fetches data from an API', async () => {
       const data = MockCrmTaskResponse();
-      const tagRef = '123456/01';
+      const tasks = crmResponseToTasks(data);
 
       axios.get.mockResolvedValue({ data: data });
 
       const response = await crmGateway.getTasksForTagRef(tagRef);
 
-      const tasks = crmResponseToTasks(data);
-
-      expect(response).toStrictEqual({ body: tasks });
+      expect(isSuccess(response)).toEqual(true);
+      expect(response).toStrictEqual(tasks);
     });
 
     it('returns an human readable error when unsuccessful', async () => {
       const errorMessage = 'Network Error';
-      const errorResponse = {
-        error: errorMessage,
-      };
-      const tagRef = '123456/01';
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
       const response = await crmGateway.getTasksForTagRef(tagRef);
 
-      expect(response).toEqual(errorResponse);
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toEqual(errorMessage);
     });
   });
 

@@ -2,7 +2,7 @@ import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import { Result } from '../../lib/utils';
+import { isError, Result } from '../../lib/utils';
 
 export interface SendTaskToManagerInterface {
   execute(taskId: string, userEmail: string): Promise<Result<void>>;
@@ -35,25 +35,24 @@ export default class SendTaskToManagerUseCase
 
     // fetch current user from crm
     const officer = await this.matPostgresGateway.getUserMapping(userEmail);
-    if (!officer || !officer.body)
+    if (isError(officer) || !officer) {
       return new Error('Error fetching mapped user');
+    }
 
     // fetch patch data from crm
-    const patch = await this.crmGateway.getPatchByOfficerId(
-      officer.body.usercrmid
-    );
+    const patch = await this.crmGateway.getPatchByOfficerId(officer.usercrmid);
     if (!patch || !patch.body) return new Error('Error fetching patch');
 
     const updateObject: TenancyManagementInteraction = {
-      estateOfficerId: officer.body.usercrmid,
-      officerPatchId: officer.body.usercrmid,
+      estateOfficerId: officer.usercrmid,
+      officerPatchId: officer.usercrmid,
       managerId: patch.body.areaManagerId,
       assignedToPatch: true,
       areaName: patch.body.areaId,
-      estateOfficerName: officer.body.username,
+      estateOfficerName: officer.username,
       interactionId: taskId,
       serviceRequest: {
-        description: `Transferred from: ${officer.body.username}`,
+        description: `Transferred from: ${officer.username}`,
         id: existingTask.body.incidentId,
         requestCallback: false,
       },

@@ -15,7 +15,7 @@ const mockCRMPatchId = faker.random.uuid();
 const mockUserGoogleId = faker.random.number();
 const mockUserCRMId = faker.random.uuid();
 const mockValidUserMapping = {
-  name: mockOfficerName,
+  username: mockOfficerName,
   emailAddress: mockEmailAddress,
   usercrmid: mockUserCRMId,
   googleId: mockUserGoogleId,
@@ -41,13 +41,8 @@ describe('GetTRAs', () => {
 
   it('Returns a response when no errors are found', async () => {
     matPostgresGateway.getUserMapping = () =>
-      Promise.resolve({
-        body: mockValidUserMapping,
-      });
-    matPostgresGateway.getTrasByPatchId = () =>
-      Promise.resolve({
-        body: [mockTRA],
-      });
+      Promise.resolve(mockValidUserMapping);
+    matPostgresGateway.getTrasByPatchId = () => Promise.resolve([mockTRA]);
 
     crmGateway.getPatchByOfficerId = () =>
       Promise.resolve({
@@ -82,15 +77,8 @@ describe('GetTRAs', () => {
 
   it('returns a empty list of TRAs when officer is not linked to a patch', async () => {
     matPostgresGateway.getUserMapping = () =>
-      Promise.resolve({
-        body: mockValidUserMapping,
-        error: undefined,
-      });
-    matPostgresGateway.getTrasByPatchId = () =>
-      Promise.resolve({
-        body: [mockTRA],
-        error: undefined,
-      });
+      Promise.resolve(mockValidUserMapping);
+    matPostgresGateway.getTrasByPatchId = () => Promise.resolve([mockTRA]);
 
     crmGateway.getPatchByOfficerId = () =>
       Promise.resolve({

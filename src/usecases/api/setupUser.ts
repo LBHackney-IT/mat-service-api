@@ -2,7 +2,7 @@ import UserMapping from '../../interfaces/userMapping';
 import jwt from 'jsonwebtoken';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { Result } from '../../lib/utils';
+import { Result, isError } from '../../lib/utils';
 
 interface HackneyToken {
   sub: string;
@@ -42,8 +42,9 @@ export default class SetupUser implements SetupUserInterface {
       const userMappingExists = await this.matPostgresGateway.getUserMapping(
         hackneyToken.email
       );
+      if (isError(userMappingExists)) return userMappingExists;
 
-      if (userMappingExists.body) {
+      if (userMappingExists) {
         return true;
       } else {
         // Fetch the CRM user
@@ -76,8 +77,9 @@ export default class SetupUser implements SetupUserInterface {
           userMapping
         );
 
-        if (createResponse.error)
+        if (isError(createResponse)) {
           return new Error('Error creating user mapping');
+        }
 
         return true;
       }

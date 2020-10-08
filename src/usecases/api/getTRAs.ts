@@ -1,7 +1,7 @@
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { TRAPatchMappingResponseInterface } from '../../mappings/apiTRAToUiTRA';
-import { Result } from '../../lib/utils';
+import { isError, Result } from '../../lib/utils';
 
 export interface officerPatchAssociationInterface {
   patchname?: string;
@@ -38,10 +38,12 @@ export default class GetTRAs implements GetTRAsInterface {
       emailAddress
     );
 
-    if (!userDetails.body) throw new Error('User not found');
+    if (isError(userDetails) || !userDetails) {
+      return new Error('User not found');
+    }
 
     const userPatch = await this.crmGateway.getPatchByOfficerId(
-      userDetails.body.usercrmid
+      userDetails.usercrmid
     );
 
     if (!userPatch || !userPatch.body || !userPatch.body.patchId) {
@@ -54,10 +56,11 @@ export default class GetTRAs implements GetTRAsInterface {
     const tras = await this.matPostgresGateway.getTrasByPatchId(
       userPatch.body.patchId
     );
+    if (isError(tras)) return tras;
 
     const traDetails: officerPatchAssociationInterface = {
       patchname: userPatch.body.patchName,
-      tras: tras.body || [],
+      tras: tras,
       officername: userPatch.body.officerName,
     };
 

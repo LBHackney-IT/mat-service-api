@@ -20,12 +20,10 @@ describe('sendTaskToManager', () => {
     body: { incidentId: 'fakeIncidentId' },
   };
   const fakeUserMappingResponse = {
-    body: {
-      usercrmid: 'fakeCrmId',
-      username: 'Fake User',
-      emailAddress: 'me@me.com',
-      googleId: '123',
-    },
+    usercrmid: 'fakeCrmId',
+    username: 'Fake User',
+    emailAddress: 'me@me.com',
+    googleId: '123',
   };
   const fakePatchResponse = {
     body: {
@@ -54,7 +52,7 @@ describe('sendTaskToManager', () => {
   it('Should assemble the correct TMI data to send to the API', async () => {
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(result).toEqual(true);
     expect(v1ApiGateway.patchTenancyManagementInteraction).toHaveBeenCalledWith(
@@ -76,17 +74,17 @@ describe('sendTaskToManager', () => {
     crmGateway.getTask = jest.fn();
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Error fetching task from crm');
   });
 
   it("Should return an error if it can't fetch the mapped user from postgres", async () => {
-    matPostgresGateway.getUserMapping = jest.fn();
+    matPostgresGateway.getUserMapping = () => Promise.resolve(null);
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Error fetching mapped user');
@@ -96,7 +94,7 @@ describe('sendTaskToManager', () => {
     crmGateway.getPatchByOfficerId = jest.fn();
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Error fetching patch');
@@ -108,7 +106,7 @@ describe('sendTaskToManager', () => {
     );
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Unknown error closing task');

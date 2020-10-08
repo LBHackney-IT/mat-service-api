@@ -38,13 +38,6 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
     if (!existingTask || !existingTask.body)
       return new Error('Error fetching task from crm');
 
-    // fetch current user from crm
-    const officer = await this.matPostgresGateway.getUserMapping(
-      userDetails.email
-    );
-    if (!officer || !officer.body)
-      return new Error('Error fetching mapped user');
-
     // fetch patch data from crm
     const housingOfficerPatch = await this.crmGateway.getPatchByOfficerId(
       newOfficerId

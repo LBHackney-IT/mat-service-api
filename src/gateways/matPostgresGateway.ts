@@ -4,51 +4,36 @@ import { IClient } from 'pg-promise/typescript/pg-subset';
 import { Result } from '../lib/utils';
 
 export interface MatPostgresGatewayInterface {
-  getTrasByPatchId(patchId: string): Promise<GetTRAPatchMappingResponse>;
-  getUserMapping(emailAddress: string): Promise<GetUserMappingResponse>;
-  createUserMapping(
-    userMapping: UserMappingTable
-  ): Promise<CreateUserMappingResponse>;
+  getTrasByPatchId(patchId: string): Promise<Result<TRAPatchMapping[]>>;
+  getUserMapping(
+    emailAddress: string
+  ): Promise<Result<UserMappingTable | null>>;
+  createUserMapping(userMapping: UserMappingTable): Promise<Result<void>>;
   getLatestItvTaskSyncDate(): Promise<Result<Date | null>>;
-  createItvTask(task: ITVTaskTable): Promise<Result<boolean>>;
+  createItvTask(task: ITVTaskTable): Promise<Result<void>>;
   healthCheck(): Promise<CheckResult>;
 }
 
-export interface GetUserMappingResponse {
-  body?: UserMappingTable;
-  error?: number;
-}
-
-export interface CreateUserMappingResponse {
-  body?: boolean;
-  error?: number;
-}
-
-interface UserMappingTable {
+export interface UserMappingTable {
   username: string;
   emailAddress: string;
   usercrmid: string;
   googleId: string;
 }
 
-interface GetTRAPatchMappingResponse {
-  body?: TRAPatchMapping[];
-  error?: number;
-}
-
-interface TRAPatchMapping {
+export interface TRAPatchMapping {
   name: string;
   traid: number;
   patchcrmid: string;
 }
 
-interface ITVTaskTable {
+export interface ITVTaskTable {
   tag_ref: string;
   created: Date;
   crm_id: string;
 }
 
-class MatPostgresGateway implements MatPostgresGatewayInterface {
+export default class MatPostgresGateway implements MatPostgresGatewayInterface {
   connection: pgPromise.IDatabase<Record<string, unknown>, IClient>;
 
   constructor(
@@ -59,110 +44,73 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
 
   public async getTrasByPatchId(
     patchId: string
-  ): Promise<GetTRAPatchMappingResponse> {
-    try {
-      const results: TRAPatchMapping[] = await this.connection.many(
+  ): Promise<Result<TRAPatchMapping[]>> {
+    return this.connection
+      .many<TRAPatchMapping>(
         'SELECT  TRA.Name, TRA.TraId, TRAPatchAssociation.PatchCRMId FROM	TRA INNER JOIN TRAPatchAssociation ON TRA.TRAId = TRAPatchAssociation.TRAId WHERE TRAPatchAssociation.PatchCRMId = ${id}',
         { id: patchId }
-      );
-
-      return Promise.resolve({
-        body: results,
-        error: undefined,
-      });
-    } catch (error) {
-      return Promise.resolve({
-        body: [],
-        error: 500,
-      });
-    }
+      )
+      .then((result) => result)
+      .catch((e) => e);
   }
 
   public async getUserMapping(
     emailAddress: string
-  ): Promise<GetUserMappingResponse> {
-    try {
-      const result: UserMappingTable = await this.connection.one(
+  ): Promise<Result<UserMappingTable | null>> {
+    return this.connection
+      .one<UserMappingTable>(
         'SELECT * FROM usermappings WHERE emailaddress = $1',
         emailAddress
-      );
-
-      return Promise.resolve({
-        body: result,
-        error: undefined,
+      )
+      .then((result) => result)
+      .catch((error) => {
+        if (error.message == 'No data returned from the query.') {
+          return null;
+        }
+        return error;
       });
-    } catch (error) {
-      if (error.message == 'No data returned from the query.') {
-        return Promise.resolve({
-          body: undefined,
-          error: undefined,
-        });
-      }
-      return Promise.resolve({
-        body: undefined,
-        error: 500,
-      });
-    }
   }
 
   public async createUserMapping(
     userMapping: UserMappingTable
-  ): Promise<CreateUserMappingResponse> {
-    try {
-      await this.connection.none(
+  ): Promise<Result<void>> {
+    return this.connection
+      .none(
         'INSERT INTO usermappings(emailaddress, usercrmid, googleid, username) VALUES(${emailAddress}, ${usercrmid}, ${googleId}, ${username})',
         userMapping
-      );
-
-      return {
-        body: true,
-        error: undefined,
-      };
-    } catch (error) {
-      return Promise.resolve({
-        body: error,
-        error: 500,
-      });
-    }
+      )
+      .catch((e) => e);
   }
 
   public async getLatestItvTaskSyncDate(): Promise<Result<Date | null>> {
-    try {
-      const results = await this.connection.one(
-        'SELECT MAX(created) FROM itv_tasks'
-      );
-
-      return Promise.resolve(results.max);
-    } catch (error) {
-      return new Error(error.message);
-    }
+    return this.connection
+      .one('SELECT MAX(created) FROM itv_tasks')
+      .then((result) => result.max)
+      .catch((e) => e);
   }
 
-  async createItvTask(task: ITVTaskTable): Promise<Result<boolean>> {
-    try {
-      await this.connection.none(
+  async createItvTask(task: ITVTaskTable): Promise<Result<void>> {
+    return this.connection
+      .none(
         'INSERT INTO itv_tasks (tag_ref, created, crm_id) VALUES (${tag_ref}, ${created}, ${crm_id})',
         task
-      );
-      return true;
-    } catch (error) {
-      return new Error(error.message);
-    }
+      )
+      .catch((e) => e);
   }
 
   public async healthCheck(): Promise<CheckResult> {
     const error = { success: false, message: 'Could not connect to postgres' };
-    try {
-      const result = await this.connection.one('SELECT true as success');
-      if (result.success) {
-        return { success: true };
-      } else {
+    return this.connection
+      .one('SELECT true as success')
+      .then((result) => {
+        if (result.success) {
+          return { success: true };
+        } else {
+          return error;
+        }
+      })
+      .catch(() => {
         return error;
-      }
-    } catch (e) {
-      return error;
-    }
+      });
   }
 }
-
-export default MatPostgresGateway;

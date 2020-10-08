@@ -10,7 +10,7 @@ export interface MatPostgresGatewayInterface {
   ): Promise<Result<UserMappingTable | null>>;
   createUserMapping(userMapping: UserMappingTable): Promise<Result<void>>;
   getLatestItvTaskSyncDate(): Promise<Result<Date | null>>;
-  createItvTask(task: ITVTaskTable): Promise<Result<boolean>>;
+  createItvTask(task: ITVTaskTable): Promise<Result<void>>;
   healthCheck(): Promise<CheckResult>;
 }
 
@@ -21,19 +21,19 @@ export interface UserMappingTable {
   googleId: string;
 }
 
-interface TRAPatchMapping {
+export interface TRAPatchMapping {
   name: string;
   traid: number;
   patchcrmid: string;
 }
 
-interface ITVTaskTable {
+export interface ITVTaskTable {
   tag_ref: string;
   created: Date;
   crm_id: string;
 }
 
-class MatPostgresGateway implements MatPostgresGatewayInterface {
+export default class MatPostgresGateway implements MatPostgresGatewayInterface {
   connection: pgPromise.IDatabase<Record<string, unknown>, IClient>;
 
   constructor(
@@ -83,42 +83,34 @@ class MatPostgresGateway implements MatPostgresGatewayInterface {
   }
 
   public async getLatestItvTaskSyncDate(): Promise<Result<Date | null>> {
-    try {
-      const results = await this.connection.one(
-        'SELECT MAX(created) FROM itv_tasks'
-      );
-
-      return Promise.resolve(results.max);
-    } catch (error) {
-      return new Error(error.message);
-    }
+    return this.connection
+      .one('SELECT MAX(created) FROM itv_tasks')
+      .then((result) => result.max)
+      .catch((e) => e);
   }
 
-  async createItvTask(task: ITVTaskTable): Promise<Result<boolean>> {
-    try {
-      await this.connection.none(
+  async createItvTask(task: ITVTaskTable): Promise<Result<void>> {
+    return this.connection
+      .none(
         'INSERT INTO itv_tasks (tag_ref, created, crm_id) VALUES (${tag_ref}, ${created}, ${crm_id})',
         task
-      );
-      return true;
-    } catch (error) {
-      return new Error(error.message);
-    }
+      )
+      .catch((e) => e);
   }
 
   public async healthCheck(): Promise<CheckResult> {
     const error = { success: false, message: 'Could not connect to postgres' };
-    try {
-      const result = await this.connection.one('SELECT true as success');
-      if (result.success) {
-        return { success: true };
-      } else {
+    return this.connection
+      .one('SELECT true as success')
+      .then((result) => {
+        if (result.success) {
+          return { success: true };
+        } else {
+          return error;
+        }
+      })
+      .catch(() => {
         return error;
-      }
-    } catch (e) {
-      return error;
-    }
+      });
   }
 }
-
-export default MatPostgresGateway;

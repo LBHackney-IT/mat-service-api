@@ -2,6 +2,7 @@ import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { CrmTokenGatewayInterface } from '../../gateways/crmTokenGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
+import mockTask from '../../tests/helpers/generateTask';
 import MockTenancy from './generateTenancy';
 
 export const mockCrmTokenGateway = (): CrmTokenGatewayInterface => ({
@@ -10,7 +11,7 @@ export const mockCrmTokenGateway = (): CrmTokenGatewayInterface => ({
 
 export const mockCrmGateway = (): CrmGatewayInterface => ({
   getTasksForAPatch: jest.fn(() => Promise.resolve([])),
-  getTask: jest.fn(() => Promise.resolve({})),
+  getTask: jest.fn(() => Promise.resolve(mockTask())),
   getUserId: jest.fn(() => Promise.resolve({})),
   createUser: jest.fn(() => Promise.resolve({})),
   getPatchByOfficerId: jest.fn(() => Promise.resolve({})),

@@ -18,7 +18,7 @@ describe('sendTaskToManager', () => {
   let dummyTaskId = 'abc-123-def';
 
   const fakeTaskResponse = {
-    body: { incidentId: 'fakeIncidentId' },
+    incidentId: 'fakeIncidentId',
   };
   const fakeUserMappingResponse = {
     usercrmid: 'fakeCrmId',
@@ -74,7 +74,7 @@ describe('sendTaskToManager', () => {
   });
 
   it("Should return an error if it can't fetch the task from crm", async () => {
-    crmGateway.getTask = jest.fn();
+    crmGateway.getTask = () => Promise.resolve(new Error('No task found'));
     const result = await useCase.execute(
       dummyTaskId,
       fakeUserMappingResponse.email

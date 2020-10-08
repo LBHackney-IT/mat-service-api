@@ -4,6 +4,7 @@ import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import HackneyToken from '../../interfaces/hackneyToken';
 import { NewNote } from '../../interfaces/note';
 import { Task } from '../../interfaces/task';
+import { isError } from '../../lib/utils';
 import MockCreateNote from '../../tests/helpers/generateCreateNote';
 import MockHackneyToken from '../../tests/helpers/generateHackneyToken';
 import MockTask from '../../tests/helpers/generateTask';
@@ -28,7 +29,7 @@ describe('CreateNote', () => {
     v1MatAPIGateway = mockV1MatApiGateway();
     crmGateway = mockCrmGateway();
     crmGateway.getUserId = () => Promise.resolve({ body: 'fakeUserId' });
-    crmGateway.getTask = () => Promise.resolve({ body: dummyTask });
+    crmGateway.getTask = () => Promise.resolve(dummyTask);
     usecase = new CreateNote(v1MatAPIGateway, crmGateway);
   });
 
@@ -72,6 +73,6 @@ describe('CreateNote', () => {
       dummyHackneyToken,
       'this is a note'
     );
-    expect(result).toEqual(new Error());
+    expect(isError(result)).toEqual(true);
   });
 });

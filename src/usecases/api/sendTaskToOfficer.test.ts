@@ -21,10 +21,7 @@ describe('sendTaskToOfficer', () => {
     email: 'fakeuser@hackney.gov.uk',
   };
 
-  // const dummyTask = MockTask();
-  const fakeTaskResponse = {
-    body: MockTask(),
-  };
+  const fakeTaskResponse = MockTask();
   const fakeUserMappingResponse = {
     usercrmid: 'fakeCrmId',
     username: 'Fake User',
@@ -71,13 +68,13 @@ describe('sendTaskToOfficer', () => {
       serviceRequest: {
         description: 'Transferred from: Fake User',
         requestCallback: false,
-        id: fakeTaskResponse.body.incidentId,
+        id: fakeTaskResponse.incidentId,
       },
     });
   });
 
   it("Should return an error if it can't fetch the task from crm", async () => {
-    crmGateway.getTask = jest.fn();
+    crmGateway.getTask = () => Promise.resolve(new Error('No task found'));
     const result = await useCase.execute(
       dummyTaskId,
       fakeUserMappingResponse.email,

@@ -50,7 +50,8 @@ export interface CrmGatewayInterface {
     areaManagerId: string,
     patchId?: string
   ): Promise<Result<Task[]>>;
-  getTask(taskId: string): Promise<GatewayResponse<Task>>;
+  getTasksForTagRef(tag_ref: string): Promise<Result<Task[]>>;
+  getTask(taskId: string): Promise<Result<Task>>;
   getUserId(emailAddress: string): Promise<GatewayResponse<string>>;
   createUser(
     emailAddress: string,
@@ -65,7 +66,6 @@ export interface CrmGatewayInterface {
     uprn: string
   ): Promise<GatewayResponse<PropertyPatchDetails>>;
   getOfficersByAreaId(areaId: number): Promise<GatewayResponse<Officer[]>>;
-  getTasksForTagRef(tag_ref: string): Promise<Result<Task[]>>;
   getNotesForTask(taskId: string): Promise<GatewayResponse<Note[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
   getIntroductoryTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
@@ -150,30 +150,22 @@ class CrmGateway implements CrmGatewayInterface {
       .catch(errorHandler);
   }
 
-  public async getTask(taskId: string): Promise<GatewayResponse<Task>> {
+  public async getTask(taskId: string): Promise<Result<Task>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getTaskById(taskId);
 
     return await axios
-      .get(
+      .get<CrmResponse>(
         `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
       .then((response) => {
-        const data = response.data as CrmResponse;
-        const task = crmResponseToTask(data);
-
-        return {
-          body: task,
-        };
+        if (response.data.value.length === 0) return new Error('No task found');
+        return crmResponseToTask(response.data);
       })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+      .catch(errorHandler);
   }
 
   public async getNotesForTask(

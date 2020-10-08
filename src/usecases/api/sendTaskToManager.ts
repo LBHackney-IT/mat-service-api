@@ -30,8 +30,7 @@ export default class SendTaskToManagerUseCase
   ): Promise<Result<void>> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
-    if (!existingTask || !existingTask.body)
-      return new Error('Error fetching task from crm');
+    if (isError(existingTask)) return new Error('Error fetching task from crm');
 
     // fetch current user from crm
     const officer = await this.matPostgresGateway.getUserMapping(userEmail);
@@ -53,7 +52,7 @@ export default class SendTaskToManagerUseCase
       interactionId: taskId,
       serviceRequest: {
         description: `Transferred from: ${officer.username}`,
-        id: existingTask.body.incidentId,
+        id: existingTask.incidentId,
         requestCallback: false,
       },
     };

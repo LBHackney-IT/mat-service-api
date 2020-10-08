@@ -24,9 +24,7 @@ describe('GetExternalReactProcessUrl', () => {
   test.todo('should create the correct URL');
 
   it('should return an unsupported error', async () => {
-    crmGateway.getTask = jest.fn(() =>
-      Promise.resolve({ body: { processType: 'itv' } })
-    );
+    crmGateway.getTask = jest.fn(() => Promise.resolve({ processType: 'itv' }));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
@@ -36,6 +34,7 @@ describe('GetExternalReactProcessUrl', () => {
   });
 
   it('should return an error if it could not load a task', async () => {
+    crmGateway.getTask = () => Promise.resolve(new Error('No task found'));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'

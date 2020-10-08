@@ -3,7 +3,7 @@ import { TenancyManagementInteraction } from '../../interfaces/tenancyManagement
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import HackneyToken from '../../interfaces/hackneyToken';
-import { Result } from '../../lib/utils';
+import { isError, Result } from '../../lib/utils';
 
 interface SendTaskToOfficerInterface {
   execute(
@@ -35,8 +35,7 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
   ): Promise<Result<void>> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
-    if (!existingTask || !existingTask.body)
-      return new Error('Error fetching task from crm');
+    if (isError(existingTask)) return new Error('Error fetching task from crm');
 
     // fetch patch data from crm
     const housingOfficerPatch = await this.crmGateway.getPatchByOfficerId(
@@ -58,7 +57,7 @@ class SendTaskToOfficerUseCase implements SendTaskToOfficerInterface {
       serviceRequest: {
         description: `Transferred from: ${userDetails.name}`, //use the same value as below for estateOfficerName
         requestCallback: false, //leave as false for now
-        id: existingTask.body.incidentId, //incident ID
+        id: existingTask.incidentId, //incident ID
       },
       estateOfficerName: userDetails.name, //officer’s name, in this case it will be the manager's name
     };

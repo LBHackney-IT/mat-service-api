@@ -29,8 +29,7 @@ class CloseTaskUseCase implements CloseTaskInterface {
   ): Promise<Result<boolean>> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
-    if (!existingTask || !existingTask.body)
-      return new Error('Error fetching task from crm');
+    if (isError(existingTask)) return new Error('Error fetching task from crm');
 
     // fetch current user from crm
     const officer = await this.matPostgresGateway.getUserMapping(userEmail);
@@ -48,7 +47,7 @@ class CloseTaskUseCase implements CloseTaskInterface {
       serviceRequest: {
         description: 'Closed task',
         requestCallback: false,
-        id: existingTask.body.incidentId,
+        id: existingTask.incidentId,
       },
       status: 0,
       estateOfficerId: officer.usercrmid,

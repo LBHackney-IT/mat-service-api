@@ -20,7 +20,7 @@ import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
 import { crmToNotes } from '../mappings/crmToNotes';
 import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
 import crmToPropertyPatch from '../mappings/crmToPropertyPatch';
-import { CrmResponseInterface } from '../mappings/crmToPropertyPatch';
+import { ProperyPatchCrmValue } from '../mappings/crmToPropertyPatch';
 import Note from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { crmResponseToContacts } from '../mappings/crmToContact';
@@ -64,9 +64,7 @@ export interface CrmGatewayInterface {
   getPatchByOfficerId(
     emailAddress: string
   ): Promise<Result<PatchDetailsInterface>>;
-  getPropertyPatch(
-    uprn: string
-  ): Promise<GatewayResponse<PropertyPatchDetails>>;
+  getPropertyPatch(uprn: string): Promise<Result<PropertyPatchDetails>>;
   getOfficersByAreaId(areaId: number): Promise<GatewayResponse<Officer[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
   getIntroductoryTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
@@ -255,27 +253,19 @@ class CrmGateway implements CrmGatewayInterface {
 
   public async getPropertyPatch(
     uprn: string
-  ): Promise<GatewayResponse<PropertyPatchDetails>> {
+  ): Promise<Result<PropertyPatchDetails>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getPropertyPatchByUprn(uprn);
 
-    return await axios
-      .get<CrmResponseInterface>(
+    return axios
+      .get<GenericCrmResponse<ProperyPatchCrmValue[]>>(
         `${this.baseUrl}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         this.headers()
       )
-      .then((response) => {
-        return {
-          body: crmToPropertyPatch(response.data),
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+      .then((response) => crmToPropertyPatch(response.data))
+      .catch(errorHandler);
   }
 
   public async getOfficersByAreaId(

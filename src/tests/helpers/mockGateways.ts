@@ -4,6 +4,7 @@ import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import mockTask from './generateTask';
 import mockPatch from './generatePatchDetails';
+import mockPropertyPatch from './generatePropertyPatchDetails';
 import MockTenancy from './generateTenancy';
 
 export const mockCrmTokenGateway = (): CrmTokenGatewayInterface => ({
@@ -16,7 +17,7 @@ export const mockCrmGateway = (): CrmGatewayInterface => ({
   getUserId: jest.fn(() => Promise.resolve('fakeUserId')),
   createUser: jest.fn(() => Promise.resolve('fakeUserId')),
   getPatchByOfficerId: jest.fn(() => Promise.resolve(mockPatch())),
-  getPropertyPatch: jest.fn(() => Promise.resolve({})),
+  getPropertyPatch: jest.fn(() => Promise.resolve(mockPropertyPatch())),
   getOfficersByAreaId: jest.fn(() => Promise.resolve({})),
   getTasksForTagRef: jest.fn(() => Promise.resolve([])),
   getNotesForTask: jest.fn(() => Promise.resolve([])),

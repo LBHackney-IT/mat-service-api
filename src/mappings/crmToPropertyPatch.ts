@@ -1,25 +1,21 @@
+import { GenericCrmResponse } from '../gateways/crmGateway';
 import { PropertyPatchDetails } from '../interfaces/propertyPatchDetails';
 
-export interface CrmResponseInterface {
-  '@odata.context': string;
-  value: [
-    {
-      '@odata.etag': string;
-      '_hackney_estateofficerpropertypatchid_value@OData.Community.Display.V1.FormattedValue': string;
-      hackney_estateofficerpropertypatchid_value: string;
-      hackney_propertyareapatchid: string;
-      'hackney_areaname@OData.Community.Display.V1.FormattedValue': string;
-      hackney_areaname: number;
-      'hackney_ward@OData.Community.Display.V1.FormattedValue': string;
-      hackney_ward: number;
-      ManagerFullName: string;
-      OfficerFullName: string;
-    }
-  ];
+export interface ProperyPatchCrmValue {
+  '@odata.etag': string;
+  '_hackney_estateofficerpropertypatchid_value@OData.Community.Display.V1.FormattedValue': string;
+  hackney_estateofficerpropertypatchid_value: string;
+  hackney_propertyareapatchid: string;
+  'hackney_areaname@OData.Community.Display.V1.FormattedValue': string;
+  hackney_areaname: number;
+  'hackney_ward@OData.Community.Display.V1.FormattedValue': string;
+  hackney_ward: number;
+  ManagerFullName: string;
+  OfficerFullName: string;
 }
 
 const crmToPropertyPatch = (
-  crmData: CrmResponseInterface
+  crmData: GenericCrmResponse<ProperyPatchCrmValue[]>
 ): PropertyPatchDetails => {
   const patchData = crmData.value[0];
   return {

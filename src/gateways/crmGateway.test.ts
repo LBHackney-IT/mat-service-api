@@ -133,7 +133,8 @@ describe('CrmGateway', () => {
       axios.get.mockResolvedValue({ data: data });
 
       const response = await crmGateway.getPropertyPatch(uprn);
-      expect(response).toEqual({ body: expectedData });
+      expect(isSuccess(response)).toEqual(true);
+      expect(response).toEqual(expectedData);
     });
 
     it('returns an error from the API', async () => {
@@ -143,7 +144,8 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getPropertyPatch(uprn);
 
-      expect(response).toEqual({ error: error });
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toEqual(error);
     });
   });
 

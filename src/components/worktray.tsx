@@ -1,6 +1,5 @@
 import React from 'react';
 import { WorkTray, Heading, HeadingLevels } from 'lbh-frontend-react';
-import Head from 'next/head';
 
 export interface Props {
   columns: Column[];

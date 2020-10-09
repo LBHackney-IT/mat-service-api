@@ -1,4 +1,4 @@
-import { GenericCrmResponse } from '../gateways/crmGateway';
+import { CrmResponse } from '../gateways/crmGateway';
 
 export interface PatchDetailsInterface {
   patchId?: string;
@@ -24,7 +24,7 @@ export interface PatchDetailsCrmValue {
 }
 
 const crmToPatchDetails = (
-  crmResponse: GenericCrmResponse<PatchDetailsCrmValue[]>
+  crmResponse: CrmResponse<PatchDetailsCrmValue[]>
 ): PatchDetailsInterface => {
   const patchDetails: PatchDetailsInterface = {
     patchId: crmResponse.value[0].officerPatchId,
@@ -39,9 +39,7 @@ const crmToPatchDetails = (
   return patchDetails;
 };
 
-const getAreaManagerId = (
-  crmResponse: GenericCrmResponse<PatchDetailsCrmValue[]>
-) => {
+const getAreaManagerId = (crmResponse: CrmResponse<PatchDetailsCrmValue[]>) => {
   let areaManagerId = undefined;
 
   if (crmResponse.value[0].managerId != undefined) {
@@ -52,7 +50,7 @@ const getAreaManagerId = (
   return areaManagerId;
 };
 
-const getAreaId = (crmResponse: GenericCrmResponse<PatchDetailsCrmValue[]>) => {
+const getAreaId = (crmResponse: CrmResponse<PatchDetailsCrmValue[]>) => {
   let areaId = undefined;
   if (crmResponse.value[0].officerAreaId != undefined) {
     areaId = crmResponse.value[0].officerAreaId;

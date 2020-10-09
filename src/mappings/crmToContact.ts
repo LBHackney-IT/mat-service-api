@@ -1,4 +1,4 @@
-import { GenericCrmResponse } from '../gateways/crmGateway';
+import { CrmResponse } from '../gateways/crmGateway';
 import Contact from '../interfaces/contact';
 
 export const convertCrmContactToContact = (crmContact: CrmContact): Contact => {
@@ -27,7 +27,7 @@ export const convertCrmContactToContact = (crmContact: CrmContact): Contact => {
 };
 
 export const crmResponseToContacts = (
-  data: GenericCrmResponse<CrmContact[]>
+  data: CrmResponse<CrmContact[]>
 ): Contact[] => {
   return data.value.map(convertCrmContactToContact);
 };

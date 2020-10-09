@@ -1,4 +1,4 @@
-import { GenericCrmResponse } from '../gateways/crmGateway';
+import { CrmResponse } from '../gateways/crmGateway';
 import { PropertyPatchDetails } from '../interfaces/propertyPatchDetails';
 
 export interface ProperyPatchCrmValue {
@@ -15,7 +15,7 @@ export interface ProperyPatchCrmValue {
 }
 
 const crmToPropertyPatch = (
-  crmData: GenericCrmResponse<ProperyPatchCrmValue[]>
+  crmData: CrmResponse<ProperyPatchCrmValue[]>
 ): PropertyPatchDetails => {
   const patchData = crmData.value[0];
   return {

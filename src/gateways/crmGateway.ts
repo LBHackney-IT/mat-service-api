@@ -1,7 +1,11 @@
 import axios, { AxiosError } from 'axios';
 import { CrmTokenGatewayInterface } from './crmTokenGateway';
 import { Task } from '../interfaces/task';
-import { crmResponseToTask, crmResponseToTasks } from '../mappings/crmToTask';
+import {
+  crmResponseToTask,
+  crmResponseToTasks,
+  CrmTaskValue,
+} from '../mappings/crmToTask';
 import getTasksByPatchAndOfficerIdQuery from './xmlQueryStrings/getTasksByPatchAndOfficerId';
 import getTasksByTagRef from './xmlQueryStrings/getTasksByTagRef';
 import getUserByEmail from './xmlQueryStrings/getUserByEmail';
@@ -13,7 +17,10 @@ import crmToPatchDetails, {
 } from '../mappings/crmToPatchDetails';
 import getTaskById from './xmlQueryStrings/getTaskById';
 import getOfficersByAreaId from './xmlQueryStrings/getOfficersByAreaId';
-import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
+import {
+  CrmOfficerValue,
+  crmToOfficersDetails,
+} from '../mappings/crmToOfficersDetails';
 import { crmResponseToTenancies, CrmTenancy } from '../mappings/crmToTenancy';
 import { Officer } from '../mappings/crmToOfficersDetails';
 import getNotesForTaskById from './xmlQueryStrings/getTaskNotes';
@@ -21,7 +28,7 @@ import { crmToNotes } from '../mappings/crmToNotes';
 import getPropertyPatchByUprn from './xmlQueryStrings/getPropertyPatchByUprn';
 import crmToPropertyPatch from '../mappings/crmToPropertyPatch';
 import { ProperyPatchCrmValue } from '../mappings/crmToPropertyPatch';
-import Note from '../interfaces/note';
+import Note, { CrmNote } from '../interfaces/note';
 import Contact from '../interfaces/contact';
 import { CrmContact, crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
@@ -30,19 +37,9 @@ import getIntroductoryTenanciesByDateQuery from './xmlQueryStrings/getIntroducto
 import { Tenancy } from '../interfaces/tenancy';
 import { PropertyPatchDetails } from '../interfaces/propertyPatchDetails';
 
-export interface CrmResponse {
-  '@odata.context': string;
-  value: Record<string, unknown> | Record<string, unknown>[];
-}
-
-export interface GenericCrmResponse<T> {
+export interface CrmResponse<T> {
   '@odata.context': string;
   value: T;
-}
-
-export interface GatewayResponse<T> {
-  body?: T;
-  error?: string;
 }
 
 export interface CrmGatewayInterface {
@@ -83,7 +80,7 @@ const errorHandler = (error: AxiosError): Error => {
   return error;
 };
 
-class CrmGateway implements CrmGatewayInterface {
+export default class CrmGateway implements CrmGatewayInterface {
   baseUrl: string;
   crmTokenGateway: CrmTokenGatewayInterface;
   crmApiToken: string | undefined;
@@ -126,7 +123,7 @@ class CrmGateway implements CrmGatewayInterface {
     );
 
     return axios
-      .get<CrmResponse>(
+      .get<CrmResponse<CrmTaskValue[]>>(
         `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -140,11 +137,10 @@ class CrmGateway implements CrmGatewayInterface {
 
     const crmQuery = getTasksByTagRef(tag_ref);
 
-    return await axios
-      .get<CrmResponse>(
-        `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
-        this.headers()
-      )
+    return (await axios.get)<CrmResponse<CrmTaskValue[]>>(
+      `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
+      this.headers()
+    )
       .then((response) => crmResponseToTasks(response.data))
       .catch(errorHandler);
   }
@@ -156,7 +152,7 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getTaskById(taskId);
 
     return await axios
-      .get<CrmResponse>(
+      .get<CrmResponse<CrmTaskValue[]>>(
         `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -174,7 +170,7 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getNotesForTaskById(taskId);
 
     return axios
-      .get<CrmResponse>(
+      .get<CrmResponse<CrmNote[]>>(
         `${this.baseUrl}/api/data/v8.2/hackney_tenancymanagementinteractionses?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -189,7 +185,7 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getUserByEmail(emailAddress);
 
     return axios
-      .get<CrmResponse>(
+      .get<CrmResponse<unknown>>(
         `${this.baseUrl}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -243,7 +239,7 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getPatchByOfficerId(officerId);
 
     return axios
-      .get<GenericCrmResponse<PatchDetailsCrmValue[]>>(
+      .get<CrmResponse<PatchDetailsCrmValue[]>>(
         `${this.baseUrl}/api/data/v8.2/hackney_estateofficers?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -260,7 +256,7 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getPropertyPatchByUprn(uprn);
 
     return axios
-      .get<GenericCrmResponse<ProperyPatchCrmValue[]>>(
+      .get<CrmResponse<ProperyPatchCrmValue[]>>(
         `${this.baseUrl}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -275,7 +271,7 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getOfficersByAreaId(areaId);
 
     return axios
-      .get<CrmResponse>(
+      .get<CrmResponse<CrmOfficerValue[]>>(
         `${this.baseUrl}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -290,7 +286,7 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getContactsByTagRef(tagRef);
 
     return axios
-      .get<GenericCrmResponse<CrmContact[]>>(
+      .get<CrmResponse<CrmContact[]>>(
         `${this.baseUrl}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -307,7 +303,7 @@ class CrmGateway implements CrmGatewayInterface {
     const crmQuery = getIntroductoryTenanciesByDateQuery(date);
 
     return axios
-      .get<GenericCrmResponse<CrmTenancy[]>>(
+      .get<CrmResponse<CrmTenancy[]>>(
         `${this.baseUrl}/api/data/v8.2/accounts?fetchXml=${crmQuery}`,
         this.headers()
       )
@@ -331,7 +327,7 @@ class CrmGateway implements CrmGatewayInterface {
     if (!this.crmApiToken) return errorMsg;
 
     return await axios
-      .get<CrmResponse>(
+      .get<CrmResponse<unknown>>(
         `${this.baseUrl}/api/data/v8.2/contacts?$select=createdon&$top=1`,
         this.headers()
       )
@@ -339,6 +335,7 @@ class CrmGateway implements CrmGatewayInterface {
         if (
           response.data &&
           response.data.value &&
+          response.data.value instanceof Array &&
           response.data.value.length
         ) {
           return { success: true };
@@ -352,5 +349,3 @@ class CrmGateway implements CrmGatewayInterface {
       });
   }
 }
-
-export default CrmGateway;

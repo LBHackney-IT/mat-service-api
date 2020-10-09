@@ -3,7 +3,7 @@ import { TenancyManagementInteraction } from '../../interfaces/tenancyManagement
 import GetOfficerPatch from './getOfficerPatch';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { Result, isError } from '../../lib/utils';
+import { Result, isError, isSuccess } from '../../lib/utils';
 
 interface TmiData {
   title: string;
@@ -121,7 +121,7 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
     const result = await this.v1MatAPIGateway.createTenancyManagementInteraction(
       tmi
     );
-    if (result.body) return result.body;
+    if (isSuccess(result)) return result;
 
     return new Error('Error creating task');
   }

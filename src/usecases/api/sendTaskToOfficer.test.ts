@@ -38,16 +38,12 @@ describe('sendTaskToOfficer', () => {
     crmGateway.getTask = () => Promise.resolve(fakeTaskResponse);
     crmGateway.getPatchByOfficerId = () => Promise.resolve(fakePatchResponse);
     matPostgresGateway = mockMatPostgresGateway();
-
     v1ApiGateway = mockV1MatApiGateway();
-    (v1ApiGateway.transferCall = jest.fn(() =>
-      Promise.resolve({ body: true })
-    )),
-      (useCase = new SendTaskToOfficerUseCase(
-        crmGateway,
-        v1ApiGateway,
-        matPostgresGateway
-      ));
+    useCase = new SendTaskToOfficerUseCase(
+      crmGateway,
+      v1ApiGateway,
+      matPostgresGateway
+    );
   });
 
   it('Should assemble the correct  data to send to the API', async () => {

@@ -3,8 +3,14 @@ import axios from 'axios';
 import faker from 'faker';
 import MockTMI from '../tests/helpers/generateTMI';
 import MockCreateNote from '../tests/helpers/generateCreateNote';
+import { isSuccess } from '../lib/utils';
 jest.mock('axios');
 const dummyToken = 'abc123';
+const dummyHeaders = {
+  headers: {
+    Authorization: `Bearer ${dummyToken}`,
+  },
+};
 
 describe('v1MatAPIGateway', () => {
   let gateway: V1MatAPIGateway;
@@ -23,11 +29,7 @@ describe('v1MatAPIGateway', () => {
       expect(axios.post).toHaveBeenCalledWith(
         'http://dummy-api.com/v1/TenancyManagementInteractions/CreateTenancyManagementInteraction',
         dummyPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${dummyToken}`,
-          },
-        }
+        dummyHeaders
       );
     });
 
@@ -39,18 +41,17 @@ describe('v1MatAPIGateway', () => {
         dummyPayload
       );
 
-      expect(response).toEqual({ body: { interactionId: 'dummy' } });
+      expect(response).toEqual({ interactionId: 'dummy' });
     });
 
     it('returns an human readable error when unsuccessful', async () => {
-      const error = 'Network Error';
-      const errorResponse = { error: `V1 API: ${error}` };
+      const error = new Error('Network Error');
 
-      axios.post.mockReturnValue(Promise.reject(new Error(error)));
+      axios.post.mockReturnValue(Promise.reject(error));
 
       const response = await gateway.createTenancyManagementInteraction();
 
-      expect(response).toEqual(errorResponse);
+      expect(response).toEqual(error);
     });
   });
 
@@ -62,11 +63,7 @@ describe('v1MatAPIGateway', () => {
       expect(axios.patch).toHaveBeenCalledWith(
         'http://dummy-api.com/v1/TenancyManagementInteractions',
         dummyPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${dummyToken}`,
-          },
-        }
+        dummyHeaders
       );
     });
 
@@ -78,18 +75,18 @@ describe('v1MatAPIGateway', () => {
         dummyPayload
       );
 
-      expect(response).toEqual({ body: dummyPayload });
+      expect(response).toEqual(dummyPayload);
     });
 
-    it('returns an human readable error when unsuccessful', async () => {
-      const error = 'Network Error';
-      const errorResponse = { error: `V1 API: ${error}` };
+    it('returns an error when unsuccessful', async () => {
+      const error = new Error('Network Error');
 
-      axios.patch.mockReturnValue(Promise.reject(new Error(error)));
-      const tmi = MockTMI();
-      const response = await gateway.patchTenancyManagementInteraction(tmi);
+      axios.patch.mockReturnValue(Promise.reject(error));
+      const response = await gateway.patchTenancyManagementInteraction(
+        MockTMI()
+      );
 
-      expect(response).toEqual(errorResponse);
+      expect(response).toEqual(error);
     });
   });
 
@@ -99,11 +96,7 @@ describe('v1MatAPIGateway', () => {
       gateway.getContactsByUprn('12345678901');
       expect(axios.get).toHaveBeenCalledWith(
         'http://dummy-api.com/v1/Contacts/GetContactsByUprn?urpn=12345678901',
-        {
-          headers: {
-            Authorization: `Bearer ${dummyToken}`,
-          },
-        }
+        dummyHeaders
       );
     });
 
@@ -121,18 +114,17 @@ describe('v1MatAPIGateway', () => {
 
       const response = await gateway.getContactsByUprn('12345678901');
 
-      expect(response.body).toEqual(dummyResponse.data.results);
+      expect(response).toEqual(dummyResponse.data.results);
     });
 
-    it('returns an human readable error when unsuccessful', async () => {
-      const error = 'Network Error';
-      const errorResponse = { error };
+    it('returns an error when unsuccessful', async () => {
+      const error = new Error('Network Error');
 
-      axios.get.mockReturnValue(Promise.reject(new Error(error)));
+      axios.get.mockReturnValue(Promise.reject(error));
 
       const response = await gateway.getContactsByUprn('12345678901');
 
-      expect(response).toEqual(errorResponse);
+      expect(response).toEqual(error);
     });
   });
 
@@ -144,27 +136,22 @@ describe('v1MatAPIGateway', () => {
       expect(axios.put).toHaveBeenCalledWith(
         'http://dummy-api.com/v1/TenancyManagementInteractions/TransferCall',
         dummyTmi,
-        {
-          headers: {
-            Authorization: `Bearer ${dummyToken}`,
-          },
-        }
+        dummyHeaders
       );
     });
 
     it('successfully returns data from an API', async () => {
       axios.put.mockResolvedValue(true);
       const response = await gateway.transferCall(dummyTmi);
-      expect(response.body).toEqual(true);
+      expect(isSuccess(response)).toEqual(true);
     });
 
-    it('returns an human readable error when unsuccessful', async () => {
-      const error = 'Network Error';
-      const errorResponse = { error };
+    it('returns an error when unsuccessful', async () => {
+      const error = new Error('Network Error');
 
-      axios.put.mockReturnValue(Promise.reject(new Error(error)));
+      axios.put.mockReturnValue(Promise.reject(error));
       const response = await gateway.transferCall(dummyTmi);
-      expect(response).toEqual(errorResponse);
+      expect(response).toEqual(error);
     });
   });
 
@@ -176,11 +163,7 @@ describe('v1MatAPIGateway', () => {
       expect(axios.patch).toHaveBeenCalledWith(
         'http://dummy-api.com/v1/TenancyManagementInteractions',
         dummyPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${dummyToken}`,
-          },
-        }
+        dummyHeaders
       );
     });
 
@@ -190,19 +173,17 @@ describe('v1MatAPIGateway', () => {
       axios.patch.mockResolvedValue({ data: { interactionId: 'dummy' } });
       const response = await gateway.createTaskNote(dummyPayload);
 
-      expect(response).toEqual({ body: { interactionId: 'dummy' } });
+      expect(response).toEqual({ interactionId: 'dummy' });
     });
 
-    it('returns an human readable error when unsuccessful', async () => {
-      const dummyPayload = MockCreateNote();
-      const error = 'Network Error';
-      const errorResponse = { error: `V1 API: ${error}` };
+    it('returns an error when unsuccessful', async () => {
+      const error = new Error('Network Error');
 
-      axios.patch.mockReturnValue(Promise.reject(new Error(error)));
+      axios.patch.mockReturnValue(Promise.reject(error));
 
-      const response = await gateway.createTaskNote(dummyPayload);
+      const response = await gateway.createTaskNote(MockCreateNote());
 
-      expect(response).toEqual(errorResponse);
+      expect(response).toEqual(error);
     });
   });
 });

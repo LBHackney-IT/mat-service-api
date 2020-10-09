@@ -38,10 +38,10 @@ export const mockMatPostgresGateway = (): MatPostgresGatewayInterface => ({
 });
 
 export const mockV1MatApiGateway = (): V1MatAPIGatewayInterface => ({
-  getContactsByUprn: jest.fn(() => Promise.resolve({})),
+  getContactsByUprn: jest.fn(() => Promise.resolve([])),
   createTenancyManagementInteraction: jest.fn(() => Promise.resolve({})),
   patchTenancyManagementInteraction: jest.fn(() => Promise.resolve({})),
-  transferCall: jest.fn(() => Promise.resolve({})),
-  createTaskNote: jest.fn(() => Promise.resolve({})),
+  transferCall: jest.fn(() => Promise.resolve()),
+  createTaskNote: jest.fn(() => Promise.resolve()),
   healthCheck: jest.fn(() => Promise.resolve({ success: true })),
 });

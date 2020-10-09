@@ -89,7 +89,7 @@ describe('sendTaskToManager', () => {
 
   it("Should return an error if it can't update the task via v1 api", async () => {
     v1ApiGateway.patchTenancyManagementInteraction = jest.fn(() =>
-      Promise.resolve({})
+      Promise.resolve(new Error())
     );
     const result = await useCase.execute(
       dummyTaskId,

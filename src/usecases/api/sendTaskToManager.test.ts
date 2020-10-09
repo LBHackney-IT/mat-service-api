@@ -40,7 +40,6 @@ describe('sendTaskToManager', () => {
     matPostgresGateway.getUserMapping = () =>
       Promise.resolve(fakeUserMappingResponse);
     v1ApiGateway = mockV1MatApiGateway();
-    v1ApiGateway.transferCall = jest.fn(() => ({ body: true }));
 
     useCase = new SendTaskToManagerUseCase(
       crmGateway,

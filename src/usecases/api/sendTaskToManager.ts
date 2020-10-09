@@ -59,7 +59,7 @@ export default class SendTaskToManagerUseCase
 
     const result = await this.v1ApiGateway.transferCall(updateObject);
 
-    if (!result.body) {
+    if (isError(result)) {
       return new Error('Problem assigning task to manager');
     }
   }

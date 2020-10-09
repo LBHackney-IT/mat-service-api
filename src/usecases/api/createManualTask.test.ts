@@ -56,7 +56,7 @@ describe('createManualTasks', () => {
 
   it('should use the correct data for the TMI', async () => {
     v1MatAPIGateway.createTenancyManagementInteraction = () =>
-      Promise.resolve({ body: { interactionId: 'dummy' } });
+      Promise.resolve({ interactionId: 'dummy' });
 
     dummyGetOfficerPatch.execute.mockResolvedValue(dummyOfficerPatchData);
     const result = await usecase.execute(dummyCallData);

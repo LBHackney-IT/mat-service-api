@@ -2,13 +2,13 @@ import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
-import { Result, isError } from '../../lib/utils';
+import { Result, isError, isSuccess } from '../../lib/utils';
 
 export interface CloseTaskInterface {
   execute(taskId: string, userEmail: string): Promise<Result<boolean>>;
 }
 
-class CloseTaskUseCase implements CloseTaskInterface {
+export default class CloseTaskUseCase implements CloseTaskInterface {
   crmGateway: CrmGatewayInterface;
   v1ApiGateway: V1MatAPIGatewayInterface;
   matPostgresGateway: MatPostgresGatewayInterface;
@@ -53,12 +53,10 @@ class CloseTaskUseCase implements CloseTaskInterface {
       updateObject
     );
 
-    if (result.body) {
+    if (isSuccess(result)) {
       return true;
     } else {
       return new Error('Unknown error closing task');
     }
   }
 }
-
-export default CloseTaskUseCase;

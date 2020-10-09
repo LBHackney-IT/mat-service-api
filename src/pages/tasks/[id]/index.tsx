@@ -175,6 +175,7 @@ export default function TaskPage(): React.ReactNode {
   };
 
   const renderNotesUpdate = () => {
+    if (task.state === 0) return null;
     return (
       <div>
         <Heading level={HeadingLevels.H4}>Update Notes</Heading>
@@ -240,6 +241,7 @@ export default function TaskPage(): React.ReactNode {
   };
 
   const renderCloseTask = () => {
+    if (task.state === 0) return null;
     return (
       <div>
         <Button
@@ -260,7 +262,9 @@ export default function TaskPage(): React.ReactNode {
       </div>
     );
   };
+
   const renderSendToManager = () => {
+    if (task.state === 0) return null;
     return (
       <div>
         <Button
@@ -277,7 +281,7 @@ export default function TaskPage(): React.ReactNode {
   };
 
   const renderSelectAndSendToOfficer = () => {
-    if (!officers) return null;
+    if (!officers || task.state === 0) return null;
     return (
       <div className="selectAndSendToOfficerContainer">
         <Dropdown

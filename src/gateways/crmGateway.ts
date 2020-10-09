@@ -65,7 +65,7 @@ export interface CrmGatewayInterface {
     emailAddress: string
   ): Promise<Result<PatchDetailsInterface>>;
   getPropertyPatch(uprn: string): Promise<Result<PropertyPatchDetails>>;
-  getOfficersByAreaId(areaId: number): Promise<GatewayResponse<Officer[]>>;
+  getOfficersByAreaId(areaId: number): Promise<Result<Officer[]>>;
   getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
   getIntroductoryTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
   healthCheck(): Promise<CheckResult>;
@@ -268,32 +268,19 @@ class CrmGateway implements CrmGatewayInterface {
       .catch(errorHandler);
   }
 
-  public async getOfficersByAreaId(
-    areaId: number
-  ): Promise<GatewayResponse<Officer[]>> {
+  public async getOfficersByAreaId(areaId: number): Promise<Result<Officer[]>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getOfficersByAreaId(areaId);
 
-    return await axios
-      .get(
+    return axios
+      .get<CrmResponse>(
         `${this.baseUrl}/api/data/v8.2/hackney_propertyareapatchs?fetchXml=${crmQuery}`,
         this.headers()
       )
-      .then((response) => {
-        const data = response.data;
-        const officers: Officer[] = crmToOfficersDetails(data);
-
-        return {
-          body: officers,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+      .then((response) => crmToOfficersDetails(response.data))
+      .catch(errorHandler);
   }
 
   public async getContactsByTagRef(

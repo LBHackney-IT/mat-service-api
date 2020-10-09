@@ -185,9 +185,8 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getOfficersByAreaId(areaId);
 
-      expect(response).toEqual({
-        body: crmToOfficersDetails(data),
-      });
+      expect(isSuccess(response)).toEqual(true);
+      expect(response).toEqual(crmToOfficersDetails(data));
     });
 
     it('returns an error from the API', async () => {
@@ -197,7 +196,8 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getOfficersByAreaId(areaId);
 
-      expect(response).toEqual({ error: error });
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toEqual(error);
     });
   });
 });

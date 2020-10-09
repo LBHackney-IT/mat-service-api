@@ -1,7 +1,8 @@
 import faker from 'faker';
 import { CrmResponse } from '../..//gateways/crmGateway';
+import { CrmNote } from '../../interfaces/note';
 
-const MockCrmNoteResponse = (): CrmResponse => {
+const MockCrmNoteResponse = (): CrmResponse<CrmNote[]> => {
   return {
     '@odata.context': faker.lorem.word(),
     value: [

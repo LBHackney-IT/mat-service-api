@@ -2,15 +2,14 @@ import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import AngularProcessToken from '../../interfaces/angularProcessToken';
 import { encrypt } from '../../lib/encryption';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import UserMapping from '../../interfaces/userMapping';
-import { Task, ProcessType } from '../../interfaces/task';
-import { PatchDetailsInterface } from '../../mappings/crmToPatchDetails';
+import { ProcessType } from '../../interfaces/task';
 import moment from 'moment';
 import {
   GetExternalProcessUrlInterface,
   GetExternalProcessUrlResponse,
 } from './getExternalProcessUrl';
 import externalProcessUrls from './externalProcessUrls.json';
+import { isError } from '../../lib/utils';
 
 const processIds: { [key: string]: number } = {
   [ProcessType.thc]: 1,
@@ -45,21 +44,25 @@ export default class GetExternalAngularProcessUrl
     taskId: string,
     officerEmail: string
   ): Promise<GetExternalProcessUrlResponse> {
-    const task: Task | undefined = (await this.crmGateway.getTask(taskId)).body;
-    if (!task) return new Error('Could not load task from crm');
+    const task = await this.crmGateway.getTask(taskId);
+    if (isError(task)) return new Error('Could not load task from crm');
     if (!task.processType) {
       return new Error('Task does not have a process type');
     }
 
-    const userMapping: UserMapping | undefined = (
-      await this.matPostgresGateway.getUserMapping(officerEmail)
-    ).body;
-    if (!userMapping) return new Error('Could not load user mapping');
+    const userMapping = await this.matPostgresGateway.getUserMapping(
+      officerEmail
+    );
+    if (isError(userMapping) || !userMapping) {
+      return new Error('Could not load user mapping');
+    }
 
-    const patchData: PatchDetailsInterface | undefined = (
-      await this.crmGateway.getPatchByOfficerId(userMapping.usercrmid)
-    ).body;
-    if (!patchData) return new Error('Could not load officer patch data');
+    const patchData = await this.crmGateway.getPatchByOfficerId(
+      userMapping.usercrmid
+    );
+    if (isError(patchData)) {
+      return new Error('Could not load officer patch data');
+    }
 
     const tokenData: AngularProcessToken = {
       contactId: task.resident.contactCrmId,

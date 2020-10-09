@@ -8,6 +8,7 @@ import { isError, isSuccess } from '../../lib/utils';
 describe('GetTasks', () => {
   let crmGateway: CrmGatewayInterface;
   let getTasksForTagRef: GetTasksInterface;
+  const tagRef = '000111/1';
 
   beforeEach(() => {
     crmGateway = mockCrmGateway();
@@ -17,15 +18,9 @@ describe('GetTasks', () => {
   it('Returns a list of tasks when no errors are found', async () => {
     const mockTasks: Task[] = [MockTask(), MockTask()];
 
-    crmGateway.getTasksForTagRef = () =>
-      Promise.resolve({
-        body: mockTasks,
-        error: undefined,
-      });
+    crmGateway.getTasksForTagRef = () => Promise.resolve(mockTasks);
 
-    const tagRef = '000111/1';
-    const getTasks = new GetTasksForTagRef(crmGateway);
-    const response = await getTasks.execute(tagRef);
+    const response = await getTasksForTagRef.execute(tagRef);
 
     expect(isSuccess(response)).toEqual(true);
     expect(response).toEqual(mockTasks);
@@ -34,47 +29,21 @@ describe('GetTasks', () => {
   it('Returns an empty list when tasks are not found', async () => {
     const mockTasks: Task[] = [];
 
-    crmGateway.getTasksForTagRef = () =>
-      Promise.resolve({
-        body: mockTasks,
-        error: undefined,
-      });
+    crmGateway.getTasksForTagRef = () => Promise.resolve(mockTasks);
 
-    const tagRef = '000111/1';
-    const getTasks = new GetTasksForTagRef(crmGateway);
-    const response = await getTasks.execute(tagRef);
+    const response = await getTasksForTagRef.execute(tagRef);
 
     expect(isSuccess(response)).toEqual(true);
     expect(response).toEqual(mockTasks);
   });
 
-  it('Returns a 500 error when errors are found', async () => {
+  it('Returns the error when errors are found', async () => {
     crmGateway.getTasksForTagRef = () =>
-      Promise.resolve({
-        body: undefined,
-        error: '500',
-      });
+      Promise.resolve(new Error('Unknown error'));
 
-    const tagRef = '000111/1';
-    const getTasks = new GetTasksForTagRef(crmGateway);
-    const response = await getTasks.execute(tagRef);
+    const response = await getTasksForTagRef.execute(tagRef);
 
     expect(isError(response)).toEqual(true);
-    expect(response.message).toEqual('Unknown error in getTasksFroTagRef');
-  });
-
-  it('Returns a 401 error when errors is NotAuthorised', async () => {
-    crmGateway.getTasksForTagRef = () =>
-      Promise.resolve({
-        body: undefined,
-        error: 'NotAuthorised',
-      });
-
-    const tagRef = '000111/1';
-    const getTasks = new GetTasksForTagRef(crmGateway);
-    const response = await getTasks.execute(tagRef);
-
-    expect(isError(response)).toEqual(true);
-    expect(response.message).toEqual('NotAuthorised');
+    expect(response.message).toEqual('Unknown error');
   });
 });

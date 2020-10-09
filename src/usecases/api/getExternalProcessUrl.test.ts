@@ -27,13 +27,8 @@ describe('GetExternalProcessUrl', () => {
   });
 
   it('should call the correct usecase for an angular task', async () => {
-    crmGateway.getTask = jest.fn(() =>
-      Promise.resolve({ body: { processType: 'itv' } })
-    );
-    const result = await useCase.execute(
-      'fakeTaskId',
-      'fake.user@hackney.gov.uk'
-    );
+    crmGateway.getTask = jest.fn(() => Promise.resolve({ processType: 'itv' }));
+    await useCase.execute('fakeTaskId', 'fake.user@hackney.gov.uk');
 
     expect(GetExternalAngularProcessUrl).toHaveBeenCalledTimes(1);
     expect(GetExternalReactEtraProcessUrl).toHaveBeenCalledTimes(0);
@@ -41,7 +36,7 @@ describe('GetExternalProcessUrl', () => {
 
   it('should call the correct usecase for an etra task', async () => {
     crmGateway.getTask = jest.fn(() =>
-      Promise.resolve({ body: { processType: 'etra' } })
+      Promise.resolve({ processType: 'etra' })
     );
     const result = await useCase.execute(
       'fakeTaskId',
@@ -53,6 +48,7 @@ describe('GetExternalProcessUrl', () => {
   });
 
   it('should return an error if it could not load a task', async () => {
+    crmGateway.getTask = () => Promise.resolve(new Error('No task found'));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
@@ -62,7 +58,7 @@ describe('GetExternalProcessUrl', () => {
   });
 
   it('should return an error if the task does not have a process type', async () => {
-    crmGateway.getTask = jest.fn(() => Promise.resolve({ body: {} }));
+    crmGateway.getTask = jest.fn(() => Promise.resolve({}));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
@@ -73,7 +69,7 @@ describe('GetExternalProcessUrl', () => {
 
   it('should return an error if it has an incorrect process type', async () => {
     crmGateway.getTask = jest.fn(() =>
-      Promise.resolve({ body: { processType: 'unknown' } })
+      Promise.resolve({ processType: 'unknown' })
     );
     const result = await useCase.execute(
       'fakeTaskId',

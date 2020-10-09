@@ -39,21 +39,11 @@ describe('GetExternalAngularProcessUrl', () => {
       areaManagerId: 'fake-area-manager-id',
       isManager: false,
     };
-    crmGateway.getTask = jest.fn(() =>
-      Promise.resolve({
-        body: task,
-      })
-    );
+    crmGateway.getTask = jest.fn(() => Promise.resolve(task));
     matPostgresGateway.getUserMapping = jest.fn(() =>
-      Promise.resolve({
-        body: userMapping,
-      })
+      Promise.resolve(userMapping)
     );
-    crmGateway.getPatchByOfficerId = jest.fn(() =>
-      Promise.resolve({
-        body: patchData,
-      })
-    );
+    crmGateway.getPatchByOfficerId = jest.fn(() => Promise.resolve(patchData));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
@@ -92,6 +82,7 @@ describe('GetExternalAngularProcessUrl', () => {
   });
 
   it('should return an error if it could not load a task', async () => {
+    crmGateway.getTask = () => Promise.resolve(new Error('No task found'));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
@@ -101,7 +92,7 @@ describe('GetExternalAngularProcessUrl', () => {
   });
 
   it('should return an error if the task does not have a process type', async () => {
-    crmGateway.getTask = jest.fn(() => Promise.resolve({ body: {} }));
+    crmGateway.getTask = jest.fn(() => Promise.resolve({}));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
@@ -111,9 +102,8 @@ describe('GetExternalAngularProcessUrl', () => {
   });
 
   it('should return an error if it could not load a user mapping', async () => {
-    crmGateway.getTask = jest.fn(() =>
-      Promise.resolve({ body: { processType: 'itv' } })
-    );
+    crmGateway.getTask = jest.fn(() => Promise.resolve({ processType: 'itv' }));
+    matPostgresGateway.getUserMapping = jest.fn(() => Promise.resolve(null));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'
@@ -123,12 +113,10 @@ describe('GetExternalAngularProcessUrl', () => {
   });
 
   it('should return an error if it could not load patch data', async () => {
-    crmGateway.getTask = jest.fn(() =>
-      Promise.resolve({ body: { processType: 'itv' } })
-    );
-    matPostgresGateway.getUserMapping = jest.fn(() =>
-      Promise.resolve({ body: {} })
-    );
+    crmGateway.getPatchByOfficerId = () =>
+      Promise.resolve(new Error('Patch not found'));
+    crmGateway.getTask = () => Promise.resolve({ processType: 'itv' });
+    matPostgresGateway.getUserMapping = jest.fn(() => Promise.resolve({}));
     const result = await useCase.execute(
       'fakeTaskId',
       'fake.user@hackney.gov.uk'

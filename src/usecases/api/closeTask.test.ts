@@ -16,16 +16,12 @@ describe('sendTaskToManager', () => {
   let useCase: CloseTaskInterface;
   let dummyTaskId = 'abc-123-def';
 
-  const fakeTaskResponse = {
-    body: { incidentId: 'fakeIncidentId' },
-  };
+  const fakeTaskResponse = { incidentId: 'fakeIncidentId' };
   const fakeUserMappingResponse = {
-    body: {
-      usercrmid: 'fakeCrmId',
-      username: 'Fake User',
-      emailAddress: 'me@me.com',
-      googleId: '123',
-    },
+    usercrmid: 'fakeCrmId',
+    username: 'Fake User',
+    emailAddress: 'me@me.com',
+    googleId: '123',
   };
   const fakePatchResponse = {
     body: {
@@ -37,7 +33,6 @@ describe('sendTaskToManager', () => {
   beforeEach(() => {
     crmGateway = mockCrmGateway();
     crmGateway.getTask = () => Promise.resolve(fakeTaskResponse);
-    crmGateway.getPatchByOfficerId = () => Promise.resolve(fakePatchResponse);
 
     matPostgresGateway = mockMatPostgresGateway();
     matPostgresGateway.getUserMapping = () =>
@@ -54,7 +49,7 @@ describe('sendTaskToManager', () => {
   it('Should assemble the correct TMI data to send to the API', async () => {
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(result).toEqual(true);
     expect(v1ApiGateway.patchTenancyManagementInteraction).toHaveBeenCalledWith(
@@ -73,42 +68,32 @@ describe('sendTaskToManager', () => {
   });
 
   it("Should return an error if it can't fetch the task from crm", async () => {
-    crmGateway.getTask = jest.fn();
+    crmGateway.getTask = () => Promise.resolve(new Error('No task found'));
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Error fetching task from crm');
   });
 
   it("Should return an error if it can't fetch the mapped user from postgres", async () => {
-    matPostgresGateway.getUserMapping = jest.fn();
+    matPostgresGateway.getUserMapping = () => Promise.resolve(null);
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Error fetching mapped user');
   });
 
-  it("Should return an error if it can't fetch the patch from crm", async () => {
-    crmGateway.getPatchByOfficerId = jest.fn();
-    const result = await useCase.execute(
-      dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
-    );
-    expect(isError(result)).toEqual(true);
-    expect(result.message).toEqual('Error fetching patch');
-  });
-
   it("Should return an error if it can't update the task via v1 api", async () => {
     v1ApiGateway.patchTenancyManagementInteraction = jest.fn(() =>
-      Promise.resolve({})
+      Promise.resolve(new Error())
     );
     const result = await useCase.execute(
       dummyTaskId,
-      fakeUserMappingResponse.body.emailAddress
+      fakeUserMappingResponse.emailAddress
     );
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Unknown error closing task');

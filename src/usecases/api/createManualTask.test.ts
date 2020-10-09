@@ -10,7 +10,6 @@ import {
 } from '../../tests/helpers/mockGateways';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import MockTMI from '../../tests/helpers/generateTMI';
 import { isError, isSuccess } from '../../lib/utils';
 jest.mock('./getOfficerPatch');
 
@@ -24,14 +23,10 @@ describe('createManualTasks', () => {
   let dummyOfficerId = 'dummyOfficerId';
   let dummyOfficerPatchData: any;
   let getContactsByTagRefResponse = {
-    body: [
-      {
-        crmContactId: 'dummyContactId',
-        crmHouseholdId: 'dummyHouseholdId',
-        uhPersonNo: 1,
-        responsible: true,
-      },
-    ],
+    crmContactId: 'dummyContactId',
+    crmHouseholdId: 'dummyHouseholdId',
+    uhPersonNo: 1,
+    responsible: true,
   };
 
   beforeEach(() => {
@@ -49,6 +44,8 @@ describe('createManualTasks', () => {
     GetOfficerPatch.mockImplementationOnce(() => dummyGetOfficerPatch);
     v1MatAPIGateway = mockV1MatApiGateway();
     crmGateway = mockCrmGateway();
+    crmGateway.getContactsByTagRef = () =>
+      Promise.resolve([getContactsByTagRefResponse]);
     matPostgresGateway = mockMatPostgresGateway();
     usecase = new CreateManualTaskUseCase(
       crmGateway,
@@ -59,10 +56,8 @@ describe('createManualTasks', () => {
 
   it('should use the correct data for the TMI', async () => {
     v1MatAPIGateway.createTenancyManagementInteraction = () =>
-      Promise.resolve({ body: { interactionId: 'dummy' } });
+      Promise.resolve({ interactionId: 'dummy' });
 
-    crmGateway.getContactsByTagRef = () =>
-      Promise.resolve(getContactsByTagRefResponse);
     dummyGetOfficerPatch.execute.mockResolvedValue(dummyOfficerPatchData);
     const result = await usecase.execute(dummyCallData);
     expect(isSuccess(result)).toBe(true);
@@ -74,27 +69,20 @@ describe('createManualTasks', () => {
 
   it('should return an error if there is a problem fetching the contacts', async () => {
     crmGateway.getContactsByTagRef = () =>
-      Promise.resolve({
-        error: '500',
-      });
+      Promise.resolve(new Error('Error fetching contacts'));
     const result = await usecase.execute(dummyCallData);
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Error fetching contacts');
   });
 
   it('should return an error if there are no contacts found', async () => {
-    crmGateway.getContactsByTagRef = () =>
-      Promise.resolve({
-        contacts: [],
-      });
+    crmGateway.getContactsByTagRef = () => Promise.resolve([]);
     const result = await usecase.execute(dummyCallData);
     expect(isError(result)).toEqual(true);
     expect(result.message).toEqual('Error fetching contacts');
   });
 
   it('should create the correct TMI for homechecks', async () => {
-    crmGateway.getContactsByTagRef = () =>
-      Promise.resolve(getContactsByTagRefResponse);
     await usecase.execute(dummyCallData);
 
     const gwCall =
@@ -106,8 +94,6 @@ describe('createManualTasks', () => {
 
   it('should create the correct TMI for itvs', async () => {
     dummyCallData.process = 'itv';
-    crmGateway.getContactsByTagRef = () =>
-      Promise.resolve(getContactsByTagRefResponse);
     await usecase.execute(dummyCallData);
 
     const gwCall =
@@ -122,8 +108,6 @@ describe('createManualTasks', () => {
   it('should create the correct TMI for thcs', async () => {
     dummyCallData.process = 'thc';
     dummyCallData.subProcess = '6';
-    crmGateway.getContactsByTagRef = () =>
-      Promise.resolve(getContactsByTagRefResponse);
     await usecase.execute(dummyCallData);
     const gwCall =
       v1MatAPIGateway.createTenancyManagementInteraction.mock.calls[0][0];

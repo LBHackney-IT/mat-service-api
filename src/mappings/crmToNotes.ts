@@ -1,16 +1,8 @@
 import { CrmResponse } from '../gateways/crmGateway';
 import Note, { CrmNote } from '../interfaces/note';
 
-export const crmToNotes = (data: CrmResponse): Note[] => {
-  const notes: Note[] = [];
-  if (Array.isArray(data.value)) {
-    data.value.forEach((note) => {
-      const crmNote = note as CrmNote;
-      notes.push(crmToNote(crmNote));
-    });
-  }
-
-  return notes;
+export const crmToNotes = (data: CrmResponse<CrmNote[]>): Note[] => {
+  return data.value.map(crmToNote);
 };
 
 const crmToNote = (note: CrmNote): Note => {

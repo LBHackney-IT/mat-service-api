@@ -2,7 +2,7 @@ import UserMapping from '../../interfaces/userMapping';
 import jwt from 'jsonwebtoken';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
-import { Result } from '../../lib/utils';
+import { Result, isError } from '../../lib/utils';
 
 interface HackneyToken {
   sub: string;
@@ -42,27 +42,31 @@ export default class SetupUser implements SetupUserInterface {
       const userMappingExists = await this.matPostgresGateway.getUserMapping(
         hackneyToken.email
       );
+      if (isError(userMappingExists)) return userMappingExists;
 
-      if (userMappingExists.body) {
+      if (userMappingExists) {
         return true;
       } else {
         // Fetch the CRM user
-        const response = await this.crmGateway.getUserId(hackneyToken.email);
-        let crmUserGuid = response.body;
+        let crmUserGuid = await this.crmGateway.getUserId(hackneyToken.email);
 
         // Create a new CRM user if they don't exist
-        if (!crmUserGuid) {
-          const splitName = hackneyToken.name.split(' ');
-          const crmCreateResponse = await this.crmGateway.createUser(
-            hackneyToken.email,
-            hackneyToken.name,
-            splitName[0],
-            splitName[splitName.length - 1]
-          );
-          if (crmCreateResponse.error || !crmCreateResponse.body) {
-            return new Error('Error creating CRM user');
+        if (isError(crmUserGuid)) {
+          if (crmUserGuid.message === 'Could not find user in crm') {
+            const splitName = hackneyToken.name.split(' ');
+            const crmCreateResponse = await this.crmGateway.createUser(
+              hackneyToken.email,
+              hackneyToken.name,
+              splitName[0],
+              splitName[splitName.length - 1]
+            );
+            if (isError(crmCreateResponse)) {
+              return new Error('Error creating CRM user');
+            }
+            crmUserGuid = crmCreateResponse;
+          } else {
+            return crmUserGuid;
           }
-          crmUserGuid = crmCreateResponse.body;
         }
 
         // Create the mapping in postgres
@@ -76,8 +80,9 @@ export default class SetupUser implements SetupUserInterface {
           userMapping
         );
 
-        if (createResponse.error)
+        if (isError(createResponse)) {
           return new Error('Error creating user mapping');
+        }
 
         return true;
       }

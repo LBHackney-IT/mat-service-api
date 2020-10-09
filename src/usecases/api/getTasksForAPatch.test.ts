@@ -36,11 +36,7 @@ describe('GetTasks', () => {
   });
 
   it('Returns a list of tasks when no errors are found', async () => {
-    crmGateway.getTasksForAPatch = () =>
-      Promise.resolve({
-        body: mockTasks,
-        error: undefined,
-      });
+    crmGateway.getTasksForAPatch = () => Promise.resolve(mockTasks);
 
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
     expect(isSuccess(response)).toEqual(true);
@@ -50,11 +46,7 @@ describe('GetTasks', () => {
   it('Returns a empty list when tasks are not found', async () => {
     mockTasks = [];
 
-    crmGateway.getTasksForAPatch = () =>
-      Promise.resolve({
-        body: mockTasks,
-        error: undefined,
-      });
+    crmGateway.getTasksForAPatch = () => Promise.resolve(mockTasks);
 
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
     expect(isSuccess(response)).toEqual(true);
@@ -63,10 +55,7 @@ describe('GetTasks', () => {
 
   it('Returns the error when errors are found', async () => {
     crmGateway.getTasksForAPatch = () =>
-      Promise.resolve({
-        body: undefined,
-        error: 'NotAuthorised',
-      });
+      Promise.resolve(new Error('NotAuthorised'));
 
     const response = await getTasks.execute(isManager, areaManagerId, patchId);
     expect(isError(response)).toEqual(true);

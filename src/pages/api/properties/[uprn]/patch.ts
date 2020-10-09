@@ -2,6 +2,7 @@ import { NextApiRequest } from 'next';
 import { crmGateway } from '../../../../gateways';
 import { ApiResponse } from '../../../../interfaces/apiResponses';
 import { PropertyPatchDetails } from '../../../../interfaces/propertyPatchDetails';
+import { isSuccess } from '../../../../lib/utils';
 
 export default async (
   req: NextApiRequest,
@@ -20,8 +21,8 @@ export default async (
 
   const response = await crmGateway.getPropertyPatch(uprn);
 
-  if (response.body) {
-    res.status(200).json(response.body);
+  if (isSuccess(response)) {
+    res.status(200).json(response);
   } else {
     res.status(500).json({ error: 'Could not retrieve property patch' });
   }

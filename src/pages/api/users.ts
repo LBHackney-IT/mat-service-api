@@ -1,39 +1,18 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
+import { ApiResponse, OfficerList } from '../../interfaces/apiResponses';
 import { isError, isSuccess } from '../../lib/utils';
 import { getOfficerPatch } from '../../usecases/api';
-import { getOfficersPerArea, getUser } from '../../usecases/api';
-
-interface Data {
-  users?: any;
-  error?: string;
-}
+import { getOfficersPerArea } from '../../usecases/api';
 
 const doGet = async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: ApiResponse<OfficerList>
 ): Promise<void> => {
-  const emailAddress = req.query.emailAddress
-    ? Array.isArray(req.query.emailAddress)
-      ? req.query.emailAddress[0]
-      : req.query.emailAddress
-    : undefined;
-
   const managerEmail = req.query.managerEmail
     ? Array.isArray(req.query.managerEmail)
       ? req.query.managerEmail[0]
       : req.query.managerEmail
     : undefined;
-
-  if (emailAddress !== undefined) {
-    const response = await getUser.execute(emailAddress);
-
-    if (isSuccess(response)) {
-      res.status(200).json({ users: response });
-    } else {
-      res.status(500).json({ error: response.message });
-    }
-    return;
-  }
 
   if (managerEmail !== undefined) {
     const officerPatch = await getOfficerPatch.execute(managerEmail);
@@ -55,7 +34,7 @@ const doGet = async (
 
 export default async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: ApiResponse<OfficerList>
 ): Promise<void> => {
   if (req.method === 'GET') {
     await doGet(req, res);

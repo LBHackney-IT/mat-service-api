@@ -30,7 +30,7 @@ describe('createITVTasks', () => {
 
     v1MatAPIGateway = mockV1MatApiGateway();
     v1MatAPIGateway.createTenancyManagementInteraction = jest.fn(() =>
-      Promise.resolve({ body: { interactionId: 'fakeAccountId' } })
+      Promise.resolve({ interactionId: 'fakeAccountId' })
     );
 
     tenancies = [MockTenancy(true), MockTenancy(true)];

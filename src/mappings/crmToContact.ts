@@ -1,3 +1,4 @@
+import { CrmResponse } from '../gateways/crmGateway';
 import Contact from '../interfaces/contact';
 
 export const convertCrmContactToContact = (crmContact: CrmContact): Contact => {
@@ -25,14 +26,11 @@ export const convertCrmContactToContact = (crmContact: CrmContact): Contact => {
   };
 };
 
-export const crmResponseToContacts = (data: CrmContacts): Contact[] => {
+export const crmResponseToContacts = (
+  data: CrmResponse<CrmContact[]>
+): Contact[] => {
   return data.value.map(convertCrmContactToContact);
 };
-
-export interface CrmContacts {
-  '@odata.context': string;
-  value: CrmContact[];
-}
 
 export interface CrmContact {
   contactid: string;

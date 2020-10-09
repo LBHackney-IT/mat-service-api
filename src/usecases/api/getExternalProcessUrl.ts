@@ -4,7 +4,7 @@ import GetExternalAngularProcessUrl from './getExternalAngularProcessUrl';
 import GetExternalReactEtraProcessUrl from './getExternalReactEtraProcessUrl';
 import GetExternalReactProcessUrl from './getExternalReactProcessUrl';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import { Result } from '../../lib/utils';
+import { isError, Result } from '../../lib/utils';
 
 enum ProcessAppType {
   angular,
@@ -48,8 +48,8 @@ export default class GetExternalProcessUrlUseCase
     taskId: string,
     officerEmail: string
   ): Promise<GetExternalProcessUrlResponse> {
-    const task = (await this.crmGateway.getTask(taskId)).body;
-    if (!task) return new Error('Could not load task from crm');
+    const task = await this.crmGateway.getTask(taskId);
+    if (isError(task)) return new Error('Could not load task from crm');
     if (!task.processType) {
       return new Error('Task does not have a process type');
     }

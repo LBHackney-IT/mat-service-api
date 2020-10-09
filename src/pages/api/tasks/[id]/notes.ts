@@ -1,9 +1,10 @@
 import { NextApiRequest } from 'next';
 import { ApiResponse, NoteList } from '../../../../interfaces/apiResponses';
-import { NewNote } from '../../../../interfaces/note';
+import { IncomingNote } from '../../../../interfaces/note';
 import { isSuccess } from '../../../../lib/utils';
 import { createNote } from '../../../../usecases/api';
 import { getNotesForTask } from '../../../../usecases/api';
+import { getTokenPayloadFromRequest } from '../../../../usecases/api/getTokenPayload';
 
 export default async (
   req: NextApiRequest,
@@ -33,13 +34,19 @@ export default async (
   };
 
   const postHandler = async (req: NextApiRequest, res: ApiResponse<void>) => {
-    if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
-      return res.status(500).end();
-    }
+    const id = req.query.id
+      ? Array.isArray(req.query.id)
+        ? req.query.id[0]
+        : req.query.id
+      : undefined;
+    if (!id) return res.status(500).json({ error: 'Interaction ID missing' });
 
-    const note = req.body as NewNote;
+    const note = req.body as IncomingNote;
+    const tokenPayload = getTokenPayloadFromRequest(req);
+    if (!tokenPayload)
+      return res.status(500).json({ error: 'Hackney token ID missing' });
 
-    const response = await createNote.execute(note);
+    const response = await createNote.execute(id, tokenPayload, note.text);
 
     if (isSuccess(response)) {
       res.status(204).end();

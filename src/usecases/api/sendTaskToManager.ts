@@ -2,7 +2,7 @@ import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import { TenancyManagementInteraction } from '../../interfaces/tenancyManagementInteraction';
 import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { MatPostgresGatewayInterface } from '../../gateways/matPostgresGateway';
-import { Result } from '../../lib/utils';
+import { isError, Result } from '../../lib/utils';
 
 export interface SendTaskToManagerInterface {
   execute(taskId: string, userEmail: string): Promise<Result<void>>;
@@ -30,38 +30,36 @@ export default class SendTaskToManagerUseCase
   ): Promise<Result<void>> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
-    if (!existingTask || !existingTask.body)
-      return new Error('Error fetching task from crm');
+    if (isError(existingTask)) return new Error('Error fetching task from crm');
 
     // fetch current user from crm
     const officer = await this.matPostgresGateway.getUserMapping(userEmail);
-    if (!officer || !officer.body)
+    if (isError(officer) || !officer) {
       return new Error('Error fetching mapped user');
+    }
 
     // fetch patch data from crm
-    const patch = await this.crmGateway.getPatchByOfficerId(
-      officer.body.usercrmid
-    );
-    if (!patch || !patch.body) return new Error('Error fetching patch');
+    const patch = await this.crmGateway.getPatchByOfficerId(officer.usercrmid);
+    if (isError(patch)) return new Error('Error fetching patch');
 
     const updateObject: TenancyManagementInteraction = {
-      estateOfficerId: officer.body.usercrmid,
-      officerPatchId: officer.body.usercrmid,
-      managerId: patch.body.areaManagerId,
+      estateOfficerId: officer.usercrmid,
+      officerPatchId: officer.usercrmid,
+      managerId: patch.areaManagerId,
       assignedToPatch: true,
-      areaName: patch.body.areaId,
-      estateOfficerName: officer.body.username,
+      areaName: patch.areaId,
+      estateOfficerName: officer.username,
       interactionId: taskId,
       serviceRequest: {
-        description: `Transferred from: ${officer.body.username}`,
-        id: existingTask.body.incidentId,
+        description: `Transferred from: ${officer.username}`,
+        id: existingTask.incidentId,
         requestCallback: false,
       },
     };
 
     const result = await this.v1ApiGateway.transferCall(updateObject);
 
-    if (!result.body) {
+    if (isError(result)) {
       return new Error('Problem assigning task to manager');
     }
   }

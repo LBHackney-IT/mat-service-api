@@ -46,7 +46,7 @@ export default class GetTRAs implements GetTRAsInterface {
       userDetails.usercrmid
     );
 
-    if (!userPatch || !userPatch.body || !userPatch.body.patchId) {
+    if (isError(userPatch) || !userPatch.patchId) {
       return {
         patchname: '',
         tras: [],
@@ -54,14 +54,14 @@ export default class GetTRAs implements GetTRAsInterface {
       };
     }
     const tras = await this.matPostgresGateway.getTrasByPatchId(
-      userPatch.body.patchId
+      userPatch.patchId
     );
     if (isError(tras)) return tras;
 
     const traDetails: officerPatchAssociationInterface = {
-      patchname: userPatch.body.patchName,
+      patchname: userPatch.patchName,
       tras: tras,
-      officername: userPatch.body.officerName,
+      officername: userPatch.officerName,
     };
 
     return traDetails;

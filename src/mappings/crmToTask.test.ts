@@ -25,13 +25,13 @@ describe('crmResponseToTask', () => {
           'hackney_enquirysubject@OData.Community.Display.V1.FormattedValue'
         ]
       );
-      expect(task.resident.presentationName).toEqual(crmValue['name']);
+      expect(task.resident.presentationName).toEqual(crmValue.name);
       expect(task.resident.role).toEqual('Tenant');
       expect(task.address.presentationShort).toEqual(
         `${crmValue.contact1_x002e_address1_line1}, ${crmValue.contact1_x002e_address1_line2}`
       );
-      expect(task.completedTime).toEqual(crmValue['completionDate']);
-      expect(task.dueTime).toEqual(crmValue['dueDate']);
+      expect(task.completedTime).toEqual(new Date(crmValue.completionDate));
+      expect(task.dueTime).toEqual(new Date(crmValue.dueDate));
       expect(task.stage).toEqual(
         mapResponseToStage(crmValue.hackney_process_stage)
       );

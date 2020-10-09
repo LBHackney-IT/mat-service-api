@@ -64,7 +64,7 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
         tmi
       );
 
-      if (!createdTask.body || !createdTask.body.interactionId) {
+      if (isError(createdTask) || !createdTask.interactionId) {
         return new Error(
           `Error creating ITV Task. Tenancy: ${tenancy.tagReference}`
         );
@@ -73,7 +73,7 @@ export default class CreateITVTasksUseCase implements CreateITVTasksInterface {
       // Save to the database
       const dbResult = await this.matPostgresGateway.createItvTask({
         tag_ref: tenancy.tagReference,
-        crm_id: createdTask.body.interactionId,
+        crm_id: createdTask.interactionId,
         created: tenancy.accountCreatedOn,
       });
 

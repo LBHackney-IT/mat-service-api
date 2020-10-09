@@ -22,13 +22,7 @@ class GetTasksForAPatch implements GetTasksForAPatchInterface {
     areaManagerId: string,
     patchId?: string
   ): Promise<Result<Task[]>> {
-    const result = await this.crmGateway.getTasksForAPatch(
-      isManager,
-      areaManagerId,
-      patchId
-    );
-    if (result.body) return result.body;
-    return new Error(result.error);
+    return this.crmGateway.getTasksForAPatch(isManager, areaManagerId, patchId);
   }
 }
 

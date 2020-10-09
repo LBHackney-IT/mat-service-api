@@ -18,28 +18,20 @@ describe('GetTask', () => {
   });
 
   it('Returns a response when no errors are found', async () => {
-    const mockResponse: Task = MockTask();
+    const mockResponse = MockTask();
 
-    crmGateway.getTask = () => Promise.resolve({ body: mockResponse });
+    crmGateway.getTask = () => Promise.resolve(mockResponse);
 
     const response = await getTask.execute(taskId);
     expect(isSuccess(response)).toEqual(true);
     expect(response).toEqual(mockResponse);
   });
 
-  it('Returns a 500 error when errors are found', async () => {
-    crmGateway.getTask = () => Promise.resolve({ error: 'Anything' });
+  it('Returns the error when errors are found', async () => {
+    crmGateway.getTask = () => Promise.resolve(new Error('Anything'));
 
     const response = await getTask.execute(taskId);
     expect(isError(response)).toEqual(true);
-    expect(response.message).toEqual('Unknown error in getTask');
-  });
-
-  it('Returns a 401 error when errors is NotAuthorised', async () => {
-    crmGateway.getTask = () => Promise.resolve({ error: 'NotAuthorised' });
-
-    const response = await getTask.execute(taskId);
-    expect(isError(response)).toEqual(true);
-    expect(response.message).toEqual('Not Authorised');
+    expect(response.message).toEqual('Anything');
   });
 });

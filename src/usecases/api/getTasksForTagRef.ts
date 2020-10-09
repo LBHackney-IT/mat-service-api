@@ -13,14 +13,7 @@ class GetTasksForTagRef implements GetTasksInterface {
     this.crmGateway = crmGateway;
   }
   public async execute(tagRef: string): Promise<Result<Task[]>> {
-    const response = await this.crmGateway.getTasksForTagRef(tagRef);
-    if (response.body && !response.error) return response.body;
-    switch (response.error) {
-      case 'NotAuthorised':
-        return new Error('NotAuthorised');
-      default:
-        return new Error('Unknown error in getTasksFroTagRef');
-    }
+    return this.crmGateway.getTasksForTagRef(tagRef);
   }
 }
 

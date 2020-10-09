@@ -6,25 +6,18 @@ export interface Officer {
   patchid: string;
 }
 
-type CrmOfficerValue = {
+export type CrmOfficerValue = {
   'estateOfficerId@OData.Community.Display.V1.FormattedValue': string;
   estateOfficerId: string;
   estateOfficerPatchId: string;
 };
 
-export type CrmOfficers = {
-  '@odata.context': string;
-  value: CrmOfficerValue[];
-};
-
-export const crmToOfficersDetails = (data: CrmResponse): Officer[] => {
-  const crmOfficers = data as CrmOfficers;
-
-  const officers: Officer[] = crmOfficers.value
-    .map((officer: CrmOfficerValue) => convertCrmOfficerToOfficer(officer))
+export const crmToOfficersDetails = (
+  crmOfficers: CrmResponse<CrmOfficerValue[]>
+): Officer[] => {
+  return crmOfficers.value
+    .map(convertCrmOfficerToOfficer)
     .sort((a, b) => (a.name > b.name ? 1 : -1));
-
-  return officers;
 };
 
 function convertCrmOfficerToOfficer(crmOfficer: CrmOfficerValue) {

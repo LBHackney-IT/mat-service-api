@@ -25,10 +25,7 @@ describe('GetOfficersPerArea', () => {
     ];
 
     crmGateway.getOfficersByAreaId = jest.fn(() =>
-      Promise.resolve({
-        body: mockOfficers,
-        error: undefined,
-      })
+      Promise.resolve(mockOfficers)
     );
 
     const getOfficers = new GetOfficersPerArea(crmGateway);
@@ -42,10 +39,7 @@ describe('GetOfficersPerArea', () => {
     const mockOfficers: Officer[] = [];
 
     crmGateway.getOfficersByAreaId = jest.fn(() =>
-      Promise.resolve({
-        body: mockOfficers,
-        error: undefined,
-      })
+      Promise.resolve(mockOfficers)
     );
 
     const getOfficers = new GetOfficersPerArea(crmGateway);
@@ -58,10 +52,7 @@ describe('GetOfficersPerArea', () => {
 
   it('Returns an error when errors are found', async () => {
     crmGateway.getOfficersByAreaId = jest.fn(() =>
-      Promise.resolve({
-        body: undefined,
-        error: 500,
-      })
+      Promise.resolve(new Error('Unknown error'))
     );
 
     const getOfficers = new GetOfficersPerArea(crmGateway);
@@ -69,22 +60,6 @@ describe('GetOfficersPerArea', () => {
     const response = await getOfficers.execute(areaId);
     expect(crmGateway.getOfficersByAreaId).toHaveBeenCalledTimes(1);
     expect(isError(response)).toEqual(true);
-    expect(response.message).toEqual('Unknown error in getOfficersPerArea');
-  });
-
-  it('Returns an error when error is NotAuthorised', async () => {
-    crmGateway.getOfficersByAreaId = jest.fn(() =>
-      Promise.resolve({
-        body: undefined,
-        error: 'NotAuthorised',
-      })
-    );
-
-    const getOfficers = new GetOfficersPerArea(crmGateway);
-
-    const response = await getOfficers.execute(areaId);
-    expect(crmGateway.getOfficersByAreaId).toHaveBeenCalledTimes(1);
-    expect(isError(response)).toEqual(true);
-    expect(response.message).toEqual('Not Authorised');
+    expect(response.message).toEqual('Unknown error');
   });
 });

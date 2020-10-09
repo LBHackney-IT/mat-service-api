@@ -11,6 +11,7 @@ import MockCrmOfficersPerAreaIdResponse from '../tests/helpers/generateMockCrmOf
 import { crmToOfficersDetails } from '../mappings/crmToOfficersDetails';
 import { mockCrmTokenGateway } from '../tests/helpers/mockGateways';
 import { CrmTokenGatewayInterface } from './crmTokenGateway';
+import { isError, isSuccess } from '../lib/utils';
 
 jest.mock('axios');
 
@@ -41,27 +42,22 @@ describe('CrmGateway', () => {
 
       const tasks = crmResponseToTasks(data);
 
-      expect(response).toStrictEqual({ body: tasks });
+      expect(isSuccess(response)).toEqual(true);
+      expect(response).toStrictEqual(tasks);
     });
 
     it('returns an human readable error when unsuccessful', async () => {
       const errorMessage = 'Network Error';
-      const errorResponse = {
-        error: errorMessage,
-      };
-      const isManager = faker.random.boolean();
-      const areaManagerId = faker.lorem.word();
-      const patchId = faker.lorem.word();
-
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
       const response = await crmGateway.getTasksForAPatch(
-        isManager,
-        areaManagerId,
-        patchId
+        faker.random.boolean(),
+        faker.lorem.word(),
+        faker.lorem.word()
       );
 
-      expect(response).toStrictEqual(errorResponse);
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toEqual(errorMessage);
     });
   });
 
@@ -74,9 +70,7 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getUserId(emailAddress);
 
-      expect(response).toStrictEqual({
-        body: data.value[0].hackney_estateofficerid,
-      });
+      expect(response).toStrictEqual(data.value[0].hackney_estateofficerid);
     });
 
     it('returns an error from the API', async () => {
@@ -84,9 +78,10 @@ describe('CrmGateway', () => {
       const error = faker.lorem.words();
       axios.get.mockReturnValue(Promise.reject(new Error(error)));
 
-      const response = await crmGateway.getNotesForTask(emailAddress);
+      const response = await crmGateway.getUserId(emailAddress);
 
-      expect(response).toStrictEqual({ error: error });
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toStrictEqual(error);
     });
   });
 
@@ -100,7 +95,7 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getNotesForTask(id);
 
-      expect(response).toStrictEqual({ body: notes });
+      expect(response).toStrictEqual(notes);
     });
 
     it('returns an error from the API', async () => {
@@ -110,7 +105,8 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getNotesForTask(id);
 
-      expect(response).toStrictEqual({ error: error });
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toStrictEqual(error);
     });
   });
 
@@ -137,7 +133,8 @@ describe('CrmGateway', () => {
       axios.get.mockResolvedValue({ data: data });
 
       const response = await crmGateway.getPropertyPatch(uprn);
-      expect(response).toEqual({ body: expectedData });
+      expect(isSuccess(response)).toEqual(true);
+      expect(response).toEqual(expectedData);
     });
 
     it('returns an error from the API', async () => {
@@ -147,36 +144,35 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getPropertyPatch(uprn);
 
-      expect(response).toEqual({ error: error });
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toEqual(error);
     });
   });
 
   describe('Get Tasks by tag_ref', () => {
+    const tagRef = '123456/01';
+
     it('successfully fetches data from an API', async () => {
       const data = MockCrmTaskResponse();
-      const tagRef = '123456/01';
+      const tasks = crmResponseToTasks(data);
 
       axios.get.mockResolvedValue({ data: data });
 
       const response = await crmGateway.getTasksForTagRef(tagRef);
 
-      const tasks = crmResponseToTasks(data);
-
-      expect(response).toStrictEqual({ body: tasks });
+      expect(isSuccess(response)).toEqual(true);
+      expect(response).toStrictEqual(tasks);
     });
 
     it('returns an human readable error when unsuccessful', async () => {
       const errorMessage = 'Network Error';
-      const errorResponse = {
-        error: errorMessage,
-      };
-      const tagRef = '123456/01';
 
       axios.get.mockReturnValue(Promise.reject(new Error(errorMessage)));
 
       const response = await crmGateway.getTasksForTagRef(tagRef);
 
-      expect(response).toEqual(errorResponse);
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toEqual(errorMessage);
     });
   });
 
@@ -189,9 +185,8 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getOfficersByAreaId(areaId);
 
-      expect(response).toEqual({
-        body: crmToOfficersDetails(data),
-      });
+      expect(isSuccess(response)).toEqual(true);
+      expect(response).toEqual(crmToOfficersDetails(data));
     });
 
     it('returns an error from the API', async () => {
@@ -201,7 +196,8 @@ describe('CrmGateway', () => {
 
       const response = await crmGateway.getOfficersByAreaId(areaId);
 
-      expect(response).toEqual({ error: error });
+      expect(isError(response)).toEqual(true);
+      expect(response.message).toEqual(error);
     });
   });
 });

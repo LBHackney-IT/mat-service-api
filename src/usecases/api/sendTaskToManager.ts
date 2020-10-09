@@ -30,8 +30,7 @@ export default class SendTaskToManagerUseCase
   ): Promise<Result<void>> {
     // fetch task from crm
     const existingTask = await this.crmGateway.getTask(taskId);
-    if (!existingTask || !existingTask.body)
-      return new Error('Error fetching task from crm');
+    if (isError(existingTask)) return new Error('Error fetching task from crm');
 
     // fetch current user from crm
     const officer = await this.matPostgresGateway.getUserMapping(userEmail);
@@ -41,26 +40,26 @@ export default class SendTaskToManagerUseCase
 
     // fetch patch data from crm
     const patch = await this.crmGateway.getPatchByOfficerId(officer.usercrmid);
-    if (!patch || !patch.body) return new Error('Error fetching patch');
+    if (isError(patch)) return new Error('Error fetching patch');
 
     const updateObject: TenancyManagementInteraction = {
       estateOfficerId: officer.usercrmid,
       officerPatchId: officer.usercrmid,
-      managerId: patch.body.areaManagerId,
+      managerId: patch.areaManagerId,
       assignedToPatch: true,
-      areaName: patch.body.areaId,
+      areaName: patch.areaId,
       estateOfficerName: officer.username,
       interactionId: taskId,
       serviceRequest: {
         description: `Transferred from: ${officer.username}`,
-        id: existingTask.body.incidentId,
+        id: existingTask.incidentId,
         requestCallback: false,
       },
     };
 
     const result = await this.v1ApiGateway.transferCall(updateObject);
 
-    if (!result.body) {
+    if (isError(result)) {
       return new Error('Problem assigning task to manager');
     }
   }

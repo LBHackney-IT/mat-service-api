@@ -2,7 +2,7 @@ import { CrmGatewayInterface } from '../../gateways/crmGateway';
 import { V1MatAPIGatewayInterface } from '../../gateways/v1MatAPIGateway';
 import HackneyToken from '../../interfaces/hackneyToken';
 import { NewNote } from '../../interfaces/note';
-import { Result } from '../../lib/utils';
+import { isError, Result } from '../../lib/utils';
 
 export interface CreateNoteInterface {
   execute(
@@ -30,12 +30,12 @@ export default class CreateNote implements CreateNoteInterface {
     note: string
   ): Promise<Result<boolean>> {
     const estateOfficerId = await this.crmGateway.getUserId(officerToken.email);
-    if (!estateOfficerId || !estateOfficerId.body) {
+    if (isError(estateOfficerId)) {
       return new Error('Could not find estate officer ID');
     }
 
     const task = await this.crmGateway.getTask(interactionId);
-    if (!task || !task.body || !task.body.incidentId) {
+    if (isError(task) || !task.incidentId) {
       return new Error('Error fetching task to create note');
     }
 
@@ -45,10 +45,10 @@ export default class CreateNote implements CreateNoteInterface {
       ServiceRequest: {
         description: note,
         requestCallback: false,
-        Id: task.body.incidentId,
+        Id: task.incidentId,
       },
       status: 1,
-      estateOfficerId: estateOfficerId.body,
+      estateOfficerId: estateOfficerId,
     };
 
     return await this.v1MatAPIGateway

@@ -1,6 +1,7 @@
 import { NextApiRequest } from 'next';
 import { v1MatAPIGateway } from '../../gateways';
 import { ApiResponse, ContactList } from '../../interfaces/apiResponses';
+import { isSuccess } from '../../lib/utils';
 import v1ApiContactToContact from '../../mappings/v1ApiContactToContact';
 
 export default async (
@@ -20,10 +21,8 @@ export default async (
 
   const response = await v1MatAPIGateway.getContactsByUprn(uprn);
 
-  if (response.body) {
-    res
-      .status(200)
-      .json({ contacts: response.body.map(v1ApiContactToContact) });
+  if (isSuccess(response)) {
+    res.status(200).json({ contacts: response.map(v1ApiContactToContact) });
   } else {
     res.status(500).json({ error: 'Could not retrieve contacts' });
   }

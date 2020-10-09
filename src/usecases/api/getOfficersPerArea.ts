@@ -14,16 +14,6 @@ export default class GetOfficersPerArea implements GetOfficersPerAreaInterface {
   }
 
   public async execute(areaId: number): Promise<Result<Officer[]>> {
-    const officersResponse = await this.crmGateway.getOfficersByAreaId(areaId);
-
-    if (officersResponse.body && !officersResponse.error) {
-      return officersResponse.body;
-    }
-    switch (officersResponse.error) {
-      case 'NotAuthorised':
-        return new Error('Not Authorised');
-      default:
-        return new Error('Unknown error in getOfficersPerArea');
-    }
+    return this.crmGateway.getOfficersByAreaId(areaId);
   }
 }

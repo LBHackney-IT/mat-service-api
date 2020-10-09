@@ -29,12 +29,7 @@ class GetOfficerPatch implements GetOfficerPatchInterface {
       return new Error('Could not find officer in db');
     }
 
-    const officerPatch = await this.crmGateway.getPatchByOfficerId(
-      userDetails.usercrmid
-    );
-    if (!officerPatch.body) return new Error('Could not find officer in crm');
-
-    return officerPatch.body;
+    return this.crmGateway.getPatchByOfficerId(userDetails.usercrmid);
   }
 }
 

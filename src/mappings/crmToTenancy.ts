@@ -1,4 +1,4 @@
-import { GenericCrmResponse } from '../gateways/crmGateway';
+import { CrmResponse } from '../gateways/crmGateway';
 import { Tenancy } from '../interfaces/tenancy';
 
 export interface CrmTenancy {
@@ -27,7 +27,7 @@ export interface CrmTenancy {
 }
 
 export function crmResponseToTenancies(
-  crmResponse: GenericCrmResponse<CrmTenancy[]>
+  crmResponse: CrmResponse<CrmTenancy[]>
 ): Tenancy[] {
   return Object.values(
     crmResponse.value.reduce((acc, t) => {

@@ -19,7 +19,7 @@ const processTypeLookup = (code: number): ProcessType | null => {
   return processIds[code] || null;
 };
 
-export const crmResponseToTask = (data: CrmResponse): Task => {
+export const crmResponseToTask = (data: CrmResponse<CrmTaskValue[]>): Task => {
   const residents = crmResponseToTasks(data);
 
   const primaryResident =
@@ -35,61 +35,55 @@ export const crmResponseToTask = (data: CrmResponse): Task => {
   return primaryResident;
 };
 
-export const crmResponseToTasks = (data: CrmResponse): Task[] => {
-  const crmTasks = data as CrmTasks;
-
-  const taskArray: Task[] = [];
-  crmTasks.value.forEach((element) => {
-    const task: Task = convertCrmTaskToTask(element as CrmTaskValue);
-    taskArray.push(task);
-  });
-
-  return taskArray;
+export const crmResponseToTasks = (
+  crmTasks: CrmResponse<CrmTaskValue[]>
+): Task[] => {
+  return crmTasks.value.map(convertCrmTaskToTask);
 };
 
 function convertCrmTaskToTask(crmTask: CrmTaskValue) {
   const tenant = {
-    presentationName: crmTask['name'],
-    role: crmTask['primaryTenant'] ? 'Primary Tenant' : 'Tenant',
-    dateOfBirth: new Date(crmTask['contact1_x002e_birthdate']),
-    mobileNumber: crmTask['contact1_x002e_housing_telephone3'],
-    homePhoneNumber: crmTask['contact1_x002e_telephone2'],
-    workPhoneNumber: crmTask['contact1_x002e_telephone1'],
-    email: crmTask['contact1_x002e_emailaddress1'],
-    contactCrmId: crmTask['_hackney_contactid_value'],
+    presentationName: crmTask.name,
+    role: crmTask.primaryTenant ? 'Primary Tenant' : 'Tenant',
+    dateOfBirth: new Date(crmTask.contact1_x002e_birthdate),
+    mobileNumber: crmTask.contact1_x002e_housing_telephone3,
+    homePhoneNumber: crmTask.contact1_x002e_telephone2,
+    workPhoneNumber: crmTask.contact1_x002e_telephone1,
+    email: crmTask.contact1_x002e_emailaddress1,
+    contactCrmId: crmTask._hackney_contactid_value,
   };
 
   const task: Task = {
-    id: crmTask['hackney_tenancymanagementinteractionsid'],
+    id: crmTask.hackney_tenancymanagementinteractionsid,
     createdTime: new Date(crmTask.createdon),
     category:
       crmTask['hackney_processtype@OData.Community.Display.V1.FormattedValue'],
-    categoryId: crmTask['hackney_processtype'],
+    categoryId: crmTask.hackney_processtype,
     type: 'Unknown',
     resident: tenant,
     address: {
-      presentationShort: `${crmTask['contact1_x002e_address1_line1']}, ${crmTask['contact1_x002e_address1_line2']}`,
+      presentationShort: `${crmTask.contact1_x002e_address1_line1}, ${crmTask.contact1_x002e_address1_line2}`,
     },
     dueTime: new Date(crmTask['dueDate']),
     dueState: DueState.imminent,
     completedTime: new Date(crmTask['completionDate']),
-    stage: mapResponseToStage(crmTask['hackney_process_stage']),
-    state: mapResponseToState(crmTask['statecode']),
+    stage: mapResponseToStage(crmTask.hackney_process_stage),
+    state: mapResponseToState(crmTask.statecode),
     children: [],
     parent: crmTask['parent@OData.Community.Display.V1.FormattedValue'],
-    referenceNumber: crmTask['hackney_name'],
-    incidentId: crmTask['_hackney_incidentid_value'],
-    householdId: crmTask['_hackney_household_interactionid_value'],
+    referenceNumber: crmTask.hackney_name,
+    incidentId: crmTask._hackney_incidentid_value,
+    householdId: crmTask._hackney_household_interactionid_value,
     processType: processTypeLookup(crmTask.hackney_enquirysubject),
     assignedToManager:
       !!crmTask._hackney_managerpropertypatchid_value &&
       !crmTask._hackney_estateofficerpatchid_value,
     tenancy: {
       type: TenancyType.Secure,
-      startDate: new Date(crmTask['tenancyStartDate']),
+      startDate: new Date(crmTask.tenancyStartDate),
       residents: [tenant],
-      tagRef: crmTask['hackney_household3_x002e_hackney_tag_ref'],
-      uprn: crmTask['contact1_x002e_hackney_uprn'],
+      tagRef: crmTask.hackney_household3_x002e_hackney_tag_ref,
+      uprn: crmTask.contact1_x002e_hackney_uprn,
     },
   };
 
@@ -116,7 +110,7 @@ function convertCrmTaskToTask(crmTask: CrmTaskValue) {
   return task;
 }
 
-type CrmTaskValue = {
+export type CrmTaskValue = {
   statecode: number;
   _hackney_managerpropertypatchid_value?: string;
   _hackney_estateofficerpatchid_value?: string;
@@ -131,14 +125,14 @@ type CrmTaskValue = {
   contact1_x002e_fullname: string;
   contact1_x002e_address1_line1: string;
   contact1_x002e_address1_line2: string;
-  primaryTenant: string;
+  primaryTenant: boolean;
   contact1_x002e_birthdate: string;
   contact1_x002e_emailaddress1: string;
   contact1_x002e_telephone1: string;
   contact1_x002e_telephone2: string;
   contact1_x002e_housing_telephone3: string;
   contact1_x002e_mobilephone: string;
-  dueDate: Date;
+  dueDate: string;
   tenancyStartDate: string;
   hackney_process_stage: number;
   hackney_name: string;
@@ -149,11 +143,6 @@ type CrmTaskValue = {
   contact1_x002e_hackney_uprn: string;
   _hackney_contactid_value: string;
   hackney_enquirysubject: number;
-};
-
-export type CrmTasks = {
-  '@odata.context': string;
-  value: CrmTaskValue[];
 };
 
 export const mapResponseToStage = (stage: number): Stage => {

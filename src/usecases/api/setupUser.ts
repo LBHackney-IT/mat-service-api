@@ -48,22 +48,25 @@ export default class SetupUser implements SetupUserInterface {
         return true;
       } else {
         // Fetch the CRM user
-        const response = await this.crmGateway.getUserId(hackneyToken.email);
-        let crmUserGuid = response.body;
+        let crmUserGuid = await this.crmGateway.getUserId(hackneyToken.email);
 
         // Create a new CRM user if they don't exist
-        if (!crmUserGuid) {
-          const splitName = hackneyToken.name.split(' ');
-          const crmCreateResponse = await this.crmGateway.createUser(
-            hackneyToken.email,
-            hackneyToken.name,
-            splitName[0],
-            splitName[splitName.length - 1]
-          );
-          if (crmCreateResponse.error || !crmCreateResponse.body) {
-            return new Error('Error creating CRM user');
+        if (isError(crmUserGuid)) {
+          if (crmUserGuid.message === 'Could not find user in crm') {
+            const splitName = hackneyToken.name.split(' ');
+            const crmCreateResponse = await this.crmGateway.createUser(
+              hackneyToken.email,
+              hackneyToken.name,
+              splitName[0],
+              splitName[splitName.length - 1]
+            );
+            if (isError(crmCreateResponse)) {
+              return new Error('Error creating CRM user');
+            }
+            crmUserGuid = crmCreateResponse;
+          } else {
+            return crmUserGuid;
           }
-          crmUserGuid = crmCreateResponse.body;
         }
 
         // Create the mapping in postgres

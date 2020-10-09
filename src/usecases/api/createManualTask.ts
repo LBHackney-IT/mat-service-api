@@ -65,16 +65,11 @@ class CreateManualTaskUseCase implements CreateManualTaskInterface {
       processData.tagRef.replace('-', '/')
     );
 
-    if (
-      contacts.error ||
-      (contacts && contacts.body && contacts.body.length === 0) ||
-      !contacts ||
-      !contacts.body
-    ) {
+    if (isError(contacts) || contacts.length === 0) {
       return new Error('Error fetching contacts');
     }
 
-    const responsibleContacts = contacts.body
+    const responsibleContacts = contacts
       .filter(
         (contact) => contact.responsible && contact.uhPersonNo !== undefined
       )

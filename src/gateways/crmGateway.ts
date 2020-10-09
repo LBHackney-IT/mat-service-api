@@ -23,7 +23,7 @@ import crmToPropertyPatch from '../mappings/crmToPropertyPatch';
 import { ProperyPatchCrmValue } from '../mappings/crmToPropertyPatch';
 import Note from '../interfaces/note';
 import Contact from '../interfaces/contact';
-import { crmResponseToContacts } from '../mappings/crmToContact';
+import { CrmContact, crmResponseToContacts } from '../mappings/crmToContact';
 import { CheckResult } from '../pages/api/healthcheck';
 import { Result, isSuccess } from '../lib/utils';
 import getIntroductoryTenanciesByDateQuery from './xmlQueryStrings/getIntroductoryTenanciesByDate';
@@ -66,7 +66,7 @@ export interface CrmGatewayInterface {
   ): Promise<Result<PatchDetailsInterface>>;
   getPropertyPatch(uprn: string): Promise<Result<PropertyPatchDetails>>;
   getOfficersByAreaId(areaId: number): Promise<Result<Officer[]>>;
-  getContactsByTagRef(tagRef: string): Promise<GatewayResponse<Contact[]>>;
+  getContactsByTagRef(tagRef: string): Promise<Result<Contact[]>>;
   getIntroductoryTenanciesByDate(date: Date): Promise<Result<Tenancy[]>>;
   healthCheck(): Promise<CheckResult>;
 }
@@ -283,32 +283,19 @@ class CrmGateway implements CrmGatewayInterface {
       .catch(errorHandler);
   }
 
-  public async getContactsByTagRef(
-    tagRef: string
-  ): Promise<GatewayResponse<Contact[]>> {
+  public async getContactsByTagRef(tagRef: string): Promise<Result<Contact[]>> {
     await this.updateToken();
-    if (!this.crmApiToken) return { error: 'CRM token missing' };
+    if (!this.crmApiToken) return new Error('CRM token missing');
 
     const crmQuery = getContactsByTagRef(tagRef);
 
-    return await axios
-      .get(
+    return axios
+      .get<GenericCrmResponse<CrmContact[]>>(
         `${this.baseUrl}/api/data/v8.2/contacts?fetchXml=${crmQuery}`,
         this.headers()
       )
-      .then((response) => {
-        const data = response.data;
-        const contacts = crmResponseToContacts(data);
-
-        return {
-          body: contacts,
-        };
-      })
-      .catch((error: AxiosError) => {
-        return {
-          error: error.message,
-        };
-      });
+      .then((response) => crmResponseToContacts(response.data))
+      .catch(errorHandler);
   }
 
   public async getIntroductoryTenanciesByDate(
@@ -319,7 +306,7 @@ class CrmGateway implements CrmGatewayInterface {
 
     const crmQuery = getIntroductoryTenanciesByDateQuery(date);
 
-    return await axios
+    return axios
       .get<GenericCrmResponse<CrmTenancy[]>>(
         `${this.baseUrl}/api/data/v8.2/accounts?fetchXml=${crmQuery}`,
         this.headers()

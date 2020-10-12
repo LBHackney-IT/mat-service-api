@@ -11,7 +11,7 @@ const LoadingPage: React.FC<LoadingPageProps> = (props: LoadingPageProps) => {
   const title = props.error ? 'Error loading data' : 'Loading data';
   return (
     <Layout>
-      <Heading level={HeadingLevels.H2}>{title}</Heading>
+      <Heading level={HeadingLevels.H1}>{title}</Heading>
     </Layout>
   );
 };

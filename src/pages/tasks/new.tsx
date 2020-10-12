@@ -43,7 +43,7 @@ class NewProcessPage extends React.Component<Props, State> {
   render() {
     return (
       <Layout>
-        <Heading level={HeadingLevels.H2}>Create New Process</Heading>
+        <Heading level={HeadingLevels.H1}>Create New Process</Heading>
         <Radios
           name="processes"
           items={this.itemTypes(this.isCollapsed())}
@@ -109,7 +109,7 @@ class NewProcessPage extends React.Component<Props, State> {
   thcSubItemTypes() {
     return (
       <>
-        <Heading level={HeadingLevels.H4}>
+        <Heading level={HeadingLevels.H2}>
           What is the reason for doing this Tenancy and Household Check?
         </Heading>
         <Radios

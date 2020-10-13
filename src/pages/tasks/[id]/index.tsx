@@ -54,11 +54,11 @@ export default function TaskPage(): React.ReactNode {
   const [selectedOfficerId, setSelectedOfficerId] = useState<
     string | undefined
   >(undefined);
-  const [noteText, setNoteText] = useState<string | undefined>(undefined);
+  const [noteText, setNoteText] = useState<string | undefined>('');
   const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
     boolean | undefined
   >(undefined);
-
+  const [noteIsSaving, setNoteIsSaving] = useState<boolean>(false);
   const router = useRouter();
 
   const getNotes = () => {
@@ -134,14 +134,22 @@ export default function TaskPage(): React.ReactNode {
 
   const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNoteText(event.target.value);
+    setSubmitNoteSuccess(undefined);
   };
 
   const submitNote = async () => {
     if (noteText === undefined || noteText === '' || !router.query.id) {
       setSubmitNoteSuccess(false);
     } else {
+      setNoteIsSaving(true);
       const response = await createNote(`${router.query.id}`, noteText);
-      if (response) getNotes();
+
+      if (response) {
+        setNoteIsSaving(false);
+        setNoteText('');
+        setSubmitNoteSuccess(true);
+        getNotes();
+      }
     }
   };
 
@@ -174,6 +182,12 @@ export default function TaskPage(): React.ReactNode {
     return null;
   };
 
+  const renderNoteAction = () => {
+    if (noteIsSaving) {
+      return <Paragraph>Saving note...</Paragraph>;
+    }
+  };
+
   const renderNotesUpdate = () => {
     return (
       <div>
@@ -185,7 +199,10 @@ export default function TaskPage(): React.ReactNode {
           id={'notes-text-area'}
           onChange={handleNoteChange}
         />
-        <Button onClick={() => submitNote()}>Save Note</Button>
+        <Button disabled={!noteText} onClick={() => submitNote()}>
+          Save Note
+        </Button>
+        {renderNoteAction()}
         {renderNoteSuccess()}
       </div>
     );

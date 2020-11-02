@@ -48,6 +48,8 @@ const mapResidents = (residents: Resident[]): React.ReactElement => {
 
 export default function TaskPage(): React.ReactNode {
   const [error, setError] = useState<string>('none');
+  const [success, setSuccess] = useState<string>('none');
+  const [inProgress, setInProgress] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [officers, setOfficers] = useState<string[][] | null>(null);
@@ -55,11 +57,17 @@ export default function TaskPage(): React.ReactNode {
     string | undefined
   >(undefined);
   const [noteText, setNoteText] = useState<string | undefined>('');
-  const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
-    boolean | undefined
-  >(undefined);
-  const [noteIsSaving, setNoteIsSaving] = useState<boolean>(false);
+  const [apiCallInProgress, setApiCallInProgress] = useState<boolean>(false);
   const router = useRouter();
+  const [apiCallMessage, setApiCallMessage] = useState<string | undefined>(undefined);
+
+  const setApiCallStatusAndMessages = (apiCallInProgress: boolean, inProgress: string, success: string, error: string) => {
+    clearStatus();
+    setApiCallInProgress(apiCallInProgress);
+    setInProgress(inProgress);
+    setSuccess(success);
+    setError(error);
+  }
 
   const getNotes = () => {
     getNotesById(`${router.query.id}`)
@@ -116,13 +124,21 @@ export default function TaskPage(): React.ReactNode {
     setSelectedOfficerId(officerId);
   };
 
+  const clearStatus = () => {
+    setInProgress('none');
+    setError('none');
+    setSuccess('none');
+  }
+
   const sendToManager = () => {
+setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
     sendTaskToManager(task.id)
       .then(() => {
+        setApiCallStatusAndMessages(false,"","sendToManagerSuccess","");
         router.push('/');
       })
       .catch(() => {
-        setError('sendToManagerError');
+        setApiCallStatusAndMessages(false,"","","sendToManagerError");
       });
   };
 
@@ -134,21 +150,24 @@ export default function TaskPage(): React.ReactNode {
 
   const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNoteText(event.target.value);
-    setSubmitNoteSuccess(undefined);
+    setApiCallMessage(undefined);
   };
 
   const submitNote = async () => {
     if (noteText === undefined || noteText === '' || !router.query.id) {
-      setSubmitNoteSuccess(false);
+      setError("submitNoteError");
     } else {
-      setNoteIsSaving(true);
+      setApiCallStatusAndMessages(true,"submitNoteInProgress","","")
+      
       const response = await createNote(`${router.query.id}`, noteText);
 
       if (response) {
-        setNoteIsSaving(false);
+        setApiCallStatusAndMessages(false, "", "submitNoteSuccess", "")
         setNoteText('');
-        setSubmitNoteSuccess(true);
         getNotes();
+      }
+      else{
+        setApiCallStatusAndMessages(false,"","","submitNoteError")
       }
     }
   };
@@ -170,24 +189,6 @@ export default function TaskPage(): React.ReactNode {
     return notesJsx;
   };
 
-  const renderNoteSuccess = () => {
-    if (submitNoteSuccess) {
-      return <Paragraph>Note was submitted successfully</Paragraph>;
-    }
-    if (submitNoteSuccess === false) {
-      return (
-        <ErrorMessage>An error has occurred, please try again</ErrorMessage>
-      );
-    }
-    return null;
-  };
-
-  const renderNoteAction = () => {
-    if (noteIsSaving) {
-      return <Paragraph>Saving note...</Paragraph>;
-    }
-  };
-
   const renderNotesUpdate = () => {
     return (
       <div>
@@ -198,12 +199,20 @@ export default function TaskPage(): React.ReactNode {
           value={noteText}
           id={'notes-text-area'}
           onChange={handleNoteChange}
+          disabled={apiCallInProgress}
         />
-        <Button disabled={!noteText} onClick={() => submitNote()}>
+        <Button disabled={!noteText || apiCallInProgress} onClick={() => submitNote()}>
           Save Note
         </Button>
-        {renderNoteAction()}
-        {renderNoteSuccess()}
+        {error === 'submitNoteError' && (
+          <ErrorMessage>Error submitting note</ErrorMessage>
+        )}
+        {success === 'submitNoteSuccess' && (
+          <Paragraph>Note submitted successfully</Paragraph>
+        )}
+        {inProgress === 'submitNoteInProgress' && (
+          <Paragraph>Submitting note...</Paragraph>
+        )}
       </div>
     );
   };
@@ -260,7 +269,7 @@ export default function TaskPage(): React.ReactNode {
     return (
       <div>
         <Button
-          onClick={closeTaskHandler}
+          onClick={closeTaskHandler} disabled={apiCallInProgress}
           className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary closeTask"
         >
           Close action
@@ -277,17 +286,24 @@ export default function TaskPage(): React.ReactNode {
       </div>
     );
   };
+  
   const renderSendToManager = () => {
     return (
       <div>
         <Button
-          onClick={sendToManager}
+          onClick={sendToManager} disabled={apiCallInProgress}
           className="govuk-button--secondary lbh-button--secondary sendToManager"
         >
           Send action to manager (optional)
         </Button>
         {error === 'sendToManagerError' && (
           <ErrorMessage>Error sending action to manager</ErrorMessage>
+        )}
+        {success === 'sendToManagerSuccess' && (
+          <Paragraph>Transferred to manager</Paragraph>
+        )}
+        {inProgress === 'sendTomanagerInProgress' && (
+          <Paragraph>Transferring to manager...</Paragraph>
         )}
       </div>
     );
@@ -322,6 +338,7 @@ export default function TaskPage(): React.ReactNode {
         <Tile title={'Notes and Actions'}>
           {renderNotes()}
           {renderNotesUpdate()}
+          <Paragraph>{apiCallMessage}</Paragraph>
           {task.assignedToManager
             ? renderSelectAndSendToOfficer()
             : renderSendToManager()}
@@ -353,6 +370,7 @@ export default function TaskPage(): React.ReactNode {
         </Paragraph>
       </Tile>
       {renderNotesTile()}
+    
       <style jsx>{`
         .tile-container {
           display: flex;

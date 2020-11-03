@@ -15,6 +15,7 @@
   "dueState": 0,
   "completedTime": null,
   "stage": 0,
+  "state": 1,
   "children": [],
   "referenceNumber": "CAS-00000-V2L7P6",
   "incidentId": "11111111-116f-e811-812b-70106faa6a31",

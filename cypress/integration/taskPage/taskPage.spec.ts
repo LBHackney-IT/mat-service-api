@@ -103,7 +103,7 @@ describe('Task Page', () => {
     it('should render the data', () => {
       cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a00');
       cy.contains('FLAT 33 KNIGHT COURT, GALES TERRACE');
-      cy.contains('Secure'); //check for status 
+      cy.contains('Secure'); //check for status
       cy.contains('26/08/2013');
       // Temporarily disable whilst residents information is disabled
       // cy.contains('James Cagney');

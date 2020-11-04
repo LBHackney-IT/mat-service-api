@@ -150,9 +150,15 @@ export default function TaskPage(): React.ReactNode {
   };
 
   const closeTaskHandler = () => {
+    setApiCallStatusAndMessages(true, 'closeTaskInProgress', '', '');
     closeTask(task.id)
-      .then(() => router.push('/'))
-      .catch(() => setError('closeTaskError'));
+      .then(() => {
+        setApiCallStatusAndMessages(false, '', 'closeTaskSuccess', '');
+        router.push('/');
+      })
+      .catch(() => {
+        setApiCallStatusAndMessages(false, '', '', 'closeTaskError');
+      });
   };
 
   const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -211,6 +217,7 @@ export default function TaskPage(): React.ReactNode {
         <Button
           disabled={!noteText || apiCallInProgress}
           onClick={() => submitNote()}
+          className="submitNote"
         >
           Save Note
         </Button>
@@ -286,15 +293,19 @@ export default function TaskPage(): React.ReactNode {
         >
           Close action
         </Button>
-        <Paragraph className="warningText">
-          <FaExclamation />
-          Once an action has been closed it cannot be reopened
-        </Paragraph>
         {error === 'closeTaskError' && (
           <ErrorMessage className="closeTaskError">
             Error closing action
           </ErrorMessage>
         )}
+        {success === 'closeTaskSuccess' && <Paragraph>Task closed</Paragraph>}
+        {inProgress === 'closeTaskInProgress' && (
+          <Paragraph>Closing task...</Paragraph>
+        )}
+        <Paragraph className="warningText">
+          <FaExclamation />
+          Once an action has been closed it cannot be reopened
+        </Paragraph>
       </div>
     );
   };

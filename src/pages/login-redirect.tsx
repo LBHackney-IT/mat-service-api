@@ -21,7 +21,7 @@ const LoginRedirectPage: React.FC = (): React.ReactElement => {
             Sign in with Google
           </Link>
           <div className="privacy-notice">
-            <Heading level={HeadingLevels.H3}>Privacy notice</Heading>
+            <Heading level={HeadingLevels.H2}>Privacy notice</Heading>
             <Paragraph>
               We use Google Analytics and Hotjar to collect information about
               how you use this site. We do this to make sure it’s meeting your

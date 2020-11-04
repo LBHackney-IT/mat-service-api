@@ -59,15 +59,22 @@ export default function TaskPage(): React.ReactNode {
   const [noteText, setNoteText] = useState<string | undefined>('');
   const [apiCallInProgress, setApiCallInProgress] = useState<boolean>(false);
   const router = useRouter();
-  const [apiCallMessage, setApiCallMessage] = useState<string | undefined>(undefined);
+  const [apiCallMessage, setApiCallMessage] = useState<string | undefined>(
+    undefined
+  );
 
-  const setApiCallStatusAndMessages = (apiCallInProgress: boolean, inProgress: string, success: string, error: string) => {
+  const setApiCallStatusAndMessages = (
+    apiCallInProgress: boolean,
+    inProgress: string,
+    success: string,
+    error: string
+  ) => {
     clearStatus();
     setApiCallInProgress(apiCallInProgress);
     setInProgress(inProgress);
     setSuccess(success);
     setError(error);
-  }
+  };
 
   const getNotes = () => {
     getNotesById(`${router.query.id}`)
@@ -128,17 +135,17 @@ export default function TaskPage(): React.ReactNode {
     setInProgress('none');
     setError('none');
     setSuccess('none');
-  }
+  };
 
   const sendToManager = () => {
-setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
+    setApiCallStatusAndMessages(true, 'sendTomanagerInProgress', '', '');
     sendTaskToManager(task.id)
       .then(() => {
-        setApiCallStatusAndMessages(false,"","sendToManagerSuccess","");
+        setApiCallStatusAndMessages(false, '', 'sendToManagerSuccess', '');
         router.push('/');
       })
       .catch(() => {
-        setApiCallStatusAndMessages(false,"","","sendToManagerError");
+        setApiCallStatusAndMessages(false, '', '', 'sendToManagerError');
       });
   };
 
@@ -155,19 +162,18 @@ setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
 
   const submitNote = async () => {
     if (noteText === undefined || noteText === '' || !router.query.id) {
-      setError("submitNoteError");
+      setError('submitNoteError');
     } else {
-      setApiCallStatusAndMessages(true,"submitNoteInProgress","","")
-      
+      setApiCallStatusAndMessages(true, 'submitNoteInProgress', '', '');
+
       const response = await createNote(`${router.query.id}`, noteText);
 
       if (response) {
-        setApiCallStatusAndMessages(false, "", "submitNoteSuccess", "")
+        setApiCallStatusAndMessages(false, '', 'submitNoteSuccess', '');
         setNoteText('');
         getNotes();
-      }
-      else{
-        setApiCallStatusAndMessages(false,"","","submitNoteError")
+      } else {
+        setApiCallStatusAndMessages(false, '', '', 'submitNoteError');
       }
     }
   };
@@ -190,6 +196,7 @@ setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
   };
 
   const renderNotesUpdate = () => {
+    if (task.state === 0) return null;
     return (
       <div>
         <Heading level={HeadingLevels.H4}>Update Notes</Heading>
@@ -201,7 +208,10 @@ setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
           onChange={handleNoteChange}
           disabled={apiCallInProgress}
         />
-        <Button disabled={!noteText || apiCallInProgress} onClick={() => submitNote()}>
+        <Button
+          disabled={!noteText || apiCallInProgress}
+          onClick={() => submitNote()}
+        >
           Save Note
         </Button>
         {error === 'submitNoteError' && (
@@ -266,10 +276,12 @@ setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
   };
 
   const renderCloseTask = () => {
+    if (task.state === 0) return null;
     return (
       <div>
         <Button
-          onClick={closeTaskHandler} disabled={apiCallInProgress}
+          onClick={closeTaskHandler}
+          disabled={apiCallInProgress}
           className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary closeTask"
         >
           Close action
@@ -286,12 +298,13 @@ setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
       </div>
     );
   };
-  
   const renderSendToManager = () => {
+    if (task.state === 0) return null;
     return (
       <div>
         <Button
-          onClick={sendToManager} disabled={apiCallInProgress}
+          onClick={sendToManager}
+          disabled={apiCallInProgress}
           className="govuk-button--secondary lbh-button--secondary sendToManager"
         >
           Send action to manager (optional)
@@ -310,7 +323,7 @@ setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
   };
 
   const renderSelectAndSendToOfficer = () => {
-    if (!officers) return null;
+    if (!officers || task.state === 0) return null;
     return (
       <div className="selectAndSendToOfficerContainer">
         <Dropdown
@@ -352,7 +365,9 @@ setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
   return (
     <Layout>
       {renderLaunchProcess()}
-      <Heading level={HeadingLevels.H1}>{task.type}</Heading>
+      <Heading className="heading-padding" level={HeadingLevels.H1}>
+        {task.type}
+      </Heading>
       {renderTenancyInfo()}
       {/*<Tile title={'Residents'}>
         <div className="tile-container">
@@ -370,10 +385,26 @@ setApiCallStatusAndMessages(true,"sendTomanagerInProgress","","");
         </Paragraph>
       </Tile>
       {renderNotesTile()}
-    
+
       <style jsx>{`
+        .tile {
+          margin-top: 10px;
+          padding: 20px;
+        }
         .tile-container {
           display: flex;
+        }
+        #reference {
+          font-size: 1rem;
+        }
+        .tile a {
+          font-size: 2.25rem;
+        }
+        .heading-padding {
+          padding-top: 150px;
+        }
+        .tile a.tenancy {
+          font-size: 1.25rem;
         }
         .sendToManager,
         sendToManagerError {

@@ -16,9 +16,15 @@ describe('Task Page', () => {
     );
 
     cy.server();
-    cy.fixture('task').then((tasks) => {
+    cy.fixture('activeTask').then((tasks) => {
       cy.route('/api/tasks/6790f691-116f-e811-8133-70106faa6a11', tasks).as(
-        'getTask'
+        'getActiveTask'
+      );
+    });
+
+    cy.fixture('closedTask').then((tasks) => {
+      cy.route('/api/tasks/6790f691-116f-e811-8133-70106faa6a00', tasks).as(
+        'getClosedTask'
       );
     });
 
@@ -49,7 +55,7 @@ describe('Task Page', () => {
     cy.setCookie('hackneyToken', token);
   });
 
-  describe('Rendering the page', () => {
+  describe('Rendering the page for active task', () => {
     it('should show the main elements', () => {
       cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
       cy.contains('Tenancy and household check');
@@ -74,6 +80,40 @@ describe('Task Page', () => {
 
     it('should link to the tenancy page on single view', () => {
       cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a11');
+      cy.get('a.tenancy')
+        .contains('0123456/01')
+        .should('have.attr', 'href')
+        .then((href) => {
+          expect(href.endsWith('/tenancies/0123456-01')).to.equal(true);
+        });
+    });
+  });
+
+  describe('Rendering the page for a closed task', () => {
+    it('should show the read only elements', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a00');
+      cy.contains('Tenancy and household check');
+      cy.contains('Tenancy');
+      // cy.contains('Residents');
+      cy.contains('Actions');
+      cy.contains('Notes and Actions');
+      cy.contains('Update Notes').should('not.exist');
+    });
+
+    it('should render the data', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a00');
+      cy.contains('FLAT 33 KNIGHT COURT, GALES TERRACE');
+      cy.contains('Secure'); //check for status
+      cy.contains('26/08/2013');
+      // Temporarily disable whilst residents information is disabled
+      // cy.contains('James Cagney');
+      // cy.contains('james.cagney@yahoo.co.uk');
+      cy.contains('CAS-00000-V2L7P6');
+      cy.contains('Save Note').should('not.exist');
+    });
+
+    it('should link to the tenancy page on single view', () => {
+      cy.visit('/tasks/6790f691-116f-e811-8133-70106faa6a00');
       cy.get('a.tenancy')
         .contains('0123456/01')
         .should('have.attr', 'href')

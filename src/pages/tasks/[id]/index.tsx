@@ -322,7 +322,9 @@ export default function TaskPage(): React.ReactNode {
   return (
     <Layout>
       {renderLaunchProcess()}
-      <Heading level={HeadingLevels.H1}>{task.type}</Heading>
+      <Heading className="heading-padding" level={HeadingLevels.H1}>
+        {task.type}
+      </Heading>
       {renderTenancyInfo()}
       {/*<Tile title={'Residents'}>
         <div className="tile-container">
@@ -341,8 +343,24 @@ export default function TaskPage(): React.ReactNode {
       </Tile>
       {renderNotesTile()}
       <style jsx>{`
+        .tile {
+          margin-top: 10px;
+          padding: 20px;
+        }
         .tile-container {
           display: flex;
+        }
+        #reference {
+          font-size: 1rem;
+        }
+        .tile a {
+          font-size: 2.25rem;
+        }
+        .heading-padding {
+          padding-top: 150px;
+        }
+        .tile a.tenancy {
+          font-size: 1.25rem;
         }
         .sendToManager,
         sendToManagerError {

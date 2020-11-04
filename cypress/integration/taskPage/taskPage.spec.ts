@@ -138,7 +138,7 @@ describe('Task Page', () => {
         ''
       ).as('sendToManager');
       cy.get('button.sendToManager').click();
-      cy.wait('@sendToManager', { timeout: 1000 });
+      cy.wait('@sendToManager');
     });
 
     it('should show an error if necessary', () => {
@@ -151,7 +151,7 @@ describe('Task Page', () => {
       }).as('sendToManagerFail');
       cy.get('button.sendToManager').click();
       cy.contains('Error sending action to manager');
-      cy.wait('@sendToManagerFail', { timeout: 1000 });
+      cy.wait('@sendToManagerFail');
     });
 
     it('should not be visible on a task assigned to manager already', () => {
@@ -172,7 +172,7 @@ describe('Task Page', () => {
         ''
       ).as('sendToOfficer');
       cy.get('button.sendToOfficer').click();
-      cy.wait('@sendToOfficer', { timeout: 1000 });
+      cy.wait('@sendToOfficer');
       cy.location('pathname').should('eq', '/');
     });
 
@@ -185,7 +185,7 @@ describe('Task Page', () => {
         response: {},
       }).as('sendToOfficerFail');
       cy.get('button.sendToOfficer').click();
-      cy.wait('@sendToOfficerFail', { timeout: 1000 });
+      cy.wait('@sendToOfficerFail');
       cy.contains('Error sending action to officer');
     });
 
@@ -206,7 +206,7 @@ describe('Task Page', () => {
         ''
       ).as('closeTask');
       cy.get('button.closeTask').click();
-      cy.wait('@closeTask', { timeout: 1000 });
+      cy.wait('@closeTask');
       cy.location('pathname').should('eq', '/');
     });
 
@@ -220,7 +220,7 @@ describe('Task Page', () => {
       }).as('closeTask');
       cy.get('button.closeTask').click();
       cy.contains('Error closing action');
-      cy.wait('@closeTask', { timeout: 1000 });
+      cy.wait('@closeTask');
     });
   });
 
@@ -241,7 +241,7 @@ describe('Task Page', () => {
         url: '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/notes',
         status: 200,
         response: {},
-        delay: 1000,
+        delay: 2000,
       }).as('saveNote');
       cy.get('button.submitNote').click();
 
@@ -260,7 +260,6 @@ describe('Task Page', () => {
         url: '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/notes',
         status: 200,
         response: {},
-        delay: 1000,
       }).as('saveNote');
 
       cy.get('#notes-text-area').type('Sample note');
@@ -278,7 +277,6 @@ describe('Task Page', () => {
         url: '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/notes',
         status: 500,
         response: {},
-        delay: 2000,
       }).as('saveNote');
       cy.get('#notes-text-area').type('Sample note');
       cy.get('button.submitNote').click();
@@ -312,7 +310,6 @@ describe('Task Page', () => {
         url: '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/sendToManager',
         status: 500,
         response: {},
-        delay: 2000,
       }).as('sendToManager');
       cy.get('button.sendToManager').click();
       cy.contains('Error sending action to manager');
@@ -348,10 +345,41 @@ describe('Task Page', () => {
         url: '/api/tasks/6790f691-116f-e811-8133-70106faa6a11/close',
         status: 500,
         response: {},
-        delay: 2000,
       }).as('closeTask');
       cy.get('button.closeTask').click();
       cy.contains('Error closing action');
+    });
+  });
+
+  describe('Render button states and messages when tranferring task to officer', () => {
+    it('should disable all buttons when task is being transferred to officer', () => {
+      cy.visit('/tasks/99999999-116f-e811-8133-70106faa6a11');
+      cy.route({
+        method: 'POST',
+        url: '/api/tasks/99999999-116f-e811-8133-70106faa6a11/sendToOfficer',
+        status: 200,
+        response: {},
+        delay: 2000,
+      }).as('sendToOfficer');
+
+      cy.get('button.sendToOfficer').click();
+
+      cy.get('button.submitNote').should('be.disabled');
+      cy.get('button.sendToOfficer').should('be.disabled');
+      cy.get('button.closeTask').should('be.disabled');
+      cy.location('pathname').should('eq', '/');
+    });
+
+    it('should show an error if necessary', () => {
+      cy.visit('/tasks/99999999-116f-e811-8133-70106faa6a11');
+      cy.route({
+        method: 'POST',
+        url: '/api/tasks/99999999-116f-e811-8133-70106faa6a11/sendToOfficer',
+        status: 500,
+        response: {},
+      }).as('closeTask');
+      cy.get('button.sendToOfficer').click();
+      cy.contains('Error sending action to officer');
     });
   });
 });

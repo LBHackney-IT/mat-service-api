@@ -114,15 +114,17 @@ export default function TaskPage(): React.ReactNode {
 
   const updateOfficer = () => {
     if (task && selectedOfficerId) {
+      setApiCallStatusAndMessages(true, 'sendToOfficerInProgress', '', '');
       sendTaskToOfficer({
         taskId: task.id,
         housingOfficerId: selectedOfficerId,
       })
         .then(() => {
+          setApiCallStatusAndMessages(false, '', 'sendToOfficerSuccess', '');
           router.push('/');
         })
         .catch(() => {
-          setError('sendToOfficerError');
+          setApiCallStatusAndMessages(false, '', '', 'sendToOfficerError');
         });
     }
   };
@@ -336,22 +338,33 @@ export default function TaskPage(): React.ReactNode {
   const renderSelectAndSendToOfficer = () => {
     if (!officers || task.state === 0) return null;
     return (
-      <div className="selectAndSendToOfficerContainer">
-        <Dropdown
-          options={officers}
-          selected={selectedOfficerId}
-          onChange={updateSelectedOfficerId}
-        />
-        <span className="divider"></span>
-        <Button
-          onClick={updateOfficer}
-          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary sendToOfficer"
-        >
-          Send action to officer
-        </Button>
-        {error === 'sendToOfficerError' && (
-          <ErrorMessage>Error sending action to officer</ErrorMessage>
-        )}
+      <div>
+        <div className="selectAndSendToOfficerContainer">
+          <Dropdown
+            options={officers}
+            selected={selectedOfficerId}
+            onChange={updateSelectedOfficerId}
+          />
+          <span className="divider"></span>
+          <Button
+            onClick={updateOfficer}
+            className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary sendToOfficer"
+            disabled={apiCallInProgress}
+          >
+            Send action to officer
+          </Button>
+        </div>
+        <div>
+          {error === 'sendToOfficerError' && (
+            <ErrorMessage>Error sending action to officer</ErrorMessage>
+          )}
+          {success === 'sendToOfficerSuccess' && (
+            <Paragraph>Transferred to officer</Paragraph>
+          )}
+          {inProgress === 'sendToOfficerInProgress' && (
+            <Paragraph>Transferring to officer...</Paragraph>
+          )}
+        </div>
       </div>
     );
   };

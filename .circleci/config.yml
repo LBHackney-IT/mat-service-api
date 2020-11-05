@@ -130,7 +130,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - sv-235-move-lambdas-to-vpc
       - cypress/run:
           name: cypress-branch
           executor: cypress-staging

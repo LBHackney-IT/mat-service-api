@@ -3,6 +3,7 @@ service: mat-service
 provider:
   name: aws
   runtime: nodejs12.x
+  vpc: ${self:custom.vpc.${opt:stage}}
   region: eu-west-2
   api-name: hn-mat-service-api
   stage: dev
@@ -172,3 +173,12 @@ custom:
       - housing-officer-production
       - area-housing-manager-production
       - development-team-production
+  vpc:
+    staging:
+      subnetIds:
+        - subnet-049b217c0cdebc3b9
+        - subnet-0f24c732bfa6d9577
+    production:
+      subnetIds:
+        - subnet-0133969cf2f425325
+        - subnet-01693bf072052801c

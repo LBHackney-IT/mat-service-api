@@ -48,18 +48,33 @@ const mapResidents = (residents: Resident[]): React.ReactElement => {
 
 export default function TaskPage(): React.ReactNode {
   const [error, setError] = useState<string>('none');
+  const [success, setSuccess] = useState<string>('none');
+  const [inProgress, setInProgress] = useState<string>('none');
   const [task, setTask] = useState<Task | null>(null);
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [officers, setOfficers] = useState<string[][] | null>(null);
   const [selectedOfficerId, setSelectedOfficerId] = useState<
     string | undefined
   >(undefined);
-  const [noteText, setNoteText] = useState<string | undefined>(undefined);
-  const [submitNoteSuccess, setSubmitNoteSuccess] = useState<
-    boolean | undefined
-  >(undefined);
-
+  const [noteText, setNoteText] = useState<string | undefined>('');
+  const [apiCallInProgress, setApiCallInProgress] = useState<boolean>(false);
   const router = useRouter();
+  const [apiCallMessage, setApiCallMessage] = useState<string | undefined>(
+    undefined
+  );
+
+  const setApiCallStatusAndMessages = (
+    apiCallInProgress: boolean,
+    inProgress: string,
+    success: string,
+    error: string
+  ) => {
+    clearStatus();
+    setApiCallInProgress(apiCallInProgress);
+    setInProgress(inProgress);
+    setSuccess(success);
+    setError(error);
+  };
 
   const getNotes = () => {
     getNotesById(`${router.query.id}`)
@@ -99,15 +114,17 @@ export default function TaskPage(): React.ReactNode {
 
   const updateOfficer = () => {
     if (task && selectedOfficerId) {
+      setApiCallStatusAndMessages(true, 'sendToOfficerInProgress', '', '');
       sendTaskToOfficer({
         taskId: task.id,
         housingOfficerId: selectedOfficerId,
       })
         .then(() => {
+          setApiCallStatusAndMessages(false, '', 'sendToOfficerSuccess', '');
           router.push('/');
         })
         .catch(() => {
-          setError('sendToOfficerError');
+          setApiCallStatusAndMessages(false, '', '', 'sendToOfficerError');
         });
     }
   };
@@ -116,32 +133,56 @@ export default function TaskPage(): React.ReactNode {
     setSelectedOfficerId(officerId);
   };
 
+  const clearStatus = () => {
+    setInProgress('none');
+    setError('none');
+    setSuccess('none');
+  };
+
   const sendToManager = () => {
+    setApiCallStatusAndMessages(true, 'sendTomanagerInProgress', '', '');
     sendTaskToManager(task.id)
       .then(() => {
+        setApiCallStatusAndMessages(false, '', 'sendToManagerSuccess', '');
         router.push('/');
       })
       .catch(() => {
-        setError('sendToManagerError');
+        setApiCallStatusAndMessages(false, '', '', 'sendToManagerError');
       });
   };
 
   const closeTaskHandler = () => {
+    setApiCallStatusAndMessages(true, 'closeTaskInProgress', '', '');
     closeTask(task.id)
-      .then(() => router.push('/'))
-      .catch(() => setError('closeTaskError'));
+      .then(() => {
+        setApiCallStatusAndMessages(false, '', 'closeTaskSuccess', '');
+        router.push('/');
+      })
+      .catch(() => {
+        setApiCallStatusAndMessages(false, '', '', 'closeTaskError');
+      });
   };
 
   const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNoteText(event.target.value);
+    setApiCallMessage(undefined);
   };
 
   const submitNote = async () => {
     if (noteText === undefined || noteText === '' || !router.query.id) {
-      setSubmitNoteSuccess(false);
+      setError('submitNoteError');
     } else {
+      setApiCallStatusAndMessages(true, 'submitNoteInProgress', '', '');
+
       const response = await createNote(`${router.query.id}`, noteText);
-      if (response) getNotes();
+
+      if (response) {
+        setApiCallStatusAndMessages(false, '', 'submitNoteSuccess', '');
+        setNoteText('');
+        getNotes();
+      } else {
+        setApiCallStatusAndMessages(false, '', '', 'submitNoteError');
+      }
     }
   };
 
@@ -162,18 +203,6 @@ export default function TaskPage(): React.ReactNode {
     return notesJsx;
   };
 
-  const renderNoteSuccess = () => {
-    if (submitNoteSuccess) {
-      return <Paragraph>Note was submitted successfully</Paragraph>;
-    }
-    if (submitNoteSuccess === false) {
-      return (
-        <ErrorMessage>An error has occurred, please try again</ErrorMessage>
-      );
-    }
-    return null;
-  };
-
   const renderNotesUpdate = () => {
     if (task.state === 0) return null;
     return (
@@ -185,9 +214,24 @@ export default function TaskPage(): React.ReactNode {
           value={noteText}
           id={'notes-text-area'}
           onChange={handleNoteChange}
+          disabled={apiCallInProgress}
         />
-        <Button onClick={() => submitNote()}>Save Note</Button>
-        {renderNoteSuccess()}
+        <Button
+          disabled={!noteText || apiCallInProgress}
+          onClick={() => submitNote()}
+          className="submitNote"
+        >
+          Save Note
+        </Button>
+        {error === 'submitNoteError' && (
+          <ErrorMessage>Error submitting note</ErrorMessage>
+        )}
+        {success === 'submitNoteSuccess' && (
+          <Paragraph>Note submitted successfully</Paragraph>
+        )}
+        {inProgress === 'submitNoteInProgress' && (
+          <Paragraph>Submitting note...</Paragraph>
+        )}
       </div>
     );
   };
@@ -246,35 +290,46 @@ export default function TaskPage(): React.ReactNode {
       <div>
         <Button
           onClick={closeTaskHandler}
+          disabled={apiCallInProgress}
           className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary closeTask"
         >
           Close action
         </Button>
-        <Paragraph className="warningText">
-          <FaExclamation />
-          Once an action has been closed it cannot be reopened
-        </Paragraph>
         {error === 'closeTaskError' && (
           <ErrorMessage className="closeTaskError">
             Error closing action
           </ErrorMessage>
         )}
+        {success === 'closeTaskSuccess' && <Paragraph>Task closed</Paragraph>}
+        {inProgress === 'closeTaskInProgress' && (
+          <Paragraph>Closing task...</Paragraph>
+        )}
+        <Paragraph className="warningText">
+          <FaExclamation />
+          Once an action has been closed it cannot be reopened
+        </Paragraph>
       </div>
     );
   };
-
   const renderSendToManager = () => {
     if (task.state === 0) return null;
     return (
       <div>
         <Button
           onClick={sendToManager}
+          disabled={apiCallInProgress}
           className="govuk-button--secondary lbh-button--secondary sendToManager"
         >
           Send action to manager (optional)
         </Button>
         {error === 'sendToManagerError' && (
           <ErrorMessage>Error sending action to manager</ErrorMessage>
+        )}
+        {success === 'sendToManagerSuccess' && (
+          <Paragraph>Transferred to manager</Paragraph>
+        )}
+        {inProgress === 'sendTomanagerInProgress' && (
+          <Paragraph>Transferring to manager...</Paragraph>
         )}
       </div>
     );
@@ -283,22 +338,33 @@ export default function TaskPage(): React.ReactNode {
   const renderSelectAndSendToOfficer = () => {
     if (!officers || task.state === 0) return null;
     return (
-      <div className="selectAndSendToOfficerContainer">
-        <Dropdown
-          options={officers}
-          selected={selectedOfficerId}
-          onChange={updateSelectedOfficerId}
-        />
-        <span className="divider"></span>
-        <Button
-          onClick={updateOfficer}
-          className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary sendToOfficer"
-        >
-          Send action to officer
-        </Button>
-        {error === 'sendToOfficerError' && (
-          <ErrorMessage>Error sending action to officer</ErrorMessage>
-        )}
+      <div>
+        <div className="selectAndSendToOfficerContainer">
+          <Dropdown
+            options={officers}
+            selected={selectedOfficerId}
+            onChange={updateSelectedOfficerId}
+          />
+          <span className="divider"></span>
+          <Button
+            onClick={updateOfficer}
+            className="govuk-button  lbh-button govuk-button--secondary lbh-button--secondary sendToOfficer"
+            disabled={apiCallInProgress}
+          >
+            Send action to officer
+          </Button>
+        </div>
+        <div>
+          {error === 'sendToOfficerError' && (
+            <ErrorMessage>Error sending action to officer</ErrorMessage>
+          )}
+          {success === 'sendToOfficerSuccess' && (
+            <Paragraph>Transferred to officer</Paragraph>
+          )}
+          {inProgress === 'sendToOfficerInProgress' && (
+            <Paragraph>Transferring to officer...</Paragraph>
+          )}
+        </div>
       </div>
     );
   };
@@ -309,6 +375,7 @@ export default function TaskPage(): React.ReactNode {
         <Tile title={'Notes and Actions'}>
           {renderNotes()}
           {renderNotesUpdate()}
+          <Paragraph>{apiCallMessage}</Paragraph>
           {task.assignedToManager
             ? renderSelectAndSendToOfficer()
             : renderSendToManager()}
@@ -342,6 +409,7 @@ export default function TaskPage(): React.ReactNode {
         </Paragraph>
       </Tile>
       {renderNotesTile()}
+
       <style jsx>{`
         .tile {
           margin-top: 10px;

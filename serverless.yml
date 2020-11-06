@@ -70,14 +70,14 @@ functions:
 
 resources:
   Resources:
-     matServiceDBSubnetGroup:
-      Type: "AWS::RDS::DBSubnetGroup"
-      Properties: 
+    matServiceDBSubnetGroup:
+      Type: 'AWS::RDS::DBSubnetGroup'
+      Properties:
         DBSubnetGroupName: ${self:service}-postgres-subnet-group-${self:custom.stage}
         DBSubnetGroupDescription: Private db subnet group for postgress
         SubnetIds:
           - ${self:custom.private-subnet-ids.${self:custom.stage}-1}
-          - ${self:custom.private-subnet-ids.${self:custom.stage}-2}          
+          - ${self:custom.private-subnet-ids.${self:custom.stage}-2}
     matServiceDbSecurityGroup:
       Type: AWS::EC2::SecurityGroup
       Properties:

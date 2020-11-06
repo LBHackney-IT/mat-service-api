@@ -3,7 +3,7 @@ service: mat-service
 provider:
   name: aws
   runtime: nodejs12.x
-  vpc: ${self:custom.vpc.${opt:stage}}
+  # vpc: ${self:custom.vpc.${opt:stage}}
   region: eu-west-2
   api-name: hn-mat-service-api
   stage: dev
@@ -70,6 +70,14 @@ functions:
 
 resources:
   Resources:
+     matServiceDBSubnetGroup:
+      Type: "AWS::RDS::DBSubnetGroup"
+      Properties: 
+        DBSubnetGroupName: ${self:service}-postgres-subnet-group-${self:custom.stage}
+        DBSubnetGroupDescription: Private db subnet group for postgress
+        SubnetIds:
+          - ${self:custom.private-subnet-ids.${self:custom.stage}-1}
+          - ${self:custom.private-subnet-ids.${self:custom.stage}-2}          
     matServiceDbSecurityGroup:
       Type: AWS::EC2::SecurityGroup
       Properties:
@@ -95,6 +103,8 @@ resources:
           - Fn::GetAtt:
               - matServiceDbSecurityGroup
               - GroupId
+        # DBSubnetGroupName:
+        #   - ${self:service}-postgres-subnet-group-${self:custom.stage}
       DeletionPolicy: 'Snapshot'
 
     CloudFrontDistribution:
@@ -173,12 +183,21 @@ custom:
       - housing-officer-production
       - area-housing-manager-production
       - development-team-production
-  vpc:
-    staging:
-      subnetIds:
-        - subnet-049b217c0cdebc3b9
-        - subnet-0f24c732bfa6d9577
-    production:
-      subnetIds:
-        - subnet-0133969cf2f425325
-        - subnet-01693bf072052801c
+  # vpc:
+  #   staging:
+  #     subnetIds:
+  #       - subnet-049b217c0cdebc3b9
+  #       - subnet-0f24c732bfa6d9577
+  #   production:
+  #     subnetIds:
+  #       - subnet-0133969cf2f425325
+  #       - subnet-01693bf072052801c
+  private-subnet-ids:
+    staging-1:
+      - subnet-0eabaf5f168063d11
+    staging-2:
+      - subnet-0a33fc9beff39b20c
+    production-1:
+      - subnet-027184f3d715dfda7
+    production-2:
+      - subnet-0cdca69ab8e1f9176

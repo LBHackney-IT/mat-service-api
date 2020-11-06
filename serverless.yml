@@ -101,8 +101,7 @@ resources:
           - Fn::GetAtt:
               - matServiceDbSecurityGroup
               - GroupId
-        DBSubnetGroupName:
-          - ${self:service}-postgres-subnet-group-${self:custom.stage}
+        DBSubnetGroupName: ${self:service}-postgres-subnet-group-${self:custom.stage}
       DeletionPolicy: 'Snapshot'
 
     CloudFrontDistribution:

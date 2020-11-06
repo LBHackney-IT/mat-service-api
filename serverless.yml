@@ -191,9 +191,9 @@ custom:
   #       - subnet-0133969cf2f425325
   #       - subnet-01693bf072052801c
   private-subnet-ids:
-    staging-1:
+    staging:
       - subnet-0eabaf5f168063d11
       - subnet-0a33fc9beff39b20c
-    production-1:
+    production:
       - subnet-027184f3d715dfda7
       - subnet-0cdca69ab8e1f9176

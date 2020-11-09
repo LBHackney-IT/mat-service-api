@@ -85,24 +85,24 @@ resources:
             FromPort: '5432'
             ToPort: '5432'
             CidrIp: 0.0.0.0/0
-    matServiceDb:
-      Type: 'AWS::RDS::DBInstance'
-      Properties:
-        DBInstanceIdentifier: 'mat-service-db-${self:custom.stage}'
-        DBName: ${self:provider.environment.DB_NAME}
-        AllocatedStorage: 5
-        DBInstanceClass: 'db.t2.micro'
-        Engine: 'postgres'
-        EngineVersion: '11.7'
-        MasterUsername: ${self:provider.environment.DB_USER}
-        MasterUserPassword: ${self:provider.environment.DB_PASSWORD}
-        StorageType: gp2
-        VPCSecurityGroups:
-          - Fn::GetAtt:
-              - matServiceDbSecurityGroup
-              - GroupId
-        DBSubnetGroupName: ${self:service}-postgres-subnet-group-${self:custom.stage}
-      DeletionPolicy: 'Snapshot'
+    # matServiceDb:
+    #   Type: 'AWS::RDS::DBInstance'
+    #   Properties:
+    #     DBInstanceIdentifier: 'mat-service-db-${self:custom.stage}'
+    #     DBName: ${self:provider.environment.DB_NAME}
+    #     AllocatedStorage: 5
+    #     DBInstanceClass: 'db.t2.micro'
+    #     Engine: 'postgres'
+    #     EngineVersion: '11.7'
+    #     MasterUsername: ${self:provider.environment.DB_USER}
+    #     MasterUserPassword: ${self:provider.environment.DB_PASSWORD}
+    #     StorageType: gp2
+    #     VPCSecurityGroups:
+    #       - Fn::GetAtt:
+    #           - matServiceDbSecurityGroup
+    #           - GroupId
+    #     DBSubnetGroupName: ${self:service}-postgres-subnet-group-${self:custom.stage}
+    #   DeletionPolicy: 'Snapshot'
 
     CloudFrontDistribution:
       Type: AWS::CloudFront::Distribution

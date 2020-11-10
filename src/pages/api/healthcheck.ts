@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 //import { isSuccess } from '../../lib/utils';
 import {
   // crmTokenGateway,
-  // crmGateway,
+  crmGateway,
   // v1MatAPIGateway,
   matPostgresGateway,
 } from '../../gateways';
@@ -121,9 +121,9 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
 //     });
 // };
 
-// const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
-//   return crmGateway.healthCheck();
-// };
+const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
+  return crmGateway.healthCheck();
+};
 
 const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {
   return matPostgresGateway.healthCheck();
@@ -143,7 +143,7 @@ const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {
 const checks = [
   checkEnvVars,
   //checkDynamicsToken,
-  //checkDynamics,
+  checkDynamics,
   checkPostgres,
   //checkV1MatApi,
 ];

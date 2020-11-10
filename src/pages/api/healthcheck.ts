@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import {
   //crmTokenGateway,
   //crmGateway,
-  v1MatAPIGateway,
+  //v1MatAPIGateway,
   matPostgresGateway,
 } from '../../gateways';
 
@@ -129,21 +129,21 @@ const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {
   return matPostgresGateway.healthCheck();
 };
 
-const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
-  if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
-    return {
-      success: false,
-      message: `MaT API env vars not configured`,
-    };
-  }
+// const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
+//   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
+//     return {
+//       success: false,
+//       message: `MaT API env vars not configured`,
+//     };
+//   }
 
-  return v1MatAPIGateway.healthCheck();
-};
+//   return v1MatAPIGateway.healthCheck();
+// };
 
 const checks = [
   checkEnvVars,
   //checkDynamicsToken,
   //checkDynamics,
   checkPostgres,
-  checkV1MatApi,
+  //checkV1MatApi,
 ];

@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-// import { isSuccess } from '../../lib/utils';
-// import {
-//   crmTokenGateway,
-//   crmGateway,
-//   v1MatAPIGateway,
-//   matPostgresGateway,
-// } from '../../gateways';
+import { isSuccess } from '../../lib/utils';
+import {
+  crmTokenGateway,
+  crmGateway,
+  v1MatAPIGateway,
+  //matPostgresGateway,
+} from '../../gateways';
 
 type Data = {
   result: string;
@@ -24,21 +24,21 @@ type AllResults = {
 
 let CheckFn: () => Promise<CheckResult>;
 
-// const promiseTimeout = function (
-//   ms: number,
-//   promise: Promise<unknown>
-// ): Promise<unknown> {
-//   // Create a promise that rejects in <ms> milliseconds
-//   const timeout = new Promise((resolve, reject) => {
-//     const id = setTimeout(() => {
-//       clearTimeout(id);
-//       reject('Timed out in ' + ms + 'ms.');
-//     }, ms);
-//   });
+const promiseTimeout = function (
+  ms: number,
+  promise: Promise<unknown>
+): Promise<unknown> {
+  // Create a promise that rejects in <ms> milliseconds
+  const timeout = new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject('Timed out in ' + ms + 'ms.');
+    }, ms);
+  });
 
-//   // Returns a race between our timeout and the passed in promise
-//   return Promise.race([promise, timeout]);
-// };
+  // Returns a race between our timeout and the passed in promise
+  return Promise.race([promise, timeout]);
+};
 
 export default async (
   req: NextApiRequest,
@@ -104,46 +104,46 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
   }
 };
 
-// const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
-//   const checkPromise = new Promise((resolve, reject) => {
-//     const response = crmTokenGateway.getToken();
-//     isSuccess(response) ? resolve() : reject();
-//   });
-//   return promiseTimeout(5000, checkPromise)
-//     .then(() => {
-//       return { success: true };
-//     })
-//     .catch(() => {
-//       return {
-//         success: false,
-//         message: `Could not fetch dynamics token`,
-//       };
-//     });
-// };
+const checkDynamicsToken: typeof CheckFn = async (): Promise<CheckResult> => {
+  const checkPromise = new Promise((resolve, reject) => {
+    const response = crmTokenGateway.getToken();
+    isSuccess(response) ? resolve() : reject();
+  });
+  return promiseTimeout(5000, checkPromise)
+    .then(() => {
+      return { success: true };
+    })
+    .catch(() => {
+      return {
+        success: false,
+        message: `Could not fetch dynamics token`,
+      };
+    });
+};
 
-// const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
-//   return crmGateway.healthCheck();
-// };
+const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
+  return crmGateway.healthCheck();
+};
 
 // const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {
 //   return matPostgresGateway.healthCheck();
 // };
 
-// const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
-//   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
-//     return {
-//       success: false,
-//       message: `MaT API env vars not configured`,
-//     };
-//   }
+const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
+  if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
+    return {
+      success: false,
+      message: `MaT API env vars not configured`,
+    };
+  }
 
-//   return v1MatAPIGateway.healthCheck();
-// };
+  return v1MatAPIGateway.healthCheck();
+};
 
 const checks = [
   checkEnvVars,
-  //checkDynamicsToken,
-  //checkDynamics,
+  checkDynamicsToken,
+  checkDynamics,
   //checkPostgres,
-  //checkV1MatApi,
+  checkV1MatApi,
 ];

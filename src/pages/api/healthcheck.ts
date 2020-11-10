@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 //import { isSuccess } from '../../lib/utils';
 import {
-  // crmTokenGateway,
-  crmGateway,
-  // v1MatAPIGateway,
+  //crmTokenGateway,
+  //crmGateway,
+  v1MatAPIGateway,
   matPostgresGateway,
 } from '../../gateways';
 
@@ -121,29 +121,29 @@ const checkEnvVars: typeof CheckFn = async (): Promise<CheckResult> => {
 //     });
 // };
 
-const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
-  return crmGateway.healthCheck();
-};
+// const checkDynamics: typeof CheckFn = async (): Promise<CheckResult> => {
+//   return crmGateway.healthCheck();
+// };
 
 const checkPostgres: typeof CheckFn = async (): Promise<CheckResult> => {
   return matPostgresGateway.healthCheck();
 };
 
-// const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
-//   if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
-//     return {
-//       success: false,
-//       message: `MaT API env vars not configured`,
-//     };
-//   }
+const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
+  if (!process.env.V1_MAT_API_URL || !process.env.V1_MAT_API_TOKEN) {
+    return {
+      success: false,
+      message: `MaT API env vars not configured`,
+    };
+  }
 
-//   return v1MatAPIGateway.healthCheck();
-// };
+  return v1MatAPIGateway.healthCheck();
+};
 
 const checks = [
   checkEnvVars,
   //checkDynamicsToken,
-  checkDynamics,
+  //checkDynamics,
   checkPostgres,
-  //checkV1MatApi,
+  checkV1MatApi,
 ];

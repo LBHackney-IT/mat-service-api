@@ -184,19 +184,15 @@ custom:
     staging:
       securityGroupIds:
         - sg-0eb68e84c4721bc47
-        #- sg-04121ae269359fbfe //alb-sg-staging-staging
       subnetIds:
-        # - subnet-049b217c0cdebc3b9
-        # - subnet-0f24c732bfa6d9577
         - subnet-0eabaf5f168063d11
         - subnet-0a33fc9beff39b20c
-
     production:
       securityGroupIds:
-        - sg-0d8d04c92c98a86bb
+        - sg-057508b2a3573c9e3
       subnetIds:
-        - subnet-0133969cf2f425325
-        - subnet-01693bf072052801c
+        - subnet-027184f3d715dfda7
+        - subnet-0cdca69ab8e1f9176
   private-subnet-ids:
     staging:
       - subnet-0eabaf5f168063d11

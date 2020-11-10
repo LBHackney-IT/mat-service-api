@@ -142,8 +142,8 @@ const checkV1MatApi: typeof CheckFn = async (): Promise<CheckResult> => {
 
 const checks = [
   checkEnvVars,
-  checkDynamicsToken,
-  checkDynamics,
-  checkPostgres,
-  checkV1MatApi,
+  //checkDynamicsToken,
+  //checkDynamics,
+  //checkPostgres,
+  //checkV1MatApi,
 ];
